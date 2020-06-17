@@ -5,3 +5,6 @@ app = Flask(__name__)
 def hello_world():
     return 'Hello, World! This is server/configuration test app.'
 
+if __name__ == '__main__':
+    app.run()
+
