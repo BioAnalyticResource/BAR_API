@@ -1,0 +1,28 @@
+swagger: "2.0"
+
+info:
+  version: 0.0.1
+  title: BAR API
+  description: BAR API documentation
+
+paths:
+  /gene_alias/{species}/{gene_id}:
+    get:
+      parameters:
+        - name: species
+          in: path
+          type: string
+          required: true
+        - name: gene_id
+          in: path
+          type: string
+          required: true
+          default: At3g24650
+      tags:
+        - "Gene Information"
+      summary: "Returns the list of species availible."
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: "Successful operation"
