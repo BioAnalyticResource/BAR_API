@@ -22,7 +22,7 @@ class GeneAlias(Resource):
             default: At3g24650
         tags:
           - "Gene Information"
-        summary: "Returns the list of species availible."
+        summary: "Returns gene alias given a species and gene id"
         produces:
           - application/json
         responses:

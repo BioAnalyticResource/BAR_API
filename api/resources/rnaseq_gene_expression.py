@@ -7,17 +7,40 @@ from api.utilities.bar_utilites import BARUtilities
 class RNASeqGeneExpression(Resource):
     def get(self, species='', database='', gene_id='', sample_id=''):
         """
-        This function returns a Gene Expression Value an AGI ID.
-
-        :param species: Common name of species
-        :param database: Database name
-        :param gene_id: AGI ID
-        :param sample_id: Sample id
-        :return: json Gene alias object
+        This end point returns RNA-Seq gene expression data
+        ---
+        parameters:
+          - name: species
+            in: path
+            type: string
+            required: true
+            default: arabidopsis
+          - name: database
+            in: path
+            type: string
+            required: ture
+            default: single_cell
+          - name: gene_id
+            in: path
+            type: string
+            required: true
+            default: At1g01010
+          - name: sample_id
+            in: path
+            type: string
+            required: false
+            default: cluster0_WT1.ExprMean
+        tags:
+          - "RNA-Seq Gene Expression Data"
+        summary: "Returns gene alias given a species and gene id"
+        produces:
+          - application/json
+        responses:
+          "200":
+            description: "Successful operation"
         """
 
         result = {}
-        data = None
 
         # Output help
         if species == 'species' or species is None or species == '':
