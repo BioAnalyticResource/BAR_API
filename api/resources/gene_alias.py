@@ -7,19 +7,31 @@ from api.utilities.bar_utilites import BARUtilities
 class GeneAlias(Resource):
     def get(self, species='', gene_id=''):
         """
-        This function returns a Gene Aliases given an AGI ID.
-
-        :param species: Common name of species
-        :param gene_id: AGI ID
-        :return: Gene alias object
+        This end point gets gene alias information
+        ---
+        parameters:
+          - name: species
+            in: path
+            type: string
+            required: true
+            default: arabidopsis
+          - name: gene_id
+            in: path
+            type: string
+            required: true
+            default: At3g24650
+        tags:
+          - "Gene Information"
+        summary: "Returns the list of species availible."
+        produces:
+          - application/json
+        responses:
+          "200":
+            description: "Successful operation"
         """
 
         result = {}
         aliases = []
-
-        # Get data
-        if species == 'species' or species is None or species == '':
-            return BARUtilities.success_exit(['arabidopsis'])
 
         if species == 'arabidopsis':
             if re.search(r"^At[12345CM]g\d{5}$", gene_id, re.I):

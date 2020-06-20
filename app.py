@@ -1,3 +1,3 @@
 from api import app
 
-app.run(threaded=True)
+app.run(debug=True, threaded=True)
