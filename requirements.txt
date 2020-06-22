@@ -1,6 +1,8 @@
 aniso8601==8.0.0
 attrs==19.3.0
 click==7.1.2
+coverage==5.1
+flake8==3.8.3
 flasgger==0.9.4
 Flask==1.1.2
 Flask-RESTful==0.3.8
@@ -9,12 +11,15 @@ itsdangerous==1.1.0
 Jinja2==2.11.2
 jsonschema==3.2.0
 MarkupSafe==1.1.1
+mccabe==0.6.1
 mistune==0.8.4
 more-itertools==8.4.0
 mysqlclient==1.4.6
 packaging==20.4
 pluggy==0.13.1
 py==1.8.2
+pycodestyle==2.6.0
+pyflakes==2.2.0
 pyparsing==2.4.7
 pyrsistent==0.16.0
 pytest==5.4.3
