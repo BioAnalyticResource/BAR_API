@@ -30,7 +30,6 @@ class GeneAlias(Resource):
             description: "Successful operation"
         """
 
-        result = {}
         aliases = []
 
         if species == 'arabidopsis':
@@ -44,9 +43,6 @@ class GeneAlias(Resource):
 
         # Return results if there are data
         if len(aliases) > 0:
-            result['status'] = 'success'
-            result['alias'] = aliases
+            return BARUtilities.success_exit(aliases)
         else:
             return BARUtilities.error_exit('There is no data found for the given gene')
-
-        return result
