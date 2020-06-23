@@ -18,7 +18,7 @@ class RNASeqGeneExpression(Resource):
           - name: database
             in: path
             type: string
-            required: ture
+            required: true
             default: single_cell
           - name: gene_id
             in: path
@@ -39,28 +39,21 @@ class RNASeqGeneExpression(Resource):
           "200":
             description: "Successful operation"
         """
-
-        result = {}
-
-        # Output help
-        if species == 'species' or species is None or species == '':
-            return BARUtilities.success_exit(['arabidopsis'])
-
-        if database == 'databases' or database is None or database == '':
-            return BARUtilities.success_exit(['single_cell'])
+        # Set species and check gene ID format
+        if species == 'arabidopsis':
+            if not re.search(r"^At[12345CM]g\d{5}$", gene_id, re.I):
+                return BARUtilities.error_exit('Invalid gene id')
+        else:
+            return BARUtilities.error_exit('Invalid species')
 
         # Set model
         if database == 'single_cell':
             database = SingleCell()
         else:
-            BARUtilities.error_exit('Invalid database')
+            return BARUtilities.error_exit('Invalid database')
 
-        # Validate data
-        if species == 'arabidopsis':
-            if not re.search(r"^At[12345CM]g\d{5}$", gene_id, re.I):
-                return BARUtilities.success_exit('Invalid gene id')
-
-        if not re.search(r"^[\D\d_\.]{0,40}$", sample_id):
+        # Set sample
+        if not re.search(r"^[\w+\._]{0,40}$", sample_id, re.I):
             return BARUtilities.error_exit('Invalid sample id')
 
         # Now query the database
@@ -75,9 +68,6 @@ class RNASeqGeneExpression(Resource):
 
         # Return results if there are data
         if len(data) > 0:
-            result['status'] = 'success'
-            result['data'] = data
+            return BARUtilities.success_exit(data)
         else:
             return BARUtilities.error_exit('There is no data found for the given gene')
-
-        return result
