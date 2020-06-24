@@ -1,7 +1,7 @@
 import re
 from flask_restful import Resource
 from api.models.single_cell import SingleCell
-from api.utilities.bar_utilites import BARUtilities
+from api.utilities.bar_utilities import BARUtilities
 
 
 class RNASeqGeneExpression(Resource):

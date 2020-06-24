@@ -1,7 +1,7 @@
 import re
 from flask_restful import Resource
 from api.models.annotations_lookup import AgiAlias
-from api.utilities.bar_utilites import BARUtilities
+from api.utilities.bar_utilities import BARUtilities
 
 
 class GeneAlias(Resource):
