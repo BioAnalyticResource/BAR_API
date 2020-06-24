@@ -1,5 +1,5 @@
 from unittest import TestCase
-from api.utilities.bar_utilites import BARUtilities
+from api.utilities.bar_utilities import BARUtilities
 
 
 class UtilsUnitTest(TestCase):
