@@ -1,3 +1,7 @@
+from api.base import r
+from redis import exceptions
+
+
 class BARUtilities:
     @staticmethod
     def error_exit(msg):
@@ -8,3 +12,11 @@ class BARUtilities:
     def success_exit(msg):
         result = {'success': True, 'data': msg}
         return result
+
+    @staticmethod
+    def is_redis_available():
+        try:
+            r.ping()
+            return True
+        except exceptions.ConnectionError:
+            return False
