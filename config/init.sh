@@ -18,8 +18,8 @@ fi
 
 echo "Data is now loaded. Preparing API config"
 
-sed -i "s/DB_USER/$DB_USER/g" ./config/BAR_API.cfg
-sed -i "s/DB_PASS/$DB_PASS/g" ./config/BAR_API.cfg
+sed -i '' -e "s/DB_USER/$DB_USER/g" ./config/BAR_API.cfg
+sed -i '' -e "s/DB_PASS/$DB_PASS/g" ./config/BAR_API.cfg
 
 echo "Configuration file ready."
 echo "----------- WARNING ----------"
