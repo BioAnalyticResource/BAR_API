@@ -1,0 +1,20 @@
+---
+dist: bionic
+language: python
+python: 
+  - "3.7"
+  - "3.8"
+  - "3.9-dev"
+  - "nightly"
+  - "pypy3"
+before_install: 
+  - "bash ./config/init.sh"
+install: 
+  - "pip3 install --upgrade pip"
+  - "pip3 install --upgrade setuptools"
+  - "pip install -r requirements.txt"
+script: pytest
+services: 
+  - mysql
+  - redis
+
