@@ -19,7 +19,7 @@ Apart from Travis CI and testing on live BAR, we frequently test the API on syst
 6. Clone this repository and change directory to ```BAR_API```
 7. Set up a virtual environment
 ```
-python3.8 -m venv venv
+python3 -m venv venv
 ```
 8. Activate the virtual environment. Bash/Zsh:
 ```
@@ -39,7 +39,7 @@ pip3 install -r requirements.txt
 ```
 ./config/init.sh
 ```
-Edit ```./api/base.sh``` and update line 38 add the location of the BAR_API.cfg file.
-11. Run ```pytest```. Test should pass if the system is set up correctly.
-12. Run ```python3 app.py``` to start. Enjoy :)
+11. Edit ```./api/base.sh``` and update line 38 add the location of the BAR_API.cfg file.
+12. Run ```pytest```. Test should pass if the system is set up correctly.
+13. Run ```python3 app.py``` to start. Enjoy :)
 
