@@ -28,7 +28,7 @@ redis_password = ''
 # Load configuration
 if environ.get('TRAVIS'):
     # Travis
-    pass
+    app.config.from_pyfile(expanduser('~') + '/BAR_API/config/BAR_API.cfg', silent=True)
 elif gethostname() == 'bar':
     # The BAR
     app.config.from_pyfile(environ.get('BAR_API_PATH'), silent=True)
