@@ -11,7 +11,7 @@ Apart from Travis CI and testing on live BAR, we frequently test the API on syst
 
 ## Run on your own computer
 
-1. Install [MySQL](https://www.mysql.com/products/community/) or [Maria DB](https://mariadb.com/downloads/). For Debian based systems, 
+1. Install [MySQL](https://www.mysql.com/products/community/) or [Maria DB](https://mariadb.com/downloads/).
 2. (Optional) Install [Redis](https://redis.io/download).
 3. Install [Python](https://www.python.org/downloads/) or [Pypy](https://www.pypy.org/download.html). Note: Python 2 is not supported.
 4. Install [Git](https://git-scm.com/downloads)
@@ -39,7 +39,7 @@ pip3 install -r requirements.txt
 ```
 ./config/init.sh
 ```
-Edit ```./api/base.sh``` and edit line 38 to the location of the BAR_API.cfg file
-11. Run ```pytest``. Test should pass if the system is set up correctly.
+Edit ```./api/base.sh``` and update line 38 add the location of the BAR_API.cfg file.
+11. Run ```pytest```. Test should pass if the system is set up correctly.
 12. Run ```python3 app.py``` to start. Enjoy :)
 
