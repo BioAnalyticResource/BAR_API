@@ -22,5 +22,5 @@ script:
   - coverage run
   - coverage report
 after_success:
-  - coveralls --verbose
+  - coveralls
 
