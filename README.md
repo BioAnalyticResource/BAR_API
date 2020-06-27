@@ -1,6 +1,7 @@
 # BAR API
 
 This is the official repository for the Bio-Analytic Resource. The API is live [here](http://bar.utoronto.ca/api/apidocs).
+**master**: [![Build Status](https://travis-ci.com/BioAnalyticResource/BAR_API.svg?branch=master)](https://travis-ci.com/BioAnalyticResource/BAR_API) **dev**: [![Build Status](https://travis-ci.com/BioAnalyticResource/BAR_API.svg?branch=dev)](https://travis-ci.com/BioAnalyticResource/BAR_API)
 
 ## Status
 
@@ -35,7 +36,7 @@ pip3 install --upgrade pip
 pip3 install --upgrade setuptools
 pip3 install -r requirements.txt
 ```
-10. Set up databases and configuration
+10. Set up databases and configuration. Note: Change passwords in ```./config/init.sh``` and ```./config/BAR_API.cfg```
 ```
 ./config/init.sh
 ```
