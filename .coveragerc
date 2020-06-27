@@ -15,8 +15,9 @@ omit =
     venv/*,
     env/*,
     venv/*,
-    .env/*
-
+    .env/*,
+    /home/travis/virtualenv/*,
+    config/*
 
 [report]
 # Regexes for lines to exclude from consideration
