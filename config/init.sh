@@ -19,12 +19,8 @@ fi
 echo "Data is now loaded. Preparing API config"
 echo "Please manually edit config file!"
 
-# Currently not working on all systems. Manually edit files
-#sed -i '' -e "s/DB_USER/$DB_USER/g" ./config/BAR_API.cfg
-#sed -i '' -e "s/DB_PASS/$DB_PASS/g" ./config/BAR_API.cfg
-
 echo "Configuration file ready."
 echo "----------- WARNING ----------"
-echo "Do not forget to delete your password from the configdduration files"
+echo "Do not forget to delete your password from the configuration files"
 echo "if you are pushing to publicaly hosted Git repository."
 
