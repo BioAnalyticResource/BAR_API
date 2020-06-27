@@ -1,23 +1,24 @@
+sudo: false
 dist: bionic
 language: python
 services: 
   - mysql
   - redis
 python: 
-  - "3.7"
-  - "3.8"
-  - "3.9-dev"
-  - "nightly"
-  - "pypy3"
+  - 3.7
+  - 3.8
+  - 3.9-dev
+  - nightly
+  - pypy3
 before_install: 
-  - "bash ./config/init.sh"
+  - bash ./config/init.sh
 install: 
-  - "pip install --upgrade pip"
-  - "pip install --upgrade setuptools"
-  - "pip install -r requirements.txt"
+  - pip install --upgrade pip
+  - pip install --upgrade setuptools
+  - pip install -r requirements.txt
 script: 
-  - "pwd"
-  - "df -h"
-  - "env"
-  - "pytest"
+  - flake8
+  - pytest
+  - coverage run
+  - coverage report
 
