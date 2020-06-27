@@ -1,7 +1,8 @@
 # BAR API
 
-This is the official repository for the Bio-Analytic Resource. The API is live [here](http://bar.utoronto.ca/api/apidocs).
 **master**: [![Build Status](https://travis-ci.com/BioAnalyticResource/BAR_API.svg?branch=master)](https://travis-ci.com/BioAnalyticResource/BAR_API) **dev**: [![Build Status](https://travis-ci.com/BioAnalyticResource/BAR_API.svg?branch=dev)](https://travis-ci.com/BioAnalyticResource/BAR_API)
+
+This is the official repository for the Bio-Analytic Resource. The API is live [here](http://bar.utoronto.ca/api/apidocs).
 
 ## Status
 
