@@ -1,15 +1,15 @@
 # BAR API
 
-**master**: [![Build Status](https://travis-ci.com/BioAnalyticResource/BAR_API.svg?branch=master)](https://travis-ci.com/BioAnalyticResource/BAR_API) **dev**: [![Build Status](https://travis-ci.com/BioAnalyticResource/BAR_API.svg?branch=dev)](https://travis-ci.com/BioAnalyticResource/BAR_API)
+**master**: [![Build Status](https://travis-ci.com/BioAnalyticResource/BAR_API.svg?branch=master)](https://travis-ci.com/BioAnalyticResource/BAR_API) [![Coverage Status](https://coveralls.io/repos/github/BioAnalyticResource/BAR_API/badge.svg?branch=master)](https://coveralls.io/github/BioAnalyticResource/BAR_API?branch=master) **dev**: [![Build Status](https://travis-ci.com/BioAnalyticResource/BAR_API.svg?branch=dev)](https://travis-ci.com/BioAnalyticResource/BAR_API) [![Coverage Status](https://coveralls.io/repos/github/BioAnalyticResource/BAR_API/badge.svg?branch=dev)](https://coveralls.io/github/BioAnalyticResource/BAR_API?branch=dev)
 
-This is the official repository for the Bio-Analytic Resource. The API is live [here](http://bar.utoronto.ca/api/apidocs).
+This is the official repository for the Bio-Analytic Resource API. The API is live [here](http://bar.utoronto.ca/api/apidocs).
 
 ## Status
 
-Apart from Travis CI and testing on live BAR, we frequently test the API on systems that are not BAR for cross platform compatibility. The most recent test is on the following systems:
+Apart from Travis CI and testing on the live BAR, we frequently test the API on systems that are not BAR for cross-platform compatibility. The most recent test is on the following systems:
 
-* OpenBSD 6.7-CURRENT (running Maria DB 10.4.12v1, Python 3.8.3 and Redis 6.0.5)
-* FreeBSD 12.1-RELEASE-p6 (running MySQL 8.0.20, Python 3.8.3 and Redis 5.0.9)
+* OpenBSD 6.7-CURRENT (Maria DB 10.4.12v1, Python 3.8.3 and Redis 6.0.5)
+* FreeBSD 12.1-RELEASE-p6 (MySQL 8.0.20, Python 3.8.3 and Redis 5.0.9)
 
 ## Run on your own computer
 
@@ -41,7 +41,7 @@ pip3 install -r requirements.txt
 ```
 ./config/init.sh
 ```
-11. Edit ```./api/base.sh``` and update line 38 add the location of the BAR_API.cfg file.
-12. Run ```pytest```. Test should pass if the system is set up correctly.
+11. Edit ```./api/base.sh``` and update line 38 and add the location of your BAR_API.cfg file.
+12. Run ```pytest```. Tests should pass if the system is set up correctly.
 13. Run ```python3 app.py``` to start. Enjoy :)
 

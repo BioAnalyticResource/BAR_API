@@ -21,4 +21,6 @@ script:
   - pytest
   - coverage run
   - coverage report
+after_success:
+  - coveralls --verbose
 
