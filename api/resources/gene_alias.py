@@ -2,7 +2,7 @@ import re
 from flask_restful import Resource, request
 from api.models.annotations_lookup import AgiAlias
 from api.utilities.bar_utilities import BARUtilities
-from api.base import r
+from api import r
 import json
 
 
