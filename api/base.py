@@ -2,7 +2,6 @@ from flask import Flask
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from flasgger import Swagger
-from socket import gethostname
 from os.path import expanduser
 from os import environ
 import redis
@@ -15,13 +14,17 @@ swaggger_template = {
         "description": "API for the Bio-Analytic Resource",
         "version": "0.0.1"
     },
-    "host": "bar.utoronto.ca",
-    "basePath": "/api",
     "schemes": [
         "http",
         "https"
     ]
 }
+
+# Set host name on BAR
+if environ.get('BAR'):
+    swaggger_template["host"] = "bar.utoronto.ca"
+    swaggger_template["basePath"] = "/api"
+
 app = Flask(__name__)
 redis_password = ''
 
@@ -29,7 +32,7 @@ redis_password = ''
 if environ.get('TRAVIS'):
     # Travis
     app.config.from_pyfile(environ.get('TRAVIS_BUILD_DIR') + '/config/BAR_API.cfg', silent=True)
-elif gethostname() == 'bar':
+elif environ.get('BAR'):
     # The BAR
     app.config.from_pyfile(environ.get('BAR_API_PATH'), silent=True)
     redis_password = environ.get('BAR_REDIS_PASSWORD')

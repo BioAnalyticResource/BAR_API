@@ -1,6 +1,9 @@
 # BAR API
 
-**master**: [![Build Status](https://travis-ci.com/BioAnalyticResource/BAR_API.svg?branch=master)](https://travis-ci.com/BioAnalyticResource/BAR_API) [![Coverage Status](https://coveralls.io/repos/github/BioAnalyticResource/BAR_API/badge.svg?branch=master)](https://coveralls.io/github/BioAnalyticResource/BAR_API?branch=master) **dev**: [![Build Status](https://travis-ci.com/BioAnalyticResource/BAR_API.svg?branch=dev)](https://travis-ci.com/BioAnalyticResource/BAR_API) [![Coverage Status](https://coveralls.io/repos/github/BioAnalyticResource/BAR_API/badge.svg?branch=dev)](https://coveralls.io/github/BioAnalyticResource/BAR_API?branch=dev)
+**master**: [![Build Status](https://travis-ci.com/BioAnalyticResource/BAR_API.svg?branch=master)](https://travis-ci.com/BioAnalyticResource/BAR_API) [![Coverage Status](https://coveralls.io/repos/github/BioAnalyticResource/BAR_API/badge.svg?branch=master)](https://coveralls.io/github/BioAnalyticResource/BAR_API?branch=master) 
+**dev**: [![Build Status](https://travis-ci.com/BioAnalyticResource/BAR_API.svg?branch=dev)](https://travis-ci.com/BioAnalyticResource/BAR_API) [![Coverage Status](https://coveralls.io/repos/github/BioAnalyticResource/BAR_API/badge.svg?branch=dev)](https://coveralls.io/github/BioAnalyticResource/BAR_API?branch=dev)
+
+![Website](https://img.shields.io/website?url=http%3A%2F%2Fbar.utoronto.ca%2Fapi%2Fapidocs) ![GitHub repo size](https://img.shields.io/github/repo-size/BioAnalyticResource/BAR_API)
 
 This is the official repository for the Bio-Analytic Resource API. The API is live [here](http://bar.utoronto.ca/api/apidocs).
 
@@ -43,5 +46,5 @@ pip3 install -r requirements.txt
 ```
 11. Edit ```./api/base.sh``` and update line 38 and add the location of your BAR_API.cfg file.
 12. Run ```pytest```. Tests should pass if the system is set up correctly.
-13. Run ```python3 app.py``` to start. Enjoy :)
-
+13. Run ```python3 app.py``` to start.
+14. Load ```http://localhost:5000/apidocs``` in a web browser. Enjoy :)
