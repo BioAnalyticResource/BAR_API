@@ -1,9 +1,14 @@
 import re
-from flask_restful import Resource
+from flask_restx import Namespace, Resource
+from sqlalchemy.exc import OperationalError
 from api.models.single_cell import SingleCell
 from api.utilities.bar_utilities import BARUtilities
 
+rnaseq_gene_expression = Namespace('RNA-Seq Data', description='RNA-Seq Gene Expression', path='/')
 
+
+@rnaseq_gene_expression.route('/rnaseq_gene_expression/<string:species>/<string:database>/<string:gene_id>')
+@rnaseq_gene_expression.route('/rnaseq_gene_expression/<string:species>/<string:database>/<string:gene_id>/<string:sample_id>')
 class RNASeqGeneExpression(Resource):
     def get(self, species='', database='', gene_id='', sample_id=''):
         """
@@ -58,9 +63,15 @@ class RNASeqGeneExpression(Resource):
 
         # Now query the database
         if sample_id == '' or sample_id is None:
-            rows = database.query.filter_by(data_probeset_id=gene_id).all()
+            try:
+                rows = database.query.filter_by(data_probeset_id=gene_id).all()
+            except OperationalError:
+                rnaseq_gene_expression.abort(500, 'An internal error has occurred')
         else:
-            rows = database.query.filter_by(data_probeset_id=gene_id, data_bot_id=sample_id).all()
+            try:
+                rows = database.query.filter_by(data_probeset_id=gene_id, data_bot_id=sample_id).all()
+            except OperationalError:
+                rnaseq_gene_expression.abort(500, 'An internal error has occurred')
 
         data = {}
         for row in rows:
