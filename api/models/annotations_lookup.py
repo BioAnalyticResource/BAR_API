@@ -1,4 +1,4 @@
-from api.base import db
+from api import db
 
 
 class AgiAlias(db.Model):

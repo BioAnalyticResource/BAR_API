@@ -1,4 +1,4 @@
-from api.base import r
+from api import r
 from redis import exceptions
 
 
