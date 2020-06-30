@@ -1,4 +1,4 @@
-from api.base import app
+from api import app
 from unittest import TestCase
 
 
@@ -11,7 +11,7 @@ class TestIntegrations(TestCase):
         This tests check for a gene alias for the Arabidopsis gene ABI3
         :return:
         """
-        response = self.app.get('/gene_alias/arabidopsis/At3g24650')
+        response = self.app.get('/gene_information/gene_alias/arabidopsis/At3g24650')
         expected = {
             "success": True,
             "data": [
@@ -27,7 +27,7 @@ class TestIntegrations(TestCase):
         This function tests for genes that do not exists
         :return:
         """
-        response = self.app.get('/gene_alias/arabidopsis/At3g24651')
+        response = self.app.get('/gene_information/gene_alias/arabidopsis/At3g24651')
         expected = {
             "success": False,
             "error": "There is no data found for the given gene"
@@ -39,7 +39,7 @@ class TestIntegrations(TestCase):
         This function tests for genes that are not valid
         :return:
         """
-        response = self.app.get('/gene_alias/arabidopsis/At3g2465x')
+        response = self.app.get('/gene_information/gene_alias/arabidopsis/At3g2465x')
         expected = {
             "success": False,
             "error": "Invalid gene id"
@@ -51,7 +51,7 @@ class TestIntegrations(TestCase):
         This function tests if species is available
         :return:
         """
-        response = self.app.get('/gene_alias/x/At3g24650')
+        response = self.app.get('/gene_information/gene_alias/x/At3g24650')
         expected = {
             "success": False,
             "error": "No data for the given species"

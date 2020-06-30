@@ -1,38 +1,25 @@
 import re
-from flask_restful import Resource, request
+from sqlalchemy.exc import OperationalError
+from flask_restx import Namespace, Resource
+from flask import request
 from api.models.annotations_lookup import AgiAlias
 from api.utilities.bar_utilities import BARUtilities
-from api.base import r
+from api import r
 import json
 
+gene_information = Namespace('Gene Information', description='Information about Genes', path='/gene_information')
 
+
+@gene_information.route('/gene_alias/<string:species>/<string:gene_id>')
 class GeneAlias(Resource):
+    @gene_information.param('species', description='', _in='path', default='arabidopsis')
+    @gene_information.param('gene_id', description='', _in='path', default='At3g24650')
     def get(self, species='', gene_id=''):
         """
-        This end point gets gene alias information
-        ---
-        parameters:
-          - name: species
-            in: path
-            type: string
-            required: true
-            default: arabidopsis
-          - name: gene_id
-            in: path
-            type: string
-            required: true
-            default: At3g24650
-        tags:
-          - "Gene Information"
-        summary: "Returns gene alias given a species and gene id"
-        produces:
-          - application/json
-        responses:
-          "200":
-            description: "Successful operation"
+        This end point provides gene alias given an gene ID
         """
-
         aliases = []
+        rows = []
         redis_key = request.url
 
         # Check if redis is running and results are cached
@@ -45,7 +32,10 @@ class GeneAlias(Resource):
 
         if species == 'arabidopsis':
             if re.search(r"^At[12345CM]g\d{5}$", gene_id, re.I):
-                rows = AgiAlias.query.filter_by(agi=gene_id).all()
+                try:
+                    rows = AgiAlias.query.filter_by(agi=gene_id).all()
+                except OperationalError:
+                    gene_information.abort(500, 'An internal error has occurred')
                 [aliases.append(row.alias) for row in rows]
             else:
                 return BARUtilities.error_exit('Invalid gene id')

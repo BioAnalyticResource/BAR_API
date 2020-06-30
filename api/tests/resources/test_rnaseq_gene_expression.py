@@ -1,4 +1,4 @@
-from api.base import app
+from api import app
 from unittest import TestCase
 
 
