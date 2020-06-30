@@ -1,14 +1,44 @@
+from os import environ
+from os.path import expanduser
+
+import redis
+from flasgger import Swagger
 from flask import Flask
 from flask_restful import Api
-from flasgger import Swagger
 from flask_sqlalchemy import SQLAlchemy
-from os.path import expanduser
-from os import environ
-import redis
+
+
+def start_redis():
+    """
+    This functions starts connection to the Redis Server
+    :return: redis.Redis() instance
+    """
+    redis_password = ''
+    if environ.get('BAR'):
+        redis_password = environ.get('BAR_REDIS_PASSWORD')
+
+    bar_redis = redis.Redis(password=redis_password)
+    return bar_redis
 
 
 def create_app():
-    global redis_password
+    """
+    This function create the app
+    :return: Flask app
+    """
+    # Set up variables
+    swaggger_template = {
+        "swagger": "2.0",
+        "info": {
+            "title": "BAR API",
+            "description": "API for the Bio-Analytic Resource",
+            "version": "0.0.1"
+        },
+        "schemes": [
+            "http",
+            "https"
+        ]
+    }
 
     # Set host name on BAR
     if environ.get('BAR'):
@@ -24,18 +54,27 @@ def create_app():
     elif environ.get('BAR'):
         # The BAR
         bar_app.config.from_pyfile(environ.get('BAR_API_PATH'), silent=True)
-        redis_password = environ.get('BAR_REDIS_PASSWORD')
     else:
         # Change this line if you want to load your own configuration
         bar_app.config.from_pyfile(expanduser('~') + '/Asher/BAR_API.cfg', silent=True)
 
+    # Initialize the database
     db.init_app(bar_app)
+    # No add routes
     add_routes(bar_app)
+
+    # Initialize Swagger UI
+    Swagger(bar_app, template=swaggger_template)
 
     return bar_app
 
 
 def add_routes(bar_app):
+    """
+    A helper function to list all the routes
+    :param bar_app:
+    :return:
+    """
     from api.resources.gene_alias import GeneAlias
     from api.resources.rnaseq_gene_expression import RNASeqGeneExpression
 
@@ -50,30 +89,13 @@ def add_routes(bar_app):
                          '/rnaseq_gene_expression/<string:species>/<string:database>/<string:gene_id>')
 
 
-# Set up variables
-swaggger_template = {
-    "swagger": "2.0",
-    "info": {
-        "title": "BAR API",
-        "description": "API for the Bio-Analytic Resource",
-        "version": "0.0.1"
-    },
-    "schemes": [
-        "http",
-        "https"
-    ]
-}
-
-redis_password = ''
+############################################################################################################################
 
 # Initialize database system
 db = SQLAlchemy()
 
-# Start Redis System
-r = redis.Redis(password=redis_password)
+# Initialize Redis
+r = start_redis()
 
 # Now create the app
 app = create_app()
-
-# Initialize Swagger UI
-swagger = Swagger(app, template=swaggger_template)
