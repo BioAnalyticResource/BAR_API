@@ -7,17 +7,15 @@ coverage==5.1
 coveralls==2.0.0
 docopt==0.6.2
 flake8==3.8.3
-flasgger==0.9.4
 Flask==1.1.2
-Flask-RESTful==0.3.8
+flask-restx==0.2.0
 Flask-SQLAlchemy==2.4.3
-idna==2.9
+idna==2.10
 itsdangerous==1.1.0
 Jinja2==2.11.2
 jsonschema==3.2.0
 MarkupSafe==1.1.1
 mccabe==0.6.1
-mistune==0.8.4
 more-itertools==8.4.0
 mysqlclient==1.4.6
 packaging==20.4
@@ -29,7 +27,6 @@ pyparsing==2.4.7
 pyrsistent==0.16.0
 pytest==5.4.3
 pytz==2020.1
-PyYAML==5.3.1
 redis==3.5.3
 requests==2.24.0
 six==1.15.0
