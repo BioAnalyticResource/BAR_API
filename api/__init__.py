@@ -1,10 +1,8 @@
 from os import environ
 from os.path import expanduser
-
 import redis
 from flasgger import Swagger
 from flask import Flask
-from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -60,33 +58,15 @@ def create_app():
 
     # Initialize the database
     db.init_app(bar_app)
-    # No add routes
+    # Now add routes
+
+    from api.routes import add_routes
     add_routes(bar_app)
 
     # Initialize Swagger UI
     Swagger(bar_app, template=swaggger_template)
 
     return bar_app
-
-
-def add_routes(bar_app):
-    """
-    A helper function to list all the routes
-    :param bar_app:
-    :return:
-    """
-    from api.resources.gene_alias import GeneAlias
-    from api.resources.rnaseq_gene_expression import RNASeqGeneExpression
-
-    bar_api = Api(bar_app)
-
-    # Gene Information
-    bar_api.add_resource(GeneAlias, '/gene_alias/<string:species>/<string:gene_id>')
-
-    # Gene Expression
-    bar_api.add_resource(RNASeqGeneExpression,
-                         '/rnaseq_gene_expression/<string:species>/<string:database>/<string:gene_id>/<string:sample_id>',
-                         '/rnaseq_gene_expression/<string:species>/<string:database>/<string:gene_id>')
 
 
 ############################################################################################################################
