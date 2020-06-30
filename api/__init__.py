@@ -19,26 +19,26 @@ class BARRedis(redis.Redis):
         super().__init__(password=self.redis_password)
 
 
-class BARApi:
+class BARApi(Flask):
     def __init__(self):
         """
         Initialize BAR API class
         """
-        self.bar_app = Flask(__name__)
+        #self.bar_app = Flask(__name__,)
 
         # Load configuration
         if environ.get('TRAVIS'):
             # Travis
-            self.bar_app.config.from_pyfile(environ.get('TRAVIS_BUILD_DIR') + '/config/BAR_API.cfg', silent=True)
+            self.config.from_pyfile(environ.get('TRAVIS_BUILD_DIR') + '/config/BAR_API.cfg', silent=True)
         elif environ.get('BAR'):
             # The BAR
-            self.bar_app.config.from_pyfile(environ.get('BAR_API_PATH'), silent=True)
+            self.config.from_pyfile(environ.get('BAR_API_PATH'), silent=True)
         else:
             # Change this line if you want to load your own configuration
-            self.bar_app.config.from_pyfile(expanduser('~') + '/Asher/BAR_API.cfg', silent=True)
+            self.config.from_pyfile(expanduser('~') + '/Asher/BAR_API.cfg', silent=True)
 
         # Initialize the database
-        db.init_app(self.bar_app)
+        db.init_app(self)
         # Now add routes
         api = Api(
             title='BAR API',
@@ -51,7 +51,7 @@ class BARApi:
 
         api.add_namespace(gene_information)
         api.add_namespace(rnaseq_gene_expression)
-        api.init_app(self.bar_app)
+        api.init_app(self)
 
     def create_app(self):
         """
@@ -59,7 +59,7 @@ class BARApi:
         :return: Flask app
         """
         # Set up variables
-        return self.bar_app
+        return self
 
 
 ############################################################################################################################
@@ -71,4 +71,4 @@ db = SQLAlchemy()
 r = BARRedis()
 
 # Now create the app
-app = BARApi().create_app()
+app = BARApi()
