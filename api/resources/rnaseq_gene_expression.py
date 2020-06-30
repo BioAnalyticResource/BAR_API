@@ -4,46 +4,27 @@ from sqlalchemy.exc import OperationalError
 from api.models.single_cell import SingleCell
 from api.utilities.bar_utilities import BARUtilities
 
-rnaseq_gene_expression = Namespace('RNA-Seq Data', description='RNA-Seq Gene Expression', path='/')
+rnaseq_gene_expression = Namespace('RNA-Seq Gene Expression',
+                                   description='RNA-Seq Gene Expression data from the BAR Databases',
+                                   path='/rnaseq_gene_expression')
 
 
-@rnaseq_gene_expression.route('/rnaseq_gene_expression/<string:species>/<string:database>/<string:gene_id>')
-@rnaseq_gene_expression.route('/rnaseq_gene_expression/<string:species>/<string:database>/<string:gene_id>/<string:sample_id>')
+@rnaseq_gene_expression.route('/<string:species>/<string:database>/<string:gene_id>')
+@rnaseq_gene_expression.route('/<string:species>/<string:database>/<string:gene_id>/<string:sample_id>')
 class RNASeqGeneExpression(Resource):
+    @rnaseq_gene_expression.param('species', description='', _in='path', default='arabidopsis')
+    @rnaseq_gene_expression.param('database', description='', _in='path', default='single_cell')
+    @rnaseq_gene_expression.param('gene_id', description='', _in='path', default='At1g01010')
+    @rnaseq_gene_expression.param('sample_id', description='', _in='path', default='cluster0_WT1.ExprMean')
     def get(self, species='', database='', gene_id='', sample_id=''):
         """
         This end point returns RNA-Seq gene expression data
-        ---
-        parameters:
-          - name: species
-            in: path
-            type: string
-            required: true
-            default: arabidopsis
-          - name: database
-            in: path
-            type: string
-            required: true
-            default: single_cell
-          - name: gene_id
-            in: path
-            type: string
-            required: true
-            default: At1g01010
-          - name: sample_id
-            in: path
-            type: string
-            required: false
-            default: cluster0_WT1.ExprMean
-        tags:
-          - "RNA-Seq Gene Expression Data"
-        summary: "Returns gene alias given a species and gene id"
-        produces:
-          - application/json
-        responses:
-          "200":
-            description: "Successful operation"
+
         """
+        # Variables
+        rows = []
+        sample_regex = ''
+
         # Set species and check gene ID format
         if species == 'arabidopsis':
             if not re.search(r"^At[12345CM]g\d{5}$", gene_id, re.I):
@@ -54,11 +35,13 @@ class RNASeqGeneExpression(Resource):
         # Set model
         if database == 'single_cell':
             database = SingleCell()
+            # This needs to be more strict
+            sample_regex = re.compile(r"^[\w+\._]{0,40}$", re.I)
         else:
             return BARUtilities.error_exit('Invalid database')
 
         # Set sample
-        if not re.search(r"^[\w+\._]{0,40}$", sample_id, re.I):
+        if not sample_regex.search(sample_id):
             return BARUtilities.error_exit('Invalid sample id')
 
         # Now query the database
