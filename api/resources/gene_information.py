@@ -7,7 +7,7 @@ from api.utilities.bar_utilities import BARUtilities
 from api import r
 import json
 
-gene_information = Namespace('Gene Information', description='Information about Genes', path='/')
+gene_information = Namespace('Gene Information', description='Information about Genes', path='/gene_information')
 
 
 @gene_information.route('/gene_alias/<string:species>/<string:gene_id>')
@@ -19,6 +19,7 @@ class GeneAlias(Resource):
         This end point provides gene alias given an gene ID
         """
         aliases = []
+        rows = []
         redis_key = request.url
 
         # Check if redis is running and results are cached

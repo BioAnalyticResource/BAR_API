@@ -24,7 +24,7 @@ class BARApi(Flask):
         """
         Initialize BAR API class
         """
-        #self.bar_app = Flask(__name__,)
+        super().__init__(__name__)
 
         # Load configuration
         if environ.get('TRAVIS'):
@@ -39,8 +39,9 @@ class BARApi(Flask):
 
         # Initialize the database
         db.init_app(self)
+
         # Now add routes
-        api = Api(
+        self.api = Api(
             title='BAR API',
             version='0.0.1',
             description='API for the Bio-Analytic Resource'
@@ -49,17 +50,9 @@ class BARApi(Flask):
         from api.resources.gene_information import gene_information
         from api.resources.rnaseq_gene_expression import rnaseq_gene_expression
 
-        api.add_namespace(gene_information)
-        api.add_namespace(rnaseq_gene_expression)
-        api.init_app(self)
-
-    def create_app(self):
-        """
-        This function create the app
-        :return: Flask app
-        """
-        # Set up variables
-        return self
+        self.api.add_namespace(gene_information)
+        self.api.add_namespace(rnaseq_gene_expression)
+        self.api.init_app(self)
 
 
 ############################################################################################################################
