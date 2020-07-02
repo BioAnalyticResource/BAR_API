@@ -4,6 +4,7 @@ from flask_restx import Namespace, Resource
 from flask import request
 from api.models.annotations_lookup import AgiAlias
 from api.utilities.bar_utilities import BARUtilities
+from markupsafe import escape
 from api import r
 import json
 
@@ -21,6 +22,10 @@ class GeneAlias(Resource):
         aliases = []
         rows = []
         redis_key = request.url
+
+        # Escape input
+        species = escape(species)
+        gene_id = escape(gene_id)
 
         # Check if redis is running and results are cached
         if BARUtilities.is_redis_available():
