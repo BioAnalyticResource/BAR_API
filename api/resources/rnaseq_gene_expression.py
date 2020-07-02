@@ -3,6 +3,7 @@ from flask_restx import Namespace, Resource
 from sqlalchemy.exc import OperationalError
 from api.models.single_cell import SingleCell
 from api.utilities.bar_utilities import BARUtilities
+from markupsafe import escape
 
 rnaseq_gene_expression = Namespace('RNA-Seq Gene Expression',
                                    description='RNA-Seq Gene Expression data from the BAR Databases',
@@ -23,7 +24,10 @@ class RNASeqGeneExpression(Resource):
         """
         # Variables
         rows = []
-        sample_regex = ''
+        species = escape(species)
+        database = escape(database)
+        gene_id = escape(gene_id)
+        sample_id = escape(sample_id)
 
         # Set species and check gene ID format
         if species == 'arabidopsis':
