@@ -20,20 +20,6 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
-    def test_gene_alias_list_post(self):
-        """
-        This function test the gene alias list get function
-        :return:
-        """
-        response = self.app.post('/gene_information/gene_alias')
-        expected = {
-            "success": True,
-            "data": [
-                "arabidopsis"
-            ]
-        }
-        self.assertEqual(response.json, expected)
-
     def test_arabidopsis_gene_alias(self):
         """
         This tests check for a gene alias for the Arabidopsis gene ABI3

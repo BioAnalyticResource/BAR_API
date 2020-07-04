@@ -1,14 +1,15 @@
+import json
 import re
-from sqlalchemy.exc import OperationalError
-from flask_restx import Namespace, Resource
 from flask import request
+from flask_restx import Namespace, Resource
+from markupsafe import escape
+from sqlalchemy.exc import OperationalError
+from api import r
 from api.models.annotations_lookup import AgiAlias
 from api.utilities.bar_utilities import BARUtilities
-from markupsafe import escape
-from api import r
-import json
 
 gene_information = Namespace('Gene Information', description='Information about Genes', path='/gene_information')
+
 
 # I think this is only needed for Swagger UI POST
 # resource_fields = gene_information.model('GeneAlias', {
@@ -19,19 +20,12 @@ gene_information = Namespace('Gene Information', description='Information about 
 
 @gene_information.route('/gene_alias')
 class GeneAliasList(Resource):
-    species = ['arabidopsis']   # This are the only species available so far
+    species = ['arabidopsis']  # This are the only species available so far
 
     def get(self):
         """
         This end point returns the list of species available via a GET request
         """
-        return BARUtilities.success_exit(self.species)
-
-    def post(self):
-        """
-        This end point returns the list of species available via a GET request
-        """
-        # Escape input
         return BARUtilities.success_exit(self.species)
 
 
