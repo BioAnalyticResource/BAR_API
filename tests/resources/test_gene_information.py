@@ -13,7 +13,7 @@ class TestIntegrations(TestCase):
         """
         response = self.app.get('/gene_information/gene_alias')
         expected = {
-            "success": True,
+            "wasSuccessful": True,
             "data": [
                 "arabidopsis"
             ]
@@ -27,7 +27,7 @@ class TestIntegrations(TestCase):
         """
         response = self.app.get('/gene_information/gene_alias/arabidopsis/At3g24650')
         expected = {
-            "success": True,
+            "wasSuccessful": True,
             "data": [
                 "ABI3",
                 "AtABI3",
@@ -43,7 +43,7 @@ class TestIntegrations(TestCase):
         """
         response = self.app.get('/gene_information/gene_alias/arabidopsis/At3g24651')
         expected = {
-            "success": False,
+            "wasSuccessful": False,
             "error": "There is no data found for the given gene"
         }
         self.assertEqual(response.json, expected)
@@ -55,7 +55,7 @@ class TestIntegrations(TestCase):
         """
         response = self.app.get('/gene_information/gene_alias/arabidopsis/At3g2465x')
         expected = {
-            "success": False,
+            "wasSuccessful": False,
             "error": "Invalid gene id"
         }
         self.assertEqual(response.json, expected)
@@ -67,7 +67,7 @@ class TestIntegrations(TestCase):
         """
         response = self.app.get('/gene_information/gene_alias/x/At3g24650')
         expected = {
-            "success": False,
+            "wasSuccessful": False,
             "error": "No data for the given species"
         }
         self.assertEqual(response.json, expected)
