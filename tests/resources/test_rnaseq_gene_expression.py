@@ -4,14 +4,14 @@ from unittest import TestCase
 
 class TestIntegrations(TestCase):
     def setUp(self):
-        self.app = app.test_client()
+        self.app_client = app.test_client()
 
     def test_get_arabidopsis_single_cell_gene(self):
         """
         This tests the data returned by the gene end point
         :return:
         """
-        response = self.app.get('/rnaseq_gene_expression/arabidopsis/single_cell/At1g01010')
+        response = self.app_client.get('/rnaseq_gene_expression/arabidopsis/single_cell/At1g01010')
         expected = {
             "wasSuccessful": True,
             "data": {
@@ -133,7 +133,7 @@ class TestIntegrations(TestCase):
         This tests the data returned for Arabidopsis single cell databases with a gene and a sample id.
         :return:
         """
-        response = self.app.get('/rnaseq_gene_expression/arabidopsis/single_cell/At1g01010/cluster0_WT1.ExprMean')
+        response = self.app_client.get('/rnaseq_gene_expression/arabidopsis/single_cell/At1g01010/cluster0_WT1.ExprMean')
         expected = {"wasSuccessful": True, "data": {"cluster0_WT1.ExprMean": 0.330615}}
         self.assertEqual(response.json, expected)
 
@@ -142,7 +142,7 @@ class TestIntegrations(TestCase):
         This function tests if the gene is valid.
         :return:
         """
-        response = self.app.get('/rnaseq_gene_expression/arabidopsis/single_cell/At1g0101x')
+        response = self.app_client.get('/rnaseq_gene_expression/arabidopsis/single_cell/At1g0101x')
         expected = {
             "wasSuccessful": False,
             "error": "Invalid gene id"
@@ -154,7 +154,7 @@ class TestIntegrations(TestCase):
         This function tests if the gene is valid.
         :return:
         """
-        response = self.app.get('/rnaseq_gene_expression/arabidopsis/single_c;ell/At1g01010')
+        response = self.app_client.get('/rnaseq_gene_expression/arabidopsis/single_c;ell/At1g01010')
         expected = {
             "wasSuccessful": False,
             "error": "Invalid database"
@@ -166,7 +166,7 @@ class TestIntegrations(TestCase):
         This function tests if the gene is valid.
         :return:
         """
-        response = self.app.get('/rnaseq_gene_expression/abc/single_cell/At1g01010')
+        response = self.app_client.get('/rnaseq_gene_expression/abc/single_cell/At1g01010')
         expected = {
             "wasSuccessful": False,
             "error": "Invalid species"
@@ -178,7 +178,7 @@ class TestIntegrations(TestCase):
         This function tests if the gene is valid.
         :return:
         """
-        response = self.app.get('/rnaseq_gene_expression/arabidopsis/single_cell/At1g01011')
+        response = self.app_client.get('/rnaseq_gene_expression/arabidopsis/single_cell/At1g01011')
         expected = {
             "wasSuccessful": False,
             "error": "There is no data found for the given gene"
@@ -190,7 +190,7 @@ class TestIntegrations(TestCase):
         This function tests if the gene is valid.
         :return:
         """
-        response = self.app.get('/rnaseq_gene_expression/arabidopsis/single_cell/At1g01011/cluster0_WT1.ExprMean')
+        response = self.app_client.get('/rnaseq_gene_expression/arabidopsis/single_cell/At1g01011/cluster0_WT1.ExprMean')
         expected = {
             "wasSuccessful": False,
             "error": "There is no data found for the given gene"
@@ -202,7 +202,7 @@ class TestIntegrations(TestCase):
         This function tests if the gene is valid.
         :return:
         """
-        response = self.app.get('/rnaseq_gene_expression/arabidopsis/single_cell/At1g01010/abc;xyz')
+        response = self.app_client.get('/rnaseq_gene_expression/arabidopsis/single_cell/At1g01010/abc;xyz')
         expected = {
             "wasSuccessful": False,
             "error": "Invalid sample id"
@@ -224,7 +224,7 @@ class TestIntegrations(TestCase):
                 "cluster0_WT3.ExprMean"
             ]
         }
-        response = self.app.post('/rnaseq_gene_expression/', json=data)
+        response = self.app_client.post('/rnaseq_gene_expression/', json=data)
         expected = {
             "wasSuccessful": True,
             "data": {
@@ -251,7 +251,7 @@ class TestIntegrations(TestCase):
             ],
             "abc": "xyz"
         }
-        response = self.app.post('/rnaseq_gene_expression/', json=data)
+        response = self.app_client.post('/rnaseq_gene_expression/', json=data)
         expected = {'wasSuccessful': False, 'error': {'abc': ['Unknown field.']}}
         self.assertEqual(response.json, expected)
 
@@ -270,7 +270,7 @@ class TestIntegrations(TestCase):
                 "cluster0_WT3.ExprMean"
             ]
         }
-        response = self.app.post('/rnaseq_gene_expression/', json=data)
+        response = self.app_client.post('/rnaseq_gene_expression/', json=data)
         expected = {'wasSuccessful': False, 'error': 'There are no data found for the given gene'}
         self.assertEqual(response.json, expected)
 
@@ -287,6 +287,6 @@ class TestIntegrations(TestCase):
                 "x?yx"
             ]
         }
-        response = self.app.post('/rnaseq_gene_expression/', json=data)
+        response = self.app_client.post('/rnaseq_gene_expression/', json=data)
         expected = {'wasSuccessful': False, 'error': 'Invalid sample id'}
         self.assertEqual(response.json, expected)
