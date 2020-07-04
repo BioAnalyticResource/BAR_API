@@ -11,22 +11,14 @@ from api.utilities.bar_utilities import BARUtilities
 gene_information = Namespace('Gene Information', description='Information about Genes', path='/gene_information')
 
 
-# I think this is only needed for Swagger UI POST
-# resource_fields = gene_information.model('GeneAlias', {
-#    'species': fields.String(required=True, example='arabidopsis'),
-#    'gene_id': fields.String(required=True, example='At3g24650')
-# })
-
-
 @gene_information.route('/gene_alias')
 class GeneAliasList(Resource):
-    species = ['arabidopsis']  # This are the only species available so far
-
     def get(self):
         """
         This end point returns the list of species available via a GET request
         """
-        return BARUtilities.success_exit(self.species)
+        species = ['arabidopsis']  # This are the only species available so far
+        return BARUtilities.success_exit(species)
 
 
 @gene_information.route('/gene_alias/<string:species>/<string:gene_id>')

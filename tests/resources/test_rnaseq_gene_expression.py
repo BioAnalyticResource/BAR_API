@@ -13,7 +13,7 @@ class TestIntegrations(TestCase):
         """
         response = self.app.get('/rnaseq_gene_expression/arabidopsis/single_cell/At1g01010')
         expected = {
-            "success": True,
+            "wasSuccessful": True,
             "data": {
                 "cluster0_WT1.ExprMean": 0.330615,
                 "cluster0_WT2.ExprMean": 0.376952,
@@ -134,7 +134,7 @@ class TestIntegrations(TestCase):
         :return:
         """
         response = self.app.get('/rnaseq_gene_expression/arabidopsis/single_cell/At1g01010/cluster0_WT1.ExprMean')
-        expected = {"success": True, "data": {"cluster0_WT1.ExprMean": 0.330615}}
+        expected = {"wasSuccessful": True, "data": {"cluster0_WT1.ExprMean": 0.330615}}
         self.assertEqual(response.json, expected)
 
     def test_arabidopsis_gene_invalid(self):
@@ -144,7 +144,7 @@ class TestIntegrations(TestCase):
         """
         response = self.app.get('/rnaseq_gene_expression/arabidopsis/single_cell/At1g0101x')
         expected = {
-            "success": False,
+            "wasSuccessful": False,
             "error": "Invalid gene id"
         }
         self.assertEqual(response.json, expected)
@@ -156,7 +156,7 @@ class TestIntegrations(TestCase):
         """
         response = self.app.get('/rnaseq_gene_expression/arabidopsis/single_c;ell/At1g01010')
         expected = {
-            "success": False,
+            "wasSuccessful": False,
             "error": "Invalid database"
         }
         self.assertEqual(response.json, expected)
@@ -168,7 +168,7 @@ class TestIntegrations(TestCase):
         """
         response = self.app.get('/rnaseq_gene_expression/abc/single_cell/At1g01010')
         expected = {
-            "success": False,
+            "wasSuccessful": False,
             "error": "Invalid species"
         }
         self.assertEqual(response.json, expected)
@@ -180,7 +180,7 @@ class TestIntegrations(TestCase):
         """
         response = self.app.get('/rnaseq_gene_expression/arabidopsis/single_cell/At1g01011')
         expected = {
-            "success": False,
+            "wasSuccessful": False,
             "error": "There is no data found for the given gene"
         }
         self.assertEqual(response.json, expected)
@@ -192,7 +192,7 @@ class TestIntegrations(TestCase):
         """
         response = self.app.get('/rnaseq_gene_expression/arabidopsis/single_cell/At1g01010/abc;xyz')
         expected = {
-            "success": False,
+            "wasSuccessful": False,
             "error": "Invalid sample id"
         }
         self.assertEqual(response.json, expected)
