@@ -35,9 +35,9 @@ source venv/bin/activate.csh
 ```
 9. Install requirements
 ```
-pip3 install --upgrade pip
-pip3 install --upgrade setuptools
-pip3 install -r requirements.txt
+pip install --upgrade pip
+pip install --upgrade setuptools
+pip install -r requirements.txt
 ```
 10. Set up databases and configuration. Note: Change passwords in ```./config/init.sh``` and ```./config/BAR_API.cfg```
 ```
@@ -45,5 +45,5 @@ pip3 install -r requirements.txt
 ```
 11. Edit ```./api/__init__.py``` and update line 38 and add the location of your BAR_API.cfg file.
 12. Run ```pytest```. Tests should pass if the system is set up correctly.
-13. Run ```python3 app.py``` to start.
+13. Run ```python app.py``` to start.
 14. Load ```http://localhost:5000/``` in a web browser. Enjoy :)
