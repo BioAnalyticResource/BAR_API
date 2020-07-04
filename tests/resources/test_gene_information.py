@@ -4,14 +4,14 @@ from unittest import TestCase
 
 class TestIntegrations(TestCase):
     def setUp(self):
-        self.app = app.test_client()
+        self.app_client = app.test_client()
 
     def test_get_gene_alias_list(self):
         """
         This function test the gene alias list get function
         :return:
         """
-        response = self.app.get('/gene_information/gene_alias')
+        response = self.app_client.get('/gene_information/gene_alias')
         expected = {
             "wasSuccessful": True,
             "data": [
@@ -25,7 +25,7 @@ class TestIntegrations(TestCase):
         This tests check for a gene alias for the Arabidopsis gene ABI3
         :return:
         """
-        response = self.app.get('/gene_information/gene_alias/arabidopsis/At3g24650')
+        response = self.app_client.get('/gene_information/gene_alias/arabidopsis/At3g24650')
         expected = {
             "wasSuccessful": True,
             "data": [
@@ -41,7 +41,7 @@ class TestIntegrations(TestCase):
         This function tests for genes that do not exists
         :return:
         """
-        response = self.app.get('/gene_information/gene_alias/arabidopsis/At3g24651')
+        response = self.app_client.get('/gene_information/gene_alias/arabidopsis/At3g24651')
         expected = {
             "wasSuccessful": False,
             "error": "There is no data found for the given gene"
@@ -53,7 +53,7 @@ class TestIntegrations(TestCase):
         This function tests for genes that are not valid
         :return:
         """
-        response = self.app.get('/gene_information/gene_alias/arabidopsis/At3g2465x')
+        response = self.app_client.get('/gene_information/gene_alias/arabidopsis/At3g2465x')
         expected = {
             "wasSuccessful": False,
             "error": "Invalid gene id"
@@ -65,7 +65,7 @@ class TestIntegrations(TestCase):
         This function tests if species is available
         :return:
         """
-        response = self.app.get('/gene_information/gene_alias/x/At3g24650')
+        response = self.app_client.get('/gene_information/gene_alias/x/At3g24650')
         expected = {
             "wasSuccessful": False,
             "error": "No data for the given species"
