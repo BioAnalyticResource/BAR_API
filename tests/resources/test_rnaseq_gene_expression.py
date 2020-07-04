@@ -6,7 +6,7 @@ class TestIntegrations(TestCase):
     def setUp(self):
         self.app = app.test_client()
 
-    def test_arabidopsis_single_cell_gene(self):
+    def test_get_arabidopsis_single_cell_gene(self):
         """
         This tests the data returned by the gene end point
         :return:
@@ -128,7 +128,7 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
-    def test_arabidopsis_single_cell_gene_sample(self):
+    def test_get_arabidopsis_single_cell_gene_sample(self):
         """
         This tests the data returned for Arabidopsis single cell databases with a gene and a sample id.
         :return:
@@ -137,7 +137,7 @@ class TestIntegrations(TestCase):
         expected = {"wasSuccessful": True, "data": {"cluster0_WT1.ExprMean": 0.330615}}
         self.assertEqual(response.json, expected)
 
-    def test_arabidopsis_gene_invalid(self):
+    def test_get_arabidopsis_gene_invalid(self):
         """
         This function tests if the gene is valid.
         :return:
@@ -149,7 +149,7 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
-    def test_database_invalid(self):
+    def test_get_database_invalid(self):
         """
         This function tests if the gene is valid.
         :return:
@@ -161,7 +161,7 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
-    def test_species_invalid(self):
+    def test_get_species_invalid(self):
         """
         This function tests if the gene is valid.
         :return:
@@ -173,7 +173,7 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
-    def test_gene_invalid(self):
+    def test_get_gene_invalid(self):
         """
         This function tests if the gene is valid.
         :return:
@@ -185,7 +185,19 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
-    def test_sample_invalid(self):
+    def test_get_gene_invalid_with_sample(self):
+        """
+        This function tests if the gene is valid.
+        :return:
+        """
+        response = self.app.get('/rnaseq_gene_expression/arabidopsis/single_cell/At1g01011/cluster0_WT1.ExprMean')
+        expected = {
+            "wasSuccessful": False,
+            "error": "There is no data found for the given gene"
+        }
+        self.assertEqual(response.json, expected)
+
+    def test_get_sample_invalid(self):
         """
         This function tests if the gene is valid.
         :return:
@@ -195,4 +207,86 @@ class TestIntegrations(TestCase):
             "wasSuccessful": False,
             "error": "Invalid sample id"
         }
+        self.assertEqual(response.json, expected)
+
+    def test_post_arabidopsis_single_cell_gene_sample(self):
+        """
+        This tests the data returned for Arabidopsis single cell databases with a gene and a sample id.
+        :return:
+        """
+        data = {
+            "species": "arabidopsis",
+            "database": "single_cell",
+            "gene_id": "At1g01010",
+            "sample_ids": [
+                "cluster0_WT1.ExprMean",
+                "cluster0_WT2.ExprMean",
+                "cluster0_WT3.ExprMean"
+            ]
+        }
+        response = self.app.post('/rnaseq_gene_expression/', json=data)
+        expected = {
+            "wasSuccessful": True,
+            "data": {
+                "cluster0_WT1.ExprMean": 0.330615,
+                "cluster0_WT2.ExprMean": 0.376952,
+                "cluster0_WT3.ExprMean": 0.392354
+            }
+        }
+        self.assertEqual(response.json, expected)
+
+    def test_post_arabidopsis_single_cell_gene_sample_invalid_jsaon(self):
+        """
+        This tests the data returned for Arabidopsis single cell databases with a gene and a sample id.
+        :return:
+        """
+        data = {
+            "species": "arabidopsis",
+            "database": "single_cell",
+            "gene_id": "At1g01010",
+            "sample_ids": [
+                "cluster0_WT1.ExprMean",
+                "cluster0_WT2.ExprMean",
+                "cluster0_WT3.ExprMean"
+            ],
+            "abc": "xyz"
+        }
+        response = self.app.post('/rnaseq_gene_expression/', json=data)
+        expected = {'wasSuccessful': False, 'error': {'abc': ['Unknown field.']}}
+        self.assertEqual(response.json, expected)
+
+    def test_post_arabidopsis_single_cell_gene_sample_no_data(self):
+        """
+        This tests the data returned for Arabidopsis single cell databases with a gene and a sample id.
+        :return:
+        """
+        data = {
+            "species": "arabidopsis",
+            "database": "single_cell",
+            "gene_id": "At1g01011",
+            "sample_ids": [
+                "cluster0_WT1.ExprMean",
+                "cluster0_WT2.ExprMean",
+                "cluster0_WT3.ExprMean"
+            ]
+        }
+        response = self.app.post('/rnaseq_gene_expression/', json=data)
+        expected = {'wasSuccessful': False, 'error': 'There are no data found for the given gene'}
+        self.assertEqual(response.json, expected)
+
+    def test_post_arabidopsis_single_cell_gene_sample_invalid_sample(self):
+        """
+        This tests the data returned for Arabidopsis single cell databases with a gene and a sample id.
+        :return:
+        """
+        data = {
+            "species": "arabidopsis",
+            "database": "single_cell",
+            "gene_id": "At1g01011",
+            "sample_ids": [
+                "x?yx"
+            ]
+        }
+        response = self.app.post('/rnaseq_gene_expression/', json=data)
+        expected = {'wasSuccessful': False, 'error': 'Invalid sample id'}
         self.assertEqual(response.json, expected)
