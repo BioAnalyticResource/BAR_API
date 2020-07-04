@@ -4,6 +4,7 @@ from flask import request
 from sqlalchemy.exc import OperationalError
 from api.models.single_cell import SingleCell
 from api.utilities.bar_utilities import BARUtilities
+from marshmallow import Schema, ValidationError, fields as marshmallow_fields
 from markupsafe import escape
 
 rnaseq_gene_expression = Namespace('RNA-Seq Gene Expression',
@@ -11,13 +12,21 @@ rnaseq_gene_expression = Namespace('RNA-Seq Gene Expression',
                                    path='/rnaseq_gene_expression')
 
 # I think this is only needed for Swagger UI POST
-resource_fields = rnaseq_gene_expression.model('GeneExpression', {
+gene_expression_request_fields = rnaseq_gene_expression.model('GeneExpression', {
     'species': fields.String(required=True, example='arabidopsis'),
     'database': fields.String(required=True, example='single_cell'),
     'gene_id': fields.String(required=True, example='At1g01010'),
     'sample_ids': fields.List(example=['cluster0_WT1.ExprMean', 'cluster0_WT2.ExprMean', 'cluster0_WT3.ExprMean'],
                               cls_or_instance=fields.String)
 })
+
+
+# Validation is done in a different way to keep things simple
+class RNASeqSchema(Schema):
+    species = marshmallow_fields.String(required=True)
+    database = marshmallow_fields.String(required=True)
+    gene_id = marshmallow_fields.String(required=True)
+    sample_ids = marshmallow_fields.List(cls_or_instance=marshmallow_fields.String)
 
 
 class RNASeqUtils:
@@ -72,9 +81,16 @@ class RNASeqUtils:
 
 @rnaseq_gene_expression.route('/')
 class PostRNASeqExpression(Resource):
-    @rnaseq_gene_expression.expect(resource_fields)
+    @rnaseq_gene_expression.expect(gene_expression_request_fields)
     def post(self):
         json_data = request.get_json()
+
+        # Validate data
+        try:
+            json_data = RNASeqSchema().load(json_data)
+        except ValidationError as err:
+            return BARUtilities.error_exit(err.messages), 400
+
         species = json_data['species']
         database = json_data['database']
         gene_id = json_data['gene_id']
@@ -87,7 +103,7 @@ class PostRNASeqExpression(Resource):
             if len(results['data']) > 0:
                 return BARUtilities.success_exit(results['data'])
             else:
-                return BARUtilities.error_exit('There is no data found for the given gene')
+                return BARUtilities.error_exit('There are no data found for the given gene')
         else:
             return BARUtilities.error_exit(results['error']), results['error_code']
 

@@ -6,7 +6,7 @@ class TestIntegrations(TestCase):
     def setUp(self):
         self.app = app.test_client()
 
-    def test_gene_alias_list_get(self):
+    def test_get_gene_alias_list(self):
         """
         This function test the gene alias list get function
         :return:
@@ -20,7 +20,7 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
-    def test_arabidopsis_gene_alias(self):
+    def test_get_arabidopsis_gene_alias(self):
         """
         This tests check for a gene alias for the Arabidopsis gene ABI3
         :return:
@@ -36,7 +36,7 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
-    def test_arabidopsis_gene_not_found(self):
+    def test_get_arabidopsis_gene_not_found(self):
         """
         This function tests for genes that do not exists
         :return:
@@ -48,7 +48,7 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
-    def test_arabidopsis_gene_not_valid(self):
+    def test_get_arabidopsis_gene_not_valid(self):
         """
         This function tests for genes that are not valid
         :return:
@@ -60,7 +60,7 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
-    def test_species_not_found(self):
+    def test_get_species_not_found(self):
         """
         This function tests if species is available
         :return:
