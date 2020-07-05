@@ -6,62 +6,48 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_restx import Api
 
 
-class BARRedis(redis.Redis):
-    def __init__(self):
-        """
-        This functions starts connection to the Redis Server
-        :return: redis.Redis() instance
-        """
-        # Set the Redis password if we are on the BAR
-        self.redis_password = ''
-        if environ.get('BAR'):
-            self.redis_password = environ.get('BAR_REDIS_PASSWORD')
-        super().__init__(password=self.redis_password)
+def create_app():
+    """
+    Initialize the app factory based on the official Flask documentation
+    """
+    bar_app = Flask(__name__)
 
+    # Load configuration
+    if environ.get('TRAVIS'):
+        # Travis
+        bar_app.config.from_pyfile(environ.get('TRAVIS_BUILD_DIR') + '/config/BAR_API.cfg', silent=True)
+    elif environ.get('BAR'):
+        # The BAR
+        bar_app.config.from_pyfile(environ.get('BAR_API_PATH'), silent=True)
+    else:
+        # Change this line if you want to load your own configuration
+        bar_app.config.from_pyfile(expanduser('~') + '/Asher/BAR_API.cfg', silent=True)
 
-class BARApi(Flask):
-    def __init__(self):
-        """
-        Initialize BAR API class
-        """
-        super().__init__(__name__)
+    # Initialize the database
+    db.init_app(bar_app)
 
-        # Load configuration
-        if environ.get('TRAVIS'):
-            # Travis
-            self.config.from_pyfile(environ.get('TRAVIS_BUILD_DIR') + '/config/BAR_API.cfg', silent=True)
-        elif environ.get('BAR'):
-            # The BAR
-            self.config.from_pyfile(environ.get('BAR_API_PATH'), silent=True)
-        else:
-            # Change this line if you want to load your own configuration
-            self.config.from_pyfile(expanduser('~') + '/Asher/BAR_API.cfg', silent=True)
+    # Configure the Swagger UI
+    bar_api = Api(
+        title='BAR API',
+        version='0.0.1',
+        description='API for the Bio-Analytic Resource'
+    )
 
-        # Initialize the database
-        db.init_app(self)
+    # Now add routes
+    from api.resources.gene_information import gene_information
+    from api.resources.rnaseq_gene_expression import rnaseq_gene_expression
 
-        # Now add routes
-        self.api = Api(
-            title='BAR API',
-            version='0.0.1',
-            description='API for the Bio-Analytic Resource'
-        )
+    bar_api.add_namespace(gene_information)
+    bar_api.add_namespace(rnaseq_gene_expression)
+    bar_api.init_app(bar_app)
+    return bar_app
 
-        from api.resources.gene_information import gene_information
-        from api.resources.rnaseq_gene_expression import rnaseq_gene_expression
-
-        self.api.add_namespace(gene_information)
-        self.api.add_namespace(rnaseq_gene_expression)
-        self.api.init_app(self)
-
-
-############################################################################################################################
 
 # Initialize database system
 db = SQLAlchemy()
 
 # Initialize Redis
-r = BARRedis()
+r = redis.Redis(password=environ.get('BAR'))
 
-# Now create the app
-app = BARApi()
+# Now create the bar_app
+app = create_app()

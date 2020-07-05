@@ -2,7 +2,7 @@
 
 **master**: [![Build Status](https://travis-ci.com/BioAnalyticResource/BAR_API.svg?branch=master)](https://travis-ci.com/BioAnalyticResource/BAR_API) [![Coverage Status](https://coveralls.io/repos/github/BioAnalyticResource/BAR_API/badge.svg?branch=master)](https://coveralls.io/github/BioAnalyticResource/BAR_API?branch=master) **dev**: [![Build Status](https://travis-ci.com/BioAnalyticResource/BAR_API.svg?branch=dev)](https://travis-ci.com/BioAnalyticResource/BAR_API) [![Coverage Status](https://coveralls.io/repos/github/BioAnalyticResource/BAR_API/badge.svg?branch=dev)](https://coveralls.io/github/BioAnalyticResource/BAR_API?branch=dev)
 
-[![Website Status](https://img.shields.io/website?url=http%3A%2F%2Fbar.utoronto.ca%2Fapi%2F)](http://bar.utoronto.ca/api/) ![GitHub repo size](https://img.shields.io/github/repo-size/BioAnalyticResource/BAR_API) ![SwaggerUI](http://validator.swagger.io/validator?url=http://bar.utoronto.ca/api/swagger.json)
+[![Website Status](https://img.shields.io/website?url=http%3A%2F%2Fbar.utoronto.ca%2Fapi%2F)](http://bar.utoronto.ca/api/) ![GitHub repo size](https://img.shields.io/github/repo-size/BioAnalyticResource/BAR_API)
 
 This is the official repository for the Bio-Analytic Resource API. The API is live [here](http://bar.utoronto.ca/api/apidocs).
 
@@ -35,15 +35,15 @@ source venv/bin/activate.csh
 ```
 9. Install requirements
 ```
-pip3 install --upgrade pip
-pip3 install --upgrade setuptools
-pip3 install -r requirements.txt
+pip install --upgrade pip
+pip install --upgrade setuptools
+pip install -r requirements.txt
 ```
 10. Set up databases and configuration. Note: Change passwords in ```./config/init.sh``` and ```./config/BAR_API.cfg```
 ```
 ./config/init.sh
 ```
-11. Edit ```./api/base.sh``` and update line 38 and add the location of your BAR_API.cfg file.
+11. Edit ```./api/__init__.py``` and update line 38 and add the location of your BAR_API.cfg file.
 12. Run ```pytest```. Tests should pass if the system is set up correctly.
-13. Run ```python3 app.py``` to start.
+13. Run ```python app.py``` to start.
 14. Load ```http://localhost:5000/``` in a web browser. Enjoy :)
