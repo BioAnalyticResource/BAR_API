@@ -32,6 +32,14 @@ class RNASeqSchema(Schema):
 class RNASeqUtils:
     @staticmethod
     def get_data(species, database, gene_id, sample_ids=None):
+        """
+        This function is used to query the database for gene expression
+        :param species: name of species
+        :param database: name of BAR database
+        :param gene_id: gene id in the data_probeset column
+        :param sample_ids: sample ids in the data_bot_id column
+        :return: dict gene expression data
+        """
         if sample_ids is None:
             sample_ids = []
         data = {}
@@ -46,8 +54,8 @@ class RNASeqUtils:
         # Set model
         if database == 'single_cell':
             database = SingleCell()
-            # This needs to be more strict
-            sample_regex = re.compile(r"^[\w+\._]{0,40}$", re.I)
+            # Example: cluster0_WT1.ExprMean
+            sample_regex = re.compile(r"^\D+\d+_WT\d+.ExprMean$", re.I)
         else:
             return {'success': False, 'error': 'Invalid database', 'error_code': 400}
 
@@ -116,7 +124,6 @@ class GetRNASeqGeneExpression(Resource):
     def get(self, species='', database='', gene_id=''):
         """
         This end point returns RNA-Seq gene expression data
-
         """
         # Variables
         species = escape(species)
@@ -144,7 +151,6 @@ class GetRNASeqGeneExpressionSample(Resource):
     def get(self, species='', database='', gene_id='', sample_id=''):
         """
         This end point returns RNA-Seq gene expression data
-
         """
         # Variables
         species = escape(species)
