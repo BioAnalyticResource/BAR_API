@@ -91,6 +91,9 @@ class RNASeqUtils:
 class PostRNASeqExpression(Resource):
     @rnaseq_gene_expression.expect(gene_expression_request_fields)
     def post(self):
+        """
+        This end point returns gene expresison data for a single gene and multiple samples.
+        """
         json_data = request.get_json()
 
         # Validate data
