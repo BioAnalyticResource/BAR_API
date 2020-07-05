@@ -27,7 +27,7 @@ def create_app():
     db.init_app(bar_app)
 
     # Configure the Swagger UI
-    bar_app.api = Api(
+    bar_api = Api(
         title='BAR API',
         version='0.0.1',
         description='API for the Bio-Analytic Resource'
@@ -37,9 +37,9 @@ def create_app():
     from api.resources.gene_information import gene_information
     from api.resources.rnaseq_gene_expression import rnaseq_gene_expression
 
-    bar_app.api.add_namespace(gene_information)
-    bar_app.api.add_namespace(rnaseq_gene_expression)
-    bar_app.api.init_app(bar_app)
+    bar_api.add_namespace(gene_information)
+    bar_api.add_namespace(rnaseq_gene_expression)
+    bar_api.init_app(bar_app)
     return bar_app
 
 
@@ -47,7 +47,7 @@ def create_app():
 db = SQLAlchemy()
 
 # Initialize Redis
-r = redis.Redis(environ.get('BAR'))
+r = redis.Redis(password=environ.get('BAR'))
 
 # Now create the bar_app
 app = create_app()

@@ -118,9 +118,9 @@ class PostRNASeqExpression(Resource):
 
 @rnaseq_gene_expression.route('/<string:species>/<string:database>/<string:gene_id>')
 class GetRNASeqGeneExpression(Resource):
-    @rnaseq_gene_expression.param('species', description='', _in='path', default='arabidopsis')
-    @rnaseq_gene_expression.param('database', description='', _in='path', default='single_cell')
-    @rnaseq_gene_expression.param('gene_id', description='', _in='path', default='At1g01010')
+    @rnaseq_gene_expression.param('species', _in='path', default='arabidopsis')
+    @rnaseq_gene_expression.param('database', _in='path', default='single_cell')
+    @rnaseq_gene_expression.param('gene_id', _in='path', default='At1g01010')
     def get(self, species='', database='', gene_id=''):
         """
         This end point returns RNA-Seq gene expression data
@@ -144,10 +144,10 @@ class GetRNASeqGeneExpression(Resource):
 
 @rnaseq_gene_expression.route('/<string:species>/<string:database>/<string:gene_id>/<string:sample_id>')
 class GetRNASeqGeneExpressionSample(Resource):
-    @rnaseq_gene_expression.param('species', description='', _in='path', default='arabidopsis')
-    @rnaseq_gene_expression.param('database', description='', _in='path', default='single_cell')
-    @rnaseq_gene_expression.param('gene_id', description='', _in='path', default='At1g01010')
-    @rnaseq_gene_expression.param('sample_id', description='', _in='path', default='cluster0_WT1.ExprMean')
+    @rnaseq_gene_expression.param('species', _in='path', default='arabidopsis')
+    @rnaseq_gene_expression.param('database', _in='path', default='single_cell')
+    @rnaseq_gene_expression.param('gene_id', _in='path', default='At1g01010')
+    @rnaseq_gene_expression.param('sample_id', _in='path', default='cluster0_WT1.ExprMean')
     def get(self, species='', database='', gene_id='', sample_id=''):
         """
         This end point returns RNA-Seq gene expression data

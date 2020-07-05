@@ -23,8 +23,8 @@ class GeneAliasList(Resource):
 
 @gene_information.route('/gene_alias/<string:species>/<string:gene_id>')
 class GeneAlias(Resource):
-    @gene_information.param('species', _in='path', description='', default='arabidopsis')
-    @gene_information.param('gene_id', _in='path', description='', default='At3g24650')
+    @gene_information.param('species', _in='path', default='arabidopsis')
+    @gene_information.param('gene_id', _in='path', default='At3g24650')
     def get(self, species='', gene_id=''):
         """
         This end point provides gene alias given an gene ID
