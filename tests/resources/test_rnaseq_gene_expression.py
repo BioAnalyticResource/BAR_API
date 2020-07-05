@@ -151,7 +151,7 @@ class TestIntegrations(TestCase):
 
     def test_get_database_invalid(self):
         """
-        This function tests if the gene is valid.
+        This function tests if the database is valid.
         :return:
         """
         response = self.app_client.get('/rnaseq_gene_expression/arabidopsis/single_c;ell/At1g01010')
@@ -163,7 +163,7 @@ class TestIntegrations(TestCase):
 
     def test_get_species_invalid(self):
         """
-        This function tests if the gene is valid.
+        This function tests if the species is valid.
         :return:
         """
         response = self.app_client.get('/rnaseq_gene_expression/abc/single_cell/At1g01010')
@@ -173,9 +173,9 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
-    def test_get_gene_invalid(self):
+    def test_get_gene_no_data(self):
         """
-        This function tests if the gene is valid.
+        This function tests if the gene has data
         :return:
         """
         response = self.app_client.get('/rnaseq_gene_expression/arabidopsis/single_cell/At1g01011')
@@ -185,9 +185,9 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
-    def test_get_gene_invalid_with_sample(self):
+    def test_get_gene_no_data_with_sample(self):
         """
-        This function tests if the gene is valid.
+        This function tests if the gene had data given a sample
         :return:
         """
         response = self.app_client.get('/rnaseq_gene_expression/arabidopsis/single_cell/At1g01011/cluster0_WT1.ExprMean')
@@ -199,7 +199,7 @@ class TestIntegrations(TestCase):
 
     def test_get_sample_invalid(self):
         """
-        This function tests if the gene is valid.
+        This function tests if the sample is valid.
         :return:
         """
         response = self.app_client.get('/rnaseq_gene_expression/arabidopsis/single_cell/At1g01010/abc;xyz')
@@ -211,7 +211,7 @@ class TestIntegrations(TestCase):
 
     def test_post_arabidopsis_single_cell_gene_sample(self):
         """
-        This tests the data returned for Arabidopsis single cell databases with a gene and a sample id.
+        This tests the data returned for Arabidopsis single cell databases with a gene and a a list of samples.
         :return:
         """
         data = {
@@ -237,7 +237,7 @@ class TestIntegrations(TestCase):
 
     def test_post_arabidopsis_single_cell_gene_sample_invalid_jsaon(self):
         """
-        This tests the data returned for Arabidopsis single cell databases with a gene and a sample id.
+        This tests the data returned for Arabidopsis single cell databases with a gene and a list of samples.
         :return:
         """
         data = {
@@ -257,7 +257,7 @@ class TestIntegrations(TestCase):
 
     def test_post_arabidopsis_single_cell_gene_sample_no_data(self):
         """
-        This tests the data returned for Arabidopsis single cell databases with a gene and a sample id.
+        This tests the data returned for Arabidopsis single cell databases with a gene and a list of samples.
         :return:
         """
         data = {

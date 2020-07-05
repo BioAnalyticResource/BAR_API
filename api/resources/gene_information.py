@@ -30,7 +30,6 @@ class GeneAlias(Resource):
         This end point provides gene alias given an gene ID
         """
         aliases = []
-        rows = []
         redis_key = request.url
 
         # Escape input
@@ -62,7 +61,6 @@ class GeneAlias(Resource):
             # Set up cache if it does not exist
             if BARUtilities.is_redis_available() and r.get(redis_key) is None:
                 r.set(redis_key, json.dumps(aliases))
-
             return BARUtilities.success_exit(aliases)
         else:
             return BARUtilities.error_exit('There is no data found for the given gene')
