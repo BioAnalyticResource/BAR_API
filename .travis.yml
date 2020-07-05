@@ -7,8 +7,8 @@ services:
 python: 
   - 3.7
   - 3.8
-  - 3.9-dev
-  - nightly
+  #- 3.9-dev
+  #- nightly
   - pypy3
 before_install: 
   - bash ./config/init.sh
