@@ -47,7 +47,7 @@ def create_app():
 db = SQLAlchemy()
 
 # Initialize Redis
-r = redis.Redis(password=environ.get('BAR'))
+r = redis.Redis(password=environ.get('BAR_REDIS_PASSWORD'))
 
 # Now create the bar_app
 app = create_app()
