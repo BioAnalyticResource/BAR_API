@@ -14,7 +14,7 @@ gene_information = Namespace('Gene Information', description='Information about 
 class GeneAliasList(Resource):
     def get(self):
         """
-        This end point returns the list of species available via a GET request
+        This end point returns the list of species available
         """
         species = ['arabidopsis']  # This are the only species available so far
         return BARUtils.success_exit(species)
@@ -26,7 +26,7 @@ class GeneAlias(Resource):
     @gene_information.param('gene_id', _in='path', default='At3g24650')
     def get(self, species='', gene_id=''):
         """
-        This end point provides gene alias given an gene ID
+        This end point provides gene alias given a gene ID
         """
         aliases = []
         redis_key = request.url
@@ -62,4 +62,4 @@ class GeneAlias(Resource):
                 r.set(redis_key, json.dumps(aliases))
             return BARUtils.success_exit(aliases)
         else:
-            return BARUtils.error_exit('There is no data found for the given gene')
+            return BARUtils.error_exit('There are no data found for the given gene')

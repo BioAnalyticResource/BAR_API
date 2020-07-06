@@ -19,6 +19,11 @@ class UtilsUnitTest(TestCase):
         # Valid gene
         result = BARUtils.is_arabidopsis_gene_valid('At1g01010')
         self.assertTrue(result)
+        result = BARUtils.is_arabidopsis_gene_valid('At1g01010.1')
+        self.assertTrue(result)
+
         # Invalid gene
         result = BARUtils.is_arabidopsis_gene_valid('abc')
+        self.assertFalse(result)
+        result = BARUtils.is_arabidopsis_gene_valid('At1g01010.11')
         self.assertFalse(result)
