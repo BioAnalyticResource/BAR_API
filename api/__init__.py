@@ -36,9 +36,11 @@ def create_app():
     # Now add routes
     from api.resources.gene_information import gene_information
     from api.resources.rnaseq_gene_expression import rnaseq_gene_expression
+    from api.resources.proxy import bar_proxy
 
     bar_api.add_namespace(gene_information)
     bar_api.add_namespace(rnaseq_gene_expression)
+    bar_api.add_namespace(bar_proxy)
     bar_api.init_app(bar_app)
     return bar_app
 

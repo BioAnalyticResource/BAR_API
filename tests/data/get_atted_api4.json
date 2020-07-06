@@ -1,0 +1,57 @@
+{
+  "request": {
+    "query_id": "At1g01010",
+    "id_type": "gene",
+    "entrez_gene_id": [
+      839580
+    ],
+    "type": null,
+    "value": null,
+    "topN": 5,
+    "database": "Ath-u.c1-0",
+    "database_version": "c1-0"
+  },
+  "result_set": [
+    {
+      "entrez_gene_id": 839580,
+      "results": [
+        {
+          "gene": 831644,
+          "pair_rank": 150957,
+          "other_id": "AT5G17760",
+          "mutual_rank": 224.91,
+          "logit_score": 6.38
+        },
+        {
+          "gene": 842367,
+          "pair_rank": 359952,
+          "other_id": "AT1G60730",
+          "mutual_rank": 438.57,
+          "logit_score": 5.4
+        },
+        {
+          "gene": 835976,
+          "pair_rank": 383418,
+          "other_id": "AT5G58620",
+          "mutual_rank": 459.85,
+          "logit_score": 5.33
+        },
+        {
+          "gene": 844034,
+          "pair_rank": 403455,
+          "other_id": "AT1G76980",
+          "mutual_rank": 475.66,
+          "logit_score": 5.28
+        },
+        {
+          "gene": 819700,
+          "pair_rank": 410714,
+          "other_id": "AT3G05360",
+          "mutual_rank": 482.13,
+          "logit_score": 5.26
+        }
+      ],
+      "other_id": "AT1G01010"
+    }
+  ]
+}
