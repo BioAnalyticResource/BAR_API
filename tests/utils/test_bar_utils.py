@@ -27,3 +27,16 @@ class UtilsUnitTest(TestCase):
         self.assertFalse(result)
         result = BARUtils.is_arabidopsis_gene_valid('At1g01010.11')
         self.assertFalse(result)
+
+    def test_is_integer(self):
+        # Valid result
+        result = BARUtils.is_integer('5')
+        self.assertTrue(result)
+
+        # Valid but too large
+        result = BARUtils.is_integer('99999999999999')
+        self.assertFalse(result)
+
+        # Invalid
+        result = BARUtils.is_integer('abc')
+        self.assertFalse(result)
