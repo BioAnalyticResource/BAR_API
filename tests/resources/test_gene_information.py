@@ -22,9 +22,10 @@ class TestIntegrations(TestCase):
 
     def test_get_arabidopsis_gene_alias(self):
         """
-        This tests check for a gene alias for the Arabidopsis gene ABI3
+        This tests checks GET request for gene alias Arabidopsis
         :return:
         """
+        # Valid data
         response = self.app_client.get('/gene_information/gene_alias/arabidopsis/At3g24650')
         expected = {
             "wasSuccessful": True,
@@ -36,23 +37,15 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
-    def test_get_arabidopsis_gene_not_found(self):
-        """
-        This function tests for genes that do not exists
-        :return:
-        """
+        # Data not found, but gene is valid
         response = self.app_client.get('/gene_information/gene_alias/arabidopsis/At3g24651')
         expected = {
             "wasSuccessful": False,
-            "error": "There is no data found for the given gene"
+            "error": "There are no data found for the given gene"
         }
         self.assertEqual(response.json, expected)
 
-    def test_get_arabidopsis_gene_not_valid(self):
-        """
-        This function tests for genes that are not valid
-        :return:
-        """
+        # Invalid Gene
         response = self.app_client.get('/gene_information/gene_alias/arabidopsis/At3g2465x')
         expected = {
             "wasSuccessful": False,
@@ -60,11 +53,7 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
-    def test_get_species_not_found(self):
-        """
-        This function tests if species is available
-        :return:
-        """
+        # Invalid Species
         response = self.app_client.get('/gene_information/gene_alias/x/At3g24650')
         expected = {
             "wasSuccessful": False,

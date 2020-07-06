@@ -1,8 +1,9 @@
 from api import r
 from redis import exceptions
+import re
 
 
-class BARUtilities:
+class BARUtils:
     @staticmethod
     def error_exit(msg):
         """
@@ -35,3 +36,15 @@ class BARUtilities:
         except exceptions.ConnectionError:
             found = False
         return found
+
+    @staticmethod
+    def is_arabidopsis_gene_valid(gene):
+        """
+        This function verifies if Arabidopsis gene is valid
+        :param gene:
+        :return:
+        """
+        if re.search(r"^At[12345cm]g\d{5}.?\d?$", gene, re.I):
+            return True
+        else:
+            return False
