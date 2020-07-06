@@ -40,11 +40,11 @@ class BARUtils:
     @staticmethod
     def is_arabidopsis_gene_valid(gene):
         """
-        This function verifies if Arabidopis gene is valid
+        This function verifies if Arabidopsis gene is valid
         :param gene:
         :return:
         """
-        if re.search(r"At[12345cm]g\d{5}.?\d?$", gene, re.I):
+        if re.search(r"^At[12345cm]g\d{5}.?\d?$", gene, re.I):
             return True
         else:
             return False

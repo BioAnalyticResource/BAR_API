@@ -94,11 +94,11 @@ class PostRNASeqExpression(Resource):
     @rnaseq_gene_expression.expect(gene_expression_request_fields)
     def post(self):
         """
-        This end point returns gene expresison data for a single gene and multiple samples.
+        This end point returns gene expression data for a single gene and multiple samples.
         """
         json_data = request.get_json()
 
-        # Validate data
+        # Validate json
         try:
             json_data = RNASeqSchema().load(json_data)
         except ValidationError as err:
@@ -142,7 +142,7 @@ class GetRNASeqGeneExpression(Resource):
             if len(results['data']) > 0:
                 return BARUtils.success_exit(results['data'])
             else:
-                return BARUtils.error_exit('There is no data found for the given gene')
+                return BARUtils.error_exit('There are no data found for the given gene')
         else:
             return BARUtils.error_exit(results['error']), results['error_code']
 
@@ -170,6 +170,6 @@ class GetRNASeqGeneExpressionSample(Resource):
             if len(results['data']) > 0:
                 return BARUtils.success_exit(results['data'])
             else:
-                return BARUtils.error_exit('There is no data found for the given gene')
+                return BARUtils.error_exit('There are no data found for the given gene')
         else:
             return BARUtils.error_exit(results['error']), results['error_code']
