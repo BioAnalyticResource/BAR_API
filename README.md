@@ -43,7 +43,7 @@ pip install -r requirements.txt
 ```
 ./config/init.sh
 ```
-11. Edit ```./api/__init__.py``` and update line 38 and add the location of your BAR_API.cfg file.
+11. Edit ```./api/__init__.py``` and update the location of your BAR_API.cfg file.
 12. Run ```pytest```. Tests should pass if the system is set up correctly.
 13. Run ```python app.py``` to start.
 14. Load ```http://localhost:5000/``` in a web browser. Enjoy :)

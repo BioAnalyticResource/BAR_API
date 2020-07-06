@@ -1,12 +1,11 @@
 import json
-import re
 from flask import request
 from flask_restx import Namespace, Resource
 from markupsafe import escape
 from sqlalchemy.exc import OperationalError
 from api import r
 from api.models.annotations_lookup import AgiAlias
-from api.utilities.bar_utilities import BARUtilities
+from api.utils.bar_utils import BARUtils
 
 gene_information = Namespace('Gene Information', description='Information about Genes', path='/gene_information')
 
@@ -18,7 +17,7 @@ class GeneAliasList(Resource):
         This end point returns the list of species available via a GET request
         """
         species = ['arabidopsis']  # This are the only species available so far
-        return BARUtilities.success_exit(species)
+        return BARUtils.success_exit(species)
 
 
 @gene_information.route('/gene_alias/<string:species>/<string:gene_id>')
@@ -37,30 +36,30 @@ class GeneAlias(Resource):
         gene_id = escape(gene_id)
 
         # Check if redis is running and results are cached
-        if BARUtilities.is_redis_available():
+        if BARUtils.is_redis_available():
             redis_value = r.get(redis_key)
             # If the request is stored then return value
             if redis_value:
                 redis_value = json.loads(redis_value)
-                return BARUtilities.success_exit(redis_value)
+                return BARUtils.success_exit(redis_value)
 
         if species == 'arabidopsis':
-            if re.search(r"^At[12345CM]g\d{5}$", gene_id, re.I):
+            if BARUtils.is_arabidopsis_gene_valid(gene_id):
                 try:
                     rows = AgiAlias.query.filter_by(agi=gene_id).all()
                 except OperationalError:
-                    return BARUtilities.error_exit('An internal error has occurred'), 500
+                    return BARUtils.error_exit('An internal error has occurred'), 500
                 [aliases.append(row.alias) for row in rows]
             else:
-                return BARUtilities.error_exit('Invalid gene id'), 400
+                return BARUtils.error_exit('Invalid gene id'), 400
         else:
-            return BARUtilities.error_exit('No data for the given species')
+            return BARUtils.error_exit('No data for the given species')
 
         # Return results if there are data
         if len(aliases) > 0:
             # Set up cache if it does not exist
-            if BARUtilities.is_redis_available() and r.get(redis_key) is None:
+            if BARUtils.is_redis_available() and r.get(redis_key) is None:
                 r.set(redis_key, json.dumps(aliases))
-            return BARUtilities.success_exit(aliases)
+            return BARUtils.success_exit(aliases)
         else:
-            return BARUtilities.error_exit('There is no data found for the given gene')
+            return BARUtils.error_exit('There is no data found for the given gene')

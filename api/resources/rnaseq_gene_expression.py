@@ -3,7 +3,7 @@ from flask_restx import Namespace, Resource, fields
 from flask import request
 from sqlalchemy.exc import OperationalError
 from api.models.single_cell import SingleCell
-from api.utilities.bar_utilities import BARUtilities
+from api.utils.bar_utils import BARUtils
 from marshmallow import Schema, ValidationError, fields as marshmallow_fields
 from markupsafe import escape
 
@@ -46,7 +46,7 @@ class RNASeqUtils:
 
         # Set species and check gene ID format
         if species == 'arabidopsis':
-            if not re.search(r"^At[12345CM]g\d{5}$", gene_id, re.I):
+            if not BARUtils.is_arabidopsis_gene_valid(gene_id):
                 return {'success': False, 'error': 'Invalid gene id', 'error_code': 400}
         else:
             return {'success': False, 'error': 'Invalid species', 'error_code': 400}
@@ -70,19 +70,21 @@ class RNASeqUtils:
                 for row in rows:
                     data[row.data_bot_id] = row.data_signal
         else:
-            # Set sample
+            # Validate all samples
             for sample_id in sample_ids:
                 if not sample_regex.search(sample_id):
                     return {'success': False, 'error': 'Invalid sample id', 'error_code': 400}
 
-                try:
-                    rows = database.query.filter_by(data_probeset_id=gene_id, data_bot_id=sample_id).all()
-                except OperationalError:
-                    return {'success': False, 'error': 'An internal error has occurred', 'error_code': 500}
+            try:
+                # This optimizes query of MySQL in operator.
+                rows = database.query.filter(SingleCell.data_probeset_id == gene_id,
+                                             SingleCell.data_bot_id.in_(sample_ids)).all()
+            except OperationalError:
+                return {'success': False, 'error': 'An internal error has occurred', 'error_code': 500}
 
-                if len(rows) > 0:
-                    for row in rows:
-                        data[row.data_bot_id] = row.data_signal
+            if len(rows) > 0:
+                for row in rows:
+                    data[row.data_bot_id] = row.data_signal
 
         return {'success': True, 'data': data}
 
@@ -100,7 +102,7 @@ class PostRNASeqExpression(Resource):
         try:
             json_data = RNASeqSchema().load(json_data)
         except ValidationError as err:
-            return BARUtilities.error_exit(err.messages), 400
+            return BARUtils.error_exit(err.messages), 400
 
         species = json_data['species']
         database = json_data['database']
@@ -112,11 +114,11 @@ class PostRNASeqExpression(Resource):
         if results['success']:
             # Return results if there are data
             if len(results['data']) > 0:
-                return BARUtilities.success_exit(results['data'])
+                return BARUtils.success_exit(results['data'])
             else:
-                return BARUtilities.error_exit('There are no data found for the given gene')
+                return BARUtils.error_exit('There are no data found for the given gene')
         else:
-            return BARUtilities.error_exit(results['error']), results['error_code']
+            return BARUtils.error_exit(results['error']), results['error_code']
 
 
 @rnaseq_gene_expression.route('/<string:species>/<string:database>/<string:gene_id>')
@@ -138,11 +140,11 @@ class GetRNASeqGeneExpression(Resource):
         if results['success']:
             # Return results if there are data
             if len(results['data']) > 0:
-                return BARUtilities.success_exit(results['data'])
+                return BARUtils.success_exit(results['data'])
             else:
-                return BARUtilities.error_exit('There is no data found for the given gene')
+                return BARUtils.error_exit('There is no data found for the given gene')
         else:
-            return BARUtilities.error_exit(results['error']), results['error_code']
+            return BARUtils.error_exit(results['error']), results['error_code']
 
 
 @rnaseq_gene_expression.route('/<string:species>/<string:database>/<string:gene_id>/<string:sample_id>')
@@ -166,8 +168,8 @@ class GetRNASeqGeneExpressionSample(Resource):
         if results['success']:
             # Return results if there are data
             if len(results['data']) > 0:
-                return BARUtilities.success_exit(results['data'])
+                return BARUtils.success_exit(results['data'])
             else:
-                return BARUtilities.error_exit('There is no data found for the given gene')
+                return BARUtils.error_exit('There is no data found for the given gene')
         else:
-            return BARUtilities.error_exit(results['error']), results['error_code']
+            return BARUtils.error_exit(results['error']), results['error_code']
