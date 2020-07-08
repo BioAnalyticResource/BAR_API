@@ -4,7 +4,7 @@
 
 [![Website Status](https://img.shields.io/website?url=http%3A%2F%2Fbar.utoronto.ca%2Fapi%2F)](http://bar.utoronto.ca/api/) ![GitHub repo size](https://img.shields.io/github/repo-size/BioAnalyticResource/BAR_API)
 
-This is the official repository for the Bio-Analytic Resource API. The API is live [here](http://bar.utoronto.ca/api/apidocs).
+This is the official repository for the Bio-Analytic Resource API.
 
 ## Status
 
