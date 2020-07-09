@@ -48,3 +48,15 @@ class BARUtils:
             return True
         else:
             return False
+
+    @staticmethod
+    def is_integer(data):
+        """
+        Check if the input is at max ten figure number.
+        :param data: int number
+        :return: True if a number
+        """
+        if re.search(r"^\d{1,10}$", data):
+            return True
+        else:
+            return False
