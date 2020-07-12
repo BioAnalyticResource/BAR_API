@@ -6,8 +6,7 @@ import re
 class BARUtils:
     @staticmethod
     def error_exit(msg):
-        """
-        Exit if failed
+        """Exit if failed
         :param msg: message to pass on failure
         :return:
         """
@@ -16,8 +15,7 @@ class BARUtils:
 
     @staticmethod
     def success_exit(msg):
-        """
-        Output if success
+        """Output if success
         :param msg: the actual data the needs to be output
         :return:
         """
@@ -26,8 +24,7 @@ class BARUtils:
 
     @staticmethod
     def is_redis_available():
-        """
-        Redis is optional. This function check if it is available.
+        """Redis is optional. This function check if it is available.
         :return: True if redis is found.
         """
         found = True
@@ -39,8 +36,7 @@ class BARUtils:
 
     @staticmethod
     def is_arabidopsis_gene_valid(gene):
-        """
-        This function verifies if Arabidopsis gene is valid
+        """This function verifies if Arabidopsis gene is valid
         :param gene:
         :return:
         """
@@ -51,8 +47,7 @@ class BARUtils:
 
     @staticmethod
     def is_integer(data):
-        """
-        Check if the input is at max ten figure number.
+        """Check if the input is at max ten figure number.
         :param data: int number
         :return: True if a number
         """

@@ -1,0 +1,19 @@
+{
+    "modelName": "genomic",
+    "columnHeaders": [
+        "Gene > Gene Rifs > Annotation",
+        "Gene > Gene Rifs > last updated",
+        "Gene > Gene Rifs > PubMed Id"
+    ],
+    "rootClass": "Gene",
+    "start": 0,
+    "views": [
+        "Gene.geneRifs.annotation",
+        "Gene.geneRifs.timeStamp",
+        "Gene.geneRifs.publication.pubMedId"
+    ],
+    "results": [],
+    "wasSuccessful": true,
+    "error": null,
+    "statusCode": 200
+}

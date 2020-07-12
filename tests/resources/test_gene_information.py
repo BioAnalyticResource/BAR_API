@@ -7,8 +7,7 @@ class TestIntegrations(TestCase):
         self.app_client = app.test_client()
 
     def test_get_gene_alias_list(self):
-        """
-        This function tests the gene alias list get function
+        """This function tests the gene alias list get function
         :return:
         """
         response = self.app_client.get('/gene_information/gene_alias')
@@ -21,8 +20,7 @@ class TestIntegrations(TestCase):
         self.assertEqual(response.json, expected)
 
     def test_get_arabidopsis_gene_alias(self):
-        """
-        This tests checks GET request for gene alias Arabidopsis
+        """This tests checks GET request for gene alias Arabidopsis
         :return:
         """
         # Valid data

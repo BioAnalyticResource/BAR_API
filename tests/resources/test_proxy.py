@@ -8,8 +8,7 @@ class TestIntegrations(TestCase):
         self.app_client = app.test_client()
 
     def test_get_atted_api4(self):
-        """
-        This tests the data returned by the Atted proxy
+        """This tests the data returned by the Atted proxy
         :return:
         """
         # Valid data
