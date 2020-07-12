@@ -14,8 +14,7 @@ class ATTEDApi4(Resource):
     @bar_proxy.param('gene_id', _in='path', default='At1g01010')
     @bar_proxy.param('top_n', _in='path', default=5)
     def get(self, gene_id='', top_n=''):
-        """
-        This end point is a proxy for ATTED-II api version 4.
+        """This end point is a proxy for ATTED-II api version 4.
         This is used by ThaleMine.
         This end point is currently not cached.
         """

@@ -13,9 +13,7 @@ gene_information = Namespace('Gene Information', description='Information about 
 @gene_information.route('/gene_alias')
 class GeneAliasList(Resource):
     def get(self):
-        """
-        This end point returns the list of species available
-        """
+        """This end point returns the list of species available"""
         species = ['arabidopsis']  # This are the only species available so far
         return BARUtils.success_exit(species)
 
@@ -25,9 +23,7 @@ class GeneAlias(Resource):
     @gene_information.param('species', _in='path', default='arabidopsis')
     @gene_information.param('gene_id', _in='path', default='At3g24650')
     def get(self, species='', gene_id=''):
-        """
-        This end point provides gene alias given a gene ID
-        """
+        """This end point provides gene alias given a gene ID"""
         aliases = []
         redis_key = request.url
 
