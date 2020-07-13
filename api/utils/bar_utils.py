@@ -1,5 +1,3 @@
-from api import r
-from redis import exceptions
 import re
 
 
@@ -21,18 +19,6 @@ class BARUtils:
         """
         result = {'wasSuccessful': True, 'data': msg}
         return result
-
-    @staticmethod
-    def is_redis_available():
-        """Redis is optional. This function check if it is available.
-        :return: True if redis is found.
-        """
-        found = True
-        try:
-            r.ping()
-        except exceptions.ConnectionError:
-            found = False
-        return found
 
     @staticmethod
     def is_arabidopsis_gene_valid(gene):
