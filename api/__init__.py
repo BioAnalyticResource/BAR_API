@@ -1,10 +1,10 @@
 from os import environ
 from os.path import expanduser
-import redis
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_restx import Api
 from flask_cors import CORS
+from flask_caching import Cache
 
 
 def create_app():
@@ -27,6 +27,9 @@ def create_app():
 
     # Initialize the database
     db.init_app(bar_app)
+
+    # Initialize the cache
+    cache.init_app(bar_app)
 
     # Configure the Swagger UI
     bar_api = Api(
@@ -53,7 +56,11 @@ def create_app():
 db = SQLAlchemy()
 
 # Initialize Redis
-r = redis.Redis(password=environ.get('BAR_REDIS_PASSWORD'))
+cache = Cache(config={
+    'CACHE_TYPE': 'redis',
+    'CACHE_KEY_PREFIX': 'BAR_API_',
+    'CACHE_REDIS_PASSWORD': environ.get('BAR_REDIS_PASSWORD')
+})
 
 # Now create the bar_app
 app = create_app()
