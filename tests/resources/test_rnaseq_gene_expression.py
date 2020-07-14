@@ -8,8 +8,7 @@ class TestIntegrations(TestCase):
         self.app_client = app.test_client()
 
     def test_get_arabidopsis_single_cell_gene(self):
-        """
-        This tests the data returned by the RNA-Seq end point
+        """This tests the data returned by the RNA-Seq end point
         :return:
         """
         # Valid data
@@ -52,8 +51,7 @@ class TestIntegrations(TestCase):
         self.assertEqual(response.json, expected)
 
     def test_get_arabidopsis_single_cell_gene_sample(self):
-        """
-        This tests the data returned for Arabidopsis single cell databases with a gene and a sample id.
+        """This tests the data returned for Arabidopsis single cell databases with a gene and a sample id.
         :return:
         """
         # Valid result
@@ -78,8 +76,7 @@ class TestIntegrations(TestCase):
         self.assertEqual(response.json, expected)
 
     def test_post_arabidopsis_single_cell_gene_sample(self):
-        """
-        This tests the data returned for Arabidopsis single cell databases with a gene and a a list of samples.
+        """This tests the data returned for Arabidopsis single cell databases with a gene and a a list of samples.
         :return:
         """
         # Valid example
