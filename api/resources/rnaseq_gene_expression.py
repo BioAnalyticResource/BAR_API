@@ -32,8 +32,7 @@ class RNASeqSchema(Schema):
 class RNASeqUtils:
     @staticmethod
     def get_data(species, database, gene_id, sample_ids=None):
-        """
-        This function is used to query the database for gene expression
+        """This function is used to query the database for gene expression
         :param species: name of species
         :param database: name of BAR database
         :param gene_id: gene id in the data_probeset column
@@ -93,9 +92,7 @@ class RNASeqUtils:
 class PostRNASeqExpression(Resource):
     @rnaseq_gene_expression.expect(gene_expression_request_fields)
     def post(self):
-        """
-        This end point returns gene expression data for a single gene and multiple samples.
-        """
+        """This end point returns gene expression data for a single gene and multiple samples."""
         json_data = request.get_json()
 
         # Validate json
@@ -127,9 +124,7 @@ class GetRNASeqGeneExpression(Resource):
     @rnaseq_gene_expression.param('database', _in='path', default='single_cell')
     @rnaseq_gene_expression.param('gene_id', _in='path', default='At1g01010')
     def get(self, species='', database='', gene_id=''):
-        """
-        This end point returns RNA-Seq gene expression data
-        """
+        """This end point returns RNA-Seq gene expression data"""
         # Variables
         species = escape(species)
         database = escape(database)
@@ -154,9 +149,7 @@ class GetRNASeqGeneExpressionSample(Resource):
     @rnaseq_gene_expression.param('gene_id', _in='path', default='At1g01010')
     @rnaseq_gene_expression.param('sample_id', _in='path', default='cluster0_WT1.ExprMean')
     def get(self, species='', database='', gene_id='', sample_id=''):
-        """
-        This end point returns RNA-Seq gene expression data
-        """
+        """This end point returns RNA-Seq gene expression data"""
         # Variables
         species = escape(species)
         database = escape(database)
