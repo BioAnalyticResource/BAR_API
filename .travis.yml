@@ -19,6 +19,9 @@ install:
   - pip install -r requirements.txt
 script: 
   - flake8
+  # Test with no cache
+  - pytest
+  # Test with cache: Results should be same
   - pytest
   - redis-cli flushall
   - coverage run
