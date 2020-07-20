@@ -2,7 +2,8 @@
 
 **master**: [![Build Status](https://travis-ci.com/BioAnalyticResource/BAR_API.svg?branch=master)](https://travis-ci.com/BioAnalyticResource/BAR_API) [![Coverage Status](https://coveralls.io/repos/github/BioAnalyticResource/BAR_API/badge.svg?branch=master)](https://coveralls.io/github/BioAnalyticResource/BAR_API?branch=master) **dev**: [![Build Status](https://travis-ci.com/BioAnalyticResource/BAR_API.svg?branch=dev)](https://travis-ci.com/BioAnalyticResource/BAR_API) [![Coverage Status](https://coveralls.io/repos/github/BioAnalyticResource/BAR_API/badge.svg?branch=dev)](https://coveralls.io/github/BioAnalyticResource/BAR_API?branch=dev)
 
-[![Website Status](https://img.shields.io/website?url=http%3A%2F%2Fbar.utoronto.ca%2Fapi%2F)](http://bar.utoronto.ca/api/) ![GitHub repo size](https://img.shields.io/github/repo-size/BioAnalyticResource/BAR_API)
+[![Website Status](https://img.shields.io/website?url=http%3A%2F%2Fbar.utoronto.ca%2Fapi%2F)](http://bar.utoronto.ca/api/) ![GitHub repo size](https://img.shields.io/github/repo-size/BioAnalyticResource/BAR_API) [![LGTM Alerts](https://img.shields.io/lgtm/alerts/github/BioAnalyticResource/BAR_API)](https://lgtm.com/projects/g/BioAnalyticResource/BAR_API/?mode=list) [![LGTM
+Grade](https://img.shields.io/lgtm/grade/python/github/BioAnalyticResource/BAR_API)](https://lgtm.com/projects/g/BioAnalyticResource/BAR_API/latest/files/?sort=name&dir=ASC&mode=heatmap)
 
 This is the official repository for the Bio-Analytic Resource API.
 
