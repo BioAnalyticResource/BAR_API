@@ -24,7 +24,34 @@ class ThaleMineGeneRIFs(Resource):
 
         query = '<query name="" model="genomic" view="Gene.geneRifs.annotation Gene.geneRifs.timeStamp ' \
                 'Gene.geneRifs.publication.pubMedId" longDescription="" sortOrder="Gene.geneRifs.annotation ' \
-                'asc"><constraint path="Gene.primaryIdentifier" op="=" value="{}"/></query> '
+                'asc"><constraint path="Gene.primaryIdentifier" op="=" value="{}"/></query>'
+        query = query.format(gene_id)
+
+        # Now query the web service
+        payload = {'format': 'json', 'query': query}
+        resp = requests.post('https://bar.utoronto.ca/thalemine/service/query/results', data=payload,
+                             headers=request_headers)
+
+        return resp.json()
+
+
+@thalemine.route('/publications/<string:gene_id>')
+class ThaleMinePublications(Resource):
+    @thalemine.param('gene_id', _in='path', default='At1g01020')
+    @cache.cached()
+    def get(self, gene_id=''):
+        """This end point retrieves publications from ThaleMine given an AGI ID"""
+        gene_id = escape(gene_id)
+
+        # Is data valid
+        if not BARUtils.is_arabidopsis_gene_valid(gene_id):
+            return BARUtils.error_exit('Invalid gene id'), 400
+
+        query = '<query name="" model="genomic" view="Gene.publications.firstAuthor Gene.publications.issue ' \
+                'Gene.publications.journal Gene.publications.pages Gene.publications.pubMedId Gene.publications.title ' \
+                'Gene.publications.volume Gene.publications.year" longDescription="" ' \
+                'sortOrder="Gene.publications.firstAuthor asc"><constraint path="Gene.primaryIdentifier" op="=" value="{' \
+                '}"/></query> '
         query = query.format(gene_id)
 
         # Now query the web service

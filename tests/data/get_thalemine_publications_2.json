@@ -1,0 +1,29 @@
+{
+  "modelName": "genomic",
+  "columnHeaders": [
+    "Gene > Publications > First Author",
+    "Gene > Publications > Issue",
+    "Gene > Publications > Journal",
+    "Gene > Publications > Pages",
+    "Gene > Publications > PubMed ID",
+    "Gene > Publications > Title",
+    "Gene > Publications > Volume",
+    "Gene > Publications > Year"
+  ],
+  "rootClass": "Gene",
+  "start": 0,
+  "views": [
+    "Gene.publications.firstAuthor",
+    "Gene.publications.issue",
+    "Gene.publications.journal",
+    "Gene.publications.pages",
+    "Gene.publications.pubMedId",
+    "Gene.publications.title",
+    "Gene.publications.volume",
+    "Gene.publications.year"
+  ],
+  "results": [],
+  "wasSuccessful": true,
+  "error": null,
+  "statusCode": 200
+}
