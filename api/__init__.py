@@ -8,9 +8,7 @@ from flask_caching import Cache
 
 
 def create_app():
-    """
-    Initialize the app factory based on the official Flask documentation
-    """
+    """Initialize the app factory based on the official Flask documentation"""
     bar_app = Flask(__name__)
     CORS(bar_app)
 
