@@ -1,0 +1,25 @@
+{
+  "modelName": "genomic",
+  "columnHeaders": [
+    "Gene > Gene Rifs > Annotation",
+    "Gene > Gene Rifs > last updated",
+    "Gene > Gene Rifs > PubMed Id"
+  ],
+  "rootClass": "Gene",
+  "start": 0,
+  "views": [
+    "Gene.geneRifs.annotation",
+    "Gene.geneRifs.timeStamp",
+    "Gene.geneRifs.publication.pubMedId"
+  ],
+  "results": [
+    [
+      "Crystal structures of plant inorganic pyrophosphatase, an enzyme with a moonlighting autoproteolytic activity.",
+      "2020-03-21",
+      "31371393"
+    ]
+  ],
+  "wasSuccessful": true,
+  "error": null,
+  "statusCode": 200
+}
