@@ -36,9 +36,7 @@ source venv/bin/activate.csh
 ```
 9. Install requirements
 ```
-pip install --upgrade pip
-pip install --upgrade setuptools
-pip install wheel
+pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt
 ```
 10. Set up databases and configuration. Note: Change passwords in ```./config/init.sh``` and ```./config/BAR_API.cfg```
