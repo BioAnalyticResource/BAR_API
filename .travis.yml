@@ -13,9 +13,7 @@ python:
 before_install: 
   - bash ./config/init.sh
 install:
-  - pip install --upgrade pip
-  - pip install --upgrade setuptools
-  - pip install wheel
+  - pip install --upgrade pip setuptools wheel
   - pip install -r requirements.txt
 script: 
   - flake8
