@@ -109,7 +109,7 @@ class SummarizationGeneExpressionInsert(Resource):
             df = pandas.read_csv(csv)
             db_id = db_id.split(".")[0]
             df = df.melt(id_vars=["Gene"], var_name="Sample", value_name="Value")
-            db_id = db_id.split("/")[len(db_id.split("/"))-1]
+            db_id = db_id.split("/")[len(db_id.split("/")) - 1]
             con = db.get_engine(bind='summarization')
             df.to_sql(db_id, con, if_exists='append', index=True)
 
@@ -167,7 +167,7 @@ class SummarizationGeneExpressionFindGene(Resource):
         uid = request.args.get('id')
         string = request.args.get('string')
         con = db.get_engine(bind='summarization')
-        tbl = SummarizationGeneExpressionUtils.get_table_object(uid) 
+        tbl = SummarizationGeneExpressionUtils.get_table_object(uid)
         values = []
         rows = con.execute(db.select([tbl.c.Gene]).where(tbl.c.Gene.contains(string)))
         [values.append((row.Gene)) for row in rows]
@@ -175,7 +175,7 @@ class SummarizationGeneExpressionFindGene(Resource):
 
 
 @summarization_gene_expression.route('/table_exists', methods=["GET"])
-class SummarizationGeneExpressionDbExists(Resource):
+class SummarizationGeneExpressionTableExists(Resource):
     def get(self):
         uid = request.args.get('id')
         con = db.get_engine(bind='summarization')
@@ -183,11 +183,10 @@ class SummarizationGeneExpressionDbExists(Resource):
 
 
 @summarization_gene_expression.route('/drop_table', methods=["GET"])
-class SummarizationGeneExpressionDbExists(Resource):
+class SummarizationGeneExpressionDropTable(Resource):
     def get(self):
         if request.remote_addr != '127.0.0.1':
             abort(403)
         uid = request.args.get('id')
-        con = db.get_engine(bind='summarization')
-        tbl = SummarizationGeneExpressionUtils.get_table_object(uid) 
+        tbl = SummarizationGeneExpressionUtils.get_table_object(uid)
         tbl.drop()
