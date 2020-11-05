@@ -1,11 +1,13 @@
 from api import db
 
+
 class ProteinAlias(db.Model):
     __bind_key__ = 'poplar_snps_db'
     __tablename__ = 'protein_reference'
     protein_reference_id = db.Column(db.Integer(), primary_key=True)
     gene_identifier = db.Column(db.String(45), primary_key=False)
     proteinsJoin = db.relationship('SnpsProteinJoin', backref="prot")
+
 
 class SnpsProteinJoin(db.Model):
     __bind_key__ = 'poplar_snps_db'
@@ -23,6 +25,7 @@ class SnpsProteinJoin(db.Model):
     type = db.Column(db.String(50), primary_key=False)
     effect_impact = db.Column(db.String(50), primary_key=False)
     transcript_biotype = db.Column(db.String(45), primary_key=False)
+
 
 class SnpsTbl(db.Model):
     __bind_key__ = 'poplar_snps_db'
