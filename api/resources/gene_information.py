@@ -2,6 +2,7 @@ from flask_restx import Namespace, Resource
 from markupsafe import escape
 from sqlalchemy.exc import OperationalError
 from api.models.annotations_lookup import AgiAlias
+from api.models.eplant2 import isoforms
 from api.utils.bar_utils import BARUtils
 from api import cache
 
@@ -44,5 +45,36 @@ class GeneAlias(Resource):
         # Return results if there are data
         if len(aliases) > 0:
             return BARUtils.success_exit(aliases)
+        else:
+            return BARUtils.error_exit('There are no data found for the given gene')
+
+
+@gene_information.route('/gene_isoforms/<string:species>/<string:gene_id>')
+class GeneIsoforms(Resource):
+    @gene_information.param('species', _in='path', default='arabidopsis')
+    @gene_information.param('gene_id', _in='path', default='AT1G01020')
+    def get(self, species='', gene_id=''):
+        """This end point provides gene isoforms given a gene ID"""
+        gene_isoforms = []
+
+        # Escape input
+        species = escape(species)
+        gene_id = escape(gene_id)
+
+        if species == 'arabidopsis':
+            if BARUtils.is_arabidopsis_gene_valid(gene_id):
+                try:
+                    rows = isoforms.query.filter_by(gene=gene_id).all()
+                except OperationalError:
+                    return BARUtils.error_exit('An internal error has occurred'), 500
+                [gene_isoforms.append(row.isoform) for row in rows]
+            else:
+                return BARUtils.error_exit('Invalid gene id'), 400
+        else:
+            return BARUtils.error_exit('No data for the given species')
+
+        # Return results if there are data
+        if len(gene_isoforms) > 0:
+            return BARUtils.success_exit(gene_isoforms)
         else:
             return BARUtils.error_exit('There are no data found for the given gene')
