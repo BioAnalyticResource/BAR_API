@@ -11,9 +11,9 @@ from api.utils.bar_utils import BARUtils
 from flask_restx import Namespace, Resource
 
 
-UPLOAD_FOLDER = '/windir/c/Users/Bruno/Documents'
-SUMMARIZATION_FILES_PATH = '../gene-summarization-bar/summarization'
-CROMWELL_URL = "http://127.0.0.1:8000"
+UPLOAD_FOLDER = ''
+SUMMARIZATION_FILES_PATH = ''
+CROMWELL_URL = 'http://127.0.0.1:8000'
 
 
 summarization_gene_expression = Namespace('Summarization Gene Expression',
