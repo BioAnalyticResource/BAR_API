@@ -1,8 +1,8 @@
--- MariaDB dump 10.17  Distrib 10.5.6-MariaDB, for OpenBSD (amd64)
+-- MariaDB dump 10.18  Distrib 10.5.7-MariaDB, for OpenBSD (amd64)
 --
 -- Host: localhost    Database: eplant2
 -- ------------------------------------------------------
--- Server version	10.5.6-MariaDB
+-- Server version	10.5.7-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -14,6 +14,14 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Current Database: `eplant2`
+--
+
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `eplant2` /*!40100 DEFAULT CHARACTER SET latin1 */;
+
+USE `eplant2`;
 
 --
 -- Table structure for table `isoforms`
@@ -48,4 +56,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-11-05 11:40:20
+-- Dump completed on 2020-11-09 20:13:46
