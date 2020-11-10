@@ -47,7 +47,7 @@ class SummarizationGeneExpressionSummarize(Resource):
     def post(self):
         if request.remote_addr != '127.0.0.1':
             abort(403)
-        if(request.method == "POST"):
+        if request.method == "POST":
             json = request.get_json()
             uid = uuid.uuid4().hex
             inputs = """
@@ -76,8 +76,8 @@ class SummarizationGeneExpressionCsvUpload(Resource):
     def post(self):
         if request.remote_addr != '127.0.0.1':
             abort(403)
-        if(request.method == "POST"):
-            if('file' not in request.files):
+        if request.method == "POST":
+            if 'file' not in request.files:
                 print("Error")
             file = request.files['file']
             if file:
@@ -101,7 +101,7 @@ class SummarizationGeneExpressionInsert(Resource):
     def post(self):
         if request.remote_addr != '127.0.0.1':
             abort(403)
-        if(request.method == "POST"):
+        if request.method == "POST":
             csv = request.get_json().get("csv")
             db_id = request.get_json().get("uid")
             print(csv)
@@ -125,7 +125,7 @@ class SummarizationGeneExpressionValue(Resource):
             uid = request.args.get('id')
             con = db.get_engine(bind='summarization')
             tbl = SummarizationGeneExpressionUtils.get_table_object(uid)
-            if(sample == ''):
+            if sample == '':
                 values = {}
                 rows = con.execute(tbl.select(tbl.c.Value).where(tbl.c.Gene == gene))
                 for row in rows:
@@ -133,7 +133,7 @@ class SummarizationGeneExpressionValue(Resource):
             else:
                 values = []
                 rows = con.execute(tbl.select(tbl.c.Value).where(tbl.c.Sample == sample).where(tbl.c.Gene == gene))
-                [values.append((row.Value)) for row in rows]
+                [values.append(row.Value) for row in rows]
             return jsonify(values)
 
 
@@ -145,7 +145,7 @@ class SummarizationGeneExpressionSamples(Resource):
         tbl = SummarizationGeneExpressionUtils.get_table_object(uid)
         values = []
         rows = con.execute(db.select([tbl.c.Sample]).distinct())
-        [values.append((row.Sample)) for row in rows]
+        [values.append(row.Sample) for row in rows]
         return jsonify(values)
 
 
@@ -157,7 +157,7 @@ class SummarizationGeneExpressionGenes(Resource):
         tbl = SummarizationGeneExpressionUtils.get_table_object(uid)
         values = []
         rows = con.execute(db.select([tbl.c.Gene]).distinct())
-        [values.append((row.Sample)) for row in rows]
+        [values.append(row.Sample) for row in rows]
         return jsonify(values)
 
 
@@ -170,7 +170,7 @@ class SummarizationGeneExpressionFindGene(Resource):
         tbl = SummarizationGeneExpressionUtils.get_table_object(uid)
         values = []
         rows = con.execute(db.select([tbl.c.Gene]).where(tbl.c.Gene.contains(string)))
-        [values.append((row.Gene)) for row in rows]
+        [values.append(row.Gene) for row in rows]
         return jsonify(values)
 
 
