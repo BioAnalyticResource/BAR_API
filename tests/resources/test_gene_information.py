@@ -58,3 +58,42 @@ class TestIntegrations(TestCase):
             "error": "No data for the given species"
         }
         self.assertEqual(response.json, expected)
+
+    def test_get_arabidopsis_gene_isoform(self):
+        """This tests checks GET request for gene isoforms Arabidopsis
+        :return:
+        """
+        # Valid data
+        response = self.app_client.get('/gene_information/gene_isoforms/arabidopsis/AT1G01020')
+        expected = {
+            "wasSuccessful": True,
+            "data": [
+                "AT1G01020.1",
+                "AT1G01020.2"
+            ]
+        }
+        self.assertEqual(response.json, expected)
+
+        # Data not found, but gene is valid
+        response = self.app_client.get('/gene_information/gene_isoforms/arabidopsis/At3g24651')
+        expected = {
+            "wasSuccessful": False,
+            "error": "There are no data found for the given gene"
+        }
+        self.assertEqual(response.json, expected)
+
+        # Invalid Gene
+        response = self.app_client.get('/gene_information/gene_isoforms/arabidopsis/At3g2465x')
+        expected = {
+            "wasSuccessful": False,
+            "error": "Invalid gene id"
+        }
+        self.assertEqual(response.json, expected)
+
+        # Invalid Species
+        response = self.app_client.get('/gene_information/gene_isoforms/x/At3g24650')
+        expected = {
+            "wasSuccessful": False,
+            "error": "No data for the given species"
+        }
+        self.assertEqual(response.json, expected)
