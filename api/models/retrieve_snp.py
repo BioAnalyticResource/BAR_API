@@ -13,9 +13,9 @@ class SnpsProteinJoin(db.Model):
     __bind_key__ = 'poplar_snps_db'
     __tablename__ = 'snps_to_protein'
     snps_reference_id = db.Column(db.Integer(),
-                        db.ForeignKey('snps_reference.snps_reference_id'), primary_key=True)
+                                  db.ForeignKey('snps_reference.snps_reference_id'), primary_key=True)
     protein_reference_id = db.Column(db.Integer(),
-        db.ForeignKey('protein_reference.protein_reference_id'), primary_key=True)
+                                     db.ForeignKey('protein_reference.protein_reference_id'), primary_key=True)
     transcript_pos = db.Column(db.Integer(), primary_key=False)
     ref_DNA = db.Column(db.String(1), primary_key=False)
     alt_DNA = db.Column(db.String(1), primary_key=False)
