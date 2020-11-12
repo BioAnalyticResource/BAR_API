@@ -17,7 +17,7 @@ install:
   - pip install --upgrade pip setuptools wheel
   - pip install -r requirements.txt
 script: 
-  - flake8 --ignore=E128 api/
+  - flake8
   # Test with no cache
   - pytest
   # Test with cache: Results should be same

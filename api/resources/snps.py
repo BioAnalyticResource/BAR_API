@@ -44,8 +44,8 @@ class GeneNameAlias(Resource):
                     "MODERATE",
                     "MISSENSE",
                     None,
-                    "p." + snpsjoin.ref_aa + str(snpsjoin.aa_pos) + snpsjoin.alt_aa + 
-                    "/c." + str(snpsjoin.transcript_pos) + snpsjoin.ref_DNA + ">" + snpsjoin.alt_DNA,
+                    "p." + snpsjoin.ref_aa + str(snpsjoin.aa_pos) + snpsjoin.alt_aa
+                    + "/c." + str(snpsjoin.transcript_pos) + snpsjoin.ref_DNA + ">" + snpsjoin.alt_DNA,
                     None,
                     re.sub('.\d$', "", protein.gene_identifier),
                     None,
@@ -65,4 +65,3 @@ class GeneNameAlias(Resource):
             return BARUtils.success_exit(resultsJSON)
         else:
             return BARUtils.error_exit('There are no data found for the given gene')
-
