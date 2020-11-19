@@ -3,7 +3,7 @@ import os
 import re
 import uuid
 import pandas
-from api.models.summarization_gene_expression import SummarizationGeneExpression
+from api.models.summarization import SummarizationGeneExpression
 from api import db
 from flask import request, jsonify, abort
 from werkzeug.utils import secure_filename
