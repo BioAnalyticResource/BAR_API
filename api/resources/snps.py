@@ -44,8 +44,7 @@ class GeneNameAlias(Resource):
                     'MODERATE',
                     'MISSENSE',
                     None,
-                    'p.' + snpsjoin.ref_aa + str(snpsjoin.aa_pos) + snpsjoin.alt_aa + '/c.' + str(snpsjoin.transcript_pos) +
-                    snpsjoin.ref_DNA + '>' + snpsjoin.alt_DNA,
+                    'p.' + snpsjoin.ref_aa + str(snpsjoin.aa_pos) + snpsjoin.alt_aa + '/c.' + str(snpsjoin.transcript_pos) + snpsjoin.ref_DNA + '>' + snpsjoin.alt_DNA,
                     None,
                     re.sub(r'.\d$', '', protein.gene_identifier),
                     None,
