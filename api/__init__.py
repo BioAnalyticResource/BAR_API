@@ -1,5 +1,5 @@
 from os import environ
-from os.path import expanduser
+# from os.path import expanduser
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_restx import Api
@@ -21,7 +21,7 @@ def create_app():
         bar_app.config.from_pyfile(environ.get('BAR_API_PATH'), silent=True)
     else:
         # Change this line if you want to load your own configuration
-        bar_app.config.from_pyfile(expanduser('~') + '/Asher/BAR_API.cfg', silent=True)
+        bar_app.config.from_pyfile('../config/BAR_API.cfg', silent=True)
 
     # Initialize the database
     db.init_app(bar_app)
@@ -39,15 +39,15 @@ def create_app():
     # Now add routes
     from api.resources.gene_information import gene_information
     from api.resources.rnaseq_gene_expression import rnaseq_gene_expression
-    from api.resources.summarization_gene_expression import summarization_gene_expression
     from api.resources.proxy import bar_proxy
     from api.resources.thalemine import thalemine
+    from api.resources.snps import snps
 
     bar_api.add_namespace(gene_information)
     bar_api.add_namespace(rnaseq_gene_expression)
-    bar_api.add_namespace(summarization_gene_expression)
     bar_api.add_namespace(bar_proxy)
     bar_api.add_namespace(thalemine)
+    bar_api.add_namespace(snps)
     bar_api.init_app(bar_app)
     return bar_app
 
