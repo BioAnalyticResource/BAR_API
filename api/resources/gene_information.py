@@ -1,12 +1,26 @@
-from flask_restx import Namespace, Resource
+from flask_restx import Namespace, Resource, fields
+from flask import request
 from markupsafe import escape
 from sqlalchemy.exc import OperationalError
 from api.models.annotations_lookup import AgiAlias
 from api.models.eplant2 import isoforms
 from api.utils.bar_utils import BARUtils
+from marshmallow import Schema, ValidationError, fields as marshmallow_fields
 from api import cache
 
 gene_information = Namespace('Gene Information', description='Information about Genes', path='/gene_information')
+
+# I think this is only needed for Swagger UI POST
+gene_isoforms_request_fields = gene_information.model('GeneIsoforms', {
+    'species': fields.String(required=True, example='arabidopsis'),
+    'genes': fields.List(required=True, example=['AT1G01010', 'AT1G01020'], cls_or_instance=fields.String)
+})
+
+
+# Validation is done in a different way to keep things simple
+class GeneIsoformsSchema(Schema):
+    species = marshmallow_fields.String(required=True)
+    genes = marshmallow_fields.List(cls_or_instance=marshmallow_fields.String)
 
 
 @gene_information.route('/gene_alias')
@@ -78,3 +92,49 @@ class GeneIsoforms(Resource):
             return BARUtils.success_exit(gene_isoforms)
         else:
             return BARUtils.error_exit('There are no data found for the given gene')
+
+
+@gene_information.route('/gene_isoforms/')
+class PostGeneIsoforms(Resource):
+    @gene_information.expect(gene_isoforms_request_fields)
+    def post(self):
+        """This end point returns gene expression data for a single gene and multiple samples."""
+
+        json_data = request.get_json()
+        data = {}
+
+        # Validate json
+        try:
+            json_data = GeneIsoformsSchema().load(json_data)
+        except ValidationError as err:
+            return BARUtils.error_exit(err.messages), 400
+
+        genes = json_data['genes']
+        species = json_data['species']
+
+        # Set species and check gene ID format
+        if species == 'arabidopsis':
+            for gene in genes:
+                if not BARUtils.is_arabidopsis_gene_valid(gene):
+                    return BARUtils.error_exit('Invalid gene id'), 400
+        else:
+            return BARUtils.error_exit('Invalid species'), 400
+
+        # Query the database
+        database = isoforms()
+        try:
+            rows = database.query.filter(isoforms.gene.in_(genes)).all()
+        except OperationalError:
+            return BARUtils.error_exit('An internal error has occurred.'), 500
+
+        if len(rows) > 0:
+            for row in rows:
+                if row.gene in data:
+                    data[row.gene].append(row.isoform)
+                else:
+                    data[row.gene] = []
+                    data[row.gene].append(row.isoform)
+        else:
+            return BARUtils.error_exit('No data for the given species/genes'), 400
+
+        return BARUtils.success_exit(data)
