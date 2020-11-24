@@ -98,7 +98,7 @@ class GeneIsoforms(Resource):
 class PostGeneIsoforms(Resource):
     @gene_information.expect(gene_isoforms_request_fields)
     def post(self):
-        """This end point returns gene expression data for a single gene and multiple samples."""
+        """This end point returns gene isforms data for a multiple genes for a species."""
 
         json_data = request.get_json()
         data = {}
