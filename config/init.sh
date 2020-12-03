@@ -2,7 +2,7 @@
 # This script initialized the Travis environment
 
 # To use locally, set up DB Password below
-DB_USER="root"
+DB_USER=""
 DB_PASS=""
 
 # Load the data
@@ -12,10 +12,12 @@ if [ -n "$DB_PASS" ]; then
     mysql -u $DB_USER -p$DB_PASS < ./config/databases/annotations_lookup.sql
     mysql -u $DB_USER -p$DB_PASS < ./config/databases/single_cell.sql
     mysql -u $DB_USER -p$DB_PASS < ./config/databases/summarization.sql
+    mysql -u $DB_USER -p$DB_PASS < ./config/databases/api_keys.sql
 else
     mysql -u $DB_USER  < ./config/databases/annotations_lookup.sql
     mysql -u $DB_USER  < ./config/databases/single_cell.sql
     mysql -u $DB_USER  < ./config/databases/summarization.sql
+    mysql -u $DB_USER  < ./config/databases/api_keys.sql
 fi
 
 echo "Data is now loaded. Preparing API config"

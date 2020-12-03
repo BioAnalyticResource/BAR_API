@@ -4,6 +4,7 @@ import re
 import uuid
 import pandas
 from api.models.summarization_gene_expression import SummarizationGeneExpression
+from api.models.api_manager import Users
 from api import db
 from flask import request, jsonify, abort
 from werkzeug.utils import secure_filename
@@ -41,6 +42,14 @@ class SummarizationGeneExpressionUtils:
         else:
             return True
 
+    @staticmethod
+    def decrement_uses(key):
+        row = Users.query.filter_by(api_key=key).first()
+        row.uses_left = Users.uses_left - 1
+        # db.session.query(Users).filter_by(api_key=key).update({"uses_left": uses - 1})
+        db.session.commit()
+        return 
+
 
 @summarization_gene_expression.route('/summarize', methods=["POST"])
 class SummarizationGeneExpressionSummarize(Resource):
@@ -68,6 +77,7 @@ class SummarizationGeneExpressionSummarize(Resource):
             files = {'workflowSource': ('rpkm.wdl', open(SUMMARIZATION_FILES_PATH + '/rpkm.wdl', 'rb')), 'workflowInputs': ('rpkm_inputs.json', inputs)}
             requests.post(CROMWELL_URL + '/api/workflows/v1', files=files)
             # Return ID for future accessing
+            SummarizationGeneExpressionUtils.decrement_uses(json['key'])
             return uid
 
 
@@ -102,6 +112,7 @@ class SummarizationGeneExpressionInsert(Resource):
         if request.remote_addr != '127.0.0.1':
             abort(403)
         if(request.method == "POST"):
+            SummarizationGeneExpressionUtils.decrement_uses(request.args.get('key'))
             csv = request.get_json().get("csv")
             db_id = request.get_json().get("uid")
             print(csv)
@@ -121,6 +132,7 @@ class SummarizationGeneExpressionValue(Resource):
         if not BARUtils.is_arabidopsis_gene_valid(gene):
             return {'success': False, 'error': 'Invalid gene id', 'error_code': 400}
         else:
+            SummarizationGeneExpressionUtils.decrement_uses(request.args.get('key'))
             sample = request.args.get('sample') if request.args.get('sample') else ''
             uid = request.args.get('id')
             con = db.get_engine(bind='summarization')
@@ -141,6 +153,7 @@ class SummarizationGeneExpressionValue(Resource):
 class SummarizationGeneExpressionSamples(Resource):
     def get(self):
         uid = request.args.get('id')
+        SummarizationGeneExpressionUtils.decrement_uses(request.args.get('key'))
         con = db.get_engine(bind='summarization')
         tbl = SummarizationGeneExpressionUtils.get_table_object(uid)
         values = []
