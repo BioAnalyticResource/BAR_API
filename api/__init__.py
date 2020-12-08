@@ -25,7 +25,6 @@ def create_app():
 
     # Initialize the database
     db.init_app(bar_app)
-
     # Initialize the cache
     cache.init_app(bar_app)
 
@@ -42,7 +41,7 @@ def create_app():
     from api.resources.summarization_gene_expression import summarization_gene_expression
     from api.resources.proxy import bar_proxy
     from api.resources.thalemine import thalemine
-    from api.resources.api_manager import api_manager 
+    from api.resources.api_manager import api_manager
 
     bar_api.add_namespace(gene_information)
     bar_api.add_namespace(rnaseq_gene_expression)

@@ -1,7 +1,6 @@
 import pandas
 from api import db
-from api.models.api_manager import Users
-from api.models.api_manager import Requests
+from api.models.requests import Requests
 from flask import request, jsonify
 from flask_restx import Namespace, Resource
 from datetime import datetime
@@ -21,7 +20,8 @@ class ApiManagerValidate(Resource):
             response_json = request.get_json()
             # Validate API key
             user_key = response_json['key']
-            key = b'dsoR_Ke7cZiX5F1oFES8RuabLHX0puUOETlPGrX-bdE='
+            # Replace below
+            key = b'fNtXVDxom9YGg3D9BHwyRAvsyJREc-1yD7gcy5Jpxbc='
             cipher_suite = Fernet(key)
             with open('./key.bin', 'rb') as f:
                 for line in f:

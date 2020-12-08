@@ -4,7 +4,7 @@ import re
 import uuid
 import pandas
 from api.models.summarization_gene_expression import SummarizationGeneExpression
-from api.models.api_manager import Users
+from api.models.users import Users
 from api import db
 from flask import request, jsonify, abort
 from werkzeug.utils import secure_filename
@@ -12,8 +12,9 @@ from api.utils.bar_utils import BARUtils
 from flask_restx import Namespace, Resource
 
 
-UPLOAD_FOLDER = ''
-SUMMARIZATION_FILES_PATH = ''
+
+UPLOAD_FOLDER = '/windir/c/Users/Bruno/Documents/GitHub/gene-summarization-bar/summarization'
+SUMMARIZATION_FILES_PATH = '/windir/c/Users/Bruno/Documents/GitHub/gene-summarization-bar/summarization'
 CROMWELL_URL = 'http://127.0.0.1:8000'
 
 
@@ -36,6 +37,24 @@ class SummarizationGeneExpressionUtils:
         return table_object
 
     @staticmethod
+    def get_users_table():
+        metadata = db.MetaData()
+        tbl = db.Table('users', metadata,
+                       db.Column("first_name", db.String(32), index=True),
+                       db.Column("last_name", db.String(32), index=True),
+                       db.Column("email", db.String(120), index=True, unique=True),
+                       db.Column("telephone", db.String(12), index=True, unique=True),
+                       db.Column("contact_type", db.String(5), index=True, unique=True),
+                       db.Column("api_key", db.String(120), primary_key=True),
+                       db.Column("status", db.String(32), index=True),
+                       db.Column("date_added", db.Date, nullable=False),
+                       db.Column("uses_left", db.Integer, index=True, default=25)
+                       )
+        db.clear_mappers()
+        db.mapper(Users, tbl)
+        return tbl
+
+    @staticmethod
     def is_valid(string):
         if re.search("([^_0-9A-Za-z])+", string):
             return False
@@ -43,12 +62,36 @@ class SummarizationGeneExpressionUtils:
             return True
 
     @staticmethod
+    def validate_api_key(key):
+        tbl = SummarizationGeneExpressionUtils.get_users_table()
+        con = db.get_engine(bind='keys')
+        try:
+            row = con.execute(db.select([tbl.c.uses_left]).where(tbl.c.api_key==key)).first()
+        except SQLAlchemyError as e:
+            error = str(e.__dict__['orig'])
+            return error
+        if(row is None):
+            return False
+        else:
+            if row.uses_left > 0:
+                return True
+            else:
+                return False
+
+    @staticmethod
     def decrement_uses(key):
-        row = Users.query.filter_by(api_key=key).first()
-        row.uses_left = Users.uses_left - 1
-        # db.session.query(Users).filter_by(api_key=key).update({"uses_left": uses - 1})
-        db.session.commit()
-        return 
+        if(SummarizationGeneExpressionUtils.validate_api_key(key)):
+            tbl = SummarizationGeneExpressionUtils.get_users_table()
+            con = db.get_engine(bind='keys')
+            try:
+                row = con.execute(db.update(tbl).where(tbl.c.api_key==key).values(uses_left=(tbl.c.uses_left - 1)))
+                db.session.commit()
+            except SQLAlchemyError as e:
+                error = str(e.__dict__['orig'])
+                return error
+            return True
+        else:
+            return False
 
 
 @summarization_gene_expression.route('/summarize', methods=["POST"])
@@ -101,7 +144,9 @@ class SummarizationGeneExpressionCsvUpload(Resource):
                         "csvUpload.csv": """ + os.path.join(UPLOAD_FOLDER, filename) + """,
                         }
                         """
-                files = {'workflowSource': ('csvUpload.wdl', open(SUMMARIZATION_FILES_PATH + '/csvUpload.wdl', 'rb')), 'workflowInputs': ('rpkm_inputs.json', inputs)}
+                files = {'workflowSource': ('csvUpload.wdl',
+                                            open(SUMMARIZATION_FILES_PATH + '/csvUpload.wdl', 'rb')),
+                         'workflowInputs': ('rpkm_inputs.json', inputs)}
                 requests.post(CROMWELL_URL + '/api/workflows/v1', files=files)
                 return uid
 
@@ -112,17 +157,15 @@ class SummarizationGeneExpressionInsert(Resource):
         if request.remote_addr != '127.0.0.1':
             abort(403)
         if(request.method == "POST"):
-            SummarizationGeneExpressionUtils.decrement_uses(request.args.get('key'))
-            csv = request.get_json().get("csv")
-            db_id = request.get_json().get("uid")
-            print(csv)
-            print(db_id)
-            df = pandas.read_csv(csv)
-            db_id = db_id.split(".")[0]
-            df = df.melt(id_vars=["Gene"], var_name="Sample", value_name="Value")
-            db_id = db_id.split("/")[len(db_id.split("/")) - 1]
-            con = db.get_engine(bind='summarization')
-            df.to_sql(db_id, con, if_exists='append', index=True)
+            if(SummarizationGeneExpressionUtils.decrement_uses(request.args.get('key'))):
+                csv = request.get_json()["csv"]
+                db_id = request.get_json()["uid"]
+                df = pandas.read_csv(csv)
+                db_id = db_id.split(".")[0]
+                df = df.melt(id_vars=["Gene"], var_name="Sample", value_name="Value")
+                db_id = db_id.split("/")[len(db_id.split("/")) - 1]
+                con = db.get_engine(bind='summarization')
+                df.to_sql(db_id, con, if_exists='append', index=True)
 
 
 @summarization_gene_expression.route('/value', methods=["GET"])
@@ -132,32 +175,43 @@ class SummarizationGeneExpressionValue(Resource):
         if not BARUtils.is_arabidopsis_gene_valid(gene):
             return {'success': False, 'error': 'Invalid gene id', 'error_code': 400}
         else:
-            SummarizationGeneExpressionUtils.decrement_uses(request.args.get('key'))
-            sample = request.args.get('sample') if request.args.get('sample') else ''
-            uid = request.args.get('id')
-            con = db.get_engine(bind='summarization')
-            tbl = SummarizationGeneExpressionUtils.get_table_object(uid)
-            if(sample == ''):
-                values = {}
-                rows = con.execute(tbl.select(tbl.c.Value).where(tbl.c.Gene == gene))
-                for row in rows:
-                    values.update({row.Sample: row.Value})
-            else:
-                values = []
-                rows = con.execute(tbl.select(tbl.c.Value).where(tbl.c.Sample == sample).where(tbl.c.Gene == gene))
-                [values.append((row.Value)) for row in rows]
-            return jsonify(values)
+            if(SummarizationGeneExpressionUtils.decrement_uses(request.args.get('key'))):
+                sample = request.args.get('sample') if request.args.get('sample') else ''
+                uid = request.args.get('id')
+                con = db.get_engine(bind='summarization')
+                tbl = SummarizationGeneExpressionUtils.get_table_object(uid)
+                if(sample == ''):
+                    values = {}
+                    try:
+                        rows = con.execute(tbl.select(tbl.c.Value).where(tbl.c.Gene == gene))
+                    except SQLAlchemyError as e:
+                        error = str(e.__dict__['orig'])
+                        return error
+                    for row in rows:
+                        values.update({row.Sample: row.Value})
+                else:
+                    values = []
+                    try:
+                        rows = con.execute(tbl.select(tbl.c.Value).where(tbl.c.Sample == sample).where(tbl.c.Gene == gene))
+                    except SQLAlchemyError as e:
+                        error = str(e.__dict__['orig'])
+                        return error
+                    [values.append((row.Value)) for row in rows]
+                return jsonify(values)
 
 
 @summarization_gene_expression.route('/samples', methods=["GET"])
 class SummarizationGeneExpressionSamples(Resource):
     def get(self):
         uid = request.args.get('id')
-        SummarizationGeneExpressionUtils.decrement_uses(request.args.get('key'))
         con = db.get_engine(bind='summarization')
         tbl = SummarizationGeneExpressionUtils.get_table_object(uid)
         values = []
-        rows = con.execute(db.select([tbl.c.Sample]).distinct())
+        try:
+            rows = con.execute(db.select([tbl.c.Sample]).distinct())
+        except SQLAlchemyError as e:
+            error = str(e.__dict__['orig'])
+            return error
         [values.append((row.Sample)) for row in rows]
         return jsonify(values)
 
@@ -165,13 +219,18 @@ class SummarizationGeneExpressionSamples(Resource):
 @summarization_gene_expression.route('/genes', methods=["GET"])
 class SummarizationGeneExpressionGenes(Resource):
     def get(self):
-        uid = request.args.get('id')
-        con = db.get_engine(bind='summarization')
-        tbl = SummarizationGeneExpressionUtils.get_table_object(uid)
-        values = []
-        rows = con.execute(db.select([tbl.c.Gene]).distinct())
-        [values.append((row.Sample)) for row in rows]
-        return jsonify(values)
+        if(SummarizationGeneExpressionUtils.decrement_uses(request.args.get('key'))):
+            uid = request.args.get('id')
+            con = db.get_engine(bind='summarization')
+            tbl = SummarizationGeneExpressionUtils.get_table_object(uid)
+            values = []
+            try:
+                rows = con.execute(db.select([tbl.c.Gene]).distinct())
+            except SQLAlchemyError as e:
+                error = str(e.__dict__['orig'])
+                return error
+            [values.append((row.Sample)) for row in rows]
+            return jsonify(values)
 
 
 @summarization_gene_expression.route('/find_gene', methods=["GET"])
@@ -182,7 +241,11 @@ class SummarizationGeneExpressionFindGene(Resource):
         con = db.get_engine(bind='summarization')
         tbl = SummarizationGeneExpressionUtils.get_table_object(uid)
         values = []
-        rows = con.execute(db.select([tbl.c.Gene]).where(tbl.c.Gene.contains(string)))
+        try:
+            rows = con.execute(db.select([tbl.c.Gene]).where(tbl.c.Gene.contains(string)))
+        except SQLAlchemyError as e:
+            error = str(e.__dict__['orig'])
+            return error
         [values.append((row.Gene)) for row in rows]
         return jsonify(values)
 
