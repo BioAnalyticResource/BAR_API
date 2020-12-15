@@ -1,11 +1,13 @@
 import pandas
 from api import db
 from api.models.requests import Requests
+from api.models.users import Users 
 from flask import request, jsonify
 from flask_restx import Namespace, Resource
 from datetime import datetime
-import uuid
+from sqlalchemy.exc import SQLAlchemyError
 from cryptography.fernet import Fernet
+import uuid
 
 
 api_manager = Namespace('API Manager',
@@ -13,7 +15,7 @@ api_manager = Namespace('API Manager',
                         path='/api_manager')
 
 
-@api_manager.route('/validate', methods=["POST"])
+@api_manager.route('/validate_admin_password', methods=["POST"])
 class ApiManagerValidate(Resource):
     def post(self):
         if(request.method == "POST"):
@@ -28,14 +30,31 @@ class ApiManagerValidate(Resource):
                     encrypted_key = line
             uncipher_text = cipher_suite.decrypt(encrypted_key)
             plain_text_encryptedpassword = bytes(uncipher_text).decode("utf-8")
-            print(user_key)
-            print(plain_text_encryptedpassword)
             if user_key == plain_text_encryptedpassword:
-                print("true")
                 return True
             else:
-                print("false")
                 return False
+
+
+@api_manager.route('/validate_api_key', methods=["POST"])
+class ApiManagerValidateKey(Resource):
+    def post(self):
+        if(request.method == "POST"):
+            tbl = Users()
+            json = request.get_json()
+            key = json["key"]
+            try:
+                row = tbl.query.filter_by(api_key=key).first()
+            except SQLAlchemyError as e:
+                error = str(e.__dict__['orig'])
+                return error
+            if(row is None):
+                return False
+            else:
+                if row.uses_left > 0:
+                    return True
+                else:
+                    return False
 
 
 @api_manager.route('/request', methods=["POST"])
@@ -45,7 +64,11 @@ class ApiManagerRequest(Resource):
             response_json = request.get_json()
             df = pandas.DataFrame.from_records([response_json])
             con = db.get_engine(bind='keys')
-            df.to_sql('requests', con, if_exists='append', index=False)
+            try:
+                df.to_sql('requests', con, if_exists='append', index=False)
+            except SQLAlchemyError as e:
+                error = str(e.__dict__['orig'])
+                return error
 
 
 @api_manager.route('/get_pending_requests', methods=["GET"])
@@ -54,7 +77,11 @@ class ApiManagerGetPending(Resource):
         if(request.method == "GET"):
             table = Requests()
             values = []
-            rows = table.query.filter_by().all()
+            try:
+                rows = table.query.filter_by().all()
+            except SQLAlchemyError as e:
+                error = str(e.__dict__['orig'])
+                return error
             [values.append({"first_name": row.first_name,
                             "last_name": row.last_name, "email": row.email,
                             "telephone": row.telephone,
@@ -69,8 +96,11 @@ class ApiManagerRejectRequest(Resource):
         if(request.method == "POST"):
             response_json = request.get_json()
             table = Requests()
-            el = table.query.filter_by(email=response_json['email']).one()
-            print(el)
+            try:
+                el = table.query.filter_by(email=response_json['email']).one()
+            except SQLAlchemyError as e:
+                error = str(e.__dict__['orig'])
+                return error
             db.session.delete(el)
             db.session.commit()
             # table.query.filter_by(email=response_json['email']).delete()
@@ -84,7 +114,11 @@ class ApiManagerApproveRequest(Resource):
             email = request.args.get('email')
             table = Requests()
             values = []
-            rows = table.query.filter_by(email=email).all()
+            try:
+                rows = table.query.filter_by(email=email).all()
+            except SQLAlchemyError as e:
+                error = str(e.__dict__['orig'])
+                return error
             key = uuid.uuid4().hex
             [values.append({"first_name": row.first_name,
                             "last_name": row.last_name, "email": row.email,
@@ -96,7 +130,11 @@ class ApiManagerApproveRequest(Resource):
                             "uses_left": 25}) for row in rows]
             df = pandas.DataFrame.from_records([values[0]])
             con = db.get_engine(bind='keys')
-            df.to_sql('users', con, if_exists='append', index=False)
-            el = table.query.filter_by(email=email).one()
-            db.session.delete(el)
+            try:
+                df.to_sql('users', con, if_exists='append', index=False)
+                el = table.query.filter_by(email=email).one()
+                db.session.delete(el)
+            except SQLAlchemyError as e:
+                error = str(e.__dict__['orig'])
+                return error
             return key

@@ -10,7 +10,7 @@ from flask import request, jsonify, abort
 from werkzeug.utils import secure_filename
 from api.utils.bar_utils import BARUtils
 from flask_restx import Namespace, Resource
-
+from sqlalchemy.exc import SQLAlchemyError
 
 
 UPLOAD_FOLDER = '/windir/c/Users/Bruno/Documents/GitHub/gene-summarization-bar/summarization'
@@ -66,7 +66,7 @@ class SummarizationGeneExpressionUtils:
         tbl = SummarizationGeneExpressionUtils.get_users_table()
         con = db.get_engine(bind='keys')
         try:
-            row = con.execute(db.select([tbl.c.uses_left]).where(tbl.c.api_key==key)).first()
+            row = con.execute(db.select([tbl.c.uses_left]).where(tbl.c.api_key == key)).first()
         except SQLAlchemyError as e:
             error = str(e.__dict__['orig'])
             return error
@@ -84,7 +84,7 @@ class SummarizationGeneExpressionUtils:
             tbl = SummarizationGeneExpressionUtils.get_users_table()
             con = db.get_engine(bind='keys')
             try:
-                row = con.execute(db.update(tbl).where(tbl.c.api_key==key).values(uses_left=(tbl.c.uses_left - 1)))
+                con.execute(db.update(tbl).where(tbl.c.api_key == key).values(uses_left=(tbl.c.uses_left - 1)))
                 db.session.commit()
             except SQLAlchemyError as e:
                 error = str(e.__dict__['orig'])
@@ -157,7 +157,8 @@ class SummarizationGeneExpressionInsert(Resource):
         if request.remote_addr != '127.0.0.1':
             abort(403)
         if(request.method == "POST"):
-            if(SummarizationGeneExpressionUtils.decrement_uses(request.args.get('key'))):
+            key = request.headers.get("X-Api-Key")
+            if(SummarizationGeneExpressionUtils.decrement_uses(key)):
                 csv = request.get_json()["csv"]
                 db_id = request.get_json()["uid"]
                 df = pandas.read_csv(csv)
@@ -175,7 +176,8 @@ class SummarizationGeneExpressionValue(Resource):
         if not BARUtils.is_arabidopsis_gene_valid(gene):
             return {'success': False, 'error': 'Invalid gene id', 'error_code': 400}
         else:
-            if(SummarizationGeneExpressionUtils.decrement_uses(request.args.get('key'))):
+            key = request.headers.get("X-Api-Key")
+            if(SummarizationGeneExpressionUtils.decrement_uses(key)):
                 sample = request.args.get('sample') if request.args.get('sample') else ''
                 uid = request.args.get('id')
                 con = db.get_engine(bind='summarization')
@@ -219,7 +221,8 @@ class SummarizationGeneExpressionSamples(Resource):
 @summarization_gene_expression.route('/genes', methods=["GET"])
 class SummarizationGeneExpressionGenes(Resource):
     def get(self):
-        if(SummarizationGeneExpressionUtils.decrement_uses(request.args.get('key'))):
+        key = request.headers.get("X-Api-Key")
+        if(SummarizationGeneExpressionUtils.decrement_uses(key)):
             uid = request.args.get('id')
             con = db.get_engine(bind='summarization')
             tbl = SummarizationGeneExpressionUtils.get_table_object(uid)
@@ -255,7 +258,10 @@ class SummarizationGeneExpressionTableExists(Resource):
     def get(self):
         uid = request.args.get('id')
         con = db.get_engine(bind='summarization')
-        return jsonify(con.dialect.has_table(con, uid))
+        if(con.dialect.has_table(con, uid)):
+            return True
+        else:
+            return False
 
 
 @summarization_gene_expression.route('/drop_table', methods=["GET"])
