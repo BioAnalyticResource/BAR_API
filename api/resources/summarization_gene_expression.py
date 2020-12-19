@@ -97,38 +97,34 @@ class SummarizationGeneExpressionUtils:
 @summarization_gene_expression.route('/summarize', methods=["POST"])
 class SummarizationGeneExpressionSummarize(Resource):
     def post(self):
-        if request.remote_addr != '127.0.0.1':
-            abort(403)
         if(request.method == "POST"):
             json = request.get_json()
-            uid = uuid.uuid4().hex
-            inputs = """
-                    {
-                    "geneSummarization.gtf": "./data/Araport11_GFF3_genes_transposons.201606.gtf",
-                    "geneSummarization.summarizeGenesScript": "./summarize_genes.R",
-                    "geneSummarization.downloadFilesScript": "./downloadDriveFiles.py",
-                    "geneSummarization.insertDataScript": "./insertData.py",
-                    "geneSummarization.credentials": "./data/credentials.json",
-                    "geneSummarization.token": "./data/token.pickle",
-                    "geneSummarization.aliases": "./data/aliases.txt",
-                    "geneSummarization.folderId": """ + json["folderId"] + """,
-                    "geneSummarization.id": """ + str(uid) + """
-                    }
-                    """
-            # Create DB
-            # Send request to Cromwell
-            files = {'workflowSource': ('rpkm.wdl', open(SUMMARIZATION_FILES_PATH + '/rpkm.wdl', 'rb')), 'workflowInputs': ('rpkm_inputs.json', inputs)}
-            requests.post(CROMWELL_URL + '/api/workflows/v1', files=files)
-            # Return ID for future accessing
-            SummarizationGeneExpressionUtils.decrement_uses(json['key'])
-            return uid
+            key = request.headers.get("X-Api-Key")
+            if(SummarizationGeneExpressionUtils.decrement_uses(key)):
+                inputs = """
+                        {
+                        "geneSummarization.gtf": "./data/Araport11_GFF3_genes_transposons.201606.gtf",
+                        "geneSummarization.summarizeGenesScript": "./summarize_genes.R",
+                        "geneSummarization.downloadFilesScript": "./downloadDriveFiles.py",
+                        "geneSummarization.insertDataScript": "./insertData.py",
+                        "geneSummarization.credentials": "./data/credentials.json",
+                        "geneSummarization.token": "./data/token.pickle",
+                        "geneSummarization.aliases": "./data/aliases.txt",
+                        "geneSummarization.folderId": """ + json["folderId"] + """,
+                        "geneSummarization.id": """ + key + """
+                        }
+                        """
+                # Create DB
+                # Send request to Cromwell
+                files = {'workflowSource': ('rpkm.wdl', open(SUMMARIZATION_FILES_PATH + '/rpkm.wdl', 'rb')), 'workflowInputs': ('rpkm_inputs.json', inputs)}
+                requests.post(CROMWELL_URL + '/api/workflows/v1', files=files)
+                # Return ID for future accessing
+            return key
 
 
 @summarization_gene_expression.route('/csv_upload', methods=["POST"])
 class SummarizationGeneExpressionCsvUpload(Resource):
     def post(self):
-        if request.remote_addr != '127.0.0.1':
-            abort(403)
         if(request.method == "POST"):
             if('file' not in request.files):
                 print("Error")
@@ -136,26 +132,25 @@ class SummarizationGeneExpressionCsvUpload(Resource):
             if file:
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(UPLOAD_FOLDER, filename))
-                uid = uuid.uuid4().hex
-                inputs = """
-                        {
-                        "csvUpload.insertDataScript": "./insertData.py",
-                        "csvUpload.id": """ + str(uid) + """,
-                        "csvUpload.csv": """ + os.path.join(UPLOAD_FOLDER, filename) + """,
-                        }
-                        """
-                files = {'workflowSource': ('csvUpload.wdl',
-                                            open(SUMMARIZATION_FILES_PATH + '/csvUpload.wdl', 'rb')),
-                         'workflowInputs': ('rpkm_inputs.json', inputs)}
-                requests.post(CROMWELL_URL + '/api/workflows/v1', files=files)
-                return uid
+                key = request.headers.get("X-Api-Key")
+                if(SummarizationGeneExpressionUtils.decrement_uses(key)):
+                    inputs = """
+                            {
+                            "csvUpload.insertDataScript": "./insertData.py",
+                            "csvUpload.id": """ + key + """,
+                            "csvUpload.csv": """ + os.path.join(UPLOAD_FOLDER, filename) + """,
+                            }
+                            """
+                    files = {'workflowSource': ('csvUpload.wdl',
+                                                open(SUMMARIZATION_FILES_PATH + '/csvUpload.wdl', 'rb')),
+                             'workflowInputs': ('rpkm_inputs.json', inputs)}
+                    requests.post(CROMWELL_URL + '/api/workflows/v1', files=files)
+                return key 
 
 
 @summarization_gene_expression.route('/insert', methods=["POST"])
 class SummarizationGeneExpressionInsert(Resource):
     def post(self):
-        if request.remote_addr != '127.0.0.1':
-            abort(403)
         if(request.method == "POST"):
             key = request.headers.get("X-Api-Key")
             if(SummarizationGeneExpressionUtils.decrement_uses(key)):
@@ -232,7 +227,7 @@ class SummarizationGeneExpressionGenes(Resource):
             except SQLAlchemyError as e:
                 error = str(e.__dict__['orig'])
                 return error
-            [values.append((row.Sample)) for row in rows]
+            [values.append((row.Gene)) for row in rows]
             return jsonify(values)
 
 
@@ -245,7 +240,7 @@ class SummarizationGeneExpressionFindGene(Resource):
         tbl = SummarizationGeneExpressionUtils.get_table_object(uid)
         values = []
         try:
-            rows = con.execute(db.select([tbl.c.Gene]).where(tbl.c.Gene.contains(string)))
+            rows = con.execute(db.select([tbl.c.Gene]).where(tbl.c.Gene.contains(string)).distinct())
         except SQLAlchemyError as e:
             error = str(e.__dict__['orig'])
             return error
@@ -267,8 +262,6 @@ class SummarizationGeneExpressionTableExists(Resource):
 @summarization_gene_expression.route('/drop_table', methods=["GET"])
 class SummarizationGeneExpressionDropTable(Resource):
     def get(self):
-        if request.remote_addr != '127.0.0.1':
-            abort(403)
         uid = request.args.get('id')
         tbl = SummarizationGeneExpressionUtils.get_table_object(uid)
         tbl.drop()
