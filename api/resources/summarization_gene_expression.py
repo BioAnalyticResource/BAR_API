@@ -1,12 +1,11 @@
 import requests
 import os
 import re
-import uuid
 import pandas
 from api.models.summarization_gene_expression import SummarizationGeneExpression
 from api.models.users import Users
 from api import db
-from flask import request, jsonify, abort
+from flask import request, jsonify
 from werkzeug.utils import secure_filename
 from api.utils.bar_utils import BARUtils
 from flask_restx import Namespace, Resource

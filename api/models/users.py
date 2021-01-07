@@ -13,9 +13,3 @@ class Users(db.Model):
     status = db.Column(db.String(32), index=True)
     date_added = db.Column(db.Date, nullable=False)
     uses_left = db.Column(db.Integer, index=True, default=25)
-    
-    def __init__(self):
-        super(Users,self).__init__()
-
-    def __repr__(self):
-        return '<Users %s>' % self

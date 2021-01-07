@@ -131,3 +131,4 @@ dmypy.json
 # BAR additions
 .idea
 key.bin
+config/BAR_API.cfg
