@@ -1,8 +1,8 @@
--- MariaDB dump 10.18  Distrib 10.5.7-MariaDB, for OpenBSD (amd64)
+-- MariaDB dump 10.18  Distrib 10.5.8-MariaDB, for OpenBSD (amd64)
 --
 -- Host: localhost    Database: eplant2
 -- ------------------------------------------------------
--- Server version	10.5.7-MariaDB
+-- Server version	10.5.8-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -43,7 +43,7 @@ CREATE TABLE `isoforms` (
 
 LOCK TABLES `isoforms` WRITE;
 /*!40000 ALTER TABLE `isoforms` DISABLE KEYS */;
-INSERT INTO `isoforms` VALUES ('AT1G01020','AT1G01020.1'),('AT1G01020','AT1G01020.2');
+INSERT INTO `isoforms` VALUES ('AT1G01010','AT1G01010.1'),('AT1G01020','AT1G01020.1'),('AT1G01020','AT1G01020.2');
 /*!40000 ALTER TABLE `isoforms` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -56,4 +56,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-11-09 20:13:46
+-- Dump completed on 2020-11-19 15:37:22
