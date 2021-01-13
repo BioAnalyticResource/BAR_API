@@ -144,7 +144,7 @@ class SummarizationGeneExpressionCsvUpload(Resource):
                                                 open(SUMMARIZATION_FILES_PATH + '/csvUpload.wdl', 'rb')),
                              'workflowInputs': ('rpkm_inputs.json', inputs)}
                     requests.post(CROMWELL_URL + '/api/workflows/v1', files=files)
-                return key 
+                return key
 
 
 @summarization_gene_expression.route('/insert', methods=["POST"])
