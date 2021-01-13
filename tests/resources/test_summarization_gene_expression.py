@@ -1,23 +1,11 @@
-from api import app, db
+from api import app
 from unittest import TestCase
 import json
-import pandas
 
 
 class TestIntegrations(TestCase):
     def setUp(self):
         self.app_client = app.test_client()
-        with app.app_context():
-            df = pandas.read_csv('tests/data/summarization_gene_expression_test_table.csv')
-            df = df.melt(id_vars=["Gene"], var_name="Sample", value_name="Value")
-            con = db.get_engine(bind='summarization')
-            df.to_sql("test", con, if_exists='replace', index=True)
-
-    def tearDown(self):
-        with app.app_context():
-            con = db.get_engine(bind='summarization')
-            command = "DROP TABLE IF EXISTS test"
-            con.execute(command)
 
     def test_get_gene_value(self):
         response = self.app_client.get('/summarization_gene_expression/value?id=test&gene=AT1G01010', headers={"x-api-key": "bb5a52387069485486b2f4861c2826dd"})
