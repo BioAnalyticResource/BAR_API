@@ -2,7 +2,7 @@
 # This script initialized the Travis environment
 
 # To use locally, set up DB Password below
-DB_USER=""
+DB_USER="root"
 DB_PASS=""
 
 # Load the data
