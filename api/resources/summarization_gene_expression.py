@@ -2,8 +2,6 @@ import requests
 import os
 import re
 import pandas
-from api.models.summarization_gene_expression import SummarizationGeneExpression
-from api.models.users import Users
 from api import db
 from flask import request, jsonify
 from werkzeug.utils import secure_filename
@@ -24,34 +22,10 @@ summarization_gene_expression = Namespace('Summarization Gene Expression',
 
 class SummarizationGeneExpressionUtils:
     @staticmethod
-    def get_table_object(uid):
+    def get_table_object(table_name, bind_name):
         metadata = db.MetaData()
-        table_object = db.Table(uid, metadata,
-                                db.Column('Gene', primary_key=True),
-                                db.Column('Sample', primary_key=True),
-                                db.Column('Value', primary_key=True)
-                                )
-        db.clear_mappers()
-        db.mapper(SummarizationGeneExpression, table_object)
+        table_object = db.Table(table_name, metadata, autoload=True, autoload_with=db.get_engine(bind=bind_name))
         return table_object
-
-    @staticmethod
-    def get_users_table():
-        metadata = db.MetaData()
-        tbl = db.Table('users', metadata,
-                       db.Column("first_name", db.String(32), index=True),
-                       db.Column("last_name", db.String(32), index=True),
-                       db.Column("email", db.String(120), index=True, unique=True),
-                       db.Column("telephone", db.String(12), index=True, unique=True),
-                       db.Column("contact_type", db.String(5), index=True, unique=True),
-                       db.Column("api_key", db.String(120), primary_key=True),
-                       db.Column("status", db.String(32), index=True),
-                       db.Column("date_added", db.Date, nullable=False),
-                       db.Column("uses_left", db.Integer, index=True, default=25)
-                       )
-        db.clear_mappers()
-        db.mapper(Users, tbl)
-        return tbl
 
     @staticmethod
     def is_valid(string):
@@ -62,7 +36,7 @@ class SummarizationGeneExpressionUtils:
 
     @staticmethod
     def validate_api_key(key):
-        tbl = SummarizationGeneExpressionUtils.get_users_table()
+        tbl = SummarizationGeneExpressionUtils.get_table_object("users", "keys")
         con = db.get_engine(bind='keys')
         try:
             row = con.execute(db.select([tbl.c.uses_left]).where(tbl.c.api_key == key)).first()
@@ -80,7 +54,7 @@ class SummarizationGeneExpressionUtils:
     @staticmethod
     def decrement_uses(key):
         if(SummarizationGeneExpressionUtils.validate_api_key(key)):
-            tbl = SummarizationGeneExpressionUtils.get_users_table()
+            tbl = SummarizationGeneExpressionUtils.get_table_object("users", "keys")
             con = db.get_engine(bind='keys')
             try:
                 con.execute(db.update(tbl).where(tbl.c.api_key == key).values(uses_left=(tbl.c.uses_left - 1)))
@@ -175,7 +149,7 @@ class SummarizationGeneExpressionValue(Resource):
                 sample = request.args.get('sample') if request.args.get('sample') else ''
                 uid = request.args.get('id')
                 con = db.get_engine(bind='summarization')
-                tbl = SummarizationGeneExpressionUtils.get_table_object(uid)
+                tbl = SummarizationGeneExpressionUtils.get_table_object(uid, "summarization")
                 if(sample == ''):
                     values = {}
                     try:
@@ -201,7 +175,7 @@ class SummarizationGeneExpressionSamples(Resource):
     def get(self):
         uid = request.args.get('id')
         con = db.get_engine(bind='summarization')
-        tbl = SummarizationGeneExpressionUtils.get_table_object(uid)
+        tbl = SummarizationGeneExpressionUtils.get_table_object(uid, "summarization")
         values = []
         try:
             rows = con.execute(db.select([tbl.c.Sample]).distinct())
@@ -219,7 +193,7 @@ class SummarizationGeneExpressionGenes(Resource):
         if(SummarizationGeneExpressionUtils.decrement_uses(key)):
             uid = request.args.get('id')
             con = db.get_engine(bind='summarization')
-            tbl = SummarizationGeneExpressionUtils.get_table_object(uid)
+            tbl = SummarizationGeneExpressionUtils.get_table_object(uid, "summarization")
             values = []
             try:
                 rows = con.execute(db.select([tbl.c.Gene]).distinct())
@@ -236,7 +210,7 @@ class SummarizationGeneExpressionFindGene(Resource):
         uid = request.args.get('id')
         string = request.args.get('string')
         con = db.get_engine(bind='summarization')
-        tbl = SummarizationGeneExpressionUtils.get_table_object(uid)
+        tbl = SummarizationGeneExpressionUtils.get_table_object(uid, "summarization")
         values = []
         try:
             rows = con.execute(db.select([tbl.c.Gene]).where(tbl.c.Gene.contains(string)).distinct())
@@ -262,5 +236,5 @@ class SummarizationGeneExpressionTableExists(Resource):
 class SummarizationGeneExpressionDropTable(Resource):
     def get(self):
         uid = request.args.get('id')
-        tbl = SummarizationGeneExpressionUtils.get_table_object(uid)
+        tbl = SummarizationGeneExpressionUtils.get_table_object(uid, "summarization")
         tbl.drop()
