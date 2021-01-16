@@ -20,7 +20,7 @@ Apart from Travis CI and testing on the live BAR, we frequently test the API on 
 2. Install [Redis](https://redis.io/download).
 3. Install [Python](https://www.python.org/downloads/) or [Pypy](https://www.pypy.org/download.html). Note: Python 2 is not supported.
 4. Install [Git](https://git-scm.com/downloads)
-5. (Optional) On Debian based systems, you may also need to install ```libmysqlclient-dev```. On FreeBSD, you may need to install ```py38-sqlite3```. We will update this step as we come across more OS dependencies. 
+5. (Optional) On Debian based systems, you may also need to install ```libmysqlclient-dev``` and ```python3-dev```. On FreeBSD, you may need to install ```py38-sqlite3```. We will update this step as we come across more OS dependencies. 
 6. Clone this repository and change directory to ```BAR_API```
 7. Set up a virtual environment
 ```
