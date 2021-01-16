@@ -1,28 +1,56 @@
 from flask_restx import Namespace, Resource
+from flask import redirect  # , send_file
 from markupsafe import escape
 from sqlalchemy.exc import OperationalError
 from api.models.poplar_nssnp import ProteinAlias, SnpsProteinJoin, SnpsTbl
 from api.utils.bar_utils import BARUtils
 from api import cache, db
 import re
+import subprocess
+import requests
 
 snps = Namespace('SNPs', description='Information about SNPs', path='/snps')
 
 
-@snps.route('/protein_name')
-class ProteinName(Resource):
-    def get(self):
-        """ Define later TODO """
-        my_id = ['asdasddsa']
-        return BARUtils.success_exit(my_id)
+@snps.route('/phenix/<fixed_pdb>/<moving_pdb>')
+class Phenix(Resource):
+    @snps.param('fixed_pdb', _in='path', default='Potri.016G107900')
+    @snps.param('moving_pdb', _in='path', default='AT5G01040.1')
+    def get(self, fixed_pdb='', moving_pdb=''):
+        """This end point returns the superimposition of the moving PDB onto moving PDB in PDB format"""
+        if BARUtils.is_arabidopsis_gene_valid(fixed_pdb):
+            fixed_pdb_path = "/var/www/html/eplant_legacy/java/Phyre2-Models/Phyre2_" + fixed_pdb.upper() + ".pdb"
+        elif BARUtils.is_poplar_gene_valid(fixed_pdb):
+            fixed_pdb_path = "/var/www/html/eplant_poplar/pdb/" + BARUtils.formatPoplar(fixed_pdb) + ".pdb"
+        else:
+            return {'success': False, 'error': 'Invalid fixed pdb gene id', 'error_code': 400}, 400
+
+        if BARUtils.is_arabidopsis_gene_valid(moving_pdb):
+            moving_pdb_path = "/var/www/html/eplant_legacy/java/Phyre2-Models/Phyre2_" + moving_pdb.upper() + ".pdb"
+        elif BARUtils.is_poplar_gene_valid(moving_pdb):
+            moving_pdb_path = "/var/www/html/eplant_poplar/pdb/" + BARUtils.formatPoplar(moving_pdb) + ".pdb"
+        else:
+            return {'success': False, 'error': 'Invalid fixed pdb gene id', 'error_code': 400}, 400
+        phenix_file_name = fixed_pdb.upper() + "-" + moving_pdb.upper() + "-phenix.pdb"
+        response = requests.get("http://bar.utoronto.ca/phenix-pdbs/" + phenix_file_name)  # TODO: Asher, create apache public dir to access pdb files
+        if response.status_code != 200:
+            subprocess.run(['phenix.superpose_pdbs',
+                            'file_name=/var/www/html/phenix-pdbs/' + phenix_file_name,  # TODO: ASHER, link apache server directory where pdb files will deposit
+                            fixed_pdb_path,
+                            moving_pdb_path])
+        return redirect("http://bar.utoronto.ca/phenix-pdbs/" + phenix_file_name)  # TODO: same url as above
+        # return send_file('/Users/vin/Desktop/Poplar-project/Phenix/fitted_PDBs/test.pdb')
 
 
 @snps.route('/gene_alias/<string:gene_id>')
 class GeneNameAlias(Resource):
-    @snps.param('gene_id', _in='path', default='Potri.001G000100.1')
+    @snps.param('gene_id', _in='path', default='Potri.019G123900.1')
     @cache.cached()
     def get(self, gene_id=''):
-        """ TODO define endpoint """
+        """ Endpoint returns annotated SNP poplar data in order of (to match A th API format):
+            AA pos (zero-indexed), sample id, 'missense_variant','MODERATE', 'MISSENSE', codon/DNA base change,
+            AA change (DH), pro length, gene ID, 'protein_coding', 'CODING', transcript id, biotype
+            values with single quotes are fixed """
         results_json = []
 
         # Escape input
@@ -34,22 +62,26 @@ class GeneNameAlias(Resource):
                 join(SnpsProteinJoin). \
                 join(SnpsTbl). \
                 filter(ProteinAlias.gene_identifier == gene_id).all()
-            print(rows)
+            # BAR A Th API format is chr, AA pos (zero-indexed), sample id, 'missense_variant',
+            # 'MODERATE', 'MISSENSE', codon/DNA base change, AA change (DH),
+            # pro length, gene ID, 'protein_coding', 'CODING', transcript id, biotype
             for protein, snpsjoin, snpstbl in rows:
                 itm_lst = [
                     snpstbl.chromosome,
-                    snpstbl.chromosomal_loci,
+                    # snpstbl.chromosomal_loci,
+                    snpsjoin.aa_pos - 1,  # zero index-ed
                     snpstbl.sample_id,
                     'missense_variant',
                     'MODERATE',
                     'MISSENSE',
-                    None,
-                    'p.' + snpsjoin.ref_aa + str(snpsjoin.aa_pos) + snpsjoin.alt_aa + '/c.' + str(snpsjoin.transcript_pos) + snpsjoin.ref_DNA + '>' + snpsjoin.alt_DNA,
+                    str(snpsjoin.transcript_pos) + snpsjoin.ref_DNA + '>' + snpsjoin.alt_DNA,
+                    snpsjoin.ref_aa + snpsjoin.alt_aa,
                     None,
                     re.sub(r'.\d$', '', protein.gene_identifier),
+                    'protein_coding',
+                    'CODING',
+                    protein.gene_identifier,
                     None,
-                    None,
-                    protein.gene_identifier
                 ]
                 results_json.append(itm_lst)
                 print(protein.gene_identifier, snpsjoin.alt_aa, snpstbl.sample_id)
@@ -60,7 +92,6 @@ class GeneNameAlias(Resource):
 
         # Return results if there are data
         if len(results_json) > 0:
-            print('yay!')
             return BARUtils.success_exit(results_json)
         else:
             return BARUtils.error_exit('There are no data found for the given gene')

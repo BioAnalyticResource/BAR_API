@@ -32,6 +32,17 @@ class BARUtils:
             return False
 
     @staticmethod
+    def is_poplar_gene_valid(gene):
+        """This function verifies if Poplar v3 gene is valid
+        :param gene:
+        :return: True if valid
+        """
+        if re.search(r"^POTRI\.\d{3}g\d{6}$", gene, re.I):
+            return True
+        else:
+            return False
+
+    @staticmethod
     def is_integer(data):
         """Check if the input is at max ten figure number.
         :param data: int number
@@ -41,3 +52,11 @@ class BARUtils:
             return True
         else:
             return False
+
+    @staticmethod
+    def formatPoplar(poplar_gene):
+        """Format Poplar gene ID to be Potri.016G107900, i.e. capitalized P and G
+        :param poplar_gene: gene id
+        :return: String
+        """
+        return poplar_gene.lower().replace('p', 'P').replace('g', 'G')
