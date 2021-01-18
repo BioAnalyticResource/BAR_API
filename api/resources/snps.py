@@ -18,27 +18,36 @@ class Phenix(Resource):
     @snps.param('moving_pdb', _in='path', default='AT5G01040.1')
     def get(self, fixed_pdb='', moving_pdb=''):
         """This end point returns the superimposition of the moving PDB onto moving PDB in PDB format"""
+
+        arabidopsis_pdb_path = '/var/www/html/eplant_legacy/java/Phyre2-Models/Phyre2_'
+        poplar_pdb_path = '/var/www/html/eplant_poplar/pdb/'
+        phenix_pdb_link = 'http://bar.utoronto.ca/phenix-pdbs/'
+        phenix_pdb_path = '/var/www/html/phenix-pdbs/'
+
         if BARUtils.is_arabidopsis_gene_valid(fixed_pdb):
-            fixed_pdb_path = "/var/www/html/eplant_legacy/java/Phyre2-Models/Phyre2_" + fixed_pdb.upper() + ".pdb"
+            fixed_pdb_path = arabidopsis_pdb_path + fixed_pdb.upper() + '.pdb'
         elif BARUtils.is_poplar_gene_valid(fixed_pdb):
-            fixed_pdb_path = "/var/www/html/eplant_poplar/pdb/" + BARUtils.formatPoplar(fixed_pdb) + ".pdb"
+            fixed_pdb_path = poplar_pdb_path + BARUtils.formatPoplar(fixed_pdb) + '.pdb'
         else:
             return {'success': False, 'error': 'Invalid fixed pdb gene id', 'error_code': 400}, 400
 
         if BARUtils.is_arabidopsis_gene_valid(moving_pdb):
-            moving_pdb_path = "/var/www/html/eplant_legacy/java/Phyre2-Models/Phyre2_" + moving_pdb.upper() + ".pdb"
+            moving_pdb_path = arabidopsis_pdb_path + moving_pdb.upper() + '.pdb'
         elif BARUtils.is_poplar_gene_valid(moving_pdb):
-            moving_pdb_path = "/var/www/html/eplant_poplar/pdb/" + BARUtils.formatPoplar(moving_pdb) + ".pdb"
+            moving_pdb_path = poplar_pdb_path + BARUtils.formatPoplar(moving_pdb) + '.pdb'
         else:
             return {'success': False, 'error': 'Invalid fixed pdb gene id', 'error_code': 400}, 400
+
         phenix_file_name = fixed_pdb.upper() + "-" + moving_pdb.upper() + "-phenix.pdb"
-        response = requests.get("http://bar.utoronto.ca/phenix-pdbs/" + phenix_file_name)  # TODO: Asher, create apache public dir to access pdb files
+        response = requests.get(phenix_pdb_link + phenix_file_name)
+
         if response.status_code != 200:
             subprocess.run(['phenix.superpose_pdbs',
-                            'file_name=/var/www/html/phenix-pdbs/' + phenix_file_name,  # TODO: ASHER, link apache server directory where pdb files will deposit
+                            'file_name=' + phenix_pdb_path + phenix_file_name,
                             fixed_pdb_path,
                             moving_pdb_path])
-        return redirect("http://bar.utoronto.ca/phenix-pdbs/" + phenix_file_name)  # TODO: same url as above
+
+        return redirect(phenix_pdb_link + phenix_file_name)  # TODO: same url as above
         # return send_file('/Users/vin/Desktop/Poplar-project/Phenix/fitted_PDBs/test.pdb')
 
 
