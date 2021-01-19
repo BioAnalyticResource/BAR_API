@@ -2,7 +2,7 @@ from api import db
 
 
 class ProteinAlias(db.Model):
-    __bind_key__ = 'poplar_snps_db'
+    __bind_key__ = 'poplar_nssnp'
     __tablename__ = 'protein_reference'
     protein_reference_id = db.Column(db.Integer(), primary_key=True)
     gene_identifier = db.Column(db.String(45), primary_key=False)
@@ -10,7 +10,7 @@ class ProteinAlias(db.Model):
 
 
 class SnpsProteinJoin(db.Model):
-    __bind_key__ = 'poplar_snps_db'
+    __bind_key__ = 'poplar_nssnp'
     __tablename__ = 'snps_to_protein'
     snps_reference_id = db.Column(db.Integer(),
                                   db.ForeignKey('snps_reference.snps_reference_id'), primary_key=True)
@@ -28,7 +28,7 @@ class SnpsProteinJoin(db.Model):
 
 
 class SnpsTbl(db.Model):
-    __bind_key__ = 'poplar_snps_db'
+    __bind_key__ = 'poplar_nssnp'
     __tablename__ = 'snps_reference'
     snps_reference_id = db.Column(db.Integer(), primary_key=True)
     chromosome = db.Column(db.Integer(), primary_key=False)
