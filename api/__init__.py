@@ -41,7 +41,7 @@ def create_app():
     from api.resources.gene_information import gene_information
     from api.resources.rnaseq_gene_expression import rnaseq_gene_expression
     from api.resources.summarization_gene_expression import summarization_gene_expression
-    from api.resources.api_manager import api_manager 
+    from api.resources.api_manager import api_manager
     from api.resources.proxy import bar_proxy
     from api.resources.thalemine import thalemine
     from api.resources.snps import snps

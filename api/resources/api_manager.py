@@ -1,7 +1,6 @@
 import pandas
 from api import db
-from api.models.requests import Requests
-from api.models.users import Users
+from api.models.mykeys import Requests, Users
 from flask import request, jsonify
 from flask_restx import Namespace, Resource
 from datetime import datetime
