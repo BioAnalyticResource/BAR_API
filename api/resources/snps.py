@@ -27,14 +27,14 @@ class Phenix(Resource):
         if BARUtils.is_arabidopsis_gene_valid(fixed_pdb):
             fixed_pdb_path = arabidopsis_pdb_path + fixed_pdb.upper() + '.pdb'
         elif BARUtils.is_poplar_gene_valid(fixed_pdb):
-            fixed_pdb_path = poplar_pdb_path + BARUtils.formatPoplar(fixed_pdb) + '.pdb'
+            fixed_pdb_path = poplar_pdb_path + BARUtils.format_poplar(fixed_pdb) + '.pdb'
         else:
             return {'success': False, 'error': 'Invalid fixed pdb gene id', 'error_code': 400}, 400
 
         if BARUtils.is_arabidopsis_gene_valid(moving_pdb):
             moving_pdb_path = arabidopsis_pdb_path + moving_pdb.upper() + '.pdb'
         elif BARUtils.is_poplar_gene_valid(moving_pdb):
-            moving_pdb_path = poplar_pdb_path + BARUtils.formatPoplar(moving_pdb) + '.pdb'
+            moving_pdb_path = poplar_pdb_path + BARUtils.format_poplar(moving_pdb) + '.pdb'
         else:
             return {'success': False, 'error': 'Invalid fixed pdb gene id', 'error_code': 400}, 400
 
