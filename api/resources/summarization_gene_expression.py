@@ -175,7 +175,7 @@ class SummarizationGeneExpressionSamples(Resource):
     def get(self):
         uid = request.args.get('id')
         con = db.get_engine(bind='summarization')
-        tbl = SummarizationGeneExpressionUtils.get_table_object(uid, "summarization")
+        tbl = SummarizationGeneExpressionUtils.get_table_object(uid, 'summarization')
         values = []
         try:
             rows = con.execute(db.select([tbl.c.Sample]).distinct())
@@ -193,7 +193,7 @@ class SummarizationGeneExpressionGenes(Resource):
         if SummarizationGeneExpressionUtils.decrement_uses(key):
             uid = request.args.get('id')
             con = db.get_engine(bind='summarization')
-            tbl = SummarizationGeneExpressionUtils.get_table_object(uid, "summarization")
+            tbl = SummarizationGeneExpressionUtils.get_table_object(uid, 'summarization')
             values = []
             try:
                 rows = con.execute(db.select([tbl.c.Gene]).distinct())
@@ -210,14 +210,14 @@ class SummarizationGeneExpressionFindGene(Resource):
         uid = request.args.get('id')
         string = request.args.get('string')
         con = db.get_engine(bind='summarization')
-        tbl = SummarizationGeneExpressionUtils.get_table_object(uid, "summarization")
+        tbl = SummarizationGeneExpressionUtils.get_table_object(uid, 'summarization')
         values = []
         try:
             rows = con.execute(db.select([tbl.c.Gene]).where(tbl.c.Gene.contains(string)).distinct())
         except SQLAlchemyError as e:
             error = str(e.__dict__['orig'])
             return error
-        [values.append((row.Gene)) for row in rows]
+        [values.append(row.Gene) for row in rows]
         return jsonify(values)
 
 
@@ -226,13 +226,13 @@ class SummarizationGeneExpressionTableExists(Resource):
     def get(self):
         uid = request.args.get('id')
         con = db.get_engine(bind='summarization')
-        if(con.dialect.has_table(con, uid)):
+        if con.dialect.has_table(con, uid):
             return True
         else:
             return False
 
 
-@summarization_gene_expression.route('/drop_table', methods=["GET"])
+@summarization_gene_expression.route('/drop_table', methods=['GET'])
 class SummarizationGeneExpressionDropTable(Resource):
     def get(self):
         uid = request.args.get('id')
