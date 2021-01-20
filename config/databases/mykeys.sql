@@ -1,13 +1,13 @@
--- MySQL dump 10.17  Distrib 10.3.23-MariaDB, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.23, for Linux (x86_64)
 --
--- Host: localhost    Database: keys
+-- Host: localhost    Database: mykeys
 -- ------------------------------------------------------
--- Server version	10.3.23-MariaDB-0+deb10u1
+-- Server version	8.0.23
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+/*!50503 SET NAMES utf8mb4 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -16,20 +16,28 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Current Database: `mykeys`
+--
+
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `mykeys` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+
+USE `mykeys`;
+
+--
 -- Table structure for table `requests`
 --
 
 DROP TABLE IF EXISTS `requests`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `requests` (
-  `first_name` text DEFAULT NULL,
-  `last_name` text DEFAULT NULL,
-  `email` text DEFAULT NULL,
-  `telephone` text DEFAULT NULL,
-  `contact_type` text DEFAULT NULL,
-  `notes` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `first_name` text,
+  `last_name` text,
+  `email` text,
+  `telephone` text,
+  `contact_type` text,
+  `notes` text
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -48,7 +56,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
   `first_name` varchar(32) DEFAULT NULL,
   `last_name` varchar(32) DEFAULT NULL,
@@ -58,7 +66,7 @@ CREATE TABLE `users` (
   `api_key` varchar(120) NOT NULL,
   `status` varchar(32) DEFAULT NULL,
   `date_added` date NOT NULL,
-  `uses_left` int(11) DEFAULT NULL,
+  `uses_left` int DEFAULT NULL,
   PRIMARY KEY (`api_key`),
   UNIQUE KEY `ix_users_email` (`email`),
   UNIQUE KEY `ix_users_telephone` (`telephone`),
@@ -67,7 +75,7 @@ CREATE TABLE `users` (
   KEY `ix_users_last_name` (`last_name`),
   KEY `ix_users_uses_left` (`uses_left`),
   KEY `ix_users_first_name` (`first_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -76,7 +84,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES ('Test','User','test@gmail.com','2345678901','Phone','bb5a52387069485486b2f4861c2826dd','user','2020-12-07',25);
+INSERT INTO `users` VALUES ('Test','User','test@gmail.com','2345678901','Phone','bb5a52387069485486b2f4861c2826dd','user','2020-12-07',23);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -89,4 +97,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-01-12 19:51:10
+-- Dump completed on 2021-01-19 16:33:08
