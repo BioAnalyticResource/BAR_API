@@ -8,7 +8,9 @@ class TestIntegrations(TestCase):
         self.app_client = app.test_client()
 
     def test_get_gene_value(self):
-        response = self.app_client.get('/summarization_gene_expression/value?id=test&gene=AT1G01010', headers={"x-api-key": "bb5a52387069485486b2f4861c2826dd"})
+
+        # If this tests fails, reload mykeys database.
+        response = self.app_client.get('/summarization_gene_expression/value?id=test&gene=AT1G01010', headers={'x-api-key': 'bb5a52387069485486b2f4861c2826dd'})
         data = json.loads(response.get_data(as_text=True))
         expected = {
             "sample1": 32,
@@ -18,7 +20,7 @@ class TestIntegrations(TestCase):
         self.assertEqual(data, expected)
 
     def test_get_samples(self):
-        response = self.app_client.get('/summarization_gene_expression/samples?id=test', headers={"x-api-key": "bb5a52387069485486b2f4861c2826dd"})
+        response = self.app_client.get('/summarization_gene_expression/samples?id=test', headers={'x-api-key': 'bb5a52387069485486b2f4861c2826dd'})
         data = json.loads(response.get_data(as_text=True))
         expected = [
             "sample1",
@@ -28,7 +30,9 @@ class TestIntegrations(TestCase):
         self.assertEqual(data, expected)
 
     def test_get_genes(self):
-        response = self.app_client.get('/summarization_gene_expression/genes?id=test', headers={"x-api-key": "bb5a52387069485486b2f4861c2826dd"})
+
+        # if this test fails, reload mykeys database.
+        response = self.app_client.get('/summarization_gene_expression/genes?id=test', headers={'x-api-key': 'bb5a52387069485486b2f4861c2826dd'})
         data = json.loads(response.get_data(as_text=True))
         expected = [
             "AT1G01010",
@@ -39,7 +43,7 @@ class TestIntegrations(TestCase):
         self.assertEqual(data, expected)
 
     def test_find_gene(self):
-        response = self.app_client.get('/summarization_gene_expression/find_gene?id=test&string=AT1G0101', headers={"x-api-key": "bb5a52387069485486b2f4861c2826dd"})
+        response = self.app_client.get('/summarization_gene_expression/find_gene?id=test&string=AT1G0101', headers={'x-api-key': 'bb5a52387069485486b2f4861c2826dd'})
         data = json.loads(response.get_data(as_text=True))
         expected = [
             "AT1G01010"
@@ -48,7 +52,7 @@ class TestIntegrations(TestCase):
         self.assertEqual(data, expected)
 
     def test_table_exists(self):
-        response = self.app_client.get('/summarization_gene_expression/table_exists?id=test', headers={"x-api-key": "bb5a52387069485486b2f4861c2826dd"})
+        response = self.app_client.get('/summarization_gene_expression/table_exists?id=test', headers={'x-api-key': 'bb5a52387069485486b2f4861c2826dd'})
         data = json.loads(response.get_data(as_text=True))
         expected = True
         self.assertEqual(response.status_code, 200)

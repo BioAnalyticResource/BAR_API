@@ -16,10 +16,10 @@ api_manager = Namespace('API Manager',
                         path='/api_manager')
 
 
-@api_manager.route('/validate_admin_password', methods=["POST"])
+@api_manager.route('/validate_admin_password', methods=['POST'], doc=False)
 class ApiManagerValidate(Resource):
     def post(self):
-        if request.method == "POST":
+        if request.method == 'POST':
             response_json = request.get_json()
 
             # Validate API key
@@ -34,7 +34,7 @@ class ApiManagerValidate(Resource):
                     encrypted_key = line
 
             deciphered_text = cipher_suite.decrypt(encrypted_key)
-            plain_text_encrypted_password = bytes(deciphered_text).decode("utf-8")
+            plain_text_encrypted_password = bytes(deciphered_text).decode('utf-8')
 
             if user_key == plain_text_encrypted_password:
                 return True
@@ -42,13 +42,13 @@ class ApiManagerValidate(Resource):
                 return False
 
 
-@api_manager.route('/validate_api_key', methods=["POST"])
+@api_manager.route('/validate_api_key', methods=['POST'], doc=False)
 class ApiManagerValidateKey(Resource):
     def post(self):
-        if request.method == "POST":
+        if request.method == 'POST':
             tbl = Users()
             json = request.get_json()
-            key = json["key"]
+            key = json['key']
             try:
                 row = tbl.query.filter_by(api_key=key).first()
             except SQLAlchemyError as e:
@@ -64,13 +64,13 @@ class ApiManagerValidateKey(Resource):
                     return False
 
 
-@api_manager.route('/request', methods=["POST"])
+@api_manager.route('/request', methods=['POST'], doc=False)
 class ApiManagerRequest(Resource):
     def post(self):
-        if request.method == "POST":
+        if request.method == 'POST':
             response_json = request.get_json()
             df = pandas.DataFrame.from_records([response_json])
-            con = db.get_engine(bind='keys')
+            con = db.get_engine(bind='mykeys')
 
             try:
                 df.to_sql('requests', con, if_exists='append', index=False)
@@ -79,10 +79,10 @@ class ApiManagerRequest(Resource):
                 return error
 
 
-@api_manager.route('/get_pending_requests', methods=["GET"])
+@api_manager.route('/get_pending_requests', methods=['GET'], doc=False)
 class ApiManagerGetPending(Resource):
     def get(self):
-        if request.method == "GET":
+        if request.method == 'GET':
             table = Requests()
             values = []
 
@@ -92,19 +92,19 @@ class ApiManagerGetPending(Resource):
                 error = str(e.__dict__['orig'])
                 return error
 
-            [values.append({"first_name": row.first_name,
-                            "last_name": row.last_name, "email": row.email,
-                            "telephone": row.telephone,
-                            "contact_type": row.contact_type,
-                            "notes": row.notes}) for row in rows]
+            [values.append({'first_name': row.first_name,
+                            'last_name': row.last_name, 'email': row.email,
+                            'telephone': row.telephone,
+                            'contact_type': row.contact_type,
+                            'notes': row.notes}) for row in rows]
 
             return jsonify(values)
 
 
-@api_manager.route('/reject_request', methods=["POST"])
+@api_manager.route('/reject_request', methods=['POST'], doc=False)
 class ApiManagerRejectRequest(Resource):
     def post(self):
-        if request.method == "POST":
+        if request.method == 'POST':
             response_json = request.get_json()
             table = Requests()
 
@@ -119,10 +119,10 @@ class ApiManagerRejectRequest(Resource):
             return True
 
 
-@api_manager.route('/approve_request', methods=["GET"])
+@api_manager.route('/approve_request', methods=['GET'], doc=False)
 class ApiManagerApproveRequest(Resource):
     def get(self):
-        if request.method == "GET":
+        if request.method == 'GET':
             email = request.args.get('email')
             table = Requests()
             values = []
@@ -134,14 +134,14 @@ class ApiManagerApproveRequest(Resource):
                 return error
 
             key = uuid.uuid4().hex
-            [values.append({"first_name": row.first_name,
-                            "last_name": row.last_name, "email": row.email,
-                            "telephone": row.telephone,
-                            "contact_type": row.contact_type,
-                            "date_added": datetime.now(),
-                            "status": "user",
-                            "api_key": key,
-                            "uses_left": 25}) for row in rows]
+            [values.append({'first_name': row.first_name,
+                            'last_name': row.last_name, 'email': row.email,
+                            'telephone': row.telephone,
+                            'contact_type': row.contact_type,
+                            'date_added': datetime.now(),
+                            'status': 'user',
+                            'api_key': key,
+                            'uses_left': 25}) for row in rows]
 
             df = pandas.DataFrame.from_records([values[0]])
 
