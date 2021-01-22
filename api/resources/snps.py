@@ -103,8 +103,8 @@ class GeneNameAlias(Resource):
                 ]
                 results_json.append(itm_lst)
         except OperationalError as e:
-            return BARUtils.error_exit('An internal error has occurred'), 500
-            return BARUtils.error_exit(e), 500
+            # return BARUtils.error_exit('An internal error has occurred'), 500
+            return BARUtils.error_exit(str(e)), 500
 
         # Return results if there are data
         if len(results_json) > 0:
