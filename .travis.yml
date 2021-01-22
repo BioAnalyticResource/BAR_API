@@ -21,7 +21,7 @@ script:
   # Test with no cache
   - pytest -s
   # Test with cache: Results should be same
-  - pytest -s
+  - pytest
   - redis-cli flushall
   - coverage run
   - coverage report
