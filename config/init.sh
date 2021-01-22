@@ -24,7 +24,7 @@ else
     mysql -u $DB_USER  < ./config/databases/poplar_nssnp.sql
 fi
 
-echo "Data is now loaded. Preparing API config"
+echo "Data are now loaded. Preparing API config"
 echo "Please manually edit config file!"
 
 echo "Configuration file ready."
