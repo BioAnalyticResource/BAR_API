@@ -19,9 +19,9 @@ install:
 script: 
   - flake8
   # Test with no cache
-  - pytest
+  - pytest -s
   # Test with cache: Results should be same
-  - pytest
+  - pytest -s
   - redis-cli flushall
   - coverage run
   - coverage report
