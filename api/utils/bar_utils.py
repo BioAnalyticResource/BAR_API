@@ -37,7 +37,7 @@ class BARUtils:
         :param gene:
         :return: True if valid
         """
-        if re.search(r"^POTRI\.\d{3}g\d{6}$", gene, re.I):
+        if re.search(r"^POTRI\.\d{3}g\d{6}.?\d?$", gene, re.I):
             return True
         else:
             return False
@@ -54,7 +54,7 @@ class BARUtils:
             return False
 
     @staticmethod
-    def formatPoplar(poplar_gene):
+    def format_poplar(poplar_gene):
         """Format Poplar gene ID to be Potri.016G107900, i.e. capitalized P and G
         :param poplar_gene: gene id
         :return: String
