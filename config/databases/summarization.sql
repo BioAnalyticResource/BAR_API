@@ -24,30 +24,30 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/ `summarization` /*!40100 DEFAULT CHARAC
 USE `summarization`;
 
 --
--- Table structure for table `30663f306b984df0a907a15d65fdcc91`
+-- Table structure for table `bb5a52387069485486b2f4861c2826dd`
 --
 
 
-DROP TABLE IF EXISTS `test`;
+DROP TABLE IF EXISTS `bb5a52387069485486b2f4861c2826dd`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `test` (
+CREATE TABLE `bb5a52387069485486b2f4861c2826dd` (
   `index` bigint(20) DEFAULT NULL,
   `Gene` text DEFAULT NULL,
   `Sample` text DEFAULT NULL,
   `Value` bigint(20) DEFAULT NULL,
-  KEY `ix_test_index` (`index`)
+  KEY `ix_bb5a52387069485486b2f4861c2826dd_index` (`index`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `test`
+-- Dumping data for table `bb5a52387069485486b2f4861c2826dd`
 --
 
-LOCK TABLES `test` WRITE;
-/*!40000 ALTER TABLE `test` DISABLE KEYS */;
-INSERT INTO `test` VALUES (0,'AT1G01010','sample1',32),(1,'AT1G01020','sample1',546),(2,'AT1G01030','sample1',43),(3,'AT1G01010','sample2',54),(4,'AT1G01020','sample2',65),(5,'AT1G01030','sample2',123);
-/*!40000 ALTER TABLE `test` ENABLE KEYS */;
+LOCK TABLES `bb5a52387069485486b2f4861c2826dd` WRITE;
+/*!40000 ALTER TABLE `bb5a52387069485486b2f4861c2826dd` DISABLE KEYS */;
+INSERT INTO `bb5a52387069485486b2f4861c2826dd` VALUES (0,'AT1G01010','sample1',32),(1,'AT1G01020','sample1',546),(2,'AT1G01030','sample1',43),(3,'AT1G01010','sample2',54),(4,'AT1G01020','sample2',65),(5,'AT1G01030','sample2',123);
+/*!40000 ALTER TABLE `bb5a52387069485486b2f4861c2826dd` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -97,7 +97,6 @@ CREATE TABLE `users` (
   PRIMARY KEY (`api_key`),
   UNIQUE KEY `ix_users_email` (`email`),
   UNIQUE KEY `ix_users_telephone` (`telephone`),
-  UNIQUE KEY `ix_users_contact_type` (`contact_type`),
   KEY `ix_users_status` (`status`),
   KEY `ix_users_last_name` (`last_name`),
   KEY `ix_users_uses_left` (`uses_left`),

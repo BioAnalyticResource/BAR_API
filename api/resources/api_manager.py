@@ -2,12 +2,14 @@ import pandas
 from api import db
 from api.models.requests import Requests
 from api.models.users import Users
-from flask import request, jsonify
+from api.utils.bar_utils import BARUtils
+from flask import request
 from flask_restx import Namespace, Resource
 from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
 from cryptography.fernet import Fernet
 import uuid
+import requests
 
 
 ADMIN_PASSWORD_FILE = ''
@@ -35,15 +37,15 @@ class ApiManagerValidate(Resource):
             uncipher_text = cipher_suite.decrypt(encrypted_key)
             plain_text_encryptedpassword = bytes(uncipher_text).decode("utf-8")
             if user_key == plain_text_encryptedpassword:
-                return True
+                return BARUtils.success_exit(True)
             else:
-                return False
+                return BARUtils.success_exit(False)
 
 
 @api_manager.route('/validate_api_key', methods=["POST"])
 class ApiManagerValidateKey(Resource):
     def post(self):
-        """Verify if an API key provided by the user exists in the database 
+        """Verify if an API key provided by the user exists in the database
         """
         if(request.method == "POST"):
             tbl = Users()
@@ -51,16 +53,15 @@ class ApiManagerValidateKey(Resource):
             key = json["key"]
             try:
                 row = tbl.query.filter_by(api_key=key).first()
-            except SQLAlchemyError as e:
-                error = str(e.__dict__['orig'])
-                return error
+            except SQLAlchemyError:
+                return BARUtils.error_exit("Internal server error"), 500
             if(row is None):
-                return {'success': False, 'error': 'Key not found', 'error_code': 404}
+                return BARUtils.success_exit(False)
             else:
                 if row.uses_left > 0:
-                    return True
+                    return BARUtils.success_exit(True)
                 else:
-                    return {'success': False, 'error': 'Key expired', 'error_code': 403}
+                    return BARUtils.success_exit(False)
 
 
 @api_manager.route('/request', methods=["POST"])
@@ -69,7 +70,6 @@ class ApiManagerRequest(Resource):
         if(request.method == "POST"):
             response_json = request.get_json()
             df = pandas.DataFrame.from_records([response_json])
-            print(df.email)
             con = db.get_engine(bind='summarization')
             try:
                 reqs = Requests()
@@ -79,10 +79,9 @@ class ApiManagerRequest(Resource):
                 if(row_req is None and row_users is None):
                     df.to_sql('requests', con, if_exists='append', index=False)
                 else:
-                    return {'success': False, 'error': 'E-mail already in use.', 'error_code': 409}
-            except SQLAlchemyError as e:
-                error = str(e.__dict__['orig'])
-                return error
+                    return BARUtils.error_exit("E-mail already in use"), 409
+            except SQLAlchemyError:
+                return BARUtils.error_exit("Internal server error"), 500
 
 
 @api_manager.route('/get_pending_requests', methods=["GET"])
@@ -95,15 +94,14 @@ class ApiManagerGetPending(Resource):
             values = []
             try:
                 rows = table.query.filter_by().all()
-            except SQLAlchemyError as e:
-                error = str(e.__dict__['orig'])
-                return error
+            except SQLAlchemyError:
+                return BARUtils.error_exit("Internal server error"), 500
             [values.append({"first_name": row.first_name,
                             "last_name": row.last_name, "email": row.email,
                             "telephone": row.telephone,
                             "contact_type": row.contact_type,
                             "notes": row.notes}) for row in rows]
-            return jsonify(values)
+            return BARUtils.success_exit(values)
 
 
 @api_manager.route('/reject_request', methods=["POST"])
@@ -116,13 +114,12 @@ class ApiManagerRejectRequest(Resource):
             table = Requests()
             try:
                 el = table.query.filter_by(email=response_json['email']).one()
-            except SQLAlchemyError as e:
-                error = str(e.__dict__['orig'])
-                return error
+            except SQLAlchemyError:
+                return BARUtils.error_exit("Internal server error"), 500
             db.session.delete(el)
             db.session.commit()
             # table.query.filter_by(email=response_json['email']).delete()
-            return True
+            return BARUtils.success_exit(True)
 
 
 @api_manager.route('/approve_request/<string:email>', methods=["GET"])
@@ -135,9 +132,8 @@ class ApiManagerApproveRequest(Resource):
             values = []
             try:
                 rows = table.query.filter_by(email=email).all()
-            except SQLAlchemyError as e:
-                error = str(e.__dict__['orig'])
-                return error
+            except SQLAlchemyError:
+                return BARUtils.error_exit("Internal server error"), 500
             key = uuid.uuid4().hex
             [values.append({"first_name": row.first_name,
                             "last_name": row.last_name, "email": row.email,
@@ -153,7 +149,18 @@ class ApiManagerApproveRequest(Resource):
                 df.to_sql('users', con, if_exists='append', index=False)
                 el = table.query.filter_by(email=email).one()
                 db.session.delete(el)
-            except SQLAlchemyError as e:
-                error = str(e.__dict__['orig'])
-                return error
-            return key
+            except SQLAlchemyError:
+                return BARUtils.error_exit("Internal server error"), 500
+            return BARUtils.success_exit(key)
+
+
+@api_manager.route('/validate_captcha', methods=["POST"])
+class ApiManagerCaptchaValidate(Resource):
+    def post():
+        """Validates a reCaptcha value using our secret token
+        """
+        if (request.method == "POST"):
+            json = request.get_json()
+            value = json['response']
+            ret = requests.post("https://www.google.com/recaptcha/api/siteverify", data={'secret': '6LeQou4ZAAAAAEpRcYB0AYksN-R8gXj9iXucTcNx', 'response': value})
+            return BARUtils.success_exit(ret.text)

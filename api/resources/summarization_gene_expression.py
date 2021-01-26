@@ -1,18 +1,19 @@
 import requests
 import os
 import re
+import datetime
 import pandas
 from api import db
-from flask import request, jsonify, abort
+from flask import request, abort, send_file
 from werkzeug.utils import secure_filename
 from api.utils.bar_utils import BARUtils
 from flask_restx import Namespace, Resource
 from sqlalchemy.exc import SQLAlchemyError
 
 
-UPLOAD_FOLDER = '/home/bpereira/dev/gene-summarization-bar/summarization'
-SUMMARIZATION_FILES_PATH = '/home/bpereira/data/'
-CROMWELL_URL = 'http://127.0.0.1:8000'
+DATA_FOLDER = '/home/bpereira/dev/summarization-data'
+SUMMARIZATION_FILES_PATH = '/home/bpereira/dev/gene-summarization-bar/summarization'
+CROMWELL_URL = 'http://localhost:3020'
 
 
 summarization_gene_expression = Namespace('Summarization Gene Expression',
@@ -30,7 +31,7 @@ class SummarizationGeneExpressionUtils:
     @staticmethod
     def is_valid(string):
         """Checks if a given string only contains alphanumeric characters
-        :param string: The string to be checked 
+        :param string: The string to be checked
         """
         if re.search("([^_0-9A-Za-z])+", string):
             return False
@@ -100,10 +101,11 @@ class SummarizationGeneExpressionSummarize(Resource):
                         """
                 # Create DB
                 # Send request to Cromwell
-                files = {'workflowSource': ('rpkm.wdl', open(SUMMARIZATION_FILES_PATH + '/rpkm.wdl', 'rb')), 'workflowInputs': ('rpkm_inputs.json', inputs)}
+                path = os.path.join(SUMMARIZATION_FILES_PATH, "rpkm.wdl")
+                files = {'workflowSource': ('rpkm.wdl', open(path, 'rb')), 'workflowInputs': ('rpkm_inputs.json', inputs)}
                 requests.post(CROMWELL_URL + '/api/workflows/v1', files=files)
                 # Return ID for future accessing
-            return key
+            return BARUtils.success_exit(key), 200
 
 
 @summarization_gene_expression.route('/csv_upload', methods=["POST"])
@@ -113,34 +115,35 @@ class SummarizationGeneExpressionCsvUpload(Resource):
         """
         if(request.method == "POST"):
             if('file' not in request.files):
-                print("Error")
+                return BARUtils.error_exit("No file attached"), 400
             file = request.files['file']
             if file:
                 filename = secure_filename(file.filename)
-                file.save(os.path.join(UPLOAD_FOLDER, filename))
                 key = request.headers.get("X-Api-Key")
+                file.save(os.path.join(DATA_FOLDER + "/" + key + "/", filename))
                 if(SummarizationGeneExpressionUtils.decrement_uses(key)):
                     inputs = """
                             {
                             "csvUpload.insertDataScript": "./insertData.py",
                             "csvUpload.id": """ + key + """,
-                            "csvUpload.csv": """ + os.path.join(UPLOAD_FOLDER, filename) + """,
+                            "csvUpload.csv": """ + os.path.join(DATA_FOLDER, key, filename) + """,
                             }
                             """
+                    path = os.path.join(SUMMARIZATION_FILES_PATH, "csvUpload.wdl")
                     files = {'workflowSource': ('csvUpload.wdl',
-                                                open(SUMMARIZATION_FILES_PATH + '/csvUpload.wdl', 'rb')),
+                                                open(path, 'rb')),
                              'workflowInputs': ('rpkm_inputs.json', inputs)}
                     requests.post(CROMWELL_URL + '/api/workflows/v1', files=files)
-                return key
+                return BARUtils.success_exit(key)
 
 
 @summarization_gene_expression.route('/insert', methods=["POST"])
 class SummarizationGeneExpressionInsert(Resource):
     def post(self):
-        """This function adds a CSV's data to the database. This is only called by the Cromwell server after receiving the user's file.  
+        """This function adds a CSV's data to the database. This is only called by the Cromwell server after receiving the user's file.
         """
         if request.remote_addr != '127.0.0.1':
-            abort(403)  # Forbidden
+            return BARUtils.error_exit("Forbidden"), 403
         if(request.method == "POST"):
             key = request.headers.get("X-Api-Key")
             if(SummarizationGeneExpressionUtils.decrement_uses(key)):
@@ -164,7 +167,7 @@ class SummarizationGeneExpressionValue(Resource):
         """Returns the value for a given gene and sample. If no sample is given returns all values for that gene
         """
         if not BARUtils.is_arabidopsis_gene_valid(gene):
-            return {'success': False, 'error': 'Invalid gene id', 'error_code': 400}
+            return BARUtils.success_exit("Invalid gene ID"), 400
         else:
             key = request.headers.get("X-Api-Key")
             if(SummarizationGeneExpressionUtils.decrement_uses(key)):
@@ -176,7 +179,7 @@ class SummarizationGeneExpressionValue(Resource):
                         rows = con.execute(tbl.select(tbl.c.Value).where(tbl.c.Gene == gene))
                     except SQLAlchemyError as e:
                         error = str(e.__dict__['orig'])
-                        return error
+                        return BARUtils.error_exit("Internal server error"), 500
                     for row in rows:
                         values.update({row.Sample: row.Value})
                 else:
@@ -185,9 +188,9 @@ class SummarizationGeneExpressionValue(Resource):
                         rows = con.execute(tbl.select(tbl.c.Value).where(tbl.c.Sample == sample).where(tbl.c.Gene == gene))
                     except SQLAlchemyError as e:
                         error = str(e.__dict__['orig'])
-                        return error
+                        return BARUtils.error_exit("Internal server error"), 500
                     [values.append((row.Value)) for row in rows]
-                return jsonify(values)
+                return BARUtils.success_exit(values)
 
 
 @summarization_gene_expression.route('/samples/<string:table_id>')
@@ -201,11 +204,10 @@ class SummarizationGeneExpressionSamples(Resource):
         values = []
         try:
             rows = con.execute(db.select([tbl.c.Sample]).distinct())
-        except SQLAlchemyError as e:
-            error = str(e.__dict__['orig'])
-            return error
+        except SQLAlchemyError:
+            return BARUtils.error_exit("Internal server error"), 500
         [values.append((row.Sample)) for row in rows]
-        return jsonify(values)
+        return BARUtils.success_exit(values)
 
 
 @summarization_gene_expression.route('/genes/<string:table_id>')
@@ -223,9 +225,9 @@ class SummarizationGeneExpressionGenes(Resource):
                 rows = con.execute(db.select([tbl.c.Gene]).distinct())
             except SQLAlchemyError as e:
                 error = str(e.__dict__['orig'])
-                return error
+                return BARUtils.error_exit("Internal server error"), 500
             [values.append((row.Gene)) for row in rows]
-            return jsonify(values)
+            return BARUtils.success_exit(values)
 
 
 @summarization_gene_expression.route('/find_gene/<string:table_id>/<string:user_string>')
@@ -240,11 +242,10 @@ class SummarizationGeneExpressionFindGene(Resource):
         values = []
         try:
             rows = con.execute(db.select([tbl.c.Gene]).where(tbl.c.Gene.contains(user_string)).distinct())
-        except SQLAlchemyError as e:
-            error = str(e.__dict__['orig'])
-            return error
+        except SQLAlchemyError:
+            return BARUtils.error_exit("Internal server error"), 500
         [values.append((row.Gene)) for row in rows]
-        return jsonify(values)
+        return BARUtils.success_exit(values)
 
 
 @summarization_gene_expression.route('/table_exists/<string:table_id>')
@@ -255,9 +256,9 @@ class SummarizationGeneExpressionTableExists(Resource):
         """
         con = db.get_engine(bind='summarization')
         if(con.dialect.has_table(con, table_id)):
-            return True
+            return BARUtils.success_exit(True)
         else:
-            return False
+            return BARUtils.success_exit(False)
 
 
 @summarization_gene_expression.route('/drop_table/<string:table_id>')
@@ -267,6 +268,57 @@ class SummarizationGeneExpressionDropTable(Resource):
         """Drops the table with the given ID
         """
         if request.remote_addr != '127.0.0.1':
-            abort(403)
-        tbl = SummarizationGeneExpressionUtils.get_table_object(test_id)
+            return BARUtils.error_exit("Forbidden"), 403
+        tbl = SummarizationGeneExpressionUtils.get_table_object(table_id)
         tbl.drop()
+
+
+@summarization_gene_expression.route('/save', methods=["POST"])
+class SummarizationGeneExpressionSave(Resource):
+    def save(self):
+        if (request.method == "POST"):
+            api_key = request.headers.get('x-api-key')
+            if(api_key is None):
+                return BARUtils.error_exit("Invalid API key"), 403
+            now = datetime.now()
+            dt_string = now.strftime("%d-%m-%Y_%H-%M-%S")
+            if 'file' in request.files:
+                file = request.files['file']
+                extension = ""
+                if(file.content_type == "text/xml"):
+                    extension = ".xml"
+                elif(file.content_type == "image/svg+xml"):
+                    extension = ".svg"
+                else:
+                    return BARUtils.error_exit("Invalid file type"), 400
+                filename = os.path.join(DATA_FOLDER, api_key, dt_string + extension)
+                file.save(filename)
+                return BARUtils.success_exit(True)
+            else:
+                return BARUtils.error_exit("No file attached"), 400
+
+
+@summarization_gene_expression.route('/get_file_list', methods=["POST"])
+class SummarizationGeneExpressionGetFileList(Resource):
+    def get_file_list(self):
+        if (request.method == "POST"):
+            api_key = request.headers.get('x-api-key')
+            files = []
+            for file in os.walk(DATA_FOLDER + api_key):
+                files.append(file[2])
+            return BARUtils.success_exit(files)
+
+
+@summarization_gene_expression.route('/get_file/<string:folder_id>')
+class SummarizationGeneExpressionGetFile(Resource):
+    @summarization_gene_expression.param('folder_id', _in='path', default='test')
+    def get_file(self, folder_id):
+        """Returns a file stored in the user's folder
+        """
+        if (request.method == "GET"):
+            api_key = request.headers.get('x-api-key')
+            filename = os.path.join(DATA_FOLDER, api_key, folder_id)
+            if(os.path.isfile(filename)):
+                return send_file(filename)
+            else:
+                return BARUtils.error_exit("File not found"), 404
