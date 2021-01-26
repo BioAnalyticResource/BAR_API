@@ -29,7 +29,7 @@ class TestIntegrations(TestCase):
             "data": [
                 "sample1",
                 "sample2"
-                ]
+            ]
         }
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data, expected)

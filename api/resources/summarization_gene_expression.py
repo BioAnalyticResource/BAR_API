@@ -4,7 +4,7 @@ import re
 import datetime
 import pandas
 from api import db
-from flask import request, abort, send_file
+from flask import request, send_file
 from werkzeug.utils import secure_filename
 from api.utils.bar_utils import BARUtils
 from flask_restx import Namespace, Resource
@@ -177,8 +177,7 @@ class SummarizationGeneExpressionValue(Resource):
                     values = {}
                     try:
                         rows = con.execute(tbl.select(tbl.c.Value).where(tbl.c.Gene == gene))
-                    except SQLAlchemyError as e:
-                        error = str(e.__dict__['orig'])
+                    except SQLAlchemyError:
                         return BARUtils.error_exit("Internal server error"), 500
                     for row in rows:
                         values.update({row.Sample: row.Value})
@@ -186,8 +185,7 @@ class SummarizationGeneExpressionValue(Resource):
                     values = []
                     try:
                         rows = con.execute(tbl.select(tbl.c.Value).where(tbl.c.Sample == sample).where(tbl.c.Gene == gene))
-                    except SQLAlchemyError as e:
-                        error = str(e.__dict__['orig'])
+                    except SQLAlchemyError:
                         return BARUtils.error_exit("Internal server error"), 500
                     [values.append((row.Value)) for row in rows]
                 return BARUtils.success_exit(values)
@@ -223,8 +221,7 @@ class SummarizationGeneExpressionGenes(Resource):
             values = []
             try:
                 rows = con.execute(db.select([tbl.c.Gene]).distinct())
-            except SQLAlchemyError as e:
-                error = str(e.__dict__['orig'])
+            except SQLAlchemyError:
                 return BARUtils.error_exit("Internal server error"), 500
             [values.append((row.Gene)) for row in rows]
             return BARUtils.success_exit(values)
