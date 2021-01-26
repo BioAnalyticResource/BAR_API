@@ -3,7 +3,7 @@ import os
 import re
 import pandas
 from api import db
-from flask import request, jsonify
+from flask import request, jsonify, abort
 from werkzeug.utils import secure_filename
 from api.utils.bar_utils import BARUtils
 from flask_restx import Namespace, Resource
@@ -22,13 +22,16 @@ summarization_gene_expression = Namespace('Summarization Gene Expression',
 
 class SummarizationGeneExpressionUtils:
     @staticmethod
-    def get_table_object(table_name, bind_name):
+    def get_table_object(table_name):
         metadata = db.MetaData()
-        table_object = db.Table(table_name, metadata, autoload=True, autoload_with=db.get_engine(bind=bind_name))
+        table_object = db.Table(table_name, metadata, autoload=True, autoload_with=db.get_engine(bind="summarization"))
         return table_object
 
     @staticmethod
     def is_valid(string):
+        """Checks if a given string only contains alphanumeric characters
+        :param string: The string to be checked 
+        """
         if re.search("([^_0-9A-Za-z])+", string):
             return False
         else:
@@ -36,8 +39,11 @@ class SummarizationGeneExpressionUtils:
 
     @staticmethod
     def validate_api_key(key):
-        tbl = SummarizationGeneExpressionUtils.get_table_object("users", "keys")
-        con = db.get_engine(bind='keys')
+        """Checks if a given API key is in the Users database
+        :param key: The API key to be checked
+        """
+        tbl = SummarizationGeneExpressionUtils.get_table_object("users")
+        con = db.get_engine(bind='summarization')
         try:
             row = con.execute(db.select([tbl.c.uses_left]).where(tbl.c.api_key == key)).first()
         except SQLAlchemyError as e:
@@ -53,9 +59,12 @@ class SummarizationGeneExpressionUtils:
 
     @staticmethod
     def decrement_uses(key):
+        """Subtracts 1 from the uses_left column of the user whose key matches the given string
+        :param key: The user's API key
+        """
         if(SummarizationGeneExpressionUtils.validate_api_key(key)):
-            tbl = SummarizationGeneExpressionUtils.get_table_object("users", "keys")
-            con = db.get_engine(bind='keys')
+            tbl = SummarizationGeneExpressionUtils.get_table_object("users")
+            con = db.get_engine(bind='summarization')
             try:
                 con.execute(db.update(tbl).where(tbl.c.api_key == key).values(uses_left=(tbl.c.uses_left - 1)))
                 db.session.commit()
@@ -70,6 +79,8 @@ class SummarizationGeneExpressionUtils:
 @summarization_gene_expression.route('/summarize', methods=["POST"])
 class SummarizationGeneExpressionSummarize(Resource):
     def post(self):
+        """Takes a Google Drive folder ID (containing BAM files) and submits them to the Cromwell server for summarization
+        """
         if(request.method == "POST"):
             json = request.get_json()
             key = request.headers.get("X-Api-Key")
@@ -98,6 +109,8 @@ class SummarizationGeneExpressionSummarize(Resource):
 @summarization_gene_expression.route('/csv_upload', methods=["POST"])
 class SummarizationGeneExpressionCsvUpload(Resource):
     def post(self):
+        """Takes a CSV file containing expression data and inserts the data into the database
+        """
         if(request.method == "POST"):
             if('file' not in request.files):
                 print("Error")
@@ -124,6 +137,10 @@ class SummarizationGeneExpressionCsvUpload(Resource):
 @summarization_gene_expression.route('/insert', methods=["POST"])
 class SummarizationGeneExpressionInsert(Resource):
     def post(self):
+        """This function adds a CSV's data to the database. This is only called by the Cromwell server after receiving the user's file.  
+        """
+        if request.remote_addr != '127.0.0.1':
+            abort(403)  # Forbidden
         if(request.method == "POST"):
             key = request.headers.get("X-Api-Key")
             if(SummarizationGeneExpressionUtils.decrement_uses(key)):
@@ -137,19 +154,22 @@ class SummarizationGeneExpressionInsert(Resource):
                 df.to_sql(db_id, con, if_exists='append', index=True)
 
 
-@summarization_gene_expression.route('/value', methods=["GET"])
+@summarization_gene_expression.route('/value/<string:table_id>/<string:gene>', defaults={'sample': ''})
+@summarization_gene_expression.route('/value/<string:table_id>/<string:gene>/<string:sample>', methods=["GET"])
 class SummarizationGeneExpressionValue(Resource):
-    def get(self):
-        gene = request.args.get('gene')
+    @summarization_gene_expression.param('table_id', _in='path', default='test')
+    @summarization_gene_expression.param('sample', _in='path', default='')
+    @summarization_gene_expression.param('gene', _in='path', default='At1g01010')
+    def get(self, table_id, sample, gene):
+        """Returns the value for a given gene and sample. If no sample is given returns all values for that gene
+        """
         if not BARUtils.is_arabidopsis_gene_valid(gene):
             return {'success': False, 'error': 'Invalid gene id', 'error_code': 400}
         else:
             key = request.headers.get("X-Api-Key")
             if(SummarizationGeneExpressionUtils.decrement_uses(key)):
-                sample = request.args.get('sample') if request.args.get('sample') else ''
-                uid = request.args.get('id')
                 con = db.get_engine(bind='summarization')
-                tbl = SummarizationGeneExpressionUtils.get_table_object(uid, "summarization")
+                tbl = SummarizationGeneExpressionUtils.get_table_object(table_id)
                 if(sample == ''):
                     values = {}
                     try:
@@ -170,12 +190,14 @@ class SummarizationGeneExpressionValue(Resource):
                 return jsonify(values)
 
 
-@summarization_gene_expression.route('/samples', methods=["GET"])
+@summarization_gene_expression.route('/samples/<string:table_id>')
 class SummarizationGeneExpressionSamples(Resource):
-    def get(self):
-        uid = request.args.get('id')
+    @summarization_gene_expression.param('table_id', _in='path', default='test')
+    def get(self, table_id=''):
+        """Returns the list of samples in the table with the given ID
+        """
         con = db.get_engine(bind='summarization')
-        tbl = SummarizationGeneExpressionUtils.get_table_object(uid, "summarization")
+        tbl = SummarizationGeneExpressionUtils.get_table_object(table_id)
         values = []
         try:
             rows = con.execute(db.select([tbl.c.Sample]).distinct())
@@ -186,14 +208,16 @@ class SummarizationGeneExpressionSamples(Resource):
         return jsonify(values)
 
 
-@summarization_gene_expression.route('/genes', methods=["GET"])
+@summarization_gene_expression.route('/genes/<string:table_id>')
 class SummarizationGeneExpressionGenes(Resource):
-    def get(self):
-        key = request.headers.get("X-Api-Key")
+    @summarization_gene_expression.param('table_id', _in='path', default='test')
+    def get(self, table_id=''):
+        """Returns the list of genes in the table with the given ID
+        """
+        key = request.headers.get("x-api-key")
         if(SummarizationGeneExpressionUtils.decrement_uses(key)):
-            uid = request.args.get('id')
             con = db.get_engine(bind='summarization')
-            tbl = SummarizationGeneExpressionUtils.get_table_object(uid, "summarization")
+            tbl = SummarizationGeneExpressionUtils.get_table_object(table_id)
             values = []
             try:
                 rows = con.execute(db.select([tbl.c.Gene]).distinct())
@@ -204,16 +228,18 @@ class SummarizationGeneExpressionGenes(Resource):
             return jsonify(values)
 
 
-@summarization_gene_expression.route('/find_gene', methods=["GET"])
+@summarization_gene_expression.route('/find_gene/<string:table_id>/<string:user_string>')
 class SummarizationGeneExpressionFindGene(Resource):
-    def get(self):
-        uid = request.args.get('id')
-        string = request.args.get('string')
+    @summarization_gene_expression.param('table_id', _in='path', default='test')
+    @summarization_gene_expression.param('user_string', _in='path', default='AT1G')
+    def get(self, table_id='', user_string=''):
+        """Returns all genes that contain a given string as part of their name
+        """
         con = db.get_engine(bind='summarization')
-        tbl = SummarizationGeneExpressionUtils.get_table_object(uid, "summarization")
+        tbl = SummarizationGeneExpressionUtils.get_table_object(table_id)
         values = []
         try:
-            rows = con.execute(db.select([tbl.c.Gene]).where(tbl.c.Gene.contains(string)).distinct())
+            rows = con.execute(db.select([tbl.c.Gene]).where(tbl.c.Gene.contains(user_string)).distinct())
         except SQLAlchemyError as e:
             error = str(e.__dict__['orig'])
             return error
@@ -221,20 +247,26 @@ class SummarizationGeneExpressionFindGene(Resource):
         return jsonify(values)
 
 
-@summarization_gene_expression.route('/table_exists', methods=["GET"])
+@summarization_gene_expression.route('/table_exists/<string:table_id>')
 class SummarizationGeneExpressionTableExists(Resource):
-    def get(self):
-        uid = request.args.get('id')
+    @summarization_gene_expression.param('table_id', _in='path', default='test')
+    def get(self, table_id=''):
+        """Checks if a given table exists
+        """
         con = db.get_engine(bind='summarization')
-        if(con.dialect.has_table(con, uid)):
+        if(con.dialect.has_table(con, table_id)):
             return True
         else:
             return False
 
 
-@summarization_gene_expression.route('/drop_table', methods=["GET"])
+@summarization_gene_expression.route('/drop_table/<string:table_id>')
 class SummarizationGeneExpressionDropTable(Resource):
-    def get(self):
-        uid = request.args.get('id')
-        tbl = SummarizationGeneExpressionUtils.get_table_object(uid, "summarization")
+    @summarization_gene_expression.param('table_id', _in='path', default='test')
+    def get(self, table_id=''):
+        """Drops the table with the given ID
+        """
+        if request.remote_addr != '127.0.0.1':
+            abort(403)
+        tbl = SummarizationGeneExpressionUtils.get_table_object(test_id)
         tbl.drop()

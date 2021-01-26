@@ -13,13 +13,11 @@ if [ -n "$DB_PASS" ]; then
     mysql -u $DB_USER -p$DB_PASS < ./config/databases/single_cell.sql
     mysql -u $DB_USER -p$DB_PASS < ./config/databases/eplant2.sql
     mysql -u $DB_USER -p$DB_PASS < ./config/databases/summarization.sql
-    mysql -u $DB_USER -p$DB_PASS < ./config/databases/keys.sql
 else
     mysql -u $DB_USER  < ./config/databases/annotations_lookup.sql
     mysql -u $DB_USER  < ./config/databases/single_cell.sql
     mysql -u $DB_USER  < ./config/databases/eplant2.sql
     mysql -u $DB_USER  < ./config/databases/summarization.sql
-    mysql -u $DB_USER  < ./config/databases/keys.sql
 fi
 
 echo "Data is now loaded. Preparing API config"

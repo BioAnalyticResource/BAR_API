@@ -2,7 +2,7 @@ from api import db
 
 
 class Requests(db.Model):
-    __bind_key__ = 'keys'
+    __bind_key__ = 'summarization'
     __tablename__ = 'requests'
     first_name = db.Column(db.String(32), index=True)
     last_name = db.Column(db.String(32), index=True)

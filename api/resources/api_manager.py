@@ -20,6 +20,8 @@ api_manager = Namespace('API Manager',
 @api_manager.route('/validate_admin_password', methods=["POST"])
 class ApiManagerValidate(Resource):
     def post(self):
+        """Verify admin password
+        """
         if(request.method == "POST"):
             response_json = request.get_json()
             # Validate API key
@@ -41,6 +43,8 @@ class ApiManagerValidate(Resource):
 @api_manager.route('/validate_api_key', methods=["POST"])
 class ApiManagerValidateKey(Resource):
     def post(self):
+        """Verify if an API key provided by the user exists in the database 
+        """
         if(request.method == "POST"):
             tbl = Users()
             json = request.get_json()
@@ -51,12 +55,12 @@ class ApiManagerValidateKey(Resource):
                 error = str(e.__dict__['orig'])
                 return error
             if(row is None):
-                return False
+                return {'success': False, 'error': 'Key not found', 'error_code': 404}
             else:
                 if row.uses_left > 0:
                     return True
                 else:
-                    return False
+                    return {'success': False, 'error': 'Key expired', 'error_code': 403}
 
 
 @api_manager.route('/request', methods=["POST"])
@@ -65,9 +69,17 @@ class ApiManagerRequest(Resource):
         if(request.method == "POST"):
             response_json = request.get_json()
             df = pandas.DataFrame.from_records([response_json])
-            con = db.get_engine(bind='keys')
+            print(df.email)
+            con = db.get_engine(bind='summarization')
             try:
-                df.to_sql('requests', con, if_exists='append', index=False)
+                reqs = Requests()
+                users = Users()
+                row_req = reqs.query.filter_by(email=df.email)
+                row_users = users.query.filter_by(email=df.email)
+                if(row_req is None and row_users is None):
+                    df.to_sql('requests', con, if_exists='append', index=False)
+                else:
+                    return {'success': False, 'error': 'E-mail already in use.', 'error_code': 409}
             except SQLAlchemyError as e:
                 error = str(e.__dict__['orig'])
                 return error
@@ -76,6 +88,8 @@ class ApiManagerRequest(Resource):
 @api_manager.route('/get_pending_requests', methods=["GET"])
 class ApiManagerGetPending(Resource):
     def get(self):
+        """Returns list of pending requests from the database
+        """
         if(request.method == "GET"):
             table = Requests()
             values = []
@@ -95,6 +109,8 @@ class ApiManagerGetPending(Resource):
 @api_manager.route('/reject_request', methods=["POST"])
 class ApiManagerRejectRequest(Resource):
     def post(self):
+        """Delete a request from the database
+        """
         if(request.method == "POST"):
             response_json = request.get_json()
             table = Requests()
@@ -109,11 +125,12 @@ class ApiManagerRejectRequest(Resource):
             return True
 
 
-@api_manager.route('/approve_request', methods=["GET"])
+@api_manager.route('/approve_request/<string:email>', methods=["GET"])
 class ApiManagerApproveRequest(Resource):
-    def get(self):
+    def get(self, email):
+        """Approve a request from the database and add it to the Users table
+        """
         if(request.method == "GET"):
-            email = request.args.get('email')
             table = Requests()
             values = []
             try:
@@ -131,7 +148,7 @@ class ApiManagerApproveRequest(Resource):
                             "api_key": key,
                             "uses_left": 25}) for row in rows]
             df = pandas.DataFrame.from_records([values[0]])
-            con = db.get_engine(bind='keys')
+            con = db.get_engine(bind='summarization')
             try:
                 df.to_sql('users', con, if_exists='append', index=False)
                 el = table.query.filter_by(email=email).one()
