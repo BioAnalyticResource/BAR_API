@@ -10,7 +10,7 @@ class SummarizationGeneExpression(db.Model):
 
 
 class Requests(db.Model):
-    __bind_key__ = 'mykeys'
+    __bind_key__ = 'summarization'
     __tablename__ = 'requests'
     first_name = db.Column(db.String(32), index=True)
     last_name = db.Column(db.String(32), index=True)
@@ -21,7 +21,7 @@ class Requests(db.Model):
 
 
 class Users(db.Model):
-    __bind_key__ = 'mykeys'
+    __bind_key__ = 'summarization'
     __tablename__ = 'users'
     first_name = db.Column(db.String(32), index=True)
     last_name = db.Column(db.String(32), index=True)
