@@ -96,7 +96,6 @@ CREATE TABLE `users` (
   `uses_left` int(11) DEFAULT NULL,
   PRIMARY KEY (`api_key`),
   UNIQUE KEY `ix_users_email` (`email`),
-  UNIQUE KEY `ix_users_telephone` (`telephone`),
   KEY `ix_users_status` (`status`),
   KEY `ix_users_last_name` (`last_name`),
   KEY `ix_users_uses_left` (`uses_left`),

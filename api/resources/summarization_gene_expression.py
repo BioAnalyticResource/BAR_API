@@ -105,10 +105,12 @@ class SummarizationGeneExpressionSummarize(Resource):
                 files = {'workflowSource': ('rpkm.wdl', open(path, 'rb')), 'workflowInputs': ('rpkm_inputs.json', inputs)}
                 requests.post(CROMWELL_URL + '/api/workflows/v1', files=files)
                 # Return ID for future accessing
-            return BARUtils.success_exit(key), 200
+                return BARUtils.success_exit(key), 200
+            else:
+                return BARUtils.error_exit("Invalid API key")
 
 
-@summarization_gene_expression.route('/csv_upload', methods=["POST"])
+@summarization_gene_expression.route('/csv_upload', methods=["POST"], doc=False)
 class SummarizationGeneExpressionCsvUpload(Resource):
     def post(self):
         """Takes a CSV file containing expression data and inserts the data into the database
@@ -134,10 +136,12 @@ class SummarizationGeneExpressionCsvUpload(Resource):
                                                 open(path, 'rb')),
                              'workflowInputs': ('rpkm_inputs.json', inputs)}
                     requests.post(CROMWELL_URL + '/api/workflows/v1', files=files)
-                return BARUtils.success_exit(key)
+                    return BARUtils.success_exit(key)
+                else:
+                    return BARUtils.error_exit("Invalid API key")
 
 
-@summarization_gene_expression.route('/insert', methods=["POST"])
+@summarization_gene_expression.route('/insert', methods=["POST"], doc=False)
 class SummarizationGeneExpressionInsert(Resource):
     def post(self):
         """This function adds a CSV's data to the database. This is only called by the Cromwell server after receiving the user's file.
@@ -155,6 +159,9 @@ class SummarizationGeneExpressionInsert(Resource):
                 db_id = db_id.split("/")[len(db_id.split("/")) - 1]
                 con = db.get_engine(bind='summarization')
                 df.to_sql(db_id, con, if_exists='append', index=True)
+                return BARUtils.success_exit("Success")
+            else:
+                return BARUtils.error_exit("Invalid API key")
 
 
 @summarization_gene_expression.route('/value/<string:table_id>/<string:gene>', defaults={'sample': ''})
@@ -189,6 +196,8 @@ class SummarizationGeneExpressionValue(Resource):
                         return BARUtils.error_exit("Internal server error"), 500
                     [values.append((row.Value)) for row in rows]
                 return BARUtils.success_exit(values)
+            else:
+                return BARUtils.error_exit("Invalid API key")
 
 
 @summarization_gene_expression.route('/samples/<string:table_id>')
@@ -225,6 +234,8 @@ class SummarizationGeneExpressionGenes(Resource):
                 return BARUtils.error_exit("Internal server error"), 500
             [values.append((row.Gene)) for row in rows]
             return BARUtils.success_exit(values)
+        else:
+            return BARUtils.error_exit("Invalid API key")
 
 
 @summarization_gene_expression.route('/find_gene/<string:table_id>/<string:user_string>')
@@ -258,7 +269,7 @@ class SummarizationGeneExpressionTableExists(Resource):
             return BARUtils.success_exit(False)
 
 
-@summarization_gene_expression.route('/drop_table/<string:table_id>')
+@summarization_gene_expression.route('/drop_table/<string:table_id>', doc=False)
 class SummarizationGeneExpressionDropTable(Resource):
     @summarization_gene_expression.param('table_id', _in='path', default='test')
     def get(self, table_id=''):
@@ -270,16 +281,16 @@ class SummarizationGeneExpressionDropTable(Resource):
         tbl.drop()
 
 
-@summarization_gene_expression.route('/save', methods=["POST"])
+@summarization_gene_expression.route('/save', methods=["POST"], doc=False)
 class SummarizationGeneExpressionSave(Resource):
-    def save(self):
+    def post(self):
         """Saves the given file if the user has a valid API key
         """
         if (request.method == "POST"):
             api_key = request.headers.get('x-api-key')
             if(api_key is None):
                 return BARUtils.error_exit("Invalid API key"), 403
-            elif(SummarizationGeneExpressionUtils.decrement_uses(key)):
+            elif(SummarizationGeneExpressionUtils.decrement_uses(api_key)):
                 now = datetime.now()
                 dt_string = now.strftime("%d-%m-%Y_%H-%M-%S")
                 if 'file' in request.files:
@@ -296,11 +307,13 @@ class SummarizationGeneExpressionSave(Resource):
                     return BARUtils.success_exit(True)
                 else:
                     return BARUtils.error_exit("No file attached"), 400
+            else:
+                return BARUtils.error_exit("Invalid API key")
 
 
 @summarization_gene_expression.route('/get_file_list', methods=["POST"])
 class SummarizationGeneExpressionGetFileList(Resource):
-    def get_file_list(self):
+    def post(self):
         """Returns a list of files stored in the user's folder
         """
         if (request.method == "POST"):
@@ -314,7 +327,7 @@ class SummarizationGeneExpressionGetFileList(Resource):
 @summarization_gene_expression.route('/get_file/<string:file_id>')
 class SummarizationGeneExpressionGetFile(Resource):
     @summarization_gene_expression.param('file_id', _in='path', default='test')
-    def get_file(self, file_id):
+    def get(self, file_id):
         """Returns a specific file stored in the user's folder
         """
         if (request.method == "GET"):
