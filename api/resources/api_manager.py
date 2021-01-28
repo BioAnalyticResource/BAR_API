@@ -11,7 +11,8 @@ import uuid
 import requests
 
 
-ADMIN_PASSWORD_FILE = '/home/bpereira/dev/pw-script/key.bin'
+# ADMIN_PASSWORD_FILE = '/home/bpereira/dev/pw-script/key.bin'
+ADMIN_PASSWORD_FILE = '/windir/c/Users/Bruno/Documents/key.bin'
 CAPTCHA_KEY_FILE = '/home/bpereira/data/bar.summarization/key'
 
 api_manager = Namespace('API Manager',
@@ -77,31 +78,27 @@ class ApiManagerRequest(Resource):
     def post(self):
         if(request.method == "POST"):
             response_json = request.get_json()
-            password = response_json["password"]
-            if ApiManagerUtils.check_admin_pass(password):
-                df = pandas.DataFrame.from_records([response_json])
-                con = db.get_engine(bind='summarization')
-                try:
-                    reqs = Requests()
-                    users = Users()
-                    row_req = reqs.query.filter_by(email=df.email)
-                    row_users = users.query.filter_by(email=df.email)
-                    if(row_req is None and row_users is None):
-                        df.to_sql('requests', con, if_exists='append', index=False)
-                    else:
-                        return BARUtils.error_exit("E-mail already in use"), 409
-                except SQLAlchemyError:
-                    return BARUtils.error_exit("Internal server error"), 500
-            else:
-                return BARUtils.error_exit("Forbidden"), 403
+            df = pandas.DataFrame.from_records([response_json])
+            con = db.get_engine(bind='summarization')
+            try:
+                reqs = Requests()
+                users = Users()
+                row_req = reqs.query.filter_by(email=df.email[0]).first()
+                row_users = users.query.filter_by(email=df.email[0]).first()
+                if(row_req is None and row_users is None):
+                    df.to_sql('requests', con, if_exists='append', index=False)
+                else:
+                    return BARUtils.error_exit("E-mail already in use"), 409
+            except SQLAlchemyError:
+                return BARUtils.error_exit("Internal server error"), 500
 
 
-@api_manager.route('/get_pending_requests', methods=["GET"], doc=False)
+@api_manager.route('/get_pending_requests', methods=["POST"], doc=False)
 class ApiManagerGetPending(Resource):
-    def get(self):
+    def post(self):
         """Returns list of pending requests from the database
         """
-        if(request.method == "GET"):
+        if(request.method == "POST"):
             response_json = request.get_json()
             password = response_json["password"]
             if ApiManagerUtils.check_admin_pass(password):
@@ -144,13 +141,14 @@ class ApiManagerRejectRequest(Resource):
                 return BARUtils.error_exit("Forbidden"), 403
 
 
-@api_manager.route('/approve_request/<string:email>', methods=["GET"], doc=False)
+@api_manager.route('/approve_request', methods=["POST"], doc=False)
 class ApiManagerApproveRequest(Resource):
-    def get(self, email):
+    def post(self):
         """Approve a request from the database and add it to the Users table
         """
-        if(request.method == "GET"):
+        if(request.method == "POST"):
             response_json = request.get_json()
+            email = response_json["email"]
             password = response_json["password"]
             if ApiManagerUtils.check_admin_pass(password):
                 table = Requests()
