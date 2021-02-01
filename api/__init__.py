@@ -13,9 +13,9 @@ def create_app():
     CORS(bar_app)
 
     # Load configuration
-    if environ.get('TRAVIS'):
+    if environ.get('CI'):
         # Travis
-        bar_app.config.from_pyfile(environ.get('TRAVIS_BUILD_DIR') + '/config/BAR_API.cfg', silent=True)
+        bar_app.config.from_pyfile('./config/BAR_API.cfg', silent=True)
     elif environ.get('BAR'):
         # The BAR
         bar_app.config.from_pyfile(environ.get('BAR_API_PATH'), silent=True)
