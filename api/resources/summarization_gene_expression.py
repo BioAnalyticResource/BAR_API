@@ -50,7 +50,7 @@ class SummarizationGeneExpressionUtils:
         except SQLAlchemyError as e:
             error = str(e.__dict__['orig'])
             return error
-        if(row is None):
+        if row is None:
             return False
         else:
             if row.uses_left > 0:
@@ -63,7 +63,7 @@ class SummarizationGeneExpressionUtils:
         """Subtracts 1 from the uses_left column of the user whose key matches the given string
         :param key: The user's API key
         """
-        if(SummarizationGeneExpressionUtils.validate_api_key(key)):
+        if SummarizationGeneExpressionUtils.validate_api_key(key):
             tbl = SummarizationGeneExpressionUtils.get_table_object("users")
             con = db.get_engine(bind='summarization')
             try:
@@ -82,10 +82,10 @@ class SummarizationGeneExpressionSummarize(Resource):
     def post(self):
         """Takes a Google Drive folder ID (containing BAM files) and submits them to the Cromwell server for summarization
         """
-        if(request.method == "POST"):
+        if request.method == "POST":
             json = request.get_json()
             key = request.headers.get("X-Api-Key")
-            if(SummarizationGeneExpressionUtils.decrement_uses(key)):
+            if SummarizationGeneExpressionUtils.decrement_uses(key):
                 inputs = """
                         {
                         "geneSummarization.gtf": "./data/Araport11_GFF3_genes_transposons.201606.gtf",
@@ -115,15 +115,15 @@ class SummarizationGeneExpressionCsvUpload(Resource):
     def post(self):
         """Takes a CSV file containing expression data and inserts the data into the database
         """
-        if(request.method == "POST"):
-            if('file' not in request.files):
+        if request.method == "POST":
+            if 'file' not in request.files:
                 return BARUtils.error_exit("No file attached"), 400
             file = request.files['file']
             if file:
                 filename = secure_filename(file.filename)
                 key = request.headers.get("X-Api-Key")
                 file.save(os.path.join(DATA_FOLDER + "/" + key + "/", filename))
-                if(SummarizationGeneExpressionUtils.decrement_uses(key)):
+                if SummarizationGeneExpressionUtils.decrement_uses(key):
                     inputs = """
                             {
                             "csvUpload.insertDataScript": "./insertData.py",
@@ -148,9 +148,9 @@ class SummarizationGeneExpressionInsert(Resource):
         """
         if request.remote_addr != '127.0.0.1':
             return BARUtils.error_exit("Forbidden"), 403
-        if(request.method == "POST"):
+        if request.method == "POST":
             key = request.headers.get("X-Api-Key")
-            if(SummarizationGeneExpressionUtils.decrement_uses(key)):
+            if SummarizationGeneExpressionUtils.decrement_uses(key):
                 csv = request.get_json()["csv"]
                 db_id = request.get_json()["uid"]
                 df = pandas.read_csv(csv)
@@ -177,10 +177,10 @@ class SummarizationGeneExpressionValue(Resource):
             return BARUtils.success_exit("Invalid gene ID"), 400
         else:
             key = request.headers.get("X-Api-Key")
-            if(SummarizationGeneExpressionUtils.decrement_uses(key)):
+            if SummarizationGeneExpressionUtils.decrement_uses(key):
                 con = db.get_engine(bind='summarization')
                 tbl = SummarizationGeneExpressionUtils.get_table_object(table_id)
-                if(sample == ''):
+                if sample == '':
                     values = {}
                     try:
                         rows = con.execute(tbl.select(tbl.c.Value).where(tbl.c.Gene == gene))
@@ -194,7 +194,7 @@ class SummarizationGeneExpressionValue(Resource):
                         rows = con.execute(tbl.select(tbl.c.Value).where(tbl.c.Sample == sample).where(tbl.c.Gene == gene))
                     except SQLAlchemyError:
                         return BARUtils.error_exit("Internal server error"), 500
-                    [values.append((row.Value)) for row in rows]
+                    [values.append(row.Value) for row in rows]
                 return BARUtils.success_exit(values)
             else:
                 return BARUtils.error_exit("Invalid API key")
@@ -213,7 +213,7 @@ class SummarizationGeneExpressionSamples(Resource):
             rows = con.execute(db.select([tbl.c.Sample]).distinct())
         except SQLAlchemyError:
             return BARUtils.error_exit("Internal server error"), 500
-        [values.append((row.Sample)) for row in rows]
+        [values.append(row.Sample) for row in rows]
         return BARUtils.success_exit(values)
 
 
@@ -224,7 +224,7 @@ class SummarizationGeneExpressionGenes(Resource):
         """Returns the list of genes in the table with the given ID
         """
         key = request.headers.get("x-api-key")
-        if(SummarizationGeneExpressionUtils.decrement_uses(key)):
+        if SummarizationGeneExpressionUtils.decrement_uses(key):
             con = db.get_engine(bind='summarization')
             tbl = SummarizationGeneExpressionUtils.get_table_object(table_id)
             values = []
@@ -232,7 +232,7 @@ class SummarizationGeneExpressionGenes(Resource):
                 rows = con.execute(db.select([tbl.c.Gene]).distinct())
             except SQLAlchemyError:
                 return BARUtils.error_exit("Internal server error"), 500
-            [values.append((row.Gene)) for row in rows]
+            [values.append(row.Gene) for row in rows]
             return BARUtils.success_exit(values)
         else:
             return BARUtils.error_exit("Invalid API key")
@@ -252,7 +252,7 @@ class SummarizationGeneExpressionFindGene(Resource):
             rows = con.execute(db.select([tbl.c.Gene]).where(tbl.c.Gene.contains(user_string)).distinct())
         except SQLAlchemyError:
             return BARUtils.error_exit("Internal server error"), 500
-        [values.append((row.Gene)) for row in rows]
+        [values.append(row.Gene) for row in rows]
         return BARUtils.success_exit(values)
 
 
@@ -263,7 +263,7 @@ class SummarizationGeneExpressionTableExists(Resource):
         """Checks if a given table exists
         """
         con = db.get_engine(bind='summarization')
-        if(con.dialect.has_table(con, table_id)):
+        if con.dialect.has_table(con, table_id):
             return BARUtils.success_exit(True)
         else:
             return BARUtils.success_exit(False)
@@ -286,19 +286,19 @@ class SummarizationGeneExpressionSave(Resource):
     def post(self):
         """Saves the given file if the user has a valid API key
         """
-        if (request.method == "POST"):
+        if request.method == "POST":
             api_key = request.headers.get('x-api-key')
-            if(api_key is None):
+            if api_key is None:
                 return BARUtils.error_exit("Invalid API key"), 403
-            elif(SummarizationGeneExpressionUtils.decrement_uses(api_key)):
+            elif SummarizationGeneExpressionUtils.decrement_uses(api_key):
                 now = datetime.now()
                 dt_string = now.strftime("%d-%m-%Y_%H-%M-%S")
                 if 'file' in request.files:
                     file = request.files['file']
                     extension = ""
-                    if(file.content_type == "text/xml"):
+                    if file.content_type == "text/xml":
                         extension = ".xml"
-                    elif(file.content_type == "image/svg+xml"):
+                    elif file.content_type == "image/svg+xml":
                         extension = ".svg"
                     else:
                         return BARUtils.error_exit("Invalid file type"), 400
@@ -316,7 +316,7 @@ class SummarizationGeneExpressionGetFileList(Resource):
     def post(self):
         """Returns a list of files stored in the user's folder
         """
-        if (request.method == "POST"):
+        if request.method == "POST":
             api_key = request.headers.get('x-api-key')
             files = []
             for file in os.walk(DATA_FOLDER + api_key):
@@ -330,10 +330,10 @@ class SummarizationGeneExpressionGetFile(Resource):
     def get(self, file_id):
         """Returns a specific file stored in the user's folder
         """
-        if (request.method == "GET"):
+        if request.method == "GET":
             api_key = request.headers.get('x-api-key')
             filename = os.path.join(DATA_FOLDER, api_key, file_id)
-            if(os.path.isfile(filename)):
+            if os.path.isfile(filename):
                 return send_file(filename)
             else:
                 return BARUtils.error_exit("File not found"), 404
