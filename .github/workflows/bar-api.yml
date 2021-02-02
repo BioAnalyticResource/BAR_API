@@ -46,6 +46,7 @@ jobs:
         REDIS_PORT: 6379
         CI: true
     - name: Coveralls Parallel
+      if: ${{ success() }}
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.github_token }}
