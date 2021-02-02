@@ -40,3 +40,18 @@ class UtilsUnitTest(TestCase):
         # Invalid
         result = BARUtils.is_integer('abc')
         self.assertFalse(result)
+
+    def test_is_poplar_gene_valid(self):
+        # Valid gene
+        result = BARUtils.is_poplar_gene_valid('Potri.019G123900.1')
+        self.assertTrue(result)
+
+        # Invalid gene
+        result = BARUtils.is_poplar_gene_valid('abc')
+        self.assertFalse(result)
+
+    def test_format_poplar(self):
+        # Test format
+        result = BARUtils.format_poplar('potri.019g123900.1')
+        expected = 'Potri.019G123900.1'
+        self.assertEqual(result, expected)
