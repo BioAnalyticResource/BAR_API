@@ -21,9 +21,12 @@ def create_app():
         # The BAR
         bar_app.config.from_pyfile(environ.get('BAR_API_PATH'), silent=True)
     else:
-        # Change this line if you want to load your own configuration
-        bar_app.config.from_pyfile(expanduser('~') + '/Asher/BAR_API.cfg', silent=True)
+        # Change this line if you want to load your own configuration. Example:
         # bar_app.config.from_pyfile('../config/BAR_API.cfg', silent=True)
+        bar_app.config.from_pyfile(expanduser('~') + '/Asher/BAR_API.cfg', silent=True)
+
+        # Load evironment variables
+        environ['API_MANAGER_KEY'] = bar_app.config.get('API_MANAGER_KEY')
 
     # Initialize the database
     db.init_app(bar_app)
