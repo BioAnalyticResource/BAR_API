@@ -24,18 +24,6 @@ jobs:
         ports:
           - 6379:6379
 
-#      mysql:
-#        image: mysql:latest
-#        env:
-#          MYSQL_ALLOW_EMPTY_PASSWORD: yes
-#        options: >-
-#          --health-cmd="mysqladmin ping"
-#          --health-interval=10s
-#          --health-timeout=5s
-#          --health-retries=3
-#        ports:
-#          - 3306
-
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -51,18 +39,16 @@ jobs:
       run: ./config/init.sh
     - name: Lint with flake8
       run: flake8
-    - name: Test with pytest
+    - name: Pytest and code Coverage
       run: |
-        pytest -s
-    - name: Test code coverage
-      run: |
-        whereis redis-cli
-        redis-cli flushall
         coverage run
         coverage report
-        coveralls
       env:
         REDIS_HOST: localhost
         REDIS_PORT: 6379
-#        DB_PORT: ${{ job.services.mysql.ports[3306] }}
         CI: true
+
+    release:
+      needs: build
+      run: coveralls
+
