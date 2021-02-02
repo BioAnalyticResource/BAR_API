@@ -1,9 +1,7 @@
 ---
 name: BAR-API
 
-on:
-  push:
-  pull_request:
+on: ["push", "pull_request"]
 
 jobs:
   build:
@@ -50,5 +48,6 @@ jobs:
     - name: Coveralls
       if: ${{ success() }}
       run: coveralls
-
+      env:
+        GITHUB_TOKEN: ${{ secrets.COVERALLS }}
 
