@@ -1,0 +1,49 @@
+---
+name: BAR-API
+
+on: ["push", "pull_request"]
+
+jobs:
+  test:
+
+    runs-on: Ubuntu-20.04
+    strategy:
+      matrix:
+        python-version: [3.7, 3.8, 3.9]
+
+    services:
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        sudo systemctl start mysql.service
+        python -m pip install --upgrade pip setuptools wheel
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Initial setup
+      run: ./config/init.sh
+    - name: Lint with flake8
+      run: flake8
+    - name: Pytest and code Coverage
+      run: |
+        coverage run
+        coverage report
+      env:
+        REDIS_HOST: localhost
+        REDIS_PORT: 6379
+        CI: true
+
+

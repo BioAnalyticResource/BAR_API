@@ -1,6 +1,6 @@
 # BAR API
 
-**master**: [![Build Status](https://travis-ci.com/BioAnalyticResource/BAR_API.svg?branch=master)](https://travis-ci.com/BioAnalyticResource/BAR_API) [![Coverage Status](https://coveralls.io/repos/github/BioAnalyticResource/BAR_API/badge.svg?branch=master)](https://coveralls.io/github/BioAnalyticResource/BAR_API?branch=master) **dev**: [![Build Status](https://travis-ci.com/BioAnalyticResource/BAR_API.svg?branch=dev)](https://travis-ci.com/BioAnalyticResource/BAR_API) [![Coverage Status](https://coveralls.io/repos/github/BioAnalyticResource/BAR_API/badge.svg?branch=dev)](https://coveralls.io/github/BioAnalyticResource/BAR_API?branch=dev)
+**master**: [![Build Status](https://github.com/BioAnalyticResource/BAR_API/workflows/BAR-API/badge.svg?branch=master)](https://github.com/BioAnalyticResource/BAR_API/actions?query=branch%3Adev) [![Coverage Status](https://coveralls.io/repos/github/BioAnalyticResource/BAR_API/badge.svg?branch=master)](https://coveralls.io/github/BioAnalyticResource/BAR_API?branch=dev) **dev**: [![Build Status](https://github.com/BioAnalyticResource/BAR_API/workflows/BAR-API/badge.svg?branch=dev)](https://github.com/BioAnalyticResource/BAR_API/actions?query=branch%3Adev) [![Coverage Status](https://coveralls.io/repos/github/BioAnalyticResource/BAR_API/badge.svg?branch=dev)](https://coveralls.io/github/BioAnalyticResource/BAR_API?branch=dev)
 
 [![Website Status](https://img.shields.io/website?url=http%3A%2F%2Fbar.utoronto.ca%2Fapi%2F)](http://bar.utoronto.ca/api/) ![GitHub repo size](https://img.shields.io/github/repo-size/BioAnalyticResource/BAR_API) [![LGTM Alerts](https://img.shields.io/lgtm/alerts/github/BioAnalyticResource/BAR_API)](https://lgtm.com/projects/g/BioAnalyticResource/BAR_API/?mode=list) [![LGTM
 Grade](https://img.shields.io/lgtm/grade/python/github/BioAnalyticResource/BAR_API)](https://lgtm.com/projects/g/BioAnalyticResource/BAR_API/latest/files/?sort=name&dir=ASC&mode=heatmap) [![Requirements Status](https://requires.io/github/BioAnalyticResource/BAR_API/requirements.svg?branch=master)](https://requires.io/github/BioAnalyticResource/BAR_API/requirements/?branch=master)
@@ -20,7 +20,7 @@ Apart from Travis CI and testing on the live BAR, we frequently test the API on 
 2. Install [Redis](https://redis.io/download).
 3. Install [Python](https://www.python.org/downloads/) or [Pypy](https://www.pypy.org/download.html). Note: Python 2 is not supported.
 4. Install [Git](https://git-scm.com/downloads)
-5. (Optional) On Debian based systems, you may also need to install ```libmysqlclient-dev```. On FreeBSD, you may need to install ```py38-sqlite3```. We will update this step as we come across more OS dependencies. 
+5. (Optional) On Debian based systems, you may also need to install ```libmysqlclient-dev``` and ```python3-dev```. On FreeBSD, you may need to install ```py38-sqlite3```. We will update this step as we come across more OS dependencies. 
 6. Clone this repository and change directory to ```BAR_API```
 7. Set up a virtual environment
 ```
