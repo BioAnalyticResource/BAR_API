@@ -8,7 +8,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: Ubuntu-20.04
     strategy:
       matrix:
         python-version: [3.7, 3.8, 3.9]
@@ -24,17 +24,17 @@ jobs:
         ports:
           - 6379:6379
 
-      mysql:
-        image: mysql:latest
-        env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: yes
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-        ports:
-          - 3306
+#      mysql:
+#        image: mysql:latest
+#        env:
+#          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+#        options: >-
+#          --health-cmd="mysqladmin ping"
+#          --health-interval=10s
+#          --health-timeout=5s
+#          --health-retries=3
+#        ports:
+#          - 3306
 
     steps:
     - uses: actions/checkout@v2
@@ -44,8 +44,12 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
+        sudo apt update && apt upgrade -y
+        sudo systemctl start mysql.service
         python -m pip install --upgrade pip setuptools wheel
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Initial setup
+      run: ./config/init.sh
     - name: Lint with flake8
       run: flake8
     - name: Test with pytest
@@ -54,5 +58,5 @@ jobs:
       env:
         REDIS_HOST: localhost
         REDIS_PORT: 6379
-        DB_PORT: ${{ job.services.mysql.ports[3306] }}
+#        DB_PORT: ${{ job.services.mysql.ports[3306] }}
         CI: true

@@ -2,8 +2,9 @@
 # This script initialized the Travis environment
 
 # To use locally, set up DB Password below
+# The password below is for GitHub Actions. Please do no change.
 DB_USER="root"
-DB_PASS=""
+DB_PASS="root"
 
 # Load the data
 echo "Welcome to the BAR API. Running init..."
