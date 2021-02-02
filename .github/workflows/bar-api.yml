@@ -1,5 +1,5 @@
 ---
-name: BAR-API CI
+name: BAR-API
 
 on:
   push:
@@ -54,6 +54,12 @@ jobs:
     - name: Test with pytest
       run: |
         pytest -s
+    - name: Test code coverage
+      run: |
+        redis-cli flushall
+        coverage run
+        coverage report
+        coveralls
       env:
         REDIS_HOST: localhost
         REDIS_PORT: 6379
