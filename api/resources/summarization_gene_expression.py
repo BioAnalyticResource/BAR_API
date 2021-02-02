@@ -3,7 +3,7 @@ import os
 import re
 import datetime
 import pandas
-from api import db
+from api import db, limiter
 from flask import request, send_file
 from werkzeug.utils import secure_filename
 from api.utils.bar_utils import BARUtils
@@ -79,6 +79,8 @@ class SummarizationGeneExpressionUtils:
 
 @summarization_gene_expression.route('/summarize', methods=['POST'])
 class SummarizationGeneExpressionSummarize(Resource):
+    decorators = [limiter.limit('1/minute')]  # Limit to 1 per minute using Flask limiter
+
     def post(self):
         """Takes a Google Drive folder ID (containing BAM files) and submits them to the Cromwell server for summarization
         """
@@ -112,6 +114,8 @@ class SummarizationGeneExpressionSummarize(Resource):
 
 @summarization_gene_expression.route('/csv_upload', methods=['POST'], doc=False)
 class SummarizationGeneExpressionCsvUpload(Resource):
+    decorators = [limiter.limit('1/minute')]
+
     def post(self):
         """Takes a CSV file containing expression data and inserts the data into the database
         """
