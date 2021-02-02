@@ -5,6 +5,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_restx import Api
 from flask_cors import CORS
 from flask_caching import Cache
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 
 def create_app():
@@ -33,6 +35,9 @@ def create_app():
 
     # Initialize the cache
     cache.init_app(bar_app)
+
+    # Rate limiter
+    limiter.init_app(bar_app)
 
     # Configure the Swagger UI
     bar_api = Api(
@@ -70,6 +75,9 @@ cache = Cache(config={
     'CACHE_KEY_PREFIX': 'BAR_API_',
     'CACHE_REDIS_PASSWORD': environ.get('BAR_REDIS_PASSWORD')
 })
+
+# Initialzie Limiter
+limiter = Limiter(key_func=get_remote_address)
 
 # Now create the bar_app
 app = create_app()
