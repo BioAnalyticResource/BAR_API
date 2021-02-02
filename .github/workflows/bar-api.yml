@@ -47,8 +47,8 @@ jobs:
         REDIS_HOST: localhost
         REDIS_PORT: 6379
         CI: true
-
-    release:
-      needs: build
+    - name: Coveralls
+      if: ${{ success() }}
       run: coveralls
+
 
