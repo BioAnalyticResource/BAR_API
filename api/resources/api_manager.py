@@ -42,7 +42,7 @@ class ApiManagerValidate(Resource):
     def post(self):
         """Verify admin password
         """
-        if(request.method == "POST"):
+        if request.method == "POST":
             response_json = request.get_json()
             user_key = response_json['key']
             if ApiManagerUtils.check_admin_pass(user_key):
@@ -56,7 +56,7 @@ class ApiManagerValidateKey(Resource):
     def post(self):
         """Verify if an API key provided by the user exists in the database
         """
-        if(request.method == "POST"):
+        if request.method == "POST":
             tbl = Users()
             json = request.get_json()
             key = json["key"]
@@ -76,7 +76,7 @@ class ApiManagerValidateKey(Resource):
 @api_manager.route('/request', methods=["POST"], doc=False)
 class ApiManagerRequest(Resource):
     def post(self):
-        if(request.method == "POST"):
+        if request.method == "POST":
             response_json = request.get_json()
             df = pandas.DataFrame.from_records([response_json])
             con = db.get_engine(bind='summarization')
@@ -85,7 +85,7 @@ class ApiManagerRequest(Resource):
                 users = Users()
                 row_req = reqs.query.filter_by(email=df.email[0]).first()
                 row_users = users.query.filter_by(email=df.email[0]).first()
-                if(row_req is None and row_users is None):
+                if row_req is None and row_users is None:
                     df.to_sql('requests', con, if_exists='append', index=False)
                 else:
                     return BARUtils.error_exit("E-mail already in use"), 409
@@ -98,7 +98,7 @@ class ApiManagerGetPending(Resource):
     def post(self):
         """Returns list of pending requests from the database
         """
-        if(request.method == "POST"):
+        if request.method == "POST":
             response_json = request.get_json()
             password = response_json["password"]
             if ApiManagerUtils.check_admin_pass(password):
@@ -123,7 +123,7 @@ class ApiManagerRejectRequest(Resource):
     def post(self):
         """Delete a request from the database
         """
-        if(request.method == "POST"):
+        if request.method == "POST":
             response_json = request.get_json()
             password = response_json["password"]
             if ApiManagerUtils.check_admin_pass(password):
@@ -146,7 +146,7 @@ class ApiManagerApproveRequest(Resource):
     def post(self):
         """Approve a request from the database and add it to the Users table
         """
-        if(request.method == "POST"):
+        if request.method == "POST":
             response_json = request.get_json()
             email = response_json["email"]
             password = response_json["password"]
@@ -181,14 +181,14 @@ class ApiManagerApproveRequest(Resource):
 
 @api_manager.route('/validate_captcha', methods=["POST"], doc=False)
 class ApiManagerCaptchaValidate(Resource):
-    def post():
+    def post(self):
         """Validates a reCaptcha value using our secret token
         """
-        if (request.method == "POST"):
+        if request.method == "POST":
             json = request.get_json()
             value = json['response']
             with open(CAPTCHA_KEY_FILE) as f:
                 key = f.read()
             key = key[:-1]  # Remove newline
-            ret = requests.post("https://www.google.com/recaptcha/api/siteverify", data={'secret': key, 'response': value})
+            ret = requests.post('https://www.google.com/recaptcha/api/siteverify', data={'secret': key, 'response': value})
             return BARUtils.success_exit(ret.text)
