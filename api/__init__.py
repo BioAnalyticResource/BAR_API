@@ -1,4 +1,4 @@
-from os import environ
+from os import environ, getcwd
 from os.path import expanduser
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -15,7 +15,8 @@ def create_app():
     # Load configuration
     if environ.get('CI'):
         # Travis
-        bar_app.config.from_pyfile('./config/BAR_API.cfg', silent=True)
+        print('We are now loading configuration.')
+        bar_app.config.from_pyfile(getcwd() + '/config/BAR_API.cfg', silent=True)
     elif environ.get('BAR'):
         # The BAR
         bar_app.config.from_pyfile(environ.get('BAR_API_PATH'), silent=True)
