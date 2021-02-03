@@ -35,7 +35,7 @@ CREATE TABLE `bb5a52387069485486b2f4861c2826dd` (
   `index` bigint(20) DEFAULT NULL,
   `Gene` text DEFAULT NULL,
   `Sample` text DEFAULT NULL,
-  `Value` bigint(20) DEFAULT NULL,
+  `Value` float DEFAULT NULL,
   KEY `ix_bb5a52387069485486b2f4861c2826dd_index` (`index`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
