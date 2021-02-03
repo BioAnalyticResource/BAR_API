@@ -2,18 +2,14 @@ import pandas
 from api import db
 from api.models.summarization import Users, Requests
 from api.utils.bar_utils import BARUtils
-from flask import request
+from flask import request, current_app as app
 from flask_restx import Namespace, Resource
 from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
 from cryptography.fernet import Fernet
 import uuid
+import smtplib
 import requests
-
-
-# ADMIN_PASSWORD_FILE = '/home/bpereira/dev/pw-script/key.bin'
-ADMIN_PASSWORD_FILE = '/windir/c/Users/Bruno/Documents/key.bin'
-CAPTCHA_KEY_FILE = '/home/bpereira/data/bar.summarization/key'
 
 api_manager = Namespace('API Manager',
                         description='API Manager',
@@ -24,9 +20,9 @@ class ApiManagerUtils:
     @staticmethod
     def check_admin_pass(user_key):
         # Replace below with key from script in /home/bpereira/dev/pw-key
-        key = b'jbqwbghmdv8okVqvqVL-KWc7cMqRU9FLpDIew6TTBoA='
+        key = app.config['ADMIN_ENCRYPT_KEY']
         cipher_suite = Fernet(key)
-        with open(ADMIN_PASSWORD_FILE, 'rb') as f:
+        with open(app.config['ADMIN_PASSWORD_FILE'], 'rb') as f:
             for line in f:
                 encrypted_key = line
         uncipher_text = cipher_suite.decrypt(encrypted_key)
@@ -42,7 +38,7 @@ class ApiManagerValidate(Resource):
     def post(self):
         """Verify admin password
         """
-        if request.method == "POST":
+        if(request.method == "POST"):
             response_json = request.get_json()
             user_key = response_json['key']
             if ApiManagerUtils.check_admin_pass(user_key):
@@ -56,7 +52,7 @@ class ApiManagerValidateKey(Resource):
     def post(self):
         """Verify if an API key provided by the user exists in the database
         """
-        if request.method == "POST":
+        if(request.method == "POST"):
             tbl = Users()
             json = request.get_json()
             key = json["key"]
@@ -76,7 +72,7 @@ class ApiManagerValidateKey(Resource):
 @api_manager.route('/request', methods=["POST"], doc=False)
 class ApiManagerRequest(Resource):
     def post(self):
-        if request.method == "POST":
+        if(request.method == "POST"):
             response_json = request.get_json()
             df = pandas.DataFrame.from_records([response_json])
             con = db.get_engine(bind='summarization')
@@ -85,8 +81,9 @@ class ApiManagerRequest(Resource):
                 users = Users()
                 row_req = reqs.query.filter_by(email=df.email[0]).first()
                 row_users = users.query.filter_by(email=df.email[0]).first()
-                if row_req is None and row_users is None:
+                if(row_req is None and row_users is None):
                     df.to_sql('requests', con, if_exists='append', index=False)
+                    return BARUtils.success_exit(True)
                 else:
                     return BARUtils.error_exit("E-mail already in use"), 409
             except SQLAlchemyError:
@@ -98,7 +95,7 @@ class ApiManagerGetPending(Resource):
     def post(self):
         """Returns list of pending requests from the database
         """
-        if request.method == "POST":
+        if(request.method == "POST"):
             response_json = request.get_json()
             password = response_json["password"]
             if ApiManagerUtils.check_admin_pass(password):
@@ -123,7 +120,7 @@ class ApiManagerRejectRequest(Resource):
     def post(self):
         """Delete a request from the database
         """
-        if request.method == "POST":
+        if(request.method == "POST"):
             response_json = request.get_json()
             password = response_json["password"]
             if ApiManagerUtils.check_admin_pass(password):
@@ -146,7 +143,7 @@ class ApiManagerApproveRequest(Resource):
     def post(self):
         """Approve a request from the database and add it to the Users table
         """
-        if request.method == "POST":
+        if(request.method == "POST"):
             response_json = request.get_json()
             email = response_json["email"]
             password = response_json["password"]
@@ -181,14 +178,34 @@ class ApiManagerApproveRequest(Resource):
 
 @api_manager.route('/validate_captcha', methods=["POST"], doc=False)
 class ApiManagerCaptchaValidate(Resource):
-    def post(self):
+    def post():
         """Validates a reCaptcha value using our secret token
         """
-        if request.method == "POST":
+        if (request.method == "POST"):
             json = request.get_json()
             value = json['response']
-            with open(CAPTCHA_KEY_FILE) as f:
+            with open(app.config["CAPTCHA_KEY_FILE"]) as f:
                 key = f.read()
             key = key[:-1]  # Remove newline
-            ret = requests.post('https://www.google.com/recaptcha/api/siteverify', data={'secret': key, 'response': value})
+            ret = requests.post("https://www.google.com/recaptcha/api/siteverify", data={'secret': key, 'response': value})
             return BARUtils.success_exit(ret.text)
+
+
+@api_manager.route('/send_email', methods=["GET"], doc=False)
+class ApiManagerSendMail(Resource):
+    def get(self):
+        """Validates a reCaptcha value using our secret token
+        """
+        if (request.method == "GET"):
+            smtp_server = 'localhost'
+            sender_email = 'notify@bar.utoronto.ca'
+            receiver_email = 'nicholas.provart@utoronto.ca'
+            message = """\
+            Subject: New API requests
+
+            There are new API requests waiting for your approval.
+            You can manage them at https://bar.utoronto.ca/~bpereira/webservices/bar-api-request-manager/build/index.html """
+
+            with smtplib.SMTP(smtp_server) as server:
+                server.ehlo()
+                server.sendmail(sender_email, receiver_email, message)
