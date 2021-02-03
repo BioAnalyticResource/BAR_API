@@ -196,6 +196,8 @@ class ApiManagerSendMail(Resource):
     def get(self):
         """Validates a reCaptcha value using our secret token
         """
+        if request.remote_addr != '127.0.0.1':
+            return BARUtils.error_exit("Forbidden"), 403
         if (request.method == "GET"):
             smtp_server = 'localhost'
             sender_email = 'notify@bar.utoronto.ca'
@@ -209,3 +211,4 @@ class ApiManagerSendMail(Resource):
             with smtplib.SMTP(smtp_server) as server:
                 server.ehlo()
                 server.sendmail(sender_email, receiver_email, message)
+            return BARUtils.success_exit(True)
