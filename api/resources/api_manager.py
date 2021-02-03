@@ -1,4 +1,3 @@
-import pandas
 from api import db
 from api.models.summarization import Users, Requests
 from api.utils.bar_utils import BARUtils
@@ -6,9 +5,10 @@ from flask import request
 from flask_restx import Namespace, Resource
 from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
-from os import environ
+import os
 import uuid
 import requests
+import pandas
 
 
 CAPTCHA_KEY_FILE = '/home/bpereira/data/bar.summarization/key'
@@ -23,7 +23,7 @@ class ApiManagerUtils:
     def check_admin_pass(user_key):
         # Replace below with key from script in /home/bpereira/dev/pw-key
         # key = b'jbqwbghmdv8okVqvqVL-KWc7cMqRU9FLpDIew6TTBoA='
-        if user_key == environ.get('API_MANAGER_KEY'):
+        if user_key == os.environ.get('API_MANAGER_KEY'):
             return True
         else:
             return False
@@ -184,7 +184,7 @@ class ApiManagerCaptchaValidate(Resource):
         if request.method == 'POST':
             json = request.get_json()
             value = json['response']
-            key = environ.get('CAPTCHA_KEY')
+            key = os.environ.get('CAPTCHA_KEY')
             if key:
                 ret = requests.post('https://www.google.com/recaptcha/api/siteverify', data={'secret': key, 'response': value})
                 return BARUtils.success_exit(ret.text)
