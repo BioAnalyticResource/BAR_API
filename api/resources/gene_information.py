@@ -7,6 +7,7 @@ from api.models.eplant2 import isoforms
 from api.utils.bar_utils import BARUtils
 from marshmallow import Schema, ValidationError, fields as marshmallow_fields
 from api import cache
+import os
 
 gene_information = Namespace('Gene Information', description='Information about Genes', path='/gene_information')
 
@@ -37,7 +38,7 @@ class GeneAlias(Resource):
     @gene_information.param('gene_id', _in='path', default='At3g24650')
     @cache.cached()
     def get(self, species='', gene_id=''):
-        """This end point provides gene alias given a gene ID"""
+        """This end point provides gene alias given a gene ID."""
         aliases = []
 
         # Escape input
@@ -68,7 +69,8 @@ class GeneIsoforms(Resource):
     @gene_information.param('species', _in='path', default='arabidopsis')
     @gene_information.param('gene_id', _in='path', default='AT1G01020')
     def get(self, species='', gene_id=''):
-        """This end point provides gene isoforms given a gene ID"""
+        """This end point provides gene isoforms given a gene ID.
+        Only genes/isoforms with pdb structures are returned"""
         gene_isoforms = []
 
         # Escape input
@@ -82,23 +84,37 @@ class GeneIsoforms(Resource):
                 except OperationalError:
                     return BARUtils.error_exit('An internal error has occurred'), 500
                 [gene_isoforms.append(row.isoform) for row in rows]
+
+                # Found isoforms
+                if len(gene_isoforms) > 0:
+                    return BARUtils.success_exit(gene_isoforms)
+            else:
+                return BARUtils.error_exit('Invalid gene id'), 400
+        elif species == 'poplar':
+            if BARUtils.is_poplar_gene_valid(gene_id):
+                # Path is the location of poplar pdb file
+                if os.environ.get('BAR'):
+                    path = '/DATA/ePlants_Data/eplant_poplar/protein_structures/'
+                else:
+                    path = os.getcwd() + '/data/gene_information/gene_isoforms/'
+
+                path += gene_id + '.pdb'
+                if os.path.exists(path) and os.path.isfile(path):
+                    return BARUtils.success_exit(gene_id)
             else:
                 return BARUtils.error_exit('Invalid gene id'), 400
         else:
             return BARUtils.error_exit('No data for the given species')
 
-        # Return results if there are data
-        if len(gene_isoforms) > 0:
-            return BARUtils.success_exit(gene_isoforms)
-        else:
-            return BARUtils.error_exit('There are no data found for the given gene')
+        return BARUtils.error_exit('There are no data found for the given gene')
 
 
 @gene_information.route('/gene_isoforms/')
 class PostGeneIsoforms(Resource):
     @gene_information.expect(gene_isoforms_request_fields)
     def post(self):
-        """This end point returns gene isoforms data for a multiple genes for a species."""
+        """This end point returns gene isoforms data for a multiple genes for a species.
+        Only genes/isoforms with pdb structures are returned"""
 
         json_data = request.get_json()
         data = {}
@@ -114,27 +130,56 @@ class PostGeneIsoforms(Resource):
 
         # Set species and check gene ID format
         if species == 'arabidopsis':
+            # Check if gene is valid
             for gene in genes:
                 if not BARUtils.is_arabidopsis_gene_valid(gene):
                     return BARUtils.error_exit('Invalid gene id'), 400
+
+            # Query the database
+            database = isoforms()
+            try:
+                rows = database.query.filter(isoforms.gene.in_(genes)).all()
+            except OperationalError:
+                return BARUtils.error_exit('An internal error has occurred.'), 500
+
+            if len(rows) > 0:
+                for row in rows:
+                    if row.gene in data:
+                        data[row.gene].append(row.isoform)
+                    else:
+                        data[row.gene] = []
+                        data[row.gene].append(row.isoform)
+
+                return BARUtils.success_exit(data)
+
+            else:
+                return BARUtils.error_exit('No data for the given species/genes'), 400
+
+        elif species == 'poplar':
+            for gene in genes:
+                # Check if gene is valid
+                if not BARUtils.is_poplar_gene_valid(gene):
+                    return BARUtils.error_exit('Invalid gene id'), 400
+
+            # Path is the location of poplar pdb file
+            if os.environ.get('BAR'):
+                path = '/DATA/ePlants_Data/eplant_poplar/protein_structures/'
+            else:
+                path = os.getcwd() + '/data/gene_information/gene_isoforms/'
+
+            # Check if the genes exist.
+            for gene in genes:
+                gene_path = path + gene + '.pdb'
+
+                if os.path.exists(gene_path) and os.path.isfile(gene_path):
+                    data[gene] = []
+                    data[gene].append(gene)
+
+            # Return data if gene is found
+            if len(data) > 0:
+                return BARUtils.success_exit(data)
+            else:
+                return BARUtils.error_exit('No data for the given species/genes'), 400
+
         else:
             return BARUtils.error_exit('Invalid species'), 400
-
-        # Query the database
-        database = isoforms()
-        try:
-            rows = database.query.filter(isoforms.gene.in_(genes)).all()
-        except OperationalError:
-            return BARUtils.error_exit('An internal error has occurred.'), 500
-
-        if len(rows) > 0:
-            for row in rows:
-                if row.gene in data:
-                    data[row.gene].append(row.isoform)
-                else:
-                    data[row.gene] = []
-                    data[row.gene].append(row.isoform)
-        else:
-            return BARUtils.error_exit('No data for the given species/genes'), 400
-
-        return BARUtils.success_exit(data)

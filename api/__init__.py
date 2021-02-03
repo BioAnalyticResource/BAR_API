@@ -1,5 +1,3 @@
-from os import environ, getcwd
-from os.path import expanduser
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_restx import Api
@@ -7,6 +5,7 @@ from flask_cors import CORS
 from flask_caching import Cache
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+import os
 
 
 def create_app():
@@ -15,20 +14,26 @@ def create_app():
     CORS(bar_app)
 
     # Load configuration
-    if environ.get('CI'):
+    if os.environ.get('CI'):
         # Travis
         print('We are now loading configuration.')
-        bar_app.config.from_pyfile(getcwd() + '/config/BAR_API.cfg', silent=True)
-    elif environ.get('BAR'):
+        bar_app.config.from_pyfile(os.getcwd() + '/config/BAR_API.cfg', silent=True)
+    elif os.environ.get('BAR'):
         # The BAR
-        bar_app.config.from_pyfile(environ.get('BAR_API_PATH'), silent=True)
+        bar_app.config.from_pyfile(os.environ.get('BAR_API_PATH'), silent=True)
     else:
-        # Change this line if you want to load your own configuration. Example:
-        # bar_app.config.from_pyfile('../config/BAR_API.cfg', silent=True)
-        bar_app.config.from_pyfile(expanduser('~') + '/Asher/BAR_API.cfg', silent=True)
+        # The localhost
+        bar_app.config.from_pyfile(os.path.expanduser('~') + '/.config/BAR_API.cfg', silent=True)
 
-        # Load evironment variables
-        environ['API_MANAGER_KEY'] = bar_app.config.get('API_MANAGER_KEY')
+        # Load environment variables
+        if bar_app.config.get('API_MANAGER_KEY'):
+            os.environ['API_MANAGER_KEY'] = bar_app.config.get('API_MANAGER_KEY')
+        if bar_app.config.get('PHENIX'):
+            os.environ['PHENIX'] = bar_app.config.get('PHENIX')
+        if bar_app.config.get('PHENIX_VERSION'):
+            os.environ['PHENIX_VERSION'] = bar_app.config.get('PHENIX_VERSION')
+        if bar_app.config.get('PATH'):
+            os.environ['PATH'] = bar_app.config.get('PATH') + + ':/usr/local/phenix-1.18.2-3874/build/bin'
 
     # Initialize the database
     db.init_app(bar_app)
@@ -73,7 +78,7 @@ db = SQLAlchemy()
 cache = Cache(config={
     'CACHE_TYPE': 'redis',
     'CACHE_KEY_PREFIX': 'BAR_API_',
-    'CACHE_REDIS_PASSWORD': environ.get('BAR_REDIS_PASSWORD')
+    'CACHE_REDIS_PASSWORD': os.environ.get('BAR_REDIS_PASSWORD')
 })
 
 # Initialzie Limiter
