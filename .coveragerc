@@ -39,4 +39,12 @@ exclude_lines =
     if 0:
     if __name__ == .__main__.:
 
+    # Ignore try/catch blocks for now
+    try:
+    (.*)except(.*)
+
+    # Skip thing that only run on live BAR.
+    # No way to test these on CI
+    (.*)if os\.environ\.get\(.BAR.\):(.*)
+
 ignore_errors = True

@@ -24,26 +24,29 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+
     - name: Install dependencies
       run: |
         sudo systemctl start mysql.service
         python -m pip install --upgrade pip setuptools wheel
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        pip install -r requirements.txt
+
     - name: Initial setup
       run: ./config/init.sh
+
     - name: Lint with flake8
       run: flake8
-    - name: Pytest and code Coverage
+
+    - name: Pytest run by coverage
       run: |
         coverage run
-        coverage report
+        coverage report -m
       env:
         REDIS_HOST: localhost
         REDIS_PORT: 6379
         CI: true
-
-
