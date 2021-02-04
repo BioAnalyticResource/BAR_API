@@ -54,7 +54,8 @@ Change passwords in ```./init.sh``` and run this script to load the databases:
 ./init.sh
 ```
 Then delete ```./init.sh```
-12. Edit ```./api/__init__.py``` and update the location of your BAR_API.cfg file.
+
+12. Edit ```./api/__init__.py``` and update the location of your BAR_API.cfg file if you have changed it.
 13. Run ```pytest```. Tests should pass if the system is set up correctly.
 14. Run ```python app.py``` to start.
 15. Load ```http://localhost:5000/``` in a web browser. Enjoy :)
