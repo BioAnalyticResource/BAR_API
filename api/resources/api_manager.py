@@ -21,8 +21,6 @@ api_manager = Namespace('API Manager',
 class ApiManagerUtils:
     @staticmethod
     def check_admin_pass(user_key):
-        # Replace below with key from script in /home/bpereira/dev/pw-key
-        # key = b'jbqwbghmdv8okVqvqVL-KWc7cMqRU9FLpDIew6TTBoA='
         if user_key == os.environ.get('API_MANAGER_KEY'):
             return True
         else:
