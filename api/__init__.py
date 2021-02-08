@@ -33,7 +33,7 @@ def create_app():
         if bar_app.config.get('PHENIX_VERSION'):
             os.environ['PHENIX_VERSION'] = bar_app.config.get('PHENIX_VERSION')
         if bar_app.config.get('PATH'):
-            os.environ['PATH'] = bar_app.config.get('PATH') + + ':/usr/local/phenix-1.18.2-3874/build/bin'
+            os.environ['PATH'] = bar_app.config.get('PATH') + ':/usr/local/phenix-1.18.2-3874/build/bin'
 
     # Initialize the database
     db.init_app(bar_app)
@@ -41,7 +41,7 @@ def create_app():
     # Initialize the cache
     cache.init_app(bar_app)
 
-    # Rate limiter
+    # Initialize rate limiter
     limiter.init_app(bar_app)
 
     # Configure the Swagger UI
@@ -81,7 +81,7 @@ cache = Cache(config={
     'CACHE_REDIS_PASSWORD': os.environ.get('BAR_REDIS_PASSWORD')
 })
 
-# Initialzie Limiter
+# Initialize Limiter
 limiter = Limiter(key_func=get_remote_address)
 
 # Now create the bar_app

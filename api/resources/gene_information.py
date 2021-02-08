@@ -92,6 +92,9 @@ class GeneIsoforms(Resource):
                 return BARUtils.error_exit('Invalid gene id'), 400
         elif species == 'poplar':
             if BARUtils.is_poplar_gene_valid(gene_id):
+                # Format the gene first
+                gene_id = BARUtils.format_poplar(gene_id)
+
                 # Path is the location of poplar pdb file
                 if os.environ.get('BAR'):
                     path = '/DATA/ePlants_Data/eplant_poplar/protein_structures/'
