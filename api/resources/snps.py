@@ -24,7 +24,7 @@ class Phenix(Resource):
 
         arabidopsis_pdb_path = '/var/www/html/eplant_legacy/java/Phyre2-Models/Phyre2_'
         poplar_pdb_path = '/var/www/html/eplant_poplar/pdb/'
-        phenix_pdb_link = 'http://bar.utoronto.ca/phenix-pdbs/'
+        phenix_pdb_link = 'https://bar.utoronto.ca/phenix-pdbs/'
         phenix_pdb_path = '/var/www/html/phenix-pdbs/'
 
         # Check if genes ids are valid

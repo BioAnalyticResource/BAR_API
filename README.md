@@ -1,6 +1,6 @@
 # BAR API
 
-**master**: [![Build Status](https://github.com/BioAnalyticResource/BAR_API/workflows/BAR-API/badge.svg?branch=master)](https://github.com/BioAnalyticResource/BAR_API/actions?query=branch%3Adev) [![Coverage Status](https://coveralls.io/repos/github/BioAnalyticResource/BAR_API/badge.svg?branch=master)](https://coveralls.io/github/BioAnalyticResource/BAR_API?branch=dev) **dev**: [![Build Status](https://github.com/BioAnalyticResource/BAR_API/workflows/BAR-API/badge.svg?branch=dev)](https://github.com/BioAnalyticResource/BAR_API/actions?query=branch%3Adev) [![Coverage Status](https://coveralls.io/repos/github/BioAnalyticResource/BAR_API/badge.svg?branch=dev)](https://coveralls.io/github/BioAnalyticResource/BAR_API?branch=dev)
+**master**: [![Build Status](https://github.com/BioAnalyticResource/BAR_API/workflows/BAR-API/badge.svg?branch=master)](https://github.com/BioAnalyticResource/BAR_API/actions?query=branch%3Amaster) [![Coverage Status](https://coveralls.io/repos/github/BioAnalyticResource/BAR_API/badge.svg?branch=master)](https://coveralls.io/github/BioAnalyticResource/BAR_API?branch=dev) **dev**: [![Build Status](https://github.com/BioAnalyticResource/BAR_API/workflows/BAR-API/badge.svg?branch=dev)](https://github.com/BioAnalyticResource/BAR_API/actions?query=branch%3Adev) [![Coverage Status](https://coveralls.io/repos/github/BioAnalyticResource/BAR_API/badge.svg?branch=dev)](https://coveralls.io/github/BioAnalyticResource/BAR_API?branch=dev)
 
 [![Website Status](https://img.shields.io/website?url=http%3A%2F%2Fbar.utoronto.ca%2Fapi%2F)](http://bar.utoronto.ca/api/) ![GitHub repo size](https://img.shields.io/github/repo-size/BioAnalyticResource/BAR_API) [![LGTM Alerts](https://img.shields.io/lgtm/alerts/github/BioAnalyticResource/BAR_API)](https://lgtm.com/projects/g/BioAnalyticResource/BAR_API/?mode=list) [![LGTM
 Grade](https://img.shields.io/lgtm/grade/python/github/BioAnalyticResource/BAR_API)](https://lgtm.com/projects/g/BioAnalyticResource/BAR_API/latest/files/?sort=name&dir=ASC&mode=heatmap) [![Requirements Status](https://requires.io/github/BioAnalyticResource/BAR_API/requirements.svg?branch=master)](https://requires.io/github/BioAnalyticResource/BAR_API/requirements/?branch=master)
@@ -39,11 +39,23 @@ source venv/bin/activate.csh
 pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt
 ```
-10. Set up databases and configuration. Note: Change passwords in ```./config/init.sh``` and ```./config/BAR_API.cfg```
+10. Copy ```config/BAR_API.cgi``` to your preferred directory, for example:
 ```
-./config/init.sh
+cp config/BAR_API.cgi ~/.config/
 ```
-11. Edit ```./api/__init__.py``` and update the location of your BAR_API.cfg file.
-12. Run ```pytest```. Tests should pass if the system is set up correctly.
-13. Run ```python app.py``` to start.
-14. Load ```http://localhost:5000/``` in a web browser. Enjoy :)
+Add, update, and modify passwords and environment variables as needed.
+
+11. Copy ```./config/init.sh``` to BAR_API directory:
+```
+cp config/init.sh .
+```
+Change passwords in ```./init.sh``` and run this script to load the databases:
+```
+./init.sh
+```
+Then delete ```./init.sh```
+
+12. Edit ```./api/__init__.py``` and update the location of your BAR_API.cfg file if you have changed it.
+13. Run ```pytest```. Tests should pass if the system is set up correctly.
+14. Run ```python app.py``` to start.
+15. Load ```http://localhost:5000/``` in a web browser. Enjoy :)
