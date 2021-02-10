@@ -11,7 +11,8 @@ from flask_restx import Namespace, Resource
 from sqlalchemy.exc import SQLAlchemyError
 
 
-DATA_FOLDER = '/home/bpereira/dev/summarization-data'
+# DATA_FOLDER = '/home/bpereira/dev/summarization-data'
+DATA_FOLDER = '/windir/c/Users/Bruno/Documents/SummarizationCache'
 SUMMARIZATION_FILES_PATH = '/home/bpereira/dev/gene-summarization-bar/summarization'
 CROMWELL_URL = 'http://localhost:3020'
 
@@ -126,7 +127,7 @@ class SummarizationGeneExpressionCsvUpload(Resource):
             if file:
                 filename = secure_filename(file.filename)
                 key = request.headers.get('X-Api-Key')
-                file.save(os.path.join(DATA_FOLDER + '/' + key + '/', filename))
+                file.save(os.path.join(DATA_FOLDER, key, filename))
                 if SummarizationGeneExpressionUtils.decrement_uses(key):
                     inputs = """
                             {
@@ -323,7 +324,7 @@ class SummarizationGeneExpressionGetFileList(Resource):
         if request.method == 'POST':
             api_key = request.headers.get('x-api-key')
             files = []
-            for file in os.walk(DATA_FOLDER + api_key):
+            for file in os.walk(os.path.join(DATA_FOLDER, api_key)):
                 files.append(file[2])
             return BARUtils.success_exit(files)
 

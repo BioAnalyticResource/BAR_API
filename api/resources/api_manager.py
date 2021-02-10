@@ -5,6 +5,7 @@ from flask import request
 from flask_restx import Namespace, Resource
 from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
+import smtplib
 import os
 import uuid
 import requests
@@ -28,6 +29,22 @@ class ApiManagerUtils:
         else:
             return False
 
+    @staticmethod
+    def send_email():
+        """Sends a notification email alerting admins about new requests
+        """
+        if request.method == 'POST':
+            smtp_server = 'localhost'
+            sender_email = 'notify@bar.utoronto.ca'
+            receiver_email = 'nicholas.provart@utoronto.ca'
+            message = """\
+            Subject: New API key request(s) 
+
+            There have been new requests for API keys since your last visit. You can approve or reject them at http://bar.utoronto.ca/~bpereira/webservices/bar-api-request-manager/build/index.html."""
+
+            with smtplib.SMTP(smtp_server) as server:
+                server.ehlo()
+                server.sendmail(sender_email, receiver_email, message)
 
 @api_manager.route('/validate_admin_password', methods=['POST'], doc=False)
 class ApiManagerValidate(Resource):
@@ -59,12 +76,12 @@ class ApiManagerValidateKey(Resource):
 
             # Todo: I guess this is work in progress.
             if row is None:
-                return BARUtils.success_exit('Do data found')
+                return BARUtils.error_exit('API key not found'), 404
             else:
                 if row.uses_left > 0:
                     return BARUtils.success_exit('True')
                 else:
-                    return BARUtils.success_exit('False')
+                    return BARUtils.error_exit('API key expired'), 401
 
 
 @api_manager.route('/request', methods=['POST'], doc=False)
@@ -82,6 +99,8 @@ class ApiManagerRequest(Resource):
 
                 if row_req is None and row_users is None:
                     df.to_sql('requests', con, if_exists='append', index=False)
+                    ApiManagerUtils.send_email()
+                    return BARUtils.success_exit('Request sent')
                 else:
                     return BARUtils.error_exit('E-mail already in use'), 409
             except SQLAlchemyError:
