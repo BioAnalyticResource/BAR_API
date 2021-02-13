@@ -1,7 +1,7 @@
 import requests
 import os
 import re
-import datetime
+from datetime import datetime
 import pandas
 from api import db, limiter
 from flask import request, send_file
@@ -301,13 +301,13 @@ class SummarizationGeneExpressionSave(Resource):
                 if 'file' in request.files:
                     file = request.files['file']
                     extension = ''
-                    if file.content_type == 'text/xml':
-                        extension = '.xml'
+                    if file.content_type == 'text/json':
+                        extension = '.json'
                     elif file.content_type == 'image/svg+xml':
                         extension = '.svg'
                     else:
                         return BARUtils.error_exit('Invalid file type'), 400
-                    filename = os.path.join(DATA_FOLDER, api_key, dt_string + extension)
+                    filename = os.path.join(DATA_FOLDER, api_key, api_key + extension)
                     file.save(filename)
                     return BARUtils.success_exit(True)
                 else:
@@ -324,8 +324,9 @@ class SummarizationGeneExpressionGetFileList(Resource):
         if request.method == 'POST':
             api_key = request.headers.get('x-api-key')
             files = []
-            for file in os.walk(os.path.join(DATA_FOLDER, api_key)):
-                files.append(file[2])
+            if os.path.exists(os.path.join(DATA_FOLDER, api_key)):
+                for file in os.walk(os.path.join(DATA_FOLDER, api_key)):
+                    files.append(file[2])
             return BARUtils.success_exit(files)
 
 
