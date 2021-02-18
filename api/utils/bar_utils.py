@@ -59,4 +59,4 @@ class BARUtils:
         :param poplar_gene: gene id
         :return: String
         """
-        return poplar_gene.lower().replace('p', 'P').replace('g', 'G')
+        return poplar_gene.translate(str.maketrans('pOTRIg', 'PotriG'))

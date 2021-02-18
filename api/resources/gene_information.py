@@ -3,7 +3,7 @@ from flask import request
 from markupsafe import escape
 from sqlalchemy.exc import OperationalError
 from api.models.annotations_lookup import AgiAlias
-from api.models.eplant2 import isoforms
+from api.models.eplant2 import Isoforms
 from api.utils.bar_utils import BARUtils
 from marshmallow import Schema, ValidationError, fields as marshmallow_fields
 from api import cache
@@ -80,7 +80,7 @@ class GeneIsoforms(Resource):
         if species == 'arabidopsis':
             if BARUtils.is_arabidopsis_gene_valid(gene_id):
                 try:
-                    rows = isoforms.query.filter_by(gene=gene_id).all()
+                    rows = Isoforms.query.filter_by(gene=gene_id).all()
                 except OperationalError:
                     return BARUtils.error_exit('An internal error has occurred'), 500
                 [gene_isoforms.append(row.isoform) for row in rows]
@@ -92,6 +92,9 @@ class GeneIsoforms(Resource):
                 return BARUtils.error_exit('Invalid gene id'), 400
         elif species == 'poplar':
             if BARUtils.is_poplar_gene_valid(gene_id):
+                # Format the gene first
+                gene_id = BARUtils.format_poplar(gene_id)
+
                 # Path is the location of poplar pdb file
                 if os.environ.get('BAR'):
                     path = '/DATA/ePlants_Data/eplant_poplar/protein_structures/'
@@ -136,9 +139,9 @@ class PostGeneIsoforms(Resource):
                     return BARUtils.error_exit('Invalid gene id'), 400
 
             # Query the database
-            database = isoforms()
+            database = Isoforms()
             try:
-                rows = database.query.filter(isoforms.gene.in_(genes)).all()
+                rows = database.query.filter(Isoforms.gene.in_(genes)).all()
             except OperationalError:
                 return BARUtils.error_exit('An internal error has occurred.'), 500
 
