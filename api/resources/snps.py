@@ -24,7 +24,7 @@ class Phenix(Resource):
 
         arabidopsis_pdb_path = '/var/www/html/eplant_legacy/java/Phyre2-Models/Phyre2_'
         poplar_pdb_path = '/var/www/html/eplant_poplar/pdb/'
-        phenix_pdb_link = 'https://bar.utoronto.ca/phenix-pdbs/'
+        phenix_pdb_link = '//bar.utoronto.ca/phenix-pdbs/'
         phenix_pdb_path = '/var/www/html/phenix-pdbs/'
 
         # Check if genes ids are valid
@@ -43,8 +43,8 @@ class Phenix(Resource):
             return BARUtils.error_exit('Invalid moving pdb gene id'), 400
 
         # Check if model already exists
-        phenix_file_name = fixed_pdb.upper() + "-" + moving_pdb.upper() + "-phenix.pdb"
-        response = requests.get(phenix_pdb_link + phenix_file_name)
+        phenix_file_name = fixed_pdb.upper() + '-' + moving_pdb.upper() + '-phenix.pdb'
+        response = requests.get('https:' + phenix_pdb_link + phenix_file_name)
 
         # If not, generate the model
         if response.status_code != 200:
@@ -53,7 +53,7 @@ class Phenix(Resource):
                             fixed_pdb_path,
                             moving_pdb_path])
 
-        return redirect(phenix_pdb_link + phenix_file_name)
+        return BARUtils.success_exit(phenix_pdb_link + phenix_file_name)
 
 
 @snps.route('/gene_alias/<string:gene_id>')
