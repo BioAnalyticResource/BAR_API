@@ -1,5 +1,5 @@
 from flask_restx import Namespace, Resource
-from flask import redirect  # , send_file
+# DISABLED from flask import redirect  # , send_file
 from markupsafe import escape
 from sqlalchemy.exc import OperationalError
 from api.models.poplar_nssnp import ProteinReference, SnpsToProtein, SnpsReference
