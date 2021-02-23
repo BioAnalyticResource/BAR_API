@@ -1,31 +1,32 @@
 from api import app
 from unittest import TestCase
-import requests
 
 
 class TestIntegrations(TestCase):
     def setUp(self):
         self.app_client = app.test_client()
 
-    def DISABLED_test_get_phenix(self):
+    def test_get_phenix(self):
         """This function test Phenix.
         I don't have a good way to test this end point. So we assume the pdb file exits on the BAR for now.
         This is disabled for now.
         """
 
         # Valid request
-        url = self.app_client.get('/snps/phenix/Potri.016G107900/AT5G01040.1')
-        response = requests.get(url.location).text
-        with open('tests/data/POTRI.016G107900-AT5G01040.1-phenix.pdb') as pdb_file:
-            expected = pdb_file.read()
-        self.assertEqual(response, expected)
+        response = self.app_client.get('/snps/phenix/Potri.016G107900/AT5G01040.1')
+        expected = {
+            "wasSuccessful": True,
+            "data": "//bar.utoronto.ca/phenix-pdbs/POTRI.016G107900-AT5G01040.1-phenix.pdb"
+        }
+        self.assertEqual(response.json, expected)
 
         # Valid request
-        url = self.app_client.get('/snps/phenix/AT5G01040.1/Potri.016G107900')
-        response = requests.get(url.location).text
-        with open('tests/data/AT5G01040.1-POTRI.016G107900-phenix.pdb') as pdb_file:
-            expected = pdb_file.read()
-        self.assertEqual(response, expected)
+        response = self.app_client.get('/snps/phenix/AT5G01040.1/Potri.016G107900')
+        expected = {
+            "wasSuccessful": True,
+            "data": "//bar.utoronto.ca/phenix-pdbs/AT5G01040.1-POTRI.016G107900-phenix.pdb"
+        }
+        self.assertEqual(response.json, expected)
 
         # Invalid fixed gene
         response = self.app_client.get('/snps/phenix/abc/AT5G01040.1')
