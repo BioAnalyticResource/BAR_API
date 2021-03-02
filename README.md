@@ -14,7 +14,23 @@ Apart from Travis CI and testing on the live BAR, we frequently test the API on 
 * OpenBSD 6.7-CURRENT (Maria DB 10.4.12v1, Python 3.8.3 and Redis 6.0.5)
 * FreeBSD 12.1-RELEASE-p6 (MySQL 8.0.20, Python 3.8.3 and Redis 5.0.9)
 
-## Run on your own computer
+## Run on your own computer with Docker
+
+1. Install [Docker](https://docs.docker.com/get-docker/)
+2. Install [Docker Compose](https://docs.docker.com/compose/install/)
+3. Install [Git](https://git-scm.com/downloads)
+4. Clone this repository and change directory to ```BAR_API```
+5. Build docker images
+```
+docker-compose build
+```
+6. Run docker containers (-d is detached)
+```
+docker-compose up -d
+```
+7. Load ```http://localhost:5000/``` in a web browser. Enjoy :)
+
+## Run on your own computer without Docker
 
 1. Install [MySQL](https://www.mysql.com/products/community/) or [Maria DB](https://mariadb.com/downloads/).
 2. Install [Redis](https://redis.io/download).
