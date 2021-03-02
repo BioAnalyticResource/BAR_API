@@ -13,19 +13,18 @@ RUN apt update && \
         libmariadb-dev \
         python3-dev
 
-RUN pip3 install --upgrade pip setuptools wheel
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN pip3 install --upgrade pip setuptools wheel && \
+    pip3 install --no-cache-dir -r requirements.txt
 
 COPY . /usr/src/app
 
 # Docker specific configuration
 # MySQL is on a different host now
-RUN sed -i 's/mysql/mysql -h BAR_mysqldb/' ./config/init.sh
-RUN sed -i 's/localhost/BAR_mysqldb/' ./config/BAR_API.cfg
-
 # To expose app, it must listen to 0.0.0.0 and not localhost
-RUN sed -i 's/run()/run(host="0.0.0.0")/' ./app.py
-
 # wait-for-it must only one command.
-RUN echo "python3 app.py" >> ./config/init.sh
-RUN echo "CACHE_REDIS_HOST = 'BAR_redis'" >> ./config/BAR_API.cfg
+RUN sed -i 's/mysql/mysql -h BAR_mysqldb/' ./config/init.sh && \
+    sed -i 's/localhost/BAR_mysqldb/' ./config/BAR_API.cfg && \
+    sed -i 's/run()/run(host="0.0.0.0")/' ./app.py && \
+    echo "pytest -s" >> ./config/init.sh && \
+    echo "python3 app.py" >> ./config/init.sh && \
+    echo "CACHE_REDIS_HOST = 'BAR_redis'" >> ./config/BAR_API.cfg
