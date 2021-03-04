@@ -5,6 +5,7 @@ from flask_cors import CORS
 from flask_caching import Cache
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from sqlalchemy import MetaData
 import os
 
 
@@ -35,8 +36,13 @@ def create_app():
         if bar_app.config.get('PATH'):
             os.environ['PATH'] = bar_app.config.get('PATH') + ':/usr/local/phenix-1.18.2-3874/build/bin'
 
-    # Initialize the database
-    db.init_app(bar_app)
+    # Initialize the databases
+    annotations_lookup_db.init_app(bar_app)
+    eplant2_db.init_app(bar_app)
+    eplant_poplar_db.init_app(bar_app)
+    poplar_nssnp_db.init_app(bar_app)
+    single_cell_db.init_app(bar_app)
+    summarization_db.init_app(bar_app)
 
     # Initialize the cache
     cache.init_app(bar_app)
@@ -72,7 +78,14 @@ def create_app():
 
 
 # Initialize database system
-db = SQLAlchemy()
+# This is needed because multiple databases have the same database name
+# Metadata cannot have multiple tables with the same name
+annotations_lookup_db = SQLAlchemy(metadata=MetaData())
+eplant2_db = SQLAlchemy(metadata=MetaData())
+eplant_poplar_db = SQLAlchemy(metadata=MetaData())
+poplar_nssnp_db = SQLAlchemy(metadata=MetaData())
+single_cell_db = SQLAlchemy(metadata=MetaData())
+summarization_db = SQLAlchemy(metadata=MetaData())
 
 # Initialize Redis
 cache = Cache(config={

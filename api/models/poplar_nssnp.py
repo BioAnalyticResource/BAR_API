@@ -1,4 +1,4 @@
-from api import db
+from api import poplar_nssnp_db as db
 
 
 class ProteinReference(db.Model):

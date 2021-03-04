@@ -23,7 +23,7 @@ services:
     container_name: BAR_API
     command: wait-for-it --strict BAR_mysqldb:3306 -- ./config/init.sh
     restart: always
-    # Run like its running on CI/CD pipeline
+    # Run like it's running on CI/CD pipeline
     environment:
       - REDIS_HOST=BAR_redis
       - REDIS_PORT=6379

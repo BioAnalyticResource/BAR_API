@@ -14,6 +14,7 @@ mysql -u $DB_USER -p$DB_PASS < ./config/databases/single_cell.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/eplant2.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/summarization.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/poplar_nssnp.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/eplant_poplar.sql
 
 echo "Data are now loaded. Preparing API config"
 echo "Please manually edit config file!"
