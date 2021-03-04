@@ -1,4 +1,4 @@
-from api import db
+from api import single_cell_db as db
 
 
 class SingleCell(db.Model):

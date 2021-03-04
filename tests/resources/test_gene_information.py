@@ -74,8 +74,8 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
-        response = self.app_client.get('/gene_information/gene_isoforms/poplar/Potri.001G000200')
-        expected = {"wasSuccessful": True, "data": "Potri.001G000200"}
+        response = self.app_client.get('/gene_information/gene_isoforms/poplar/Potri.001G000300')
+        expected = {"wasSuccessful": True, "data": ["Potri.001G000300.1"]}
         self.assertEqual(response.json, expected)
 
         # Data not found, but gene is valid
@@ -147,19 +147,22 @@ class TestIntegrations(TestCase):
         data = {
             "species": "poplar",
             "genes": [
-                "Potri.001G000200",
-                "Potri.001G000300"
+                "Potri.001G000300",
+                "Potri.001G000400"
             ]
         }
         response = self.app_client.post('/gene_information/gene_isoforms/', json=data)
         expected = {
             "wasSuccessful": True,
             "data": {
-                "Potri.001G000200": [
-                    "Potri.001G000200"
-                ],
                 "Potri.001G000300": [
-                    "Potri.001G000300"
+                    "Potri.001G000300.1"
+                ],
+                "Potri.001G000400": [
+                    "Potri.001G000400.1",
+                    "Potri.001G000400.2",
+                    "Potri.001G000400.3",
+                    "Potri.001G000400.4"
                 ]
             }
         }
@@ -222,7 +225,7 @@ class TestIntegrations(TestCase):
             "wasSuccessful": True,
             "data": {
                 "Potri.001G000300": [
-                    "Potri.001G000300"
+                    "Potri.001G000300.1"
                 ]
             }
         }

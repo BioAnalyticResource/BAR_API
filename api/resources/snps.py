@@ -1,10 +1,9 @@
 from flask_restx import Namespace, Resource
-# DISABLED from flask import redirect  # , send_file
 from markupsafe import escape
 from sqlalchemy.exc import OperationalError
 from api.models.poplar_nssnp import ProteinReference, SnpsToProtein, SnpsReference
 from api.utils.bar_utils import BARUtils
-from api import cache, db
+from api import cache, poplar_nssnp_db as db
 import re
 import subprocess
 import requests

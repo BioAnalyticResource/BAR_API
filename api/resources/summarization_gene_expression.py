@@ -3,7 +3,8 @@ import os
 import re
 import datetime
 import pandas
-from api import db, limiter
+from api import summarization_db as db
+from api import limiter
 from flask import request, send_file
 from werkzeug.utils import secure_filename
 from api.utils.bar_utils import BARUtils
