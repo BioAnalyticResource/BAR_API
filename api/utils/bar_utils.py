@@ -8,7 +8,7 @@ class BARUtils:
         :param msg: message to pass on failure
         :return:
         """
-        result = {'wasSuccessful': False, 'error': msg}
+        result = {"wasSuccessful": False, "error": msg}
         return result
 
     @staticmethod
@@ -17,7 +17,7 @@ class BARUtils:
         :param msg: the actual data the needs to be output
         :return:
         """
-        result = {'wasSuccessful': True, 'data': msg}
+        result = {"wasSuccessful": True, "data": msg}
         return result
 
     @staticmethod
@@ -59,4 +59,4 @@ class BARUtils:
         :param poplar_gene: gene id
         :return: String
         """
-        return poplar_gene.translate(str.maketrans('pOTRIg', 'PotriG'))
+        return poplar_gene.translate(str.maketrans("pOTRIg", "PotriG"))
