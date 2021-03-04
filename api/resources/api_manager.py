@@ -1,4 +1,4 @@
-from api import db
+from api import summarization_db as db
 from api.models.summarization import Users, Requests
 from api.utils.bar_utils import BARUtils
 from flask import request

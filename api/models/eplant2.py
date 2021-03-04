@@ -1,4 +1,4 @@
-from api import db
+from api import eplant2_db as db
 
 
 class Isoforms(db.Model):

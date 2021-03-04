@@ -1,4 +1,4 @@
-from api import db
+from api import summarization_db as db
 
 
 class SummarizationGeneExpression(db.Model):
