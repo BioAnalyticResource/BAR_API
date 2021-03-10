@@ -13,7 +13,7 @@ snps = Namespace("SNPs", description="Information about SNPs", path="/snps")
 
 @snps.route("/phenix/<fixed_pdb>/<moving_pdb>")
 class Phenix(Resource):
-    @snps.param("fixed_pdb", _in="path", default="Potri.016G107900")
+    @snps.param("fixed_pdb", _in="path", default="Potri.016G107900.1")
     @snps.param("moving_pdb", _in="path", default="AT5G01040.1")
     def get(self, fixed_pdb="", moving_pdb=""):
         """This end point returns the superimposition of the moving PDB onto moving PDB in PDB format"""

@@ -13,18 +13,18 @@ class TestIntegrations(TestCase):
         """
 
         # Valid request
-        response = self.app_client.get("/snps/phenix/Potri.016G107900/AT5G01040.1")
+        response = self.app_client.get("/snps/phenix/Potri.016G107900.1/AT5G01040.1")
         expected = {
             "wasSuccessful": True,
-            "data": "//bar.utoronto.ca/phenix-pdbs/POTRI.016G107900-AT5G01040.1-phenix.pdb",
+            "data": "//bar.utoronto.ca/phenix-pdbs/POTRI.016G107900.1-AT5G01040.1-phenix.pdb",
         }
         self.assertEqual(response.json, expected)
 
         # Valid request
-        response = self.app_client.get("/snps/phenix/AT5G01040.1/Potri.016G107900")
+        response = self.app_client.get("/snps/phenix/AT5G01040.1/Potri.016G107900.1")
         expected = {
             "wasSuccessful": True,
-            "data": "//bar.utoronto.ca/phenix-pdbs/AT5G01040.1-POTRI.016G107900-phenix.pdb",
+            "data": "//bar.utoronto.ca/phenix-pdbs/AT5G01040.1-POTRI.016G107900.1-phenix.pdb",
         }
         self.assertEqual(response.json, expected)
 
@@ -34,7 +34,7 @@ class TestIntegrations(TestCase):
         self.assertEqual(response.json, expected)
 
         # Invalid moving gene
-        response = self.app_client.get("/snps/phenix/Potri.016G107900/abc")
+        response = self.app_client.get("/snps/phenix/Potri.016G107900.1/abc")
         expected = {"wasSuccessful": False, "error": "Invalid moving pdb gene id"}
         self.assertEqual(response.json, expected)
 

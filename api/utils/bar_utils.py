@@ -37,7 +37,7 @@ class BARUtils:
         :param gene:
         :return: True if valid
         """
-        if re.search(r"^POTRI\.\d{3}g\d{6}.?\d?$", gene, re.I):
+        if re.search(r"^POTRI\.\d{3}g\d{6}.?\d{0,3}$", gene, re.I):
             return True
         else:
             return False
