@@ -15,26 +15,30 @@ def create_app():
     CORS(bar_app)
 
     # Load configuration
-    if os.environ.get('CI'):
+    if os.environ.get("CI"):
         # Travis
-        print('We are now loading configuration.')
-        bar_app.config.from_pyfile(os.getcwd() + '/config/BAR_API.cfg', silent=True)
-    elif os.environ.get('BAR'):
+        print("We are now loading configuration.")
+        bar_app.config.from_pyfile(os.getcwd() + "/config/BAR_API.cfg", silent=True)
+    elif os.environ.get("BAR"):
         # The BAR
-        bar_app.config.from_pyfile(os.environ.get('BAR_API_PATH'), silent=True)
+        bar_app.config.from_pyfile(os.environ.get("BAR_API_PATH"), silent=True)
     else:
         # The localhost
-        bar_app.config.from_pyfile(os.path.expanduser('~') + '/.config/BAR_API.cfg', silent=True)
+        bar_app.config.from_pyfile(
+            os.path.expanduser("~") + "/.config/BAR_API.cfg", silent=True
+        )
 
         # Load environment variables
-        if bar_app.config.get('API_MANAGER_KEY'):
-            os.environ['API_MANAGER_KEY'] = bar_app.config.get('API_MANAGER_KEY')
-        if bar_app.config.get('PHENIX'):
-            os.environ['PHENIX'] = bar_app.config.get('PHENIX')
-        if bar_app.config.get('PHENIX_VERSION'):
-            os.environ['PHENIX_VERSION'] = bar_app.config.get('PHENIX_VERSION')
-        if bar_app.config.get('PATH'):
-            os.environ['PATH'] = bar_app.config.get('PATH') + ':/usr/local/phenix-1.18.2-3874/build/bin'
+        if bar_app.config.get("API_MANAGER_KEY"):
+            os.environ["API_MANAGER_KEY"] = bar_app.config.get("API_MANAGER_KEY")
+        if bar_app.config.get("PHENIX"):
+            os.environ["PHENIX"] = bar_app.config.get("PHENIX")
+        if bar_app.config.get("PHENIX_VERSION"):
+            os.environ["PHENIX_VERSION"] = bar_app.config.get("PHENIX_VERSION")
+        if bar_app.config.get("PATH"):
+            os.environ["PATH"] = (
+                bar_app.config.get("PATH") + ":/usr/local/phenix-1.18.2-3874/build/bin"
+            )
 
     # Initialize the databases
     annotations_lookup_db.init_app(bar_app)
@@ -52,15 +56,17 @@ def create_app():
 
     # Configure the Swagger UI
     bar_api = Api(
-        title='BAR API',
-        version='0.0.1',
-        description='API for the Bio-Analytic Resource'
+        title="BAR API",
+        version="0.0.1",
+        description="API for the Bio-Analytic Resource",
     )
 
     # Now add routes
     from api.resources.gene_information import gene_information
     from api.resources.rnaseq_gene_expression import rnaseq_gene_expression
-    from api.resources.summarization_gene_expression import summarization_gene_expression
+    from api.resources.summarization_gene_expression import (
+        summarization_gene_expression,
+    )
     from api.resources.api_manager import api_manager
     from api.resources.proxy import bar_proxy
     from api.resources.thalemine import thalemine
@@ -88,11 +94,13 @@ single_cell_db = SQLAlchemy(metadata=MetaData())
 summarization_db = SQLAlchemy(metadata=MetaData())
 
 # Initialize Redis
-cache = Cache(config={
-    'CACHE_TYPE': 'redis',
-    'CACHE_KEY_PREFIX': 'BAR_API_',
-    'CACHE_REDIS_PASSWORD': os.environ.get('BAR_REDIS_PASSWORD')
-})
+cache = Cache(
+    config={
+        "CACHE_TYPE": "flask_caching.backends.redis",
+        "CACHE_KEY_PREFIX": "BAR_API_",
+        "CACHE_REDIS_PASSWORD": os.environ.get("BAR_REDIS_PASSWORD"),
+    }
+)
 
 # Initialize Limiter
 limiter = Limiter(key_func=get_remote_address)
@@ -100,5 +108,5 @@ limiter = Limiter(key_func=get_remote_address)
 # Now create the bar_app
 app = create_app()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run()
