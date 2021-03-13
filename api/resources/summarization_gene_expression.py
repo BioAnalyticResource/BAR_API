@@ -11,8 +11,8 @@ from flask_restx import Namespace, Resource
 from sqlalchemy.exc import SQLAlchemyError
 
 
-# DATA_FOLDER = '/home/bpereira/dev/summarization-data'
-DATA_FOLDER = '/windir/c/Users/Bruno/Documents/SummarizationCache'
+DATA_FOLDER = '/home/bpereira/dev/summarization-data'
+# DATA_FOLDER = '/windir/c/Users/Bruno/Documents/SummarizationCache'
 SUMMARIZATION_FILES_PATH = '/home/bpereira/dev/gene-summarization-bar/summarization'
 CROMWELL_URL = 'http://localhost:3020'
 
@@ -192,7 +192,7 @@ class SummarizationGeneExpressionValue(Resource):
                     except SQLAlchemyError:
                         return BARUtils.error_exit('Internal server error'), 500
                     for row in rows:
-                        values.update({row.Sample: row.Value})
+                      values.update({str(row.Sample): float(row.Value)})
                 else:
                     values = []
                     try:

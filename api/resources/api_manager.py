@@ -10,7 +10,7 @@ import os
 import uuid
 import requests
 import pandas
-
+from cryptography.fernet import Fernet
 
 CAPTCHA_KEY_FILE = '/home/bpereira/data/bar.summarization/key'
 
@@ -23,8 +23,14 @@ class ApiManagerUtils:
     @staticmethod
     def check_admin_pass(user_key):
         # Replace below with key from script in /home/bpereira/dev/pw-key
-        # key = b'jbqwbghmdv8okVqvqVL-KWc7cMqRU9FLpDIew6TTBoA='
-        if user_key == os.environ.get('API_MANAGER_KEY'):
+        # key = app.config['ADMIN_ENCRYPT_KEY']
+        cipher_suite = Fernet(key)
+        with open('/home/bpereira/dev/pw-script/key.bin', 'rb') as f:
+            for line in f:
+                encrypted_key = line
+        uncipher_text = cipher_suite.decrypt(encrypted_key)
+        plain_text_encryptedpassword = bytes(uncipher_text).decode("utf-8")
+        if user_key == plain_text_encryptedpassword:
             return True
         else:
             return False
@@ -40,7 +46,8 @@ class ApiManagerUtils:
             message = """\
             Subject: New API key request(s) 
 
-            There have been new requests for API keys since your last visit. You can approve or reject them at http://bar.utoronto.ca/~bpereira/webservices/bar-api-request-manager/build/index.html."""
+            There have been new requests for API keys since your last visit. 
+            You can approve or reject them at http://bar.utoronto.ca/~bpereira/webservices/bar-api-request-manager/build/index.html."""
 
             with smtplib.SMTP(smtp_server) as server:
                 server.ehlo()
