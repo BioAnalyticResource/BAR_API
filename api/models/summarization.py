@@ -1,17 +1,17 @@
-from api import db
+from api import summarization_db as db
 
 
 class SummarizationGeneExpression(db.Model):
-    __bind_key__ = 'summarization'
-    __tablename__ = 'summarization'
+    __bind_key__ = "summarization"
+    __tablename__ = "summarization"
     Gene = db.Column(db.String(24), primary_key=True)
     Value = db.Column(db.Integer, primary_key=True)
     Sample = db.Column(db.String(32), primary_key=True)
 
 
 class Requests(db.Model):
-    __bind_key__ = 'summarization'
-    __tablename__ = 'requests'
+    __bind_key__ = "summarization"
+    __tablename__ = "requests"
     first_name = db.Column(db.String(32), index=True)
     last_name = db.Column(db.String(32), index=True)
     email = db.Column(db.String(120), index=True, primary_key=True, unique=True)
@@ -21,8 +21,8 @@ class Requests(db.Model):
 
 
 class Users(db.Model):
-    __bind_key__ = 'summarization'
-    __tablename__ = 'users'
+    __bind_key__ = "summarization"
+    __tablename__ = "users"
     first_name = db.Column(db.String(32), index=True)
     last_name = db.Column(db.String(32), index=True)
     email = db.Column(db.String(120), index=True, unique=True)
