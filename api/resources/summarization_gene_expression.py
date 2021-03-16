@@ -1,7 +1,7 @@
 import requests
 import os
 import re
-import datetime
+from datetime import datetime
 import pandas
 from api import summarization_db as db
 from api import limiter
@@ -12,9 +12,10 @@ from flask_restx import Namespace, Resource
 from sqlalchemy.exc import SQLAlchemyError
 
 
-DATA_FOLDER = "/home/bpereira/dev/summarization-data"
-SUMMARIZATION_FILES_PATH = "/home/bpereira/dev/gene-summarization-bar/summarization"
-CROMWELL_URL = "http://localhost:3020"
+DATA_FOLDER = '/home/bpereira/dev/summarization-data'
+# DATA_FOLDER = '/windir/c/Users/Bruno/Documents/SummarizationCache'
+SUMMARIZATION_FILES_PATH = '/home/bpereira/dev/gene-summarization-bar/summarization'
+CROMWELL_URL = 'http://localhost:3020'
 
 
 summarization_gene_expression = Namespace(
@@ -148,8 +149,8 @@ class SummarizationGeneExpressionCsvUpload(Resource):
             file = request.files["file"]
             if file:
                 filename = secure_filename(file.filename)
-                key = request.headers.get("X-Api-Key")
-                file.save(os.path.join(DATA_FOLDER + "/" + key + "/", filename))
+                key = request.headers.get('X-Api-Key')
+                file.save(os.path.join(DATA_FOLDER, key, filename))
                 if SummarizationGeneExpressionUtils.decrement_uses(key):
                     inputs = (
                         """
@@ -225,7 +226,7 @@ class SummarizationGeneExpressionValue(Resource):
                     except SQLAlchemyError:
                         return BARUtils.error_exit("Internal server error"), 500
                     for row in rows:
-                        values.update({row.Sample: row.Value})
+                      values.update({str(row.Sample): float(row.Value)})
                 else:
                     values = []
                     try:
@@ -335,16 +336,16 @@ class SummarizationGeneExpressionSave(Resource):
             elif SummarizationGeneExpressionUtils.decrement_uses(api_key):
                 now = datetime.now()
                 dt_string = now.strftime("%d-%m-%Y_%H-%M-%S")
-                if "file" in request.files:
-                    file = request.files["file"]
-                    extension = ""
-                    if file.content_type == "text/xml":
-                        extension = ".xml"
-                    elif file.content_type == "image/svg+xml":
-                        extension = ".svg"
+                if 'file' in request.files:
+                    file = request.files['file']
+                    extension = ''
+                    if file.content_type == 'text/json':
+                        extension = '.json'
+                    elif file.content_type == 'image/svg+xml':
+                        extension = '.svg'
                     else:
-                        return BARUtils.error_exit("Invalid file type"), 400
-                    filename = os.path.join(DATA_FOLDER, api_key, dt_string + extension)
+                        return BARUtils.error_exit('Invalid file type'), 400
+                    filename = os.path.join(DATA_FOLDER, api_key, api_key + extension)
                     file.save(filename)
                     return BARUtils.success_exit(True)
                 else:
@@ -360,8 +361,9 @@ class SummarizationGeneExpressionGetFileList(Resource):
         if request.method == "POST":
             api_key = request.headers.get("x-api-key")
             files = []
-            for file in os.walk(DATA_FOLDER + api_key):
-                files.append(file[2])
+            if os.path.exists(os.path.join(DATA_FOLDER, api_key)):
+                for file in os.walk(os.path.join(DATA_FOLDER, api_key)):
+                    files.append(file[2])
             return BARUtils.success_exit(files)
 
 
