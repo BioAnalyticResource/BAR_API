@@ -1,0 +1,35 @@
+version: "3.7"
+
+services:
+
+  mysqldb:
+    image: mysql:8.0.23
+    container_name: BAR_mysqldb
+    # Must use this for mariadb client to connect
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+
+  redis:
+    image: redis:6.2.0
+    container_name: BAR_redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  api:
+    build: .
+    container_name: BAR_API
+    command: wait-for-it --strict BAR_mysqldb:3306 -- ./config/init.sh
+    restart: always
+    # Run like it's running on CI/CD pipeline
+    environment:
+      - REDIS_HOST=BAR_redis
+      - REDIS_PORT=6379
+      - CI=TRUE
+    ports:
+      - "5000:5000"
+    depends_on:
+      - redis
+      - mysqldb

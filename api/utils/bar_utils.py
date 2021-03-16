@@ -8,7 +8,7 @@ class BARUtils:
         :param msg: message to pass on failure
         :return:
         """
-        result = {'wasSuccessful': False, 'error': msg}
+        result = {"wasSuccessful": False, "error": msg}
         return result
 
     @staticmethod
@@ -17,7 +17,7 @@ class BARUtils:
         :param msg: the actual data the needs to be output
         :return:
         """
-        result = {'wasSuccessful': True, 'data': msg}
+        result = {"wasSuccessful": True, "data": msg}
         return result
 
     @staticmethod
@@ -37,7 +37,7 @@ class BARUtils:
         :param gene:
         :return: True if valid
         """
-        if re.search(r"^POTRI\.\d{3}g\d{6}.?\d?$", gene, re.I):
+        if re.search(r"^POTRI\.\d{3}g\d{6}.?\d{0,3}$", gene, re.I):
             return True
         else:
             return False
@@ -59,4 +59,4 @@ class BARUtils:
         :param poplar_gene: gene id
         :return: String
         """
-        return poplar_gene.lower().replace('p', 'P').replace('g', 'G')
+        return poplar_gene.translate(str.maketrans("pOTRIg", "PotriG"))

@@ -5,6 +5,7 @@ from flask_cors import CORS
 from flask_caching import Cache
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from sqlalchemy import MetaData
 import os
 
 
@@ -14,47 +15,58 @@ def create_app():
     CORS(bar_app)
 
     # Load configuration
-    if os.environ.get('CI'):
+    if os.environ.get("CI"):
         # Travis
-        print('We are now loading configuration.')
-        bar_app.config.from_pyfile(os.getcwd() + '/config/BAR_API.cfg', silent=True)
-    elif os.environ.get('BAR'):
+        print("We are now loading configuration.")
+        bar_app.config.from_pyfile(os.getcwd() + "/config/BAR_API.cfg", silent=True)
+    elif os.environ.get("BAR"):
         # The BAR
-        bar_app.config.from_pyfile(os.environ.get('BAR_API_PATH'), silent=True)
+        bar_app.config.from_pyfile(os.environ.get("BAR_API_PATH"), silent=True)
     else:
         # The localhost
-        bar_app.config.from_pyfile(os.path.expanduser('~') + '/.config/BAR_API.cfg', silent=True)
+        bar_app.config.from_pyfile(
+            os.path.expanduser("~") + "/.config/BAR_API.cfg", silent=True
+        )
 
         # Load environment variables
-        if bar_app.config.get('API_MANAGER_KEY'):
-            os.environ['API_MANAGER_KEY'] = bar_app.config.get('API_MANAGER_KEY')
-        if bar_app.config.get('PHENIX'):
-            os.environ['PHENIX'] = bar_app.config.get('PHENIX')
-        if bar_app.config.get('PHENIX_VERSION'):
-            os.environ['PHENIX_VERSION'] = bar_app.config.get('PHENIX_VERSION')
-        if bar_app.config.get('PATH'):
-            os.environ['PATH'] = bar_app.config.get('PATH') + + ':/usr/local/phenix-1.18.2-3874/build/bin'
+        if bar_app.config.get("API_MANAGER_KEY"):
+            os.environ["API_MANAGER_KEY"] = bar_app.config.get("API_MANAGER_KEY")
+        if bar_app.config.get("PHENIX"):
+            os.environ["PHENIX"] = bar_app.config.get("PHENIX")
+        if bar_app.config.get("PHENIX_VERSION"):
+            os.environ["PHENIX_VERSION"] = bar_app.config.get("PHENIX_VERSION")
+        if bar_app.config.get("PATH"):
+            os.environ["PATH"] = (
+                bar_app.config.get("PATH") + ":/usr/local/phenix-1.18.2-3874/build/bin"
+            )
 
-    # Initialize the database
-    db.init_app(bar_app)
+    # Initialize the databases
+    annotations_lookup_db.init_app(bar_app)
+    eplant2_db.init_app(bar_app)
+    eplant_poplar_db.init_app(bar_app)
+    poplar_nssnp_db.init_app(bar_app)
+    single_cell_db.init_app(bar_app)
+    summarization_db.init_app(bar_app)
 
     # Initialize the cache
     cache.init_app(bar_app)
 
-    # Rate limiter
+    # Initialize rate limiter
     limiter.init_app(bar_app)
 
     # Configure the Swagger UI
     bar_api = Api(
-        title='BAR API',
-        version='0.0.1',
-        description='API for the Bio-Analytic Resource'
+        title="BAR API",
+        version="0.0.1",
+        description="API for the Bio-Analytic Resource",
     )
 
     # Now add routes
     from api.resources.gene_information import gene_information
     from api.resources.rnaseq_gene_expression import rnaseq_gene_expression
-    from api.resources.summarization_gene_expression import summarization_gene_expression
+    from api.resources.summarization_gene_expression import (
+        summarization_gene_expression,
+    )
     from api.resources.api_manager import api_manager
     from api.resources.proxy import bar_proxy
     from api.resources.thalemine import thalemine
@@ -72,20 +84,29 @@ def create_app():
 
 
 # Initialize database system
-db = SQLAlchemy()
+# This is needed because multiple databases have the same database name
+# Metadata cannot have multiple tables with the same name
+annotations_lookup_db = SQLAlchemy(metadata=MetaData())
+eplant2_db = SQLAlchemy(metadata=MetaData())
+eplant_poplar_db = SQLAlchemy(metadata=MetaData())
+poplar_nssnp_db = SQLAlchemy(metadata=MetaData())
+single_cell_db = SQLAlchemy(metadata=MetaData())
+summarization_db = SQLAlchemy(metadata=MetaData())
 
 # Initialize Redis
-cache = Cache(config={
-    'CACHE_TYPE': 'redis',
-    'CACHE_KEY_PREFIX': 'BAR_API_',
-    'CACHE_REDIS_PASSWORD': os.environ.get('BAR_REDIS_PASSWORD')
-})
+cache = Cache(
+    config={
+        "CACHE_TYPE": "flask_caching.backends.redis",
+        "CACHE_KEY_PREFIX": "BAR_API_",
+        "CACHE_REDIS_PASSWORD": os.environ.get("BAR_REDIS_PASSWORD"),
+    }
+)
 
-# Initialzie Limiter
+# Initialize Limiter
 limiter = Limiter(key_func=get_remote_address)
 
 # Now create the bar_app
 app = create_app()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run()

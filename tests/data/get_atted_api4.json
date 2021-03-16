@@ -8,8 +8,8 @@
     "type": null,
     "value": null,
     "topN": 5,
-    "database": "Ath-u.c1-0",
-    "database_version": "c1-0"
+    "database": "Ath-u.c2-0",
+    "database_version": "c2-0"
   },
   "result_set": [
     {
@@ -17,38 +17,33 @@
       "results": [
         {
           "gene": 831644,
-          "pair_rank": 150957,
           "other_id": "AT5G17760",
-          "mutual_rank": 224.91,
-          "logit_score": 6.38
+          "mutual_rank": 482.65,
+          "logit_score": 5.2584
         },
         {
           "gene": 842367,
-          "pair_rank": 359952,
           "other_id": "AT1G60730",
-          "mutual_rank": 438.57,
-          "logit_score": 5.4
+          "mutual_rank": 767.19,
+          "logit_score": 4.5674
         },
         {
-          "gene": 835976,
-          "pair_rank": 383418,
-          "other_id": "AT5G58620",
-          "mutual_rank": 459.85,
-          "logit_score": 5.33
+          "gene": 837321,
+          "other_id": "AT1G08050",
+          "mutual_rank": 1076.41,
+          "logit_score": 4.0541
         },
         {
-          "gene": 844034,
-          "pair_rank": 403455,
-          "other_id": "AT1G76980",
-          "mutual_rank": 475.66,
-          "logit_score": 5.28
+          "gene": 814770,
+          "other_id": "AT2G02390",
+          "mutual_rank": 1148.08,
+          "logit_score": 3.9553
         },
         {
-          "gene": 819700,
-          "pair_rank": 410714,
-          "other_id": "AT3G05360",
-          "mutual_rank": 482.13,
-          "logit_score": 5.26
+          "gene": 832064,
+          "other_id": "AT5G19440",
+          "mutual_rank": 1148.08,
+          "logit_score": 3.9553
         }
       ],
       "other_id": "AT1G01010"
