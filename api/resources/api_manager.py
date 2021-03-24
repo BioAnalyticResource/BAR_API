@@ -19,16 +19,16 @@ api_manager = Namespace("API Manager", description="API Manager", path="/api_man
 
 class ApiManagerUtils:
     @staticmethod
-    def check_admin_pass(user_key):
+    def check_admin_pass(password):
         # Replace below with key from script in /home/bpereira/dev/pw-key
-        # key = app.config['ADMIN_ENCRYPT_KEY']
-        cipher_suite = Fernet(user_key)
-        with open("/home/bpereira/dev/pw-script/key.bin", "rb") as f:
+        key = os.environ.get("ADMIN_ENCRYPT_KEY")
+        cipher_suite = Fernet(key)
+        with open(os.environ.get("ADMIN_PASSWORD_FILE"), "rb") as f:
             for line in f:
                 encrypted_key = line
         uncipher_text = cipher_suite.decrypt(encrypted_key)
         plain_text_encryptedpassword = bytes(uncipher_text).decode("utf-8")
-        if user_key == plain_text_encryptedpassword:
+        if password == plain_text_encryptedpassword:
             return True
         else:
             return False
@@ -57,8 +57,8 @@ class ApiManagerValidate(Resource):
         """Verify admin password"""
         if request.method == "POST":
             response_json = request.get_json()
-            user_key = response_json["key"]
-            if ApiManagerUtils.check_admin_pass(user_key):
+            password = response_json["password"]
+            if ApiManagerUtils.check_admin_pass(password):
                 return BARUtils.success_exit(True)
             else:
                 return BARUtils.success_exit(False)
@@ -82,7 +82,7 @@ class ApiManagerValidateKey(Resource):
                 return BARUtils.error_exit("API key not found"), 404
             else:
                 if row.uses_left > 0:
-                    return BARUtils.success_exit("True")
+                    return BARUtils.success_exit(True)
                 else:
                     return BARUtils.error_exit("API key expired"), 401
 
