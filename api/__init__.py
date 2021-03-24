@@ -19,6 +19,10 @@ def create_app():
         # Travis
         print("We are now loading configuration.")
         bar_app.config.from_pyfile(os.getcwd() + "/config/BAR_API.cfg", silent=True)
+        if bar_app.config.get("ADMIN_ENCRYPT_KEY"):
+            os.environ["ADMIN_ENCRYPT_KEY"] = bar_app.config.get("ADMIN_ENCRYPT_KEY")
+        if bar_app.config.get("ADMIN_PASSWORD_FILE"):
+            os.environ["ADMIN_PASSWORD_FILE"] = bar_app.config.get("ADMIN_PASSWORD_FILE")
     elif os.environ.get("BAR"):
         # The BAR
         bar_app.config.from_pyfile(os.environ.get("BAR_API_PATH"), silent=True)
@@ -29,8 +33,10 @@ def create_app():
         )
 
         # Load environment variables
-        if bar_app.config.get("API_MANAGER_KEY"):
-            os.environ["API_MANAGER_KEY"] = bar_app.config.get("API_MANAGER_KEY")
+        if bar_app.config.get("ADMIN_ENCRYPT_KEY"):
+            os.environ["ADMIN_ENCRYPT_KEY"] = bar_app.config.get("ADMIN_ENCRYPT_KEY")
+        if bar_app.config.get("ADMIN_PASSWORD_FILE"):
+            os.environ["ADMIN_PASSWORD_FILE"] = bar_app.config.get("ADMIN_PASSWORD_FILE")
         if bar_app.config.get("PHENIX"):
             os.environ["PHENIX"] = bar_app.config.get("PHENIX")
         if bar_app.config.get("PHENIX_VERSION"):

@@ -112,15 +112,11 @@ class SummarizationGeneExpressionSummarize(Resource):
                         "geneSummarization.insertDataScript": "./insertData.py",
                         "geneSummarization.credentials": "./data/credentials.json",
                         "geneSummarization.token": "./data/token.pickle",
-                        "geneSummarization.aliases": "./data/aliases.txt",
-                        "geneSummarization.folderId": """
-                    + json["folderId"]
-                    + """,
-                        "geneSummarization.id": """
-                    + key
-                    + """
+                        "geneSummarization.aliases": """ + json["aliases"] + """,
+                        "geneSummarization.folderId": """+ json["folderId"] + """,
+                        "geneSummarization.id": """ + key + """ 
                         }
-                        """
+                    """
                 )
                 # Create DB
                 # Send request to Cromwell
@@ -135,6 +131,24 @@ class SummarizationGeneExpressionSummarize(Resource):
             else:
                 return BARUtils.error_exit("Invalid API key")
 
+@summarization_gene_expression.route("/user", methods=["GET"], doc=False)
+class SummarizationGeneExpressionUser(Resource):
+    def get(self):
+        """Get a user's details from the server"""
+        if request.method == "GET":
+            key = request.headers.get("X-Api-Key")
+            tbl = SummarizationGeneExpressionUtils.get_table_object("users")
+            con = db.get_engine(bind="summarization")
+            values = []
+            try:
+                rows = con.execute(
+                    db.select("*")
+                    .where(tbl.c.api_key == key)
+                )
+            except SQLAlchemyError as e:
+                return BARUtils.error_exit("Internal server error"), 500
+            [values.append([row.first_name, row.last_name, row.email, row.telephone, row.contact_type]) for row in rows]
+            return BARUtils.success_exit(values)
 
 @summarization_gene_expression.route("/csv_upload", methods=["POST"], doc=False)
 class SummarizationGeneExpressionCsvUpload(Resource):
