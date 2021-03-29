@@ -120,7 +120,7 @@ class SummarizationGeneExpressionSummarize(Resource):
                     + """,
                         "geneSummarization.id": """
                     + key
-                    + """ 
+                    + """
                         }
                     """
                 )
@@ -149,7 +149,7 @@ class SummarizationGeneExpressionUser(Resource):
             values = []
             try:
                 rows = con.execute(db.select("*").where(tbl.c.api_key == key))
-            except SQLAlchemyError as e:
+            except SQLAlchemyError:
                 return BARUtils.error_exit("Internal server error"), 500
             [
                 values.append(
