@@ -5,7 +5,8 @@ from flask import request
 from flask_restx import Namespace, Resource
 from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
-import smtplib, socket
+import smtplib
+import socket
 import os
 import uuid
 import requests
@@ -50,7 +51,7 @@ class ApiManagerUtils:
                     server.ehlo()
                     server.sendmail(sender_email, receiver_email, message)
                     return True
-            except socket.error as e:
+            except socket.error:
                 return False
 
 
