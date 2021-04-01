@@ -1,21 +1,27 @@
-from api import db
+from api import poplar_nssnp_db as db
 
 
 class ProteinReference(db.Model):
-    __bind_key__ = 'poplar_nssnp'
-    __tablename__ = 'protein_reference'
+    __bind_key__ = "poplar_nssnp"
+    __tablename__ = "protein_reference"
     protein_reference_id = db.Column(db.Integer(), primary_key=True)
     gene_identifier = db.Column(db.String(45), primary_key=False)
-    proteinsJoin = db.relationship('SnpsToProtein', backref="prot")
+    proteinsJoin = db.relationship("SnpsToProtein", backref="prot")
 
 
 class SnpsToProtein(db.Model):
-    __bind_key__ = 'poplar_nssnp'
-    __tablename__ = 'snps_to_protein'
-    snps_reference_id = db.Column(db.Integer(),
-                                  db.ForeignKey('snps_reference.snps_reference_id'), primary_key=True)
-    protein_reference_id = db.Column(db.Integer(),
-                                     db.ForeignKey('protein_reference.protein_reference_id'), primary_key=True)
+    __bind_key__ = "poplar_nssnp"
+    __tablename__ = "snps_to_protein"
+    snps_reference_id = db.Column(
+        db.Integer(),
+        db.ForeignKey("snps_reference.snps_reference_id"),
+        primary_key=True,
+    )
+    protein_reference_id = db.Column(
+        db.Integer(),
+        db.ForeignKey("protein_reference.protein_reference_id"),
+        primary_key=True,
+    )
     transcript_pos = db.Column(db.Integer(), primary_key=False)
     ref_DNA = db.Column(db.String(1), primary_key=False)
     alt_DNA = db.Column(db.String(1), primary_key=False)
@@ -28,12 +34,12 @@ class SnpsToProtein(db.Model):
 
 
 class SnpsReference(db.Model):
-    __bind_key__ = 'poplar_nssnp'
-    __tablename__ = 'snps_reference'
+    __bind_key__ = "poplar_nssnp"
+    __tablename__ = "snps_reference"
     snps_reference_id = db.Column(db.Integer(), primary_key=True)
     chromosome = db.Column(db.Integer(), primary_key=False)
     chromosomal_loci = db.Column(db.Integer(), primary_key=False)
     ref_allele = db.Column(db.String(1), primary_key=False)
     alt_allele = db.Column(db.String(1), primary_key=False)
     sample_id = db.Column(db.String(45), primary_key=False)
-    snpsJoin = db.relationship('SnpsToProtein', backref="snp")
+    snpsJoin = db.relationship("SnpsToProtein", backref="snp")
