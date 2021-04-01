@@ -22,7 +22,9 @@ def create_app():
         if bar_app.config.get("ADMIN_ENCRYPT_KEY"):
             os.environ["ADMIN_ENCRYPT_KEY"] = bar_app.config.get("ADMIN_ENCRYPT_KEY")
         if bar_app.config.get("ADMIN_PASSWORD_FILE"):
-            os.environ["ADMIN_PASSWORD_FILE"] = bar_app.config.get("ADMIN_PASSWORD_FILE")
+            os.environ["ADMIN_PASSWORD_FILE"] = bar_app.config.get(
+                "ADMIN_PASSWORD_FILE"
+            )
     elif os.environ.get("BAR"):
         # The BAR
         bar_app.config.from_pyfile(os.environ.get("BAR_API_PATH"), silent=True)
@@ -36,7 +38,9 @@ def create_app():
         if bar_app.config.get("ADMIN_ENCRYPT_KEY"):
             os.environ["ADMIN_ENCRYPT_KEY"] = bar_app.config.get("ADMIN_ENCRYPT_KEY")
         if bar_app.config.get("ADMIN_PASSWORD_FILE"):
-            os.environ["ADMIN_PASSWORD_FILE"] = bar_app.config.get("ADMIN_PASSWORD_FILE")
+            os.environ["ADMIN_PASSWORD_FILE"] = bar_app.config.get(
+                "ADMIN_PASSWORD_FILE"
+            )
         if bar_app.config.get("PHENIX"):
             os.environ["PHENIX"] = bar_app.config.get("PHENIX")
         if bar_app.config.get("PHENIX_VERSION"):
