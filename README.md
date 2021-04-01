@@ -1,9 +1,9 @@
 # BAR API
 
-**master**: [![Build Status](https://github.com/BioAnalyticResource/BAR_API/workflows/BAR-API/badge.svg?branch=master)](https://github.com/BioAnalyticResource/BAR_API/actions?query=branch%3Amaster) [![Coverage Status](https://coveralls.io/repos/github/BioAnalyticResource/BAR_API/badge.svg?branch=master)](https://coveralls.io/github/BioAnalyticResource/BAR_API?branch=dev) **dev**: [![Build Status](https://github.com/BioAnalyticResource/BAR_API/workflows/BAR-API/badge.svg?branch=dev)](https://github.com/BioAnalyticResource/BAR_API/actions?query=branch%3Adev) [![Coverage Status](https://coveralls.io/repos/github/BioAnalyticResource/BAR_API/badge.svg?branch=dev)](https://coveralls.io/github/BioAnalyticResource/BAR_API?branch=dev)
+**master**: [![Build Status](https://github.com/BioAnalyticResource/BAR_API/workflows/BAR-API/badge.svg?branch=master)](https://github.com/BioAnalyticResource/BAR_API/actions?query=branch%3Amaster) [![Coverage Status](https://coveralls.io/repos/github/BioAnalyticResource/BAR_API/badge.svg?branch=master)](https://coveralls.io/github/BioAnalyticResource/BAR_API?branch=master) **dev**: [![Build Status](https://github.com/BioAnalyticResource/BAR_API/workflows/BAR-API/badge.svg?branch=dev)](https://github.com/BioAnalyticResource/BAR_API/actions?query=branch%3Adev) [![Coverage Status](https://coveralls.io/repos/github/BioAnalyticResource/BAR_API/badge.svg?branch=dev)](https://coveralls.io/github/BioAnalyticResource/BAR_API?branch=dev)
 
 [![Website Status](https://img.shields.io/website?url=http%3A%2F%2Fbar.utoronto.ca%2Fapi%2F)](http://bar.utoronto.ca/api/) ![GitHub repo size](https://img.shields.io/github/repo-size/BioAnalyticResource/BAR_API) [![LGTM Alerts](https://img.shields.io/lgtm/alerts/github/BioAnalyticResource/BAR_API)](https://lgtm.com/projects/g/BioAnalyticResource/BAR_API/?mode=list) [![LGTM
-Grade](https://img.shields.io/lgtm/grade/python/github/BioAnalyticResource/BAR_API)](https://lgtm.com/projects/g/BioAnalyticResource/BAR_API/latest/files/?sort=name&dir=ASC&mode=heatmap) [![Requirements Status](https://requires.io/github/BioAnalyticResource/BAR_API/requirements.svg?branch=master)](https://requires.io/github/BioAnalyticResource/BAR_API/requirements/?branch=master)
+Grade](https://img.shields.io/lgtm/grade/python/github/BioAnalyticResource/BAR_API)](https://lgtm.com/projects/g/BioAnalyticResource/BAR_API/latest/files/?sort=name&dir=ASC&mode=heatmap) [![Requirements Status](https://requires.io/github/BioAnalyticResource/BAR_API/requirements.svg?branch=master)](https://requires.io/github/BioAnalyticResource/BAR_API/requirements/?branch=master) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 This is the official repository for the Bio-Analytic Resource API.
 
@@ -14,7 +14,23 @@ Apart from Travis CI and testing on the live BAR, we frequently test the API on 
 * OpenBSD 6.7-CURRENT (Maria DB 10.4.12v1, Python 3.8.3 and Redis 6.0.5)
 * FreeBSD 12.1-RELEASE-p6 (MySQL 8.0.20, Python 3.8.3 and Redis 5.0.9)
 
-## Run on your own computer
+## Run on your own computer with Docker
+
+1. Install [Docker](https://docs.docker.com/get-docker/)
+2. Install [Docker Compose](https://docs.docker.com/compose/install/)
+3. Install [Git](https://git-scm.com/downloads)
+4. Clone this repository and change directory to ```BAR_API```
+5. Build docker images
+```
+docker-compose build
+```
+6. Run docker containers (-d is detached)
+```
+docker-compose up -d
+```
+7. Load ```http://localhost:5000/``` in a web browser. Enjoy :)
+
+## Run on your own computer without Docker
 
 1. Install [MySQL](https://www.mysql.com/products/community/) or [Maria DB](https://mariadb.com/downloads/).
 2. Install [Redis](https://redis.io/download).
