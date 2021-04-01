@@ -12,7 +12,7 @@ services:
       - MYSQL_ROOT_PASSWORD=root
 
   redis:
-    image: redis:6.2.0
+    image: redis:6.2.1
     container_name: BAR_redis
     restart: always
     ports:
