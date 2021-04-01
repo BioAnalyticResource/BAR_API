@@ -22,7 +22,7 @@ class ApiManagerUtils:
     @staticmethod
     def check_admin_pass(password):
         # Replace below with key from script in /home/bpereira/dev/pw-key
-        key = os.environ.get("ADMIN_ENCRYPT_KEY")
+        key = bytes(os.environ.get("ADMIN_ENCRYPT_KEY"))
         cipher_suite = Fernet(key)
         with open(os.environ.get("ADMIN_PASSWORD_FILE"), "rb") as f:
             for line in f:
@@ -81,7 +81,6 @@ class ApiManagerValidateKey(Resource):
             except SQLAlchemyError:
                 return BARUtils.error_exit("Internal server error"), 500
 
-            # Todo: I guess this is work in progress.
             if row is None:
                 return BARUtils.error_exit("API key not found"), 404
             else:
