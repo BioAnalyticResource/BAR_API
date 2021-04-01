@@ -22,7 +22,7 @@ class ApiManagerUtils:
     @staticmethod
     def check_admin_pass(password):
         # Replace below with key from script in /home/bpereira/dev/pw-key
-        key = bytes(os.environ.get("ADMIN_ENCRYPT_KEY"))
+        key = os.environ.get("ADMIN_ENCRYPT_KEY")
         cipher_suite = Fernet(key)
         with open(os.environ.get("ADMIN_PASSWORD_FILE"), "rb") as f:
             for line in f:
