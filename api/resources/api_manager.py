@@ -81,7 +81,6 @@ class ApiManagerValidateKey(Resource):
             except SQLAlchemyError:
                 return BARUtils.error_exit("Internal server error"), 500
 
-            # Todo: I guess this is work in progress.
             if row is None:
                 return BARUtils.error_exit("API key not found"), 404
             else:
