@@ -6,7 +6,7 @@ class TomProteinReference(tomdb.Model):
     __tablename__ = "protein_reference"
     protein_reference_id = tomdb.Column(tomdb.Integer(), primary_key=True)
     gene_identifier = tomdb.Column(tomdb.String(45), primary_key=False)
-    proteinsJoin = tomdb.relationship("TomSnpsReference", backref="prot")
+    proteinsJoin = tomdb.relationship("TomSnpsToProtein", backref="prot")
 
 
 class TomSnpsToProtein(tomdb.Model):
@@ -42,4 +42,4 @@ class TomSnpsReference(tomdb.Model):
     ref_allele = tomdb.Column(tomdb.String(1), primary_key=False)
     alt_allele = tomdb.Column(tomdb.String(1), primary_key=False)
     sample_id = tomdb.Column(tomdb.String(45), primary_key=False)
-    snpsJoin = tomdb.relationship("TomSnpsReference", backref="snp")
+    snpsJoin = tomdb.relationship("TomSnpsToProtein", backref="snp")
