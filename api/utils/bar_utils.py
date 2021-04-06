@@ -48,7 +48,7 @@ class BARUtils:
         :param gene:
         :return: True if valid
         """
-        if re.search(r"^Solyc00g\d{6}\.\d\.\d$", gene, re.I):
+        if re.search(r"^Solyc0\dg\d{6}\.\d\.\d$", gene, re.I):
             return True
         else:
             return False
