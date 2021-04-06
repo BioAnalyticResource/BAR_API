@@ -44,7 +44,7 @@ class TestIntegrations(TestCase):
         """
 
         # Valid request
-        response = self.app_client.get("/snps/gene_alias/Potri.019G123900.1")
+        response = self.app_client.get("/snps/poplar/Potri.019G123900.1")
         expected = {
             "wasSuccessful": True,
             "data": [
@@ -69,12 +69,12 @@ class TestIntegrations(TestCase):
         self.assertEqual(response.json, expected)
 
         # Invalid gene id
-        response = self.app_client.get("/snps/gene_alias/abc")
+        response = self.app_client.get("/snps/poplar/abc")
         expected = {"wasSuccessful": False, "error": "Invalid gene id"}
         self.assertEqual(response.json, expected)
 
         # Gene does not exist
-        response = self.app_client.get("/snps/gene_alias/Potri.019G123901.1")
+        response = self.app_client.get("/snps/poplar/Potri.019G123901.1")
         expected = {
             "wasSuccessful": False,
             "error": "There are no data found for the given gene",

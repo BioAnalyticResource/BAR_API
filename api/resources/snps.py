@@ -1,9 +1,10 @@
 from flask_restx import Namespace, Resource
 from markupsafe import escape
 from sqlalchemy.exc import OperationalError
-from api.models.poplar_nssnp import ProteinReference, SnpsToProtein, SnpsReference
+from api.models.poplar_nssnp import PopProteinReference, PopSnpsToProtein, PopSnpsReference
+from api.models.tomato_nssnp import TomProteinReference, TomSnpsToProtein, TomSnpsReference
 from api.utils.bar_utils import BARUtils
-from api import cache, poplar_nssnp_db as db
+from api import cache, poplar_nssnp_db as popdb, tomato_nssnp_db as tomdb
 import re
 import subprocess
 import requests
@@ -63,11 +64,11 @@ class Phenix(Resource):
         return BARUtils.success_exit(phenix_pdb_link + phenix_file_name)
 
 
-@snps.route("/gene_alias/<string:gene_id>")
+@snps.route("/<string:species>/<string:gene_id>")
 class GeneNameAlias(Resource):
+    @snps.param("species", _in="path", default="poplar")
     @snps.param("gene_id", _in="path", default="Potri.019G123900.1")
-    @cache.cached()
-    def get(self, gene_id=""):
+    def get(self, species="", gene_id=""):
         """Endpoint returns annotated SNP poplar data in order of (to match A th API format):
         AA pos (zero-indexed), sample id, 'missense_variant','MODERATE', 'MISSENSE', codon/DNA base change,
         AA change (DH), pro length, gene ID, 'protein_coding', 'CODING', transcript id, biotype
@@ -77,12 +78,22 @@ class GeneNameAlias(Resource):
         # Escape input
         gene_id = escape(gene_id)
 
-        if BARUtils.is_poplar_gene_valid(gene_id) is False:
+        if species == "poplar" and BARUtils.is_poplar_gene_valid(gene_id):
+            queryDb = popdb
+            ProteinReference = PopProteinReference
+            SnpsToProtein = PopSnpsToProtein
+            SnpsReference = PopSnpsReference
+        elif species == "tomato" and BARUtils.is_tomato_gene_valid(gene_id):
+            queryDb = tomdb
+            ProteinReference = TomProteinReference
+            SnpsToProtein = TomSnpsToProtein
+            SnpsReference = TomSnpsReference
+        else:
             return BARUtils.error_exit("Invalid gene id"), 400
 
         try:
             rows = (
-                db.session.query(ProteinReference, SnpsToProtein, SnpsReference)
+                queryDb.session.query(ProteinReference, SnpsToProtein, SnpsReference)
                 .select_from(ProteinReference)
                 .join(SnpsToProtein)
                 .join(SnpsReference)
