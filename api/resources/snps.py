@@ -68,6 +68,7 @@ class Phenix(Resource):
 class GeneNameAlias(Resource):
     @snps.param("species", _in="path", default="poplar")
     @snps.param("gene_id", _in="path", default="Potri.019G123900.1")
+    @cache.cached()
     def get(self, species="", gene_id=""):
         """Endpoint returns annotated SNP poplar data in order of (to match A th API format):
         AA pos (zero-indexed), sample id, 'missense_variant','MODERATE', 'MISSENSE', codon/DNA base change,
