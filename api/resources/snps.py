@@ -2,7 +2,7 @@ from flask_restx import Namespace, Resource
 from markupsafe import escape
 from sqlalchemy.exc import OperationalError
 from api.models.poplar_nssnp import PopProteinReference, PopSnpsToProtein, PopSnpsReference
-from api.models.tomato_nssnp import TomProteinReference, TomSnpsToProtein, TomSnpsReference
+from api.models.tomato_nssnp import TomProteinReference, TomSnpsToProtein, TomSnpsReference, TomLinesLookup
 from api.utils.bar_utils import BARUtils
 from api import cache, poplar_nssnp_db as popdb, tomato_nssnp_db as tomdb
 import re
@@ -135,3 +135,29 @@ class GeneNameAlias(Resource):
             return BARUtils.success_exit(results_json)
         else:
             return BARUtils.error_exit("There are no data found for the given gene")
+
+
+@snps.route("/<string:species>/samples")
+class SampleDefinitions(Resource):
+    @snps.param("species", _in="path", default="tomato")
+    @cache.cached()
+    def get(self, species="", gene_id=""):
+        """
+        Endpoint returns sample/individual data for a given dataset(species).
+        Data may vary between species.
+        """
+
+        aliases = {}
+
+        if species != "tomato":
+            return BARUtils.error_exit("Invalid gene id"), 400
+
+        try:
+            rows = TomLinesLookup.query.all()
+        except OperationalError:
+            return BARUtils.error_exit("An internal error has occurred"), 500
+        for row in rows:
+            aliases[row.lines_id] = {"alias": row.alias, "species": row.species}
+        # [aliases.append(row.alias) for row in rows]
+
+        return BARUtils.success_exit(aliases)
