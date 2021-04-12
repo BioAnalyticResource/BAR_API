@@ -64,7 +64,8 @@ CREATE TABLE `snps_reference` (
   `alt_allele` varchar(1) NOT NULL,
   `sample_id` varchar(45) NOT NULL,
   PRIMARY KEY (`snps_reference_id`),
-  UNIQUE KEY `preventdupe` (`chromosome`,`chromosomal_loci`,`ref_allele`,`alt_allele`,`sample_id`)
+  UNIQUE KEY `preventdupe` (`chromosome`,`chromosomal_loci`,`ref_allele`,`alt_allele`,`sample_id`),
+  INDEX `index2` (`sample_id` ASC)
 ) ENGINE=InnoDB AUTO_INCREMENT=25980390 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -114,6 +115,33 @@ INSERT INTO `snps_to_protein` VALUES (1,1,154,'T','G',52,'Trp','Gly','transcript
 /*!40000 ALTER TABLE `snps_to_protein` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+-- 
+-- Table structure for table `lines_lookup`
+--
+DROP TABLE IF EXISTS `lines_lookup` ;
+
+CREATE TABLE IF NOT EXISTS `lines_lookup` (
+  `lines_id` varchar(45) NOT NULL,
+  `species` varchar(35) NULL,
+  `alias` varchar(35) NULL,
+  PRIMARY KEY (`lines_id`),
+  CONSTRAINT `lines_id`
+    FOREIGN KEY (`lines_id`)
+    REFERENCES `snps_reference` (`sample_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- 
+-- Dunping data for table `lines_lookup`
+--
+
+LOCK TABLES `lines_lookup` WRITE;
+/*!40000 ALTER TABLE `lines_lookup` DISABLE KEYS */;
+INSERT INTO `lines_lookup` VALUES ('001','Solanum lycopersicum','Moneymaker');
+/*!40000 ALTER TABLE `lines_lookup` ENABLE KEYS */;
+UNLOCK TABLES;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
