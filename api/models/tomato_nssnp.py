@@ -43,3 +43,11 @@ class TomSnpsReference(tomdb.Model):
     alt_allele = tomdb.Column(tomdb.String(1), primary_key=False)
     sample_id = tomdb.Column(tomdb.String(45), primary_key=False)
     snpsJoin = tomdb.relationship("TomSnpsToProtein", backref="snp")
+
+
+class TomLinesLookup(tomdb.Model):
+    __bind_key__ = "tomato_nssnp"
+    __tablename__ = "lines_lookup"
+    lines_id = tomdb.Column(tomdb.String(45), primary_key=True)
+    species = tomdb.Column(tomdb.String(35), primary_key=False)
+    alias = tomdb.Column(tomdb.String(35), primary_key=False)
