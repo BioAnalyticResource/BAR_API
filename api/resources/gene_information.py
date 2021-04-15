@@ -5,6 +5,7 @@ from sqlalchemy.exc import OperationalError
 from api.models.annotations_lookup import AgiAlias
 from api.models.eplant2 import Isoforms as eplant2_isoforms
 from api.models.eplant_poplar import Isoforms as eplant_poplar_isoforms
+from api.models.eplant_tomato import Isoforms as eplant_tom_isoforms
 from api.utils.bar_utils import BARUtils
 from marshmallow import Schema, ValidationError, fields as marshmallow_fields
 from api import cache
@@ -101,6 +102,12 @@ class GeneIsoforms(Resource):
 
             # Format the gene first
             gene_id = BARUtils.format_poplar(gene_id)
+
+        elif species == "tomato":
+            database = eplant_tom_isoforms
+
+            if not BARUtils.is_tomato_gene_valid(gene_id, False):
+                return BARUtils.error_exit("Invalid gene id"), 400
         else:
             return BARUtils.error_exit("No data for the given species")
 
@@ -164,6 +171,19 @@ class PostGeneIsoforms(Resource):
                 rows = database.query.filter(
                     eplant_poplar_isoforms.gene.in_(genes)
                 ).all()
+            except OperationalError:
+                return BARUtils.error_exit("An internal error has occurred."), 500
+
+        elif species == "tomato":
+            database = eplant_tom_isoforms()
+
+            for gene in genes:
+                # Check if gene is valid
+                if not BARUtils.is_tomato_gene_valid(gene, False):
+                    return BARUtils.error_exit("Invalid gene id"), 400
+
+            try:
+                rows = database.query.filter(eplant_tom_isoforms.gene.in_(genes)).all()
             except OperationalError:
                 return BARUtils.error_exit("An internal error has occurred."), 500
 
