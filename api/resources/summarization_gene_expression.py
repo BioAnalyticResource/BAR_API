@@ -15,7 +15,11 @@ DATA_FOLDER = "/home/bpereira/dev/summarization-data"
 # DATA_FOLDER = '/windir/c/Users/Bruno/Documents/SummarizationCache'
 SUMMARIZATION_FILES_PATH = "/home/bpereira/dev/gene-summarization-bar/summarization"
 CROMWELL_URL = "http://localhost:3020"
-
+GTF_DICT = {
+    "Hsapiens": "./data/hg38.ensGene.gtf",
+    "Athaliana": "./data/Araport11_GFF3_genes_transposons.201606.gtf",
+    "Mmusculus": "./data/GCF_000001635.27_GRCm39_genomic.gtf",
+}
 
 summarization_gene_expression = Namespace(
     "Summarization Gene Expression",
@@ -102,11 +106,15 @@ class SummarizationGeneExpressionSummarize(Resource):
         if request.method == "POST":
             json = request.get_json()
             key = request.headers.get("X-Api-Key")
+            species = json["species"]
+            gtf = GTF_DICT[species]
             if SummarizationGeneExpressionUtils.decrement_uses(key):
                 inputs = (
                     """
                         {
-                        "geneSummarization.gtf": "./data/Araport11_GFF3_genes_transposons.201606.gtf",
+                        "geneSummarization.gtf": """
+                    + gtf
+                    + """,
                         "geneSummarization.summarizeGenesScript": "./summarize_genes.R",
                         "geneSummarization.downloadFilesScript": "./downloadDriveFiles.py",
                         "geneSummarization.insertDataScript": "./insertData.py",
