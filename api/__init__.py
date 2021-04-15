@@ -19,6 +19,12 @@ def create_app():
         # Travis
         print("We are now loading configuration.")
         bar_app.config.from_pyfile(os.getcwd() + "/config/BAR_API.cfg", silent=True)
+        if bar_app.config.get("ADMIN_ENCRYPT_KEY"):
+            os.environ["ADMIN_ENCRYPT_KEY"] = bar_app.config.get("ADMIN_ENCRYPT_KEY")
+        if bar_app.config.get("ADMIN_PASSWORD_FILE"):
+            os.environ["ADMIN_PASSWORD_FILE"] = bar_app.config.get(
+                "ADMIN_PASSWORD_FILE"
+            )
     elif os.environ.get("BAR"):
         # The BAR
         bar_app.config.from_pyfile(os.environ.get("BAR_API_PATH"), silent=True)
@@ -29,8 +35,12 @@ def create_app():
         )
 
         # Load environment variables
-        if bar_app.config.get("API_MANAGER_KEY"):
-            os.environ["API_MANAGER_KEY"] = bar_app.config.get("API_MANAGER_KEY")
+        if bar_app.config.get("ADMIN_ENCRYPT_KEY"):
+            os.environ["ADMIN_ENCRYPT_KEY"] = bar_app.config.get("ADMIN_ENCRYPT_KEY")
+        if bar_app.config.get("ADMIN_PASSWORD_FILE"):
+            os.environ["ADMIN_PASSWORD_FILE"] = bar_app.config.get(
+                "ADMIN_PASSWORD_FILE"
+            )
         if bar_app.config.get("PHENIX"):
             os.environ["PHENIX"] = bar_app.config.get("PHENIX")
         if bar_app.config.get("PHENIX_VERSION"):
@@ -44,7 +54,9 @@ def create_app():
     annotations_lookup_db.init_app(bar_app)
     eplant2_db.init_app(bar_app)
     eplant_poplar_db.init_app(bar_app)
+    eplant_tomato_db.init_app(bar_app)
     poplar_nssnp_db.init_app(bar_app)
+    tomato_nssnp_db.init_app(bar_app)
     single_cell_db.init_app(bar_app)
     summarization_db.init_app(bar_app)
 
@@ -89,7 +101,9 @@ def create_app():
 annotations_lookup_db = SQLAlchemy(metadata=MetaData())
 eplant2_db = SQLAlchemy(metadata=MetaData())
 eplant_poplar_db = SQLAlchemy(metadata=MetaData())
+eplant_tomato_db = SQLAlchemy(metadata=MetaData())
 poplar_nssnp_db = SQLAlchemy(metadata=MetaData())
+tomato_nssnp_db = SQLAlchemy(metadata=MetaData())
 single_cell_db = SQLAlchemy(metadata=MetaData())
 summarization_db = SQLAlchemy(metadata=MetaData())
 

@@ -31,7 +31,7 @@ class TestIntegrations(TestCase):
             },
         )
         data = json.loads(response.get_data(as_text=True))
-        expected = {"wasSuccessful": True, "data": True}
+        expected = {"wasSuccessful": True, "data": "Data added, email failed"}
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data, expected)
 
