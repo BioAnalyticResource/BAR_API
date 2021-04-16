@@ -7,7 +7,7 @@ DB_USER="root"
 DB_PASS="root"
 
 # Load the data
-echo "Welcome to the BAR API. Running init..."
+echo "Welcome to the BAR API. Running init!"
 
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/annotations_lookup.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/single_cell.sql
@@ -17,6 +17,7 @@ mysql -u $DB_USER -p$DB_PASS < ./config/databases/poplar_nssnp.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/tomato_nssnp.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/eplant_poplar.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/eplant_tomato.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/tomato_seq.sql
 
 echo "Data are now loaded. Preparing API config"
 echo "Please manually edit config file!"
