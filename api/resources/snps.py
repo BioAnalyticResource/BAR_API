@@ -1,8 +1,17 @@
 from flask_restx import Namespace, Resource
 from markupsafe import escape
 from sqlalchemy.exc import OperationalError
-from api.models.poplar_nssnp import PopProteinReference, PopSnpsToProtein, PopSnpsReference
-from api.models.tomato_nssnp import TomProteinReference, TomSnpsToProtein, TomSnpsReference, TomLinesLookup
+from api.models.poplar_nssnp import (
+    PopProteinReference,
+    PopSnpsToProtein,
+    PopSnpsReference,
+)
+from api.models.tomato_nssnp import (
+    TomProteinReference,
+    TomSnpsToProtein,
+    TomSnpsReference,
+    TomLinesLookup,
+)
 from api.utils.bar_utils import BARUtils
 from api import cache, poplar_nssnp_db as popdb, tomato_nssnp_db as tomdb
 import re
