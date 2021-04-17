@@ -57,6 +57,7 @@ def create_app():
     eplant_tomato_db.init_app(bar_app)
     poplar_nssnp_db.init_app(bar_app)
     tomato_nssnp_db.init_app(bar_app)
+    tomato_seq_db.init_app(bar_app)
     single_cell_db.init_app(bar_app)
     summarization_db.init_app(bar_app)
 
@@ -83,6 +84,7 @@ def create_app():
     from api.resources.proxy import bar_proxy
     from api.resources.thalemine import thalemine
     from api.resources.snps import snps
+    from api.resources.sequence import sequence
 
     bar_api.add_namespace(gene_information)
     bar_api.add_namespace(rnaseq_gene_expression)
@@ -91,6 +93,7 @@ def create_app():
     bar_api.add_namespace(bar_proxy)
     bar_api.add_namespace(thalemine)
     bar_api.add_namespace(snps)
+    bar_api.add_namespace(sequence)
     bar_api.init_app(bar_app)
     return bar_app
 
@@ -104,6 +107,7 @@ eplant_poplar_db = SQLAlchemy(metadata=MetaData())
 eplant_tomato_db = SQLAlchemy(metadata=MetaData())
 poplar_nssnp_db = SQLAlchemy(metadata=MetaData())
 tomato_nssnp_db = SQLAlchemy(metadata=MetaData())
+tomato_seq_db = SQLAlchemy(metadata=MetaData())
 single_cell_db = SQLAlchemy(metadata=MetaData())
 summarization_db = SQLAlchemy(metadata=MetaData())
 
