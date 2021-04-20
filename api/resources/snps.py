@@ -26,13 +26,17 @@ class Phenix(Resource):
     @snps.param("fixed_pdb", _in="path", default="Potri.016G107900.1")
     @snps.param("moving_pdb", _in="path", default="AT5G01040.1")
     def get(self, fixed_pdb="", moving_pdb=""):
-        """This end point returns the superimposition of the moving PDB onto moving PDB in PDB format"""
+        """
+        This end point returns the superimposition of the moving PDB onto the fixed PDB (returns a URL to fetch PDB)
+        Enter valid species identifier for proteins of interest
+        """
 
         fixed_pdb = escape(fixed_pdb)
         moving_pdb = escape(moving_pdb)
 
         arabidopsis_pdb_path = "/var/www/html/eplant_legacy/java/Phyre2-Models/Phyre2_"
         poplar_pdb_path = "/var/www/html/eplant_poplar/pdb/"
+        tomato_pdb_path = 'TODO: ASHER PLS LINK TO SERVERS PUBLIC TOMATO DIR'  # TODO: Asher
         phenix_pdb_link = "//bar.utoronto.ca/phenix-pdbs/"
         phenix_pdb_path = "/var/www/html/phenix-pdbs/"
 
@@ -43,6 +47,8 @@ class Phenix(Resource):
             fixed_pdb_path = (
                 poplar_pdb_path + BARUtils.format_poplar(fixed_pdb) + ".pdb"
             )
+        elif BARUtils.is_tomato_gene_valid(fixed_pdb, True):
+            fixed_pdb_path = tomato_pdb_path + fixed_pdb.capitalize() + ".pdb"
         else:
             return BARUtils.error_exit("Invalid fixed pdb gene id"), 400
 
@@ -52,6 +58,8 @@ class Phenix(Resource):
             moving_pdb_path = (
                 poplar_pdb_path + BARUtils.format_poplar(moving_pdb) + ".pdb"
             )
+        elif BARUtils.is_tomato_gene_valid(moving_pdb, True):
+            moving_pdb_path = tomato_pdb_path + moving_pdb.capitalize() + ".pdb"
         else:
             return BARUtils.error_exit("Invalid moving pdb gene id"), 400
 
