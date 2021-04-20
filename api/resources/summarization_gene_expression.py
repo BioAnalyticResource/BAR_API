@@ -107,27 +107,38 @@ class SummarizationGeneExpressionSummarize(Resource):
             json = request.get_json()
             key = request.headers.get("X-Api-Key")
             species = json["species"]
+            email = json["email"]
+            aliases = json["aliases"]
             gtf = GTF_DICT[species]
             if SummarizationGeneExpressionUtils.decrement_uses(key):
                 inputs = (
                     """
                         {
-                        "geneSummarization.gtf": """
-                    + gtf
-                    + """,
                         "geneSummarization.summarizeGenesScript": "./summarize_genes.R",
                         "geneSummarization.downloadFilesScript": "./downloadDriveFiles.py",
-                        "geneSummarization.insertDataScript": "./insertData.py",
-                        "geneSummarization.credentials": "./data/credentials.json",
-                        "geneSummarization.token": "./data/token.pickle",
-                        "geneSummarization.aliases": """
-                    + json["aliases"]
-                    + """,
+                        "geneSummarization.chrsScript": "./chrs.py",
                         "geneSummarization.folderId": """
                     + json["folderId"]
                     + """,
+                        "geneSummarization.credentials": "./data/credentials.json",
+                        "geneSummarization.token": "./data/token.pickle",
+                        "geneSummarization.species": """
+                    + species
+                    + """,
+                        "geneSummarization.gtf": """
+                    + gtf
+                    + """,
+                        "geneSummarization.aliases": """
+                    + json["aliases"]
+                    + """,
                         "geneSummarization.id": """
                     + key
+                    + """
+                        "geneSummarization.pairedEndScript": "paired.sh",
+                        "geneSummarization.insertDataScript": "./insertData.py",
+                        "geneSummarization.barEmailScript": "./email.py",
+                        "geneSummarization.email": """
+                    + email
                     + """
                         }
                     """
