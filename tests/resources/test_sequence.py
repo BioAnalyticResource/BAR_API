@@ -15,8 +15,8 @@ class TestIntegrations(TestCase):
             "gene_id": "Solyc00g005445.1.1",
             "sequence": "MSIFSDKIEDTIEQPTDESRSLMLADNVYIHVLSAYKLWRKYSSKKQTRKIFLLIRKEVHKQIGCQYTGVTLSEWQLEYAKLRVERADLQVVLSFIVLFIATRKDLEEATKVVQEKMIVCRIEACRGVWTKVQEGALESSVI*",
             "length": 143,
-            "phyre_2_seq": "KEVHKQIGCQYTGVTLSEWQLEYAKLRVERADLQVVLSFIVLFIATRKDLEEATKVVQEKMIVCRIEA",
+            "phyre2_seq": "KEVHKQIGCQYTGVTLSEWQLEYAKLRVERADLQVVLSFIVLFIATRKDLEEATKVVQEKMIVCRIEA",
             "phyre2_seq_start": 57,
-            "phyre2_seq_end": 124
+            "phyre2_seq_end": 124,
         }
         self.assertEqual(response.json, expected)

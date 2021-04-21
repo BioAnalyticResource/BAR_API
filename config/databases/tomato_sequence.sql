@@ -10,20 +10,20 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema 
 -- -----------------------------------------------------
-CREATE DATABASE IF NOT EXISTS `tom_sequence` DEFAULT CHARACTER SET utf8 ;
+CREATE DATABASE IF NOT EXISTS `tomato_sequence` DEFAULT CHARACTER SET utf8 ;
 
-USE `tom_sequence` ;
+USE `tomato_sequence` ;
 
 -- -----------------------------------------------------
--- Table ``.`tom_3_2_sequence_info`
+-- Table ``.`tomato_3_2_sequence_info`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `tom_3_2_sequence_info` ;
+DROP TABLE IF EXISTS `tomato_3_2_sequence_info` ;
 
-CREATE TABLE IF NOT EXISTS `tom_3_2_sequence_info` (
+CREATE TABLE IF NOT EXISTS `tomato_3_2_sequence_info` (
   `gene_id` VARCHAR(20) NOT NULL,
   `full_seq` VARCHAR(9999) NULL,
   `full_seq_len` INT NULL,
-  `phyre_2_seq` VARCHAR(9999) NULL,
+  `phyre2_seq` VARCHAR(9999) NULL,
   `phyre2_seq_start` INT NULL,
   `phyre2_seq_end` INT NULL,
   PRIMARY KEY (`gene_id`))
@@ -35,11 +35,11 @@ SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 -- -----------------------------------------------------
--- Data for table `tom_3_2_sequence_info`
+-- Data for table `tomato_3_2_sequence_info`
 -- -----------------------------------------------------
 START TRANSACTION;
-USE `tom_sequence`;
-INSERT INTO `tom_3_2_sequence_info` (`gene_id`, `full_seq`, `full_seq_len`, `phyre_2_seq`, `phyre2_seq_start`, `phyre2_seq_end`) VALUES ('Solyc00g005445.1.1', 'MSIFSDKIEDTIEQPTDESRSLMLADNVYIHVLSAYKLWRKYSSKKQTRKIFLLIRKEVHKQIGCQYTGVTLSEWQLEYAKLRVERADLQVVLSFIVLFIATRKDLEEATKVVQEKMIVCRIEACRGVWTKVQEGALESSVI*', 143, 'KEVHKQIGCQYTGVTLSEWQLEYAKLRVERADLQVVLSFIVLFIATRKDLEEATKVVQEKMIVCRIEA', 57, 124);
+USE `tomato_sequence`;
+INSERT INTO `tomato_3_2_sequence_info` (`gene_id`, `full_seq`, `full_seq_len`, `phyre2_seq`, `phyre2_seq_start`, `phyre2_seq_end`) VALUES ('Solyc00g005445.1.1', 'MSIFSDKIEDTIEQPTDESRSLMLADNVYIHVLSAYKLWRKYSSKKQTRKIFLLIRKEVHKQIGCQYTGVTLSEWQLEYAKLRVERADLQVVLSFIVLFIATRKDLEEATKVVQEKMIVCRIEACRGVWTKVQEGALESSVI*', 143, 'KEVHKQIGCQYTGVTLSEWQLEYAKLRVERADLQVVLSFIVLFIATRKDLEEATKVVQEKMIVCRIEA', 57, 124);
 
 COMMIT;
 
