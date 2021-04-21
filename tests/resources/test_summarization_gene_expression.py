@@ -50,7 +50,7 @@ class TestIntegrations(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data, expected)
 
-    def test_table_exists(self):
+    def DISABLED_test_table_exists(self):
         response = self.app_client.get(
             "/summarization_gene_expression/table_exists/bb5a52387069485486b2f4861c2826dd",
             headers={"x-api-key": "bb5a52387069485486b2f4861c2826dd"},
