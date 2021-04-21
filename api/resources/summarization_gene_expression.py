@@ -129,7 +129,7 @@ class SummarizationGeneExpressionSummarize(Resource):
                     + gtf
                     + """,
                         "geneSummarization.aliases": """
-                    + str(json["aliases"])
+                    + str(aliases)
                     + """,
                         "geneSummarization.id": """
                     + key
