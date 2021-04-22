@@ -1,4 +1,4 @@
-from api import tomato_seq_db as db
+from api import tomato_nssnp_db as db
 
 
 class ProteinReference(db.Model):
