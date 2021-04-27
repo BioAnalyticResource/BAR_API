@@ -101,7 +101,7 @@ class GeneNameAlias(Resource):
             protein_reference = PoplarProteinReference
             snps_to_protein = PoplarSnpsToProtein
             snps_reference = PoplarSnpsReference
-        elif species == "tomato" and BARUtils.is_tomato_gene_valid(gene_id):
+        elif species == "tomato" and BARUtils.is_tomato_gene_valid(gene_id, True):
             query_db = tomato_nssnp_db
             protein_reference = TomatoProteinReference
             snps_to_protein = TomatoSnpsToProtein
