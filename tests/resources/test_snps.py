@@ -43,7 +43,7 @@ class TestIntegrations(TestCase):
         Note: This is using proof of principle database with only one row. Testing on the BAR will fail for now.
         """
 
-        # Valid request
+        # Valid request poplar
         response = self.app_client.get("/snps/poplar/Potri.019G123900.1")
         expected = {
             "wasSuccessful": True,
@@ -63,6 +63,31 @@ class TestIntegrations(TestCase):
                     "CODING",
                     "Potri.019G123900.1",
                     None,
+                ]
+            ],
+        }
+        self.assertEqual(response.json, expected)
+
+        # Valid request tomato
+        response = self.app_client.get("/snps/tomato/Solyc00g005060.1.1")
+        expected = {
+            "wasSuccessful": True,
+            "data": [
+                [
+                    0,
+                    51,
+                    "001",
+                    "missense_variant",
+                    "MODERATE",
+                    "MISSENSE",
+                    "154T>G",
+                    "TrpGly",
+                    None,
+                    "Solyc00g005060.1",
+                    "protein_coding",
+                    "CODING",
+                    "Solyc00g005060.1.1",
+                    None
                 ]
             ],
         }
