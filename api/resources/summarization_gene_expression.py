@@ -1,4 +1,6 @@
 import requests
+import io
+import json as jsonlib
 import os
 import re
 import pandas
@@ -11,10 +13,10 @@ from flask_restx import Namespace, Resource
 from sqlalchemy.exc import SQLAlchemyError
 
 
-DATA_FOLDER = "/home/bpereira/dev/summarization-data"
+DATA_FOLDER = "/home/bcp/dev/summarization-data"
 # DATA_FOLDER = '/windir/c/Users/Bruno/Documents/SummarizationCache'
-SUMMARIZATION_FILES_PATH = "/home/bpereira/dev/gene-summarization-bar/summarization"
-CROMWELL_URL = "http://localhost:3020"
+SUMMARIZATION_FILES_PATH = "/home/bcp/dev/gene-summarization-bar/summarization"
+CROMWELL_URL = "http://localhost:8000"
 GTF_DICT = {
     "Hsapiens": "./data/hg38.ensGene.gtf",
     "Athaliana": "./data/Araport11_GFF3_genes_transposons.201606.gtf",
@@ -111,46 +113,35 @@ class SummarizationGeneExpressionSummarize(Resource):
             aliases = json["aliases"]
             gtf = GTF_DICT[species]
             if SummarizationGeneExpressionUtils.decrement_uses(key):
-                inputs = (
-                    """
-                        {
-                        "geneSummarization.summarizeGenesScript": "./summarize_genes.R",
-                        "geneSummarization.downloadFilesScript": "./downloadDriveFiles.py",
-                        "geneSummarization.chrsScript": "./chrs.py",
-                        "geneSummarization.folderId": """
-                    + json["folderId"]
-                    + """,
-                        "geneSummarization.credentials": "./data/credentials.json",
-                        "geneSummarization.token": "./data/token.pickle",
-                        "geneSummarization.species": """
-                    + species
-                    + """,
-                        "geneSummarization.gtf": """
-                    + gtf
-                    + """,
-                        "geneSummarization.aliases": """
-                    + str(aliases)
-                    + """,
-                        "geneSummarization.id": """
-                    + key
-                    + """
-                        "geneSummarization.pairedEndScript": "paired.sh",
-                        "geneSummarization.insertDataScript": "./insertData.py",
-                        "geneSummarization.barEmailScript": "./email.py",
-                        "geneSummarization.email": """
-                    + email
-                    + """
+                inputs = {
+                          "geneSummarization.summarizeGenesScript": "./summarize_genes.R",
+                          "geneSummarization.downloadFilesScript": "./downloadDriveFiles.py",
+                          "geneSummarization.chrsScript": "./chrs.py",
+                          "geneSummarization.folderId": json["folderId"],
+                          "geneSummarization.credentials": "./data/credentials.json",
+                          "geneSummarization.token": "./data/token.pickle",
+                          "geneSummarization.species": species,
+                          "geneSummarization.gtf": gtf,
+                          "geneSummarization.aliases": str(aliases),
+                          "geneSummarization.id": key,
+                          "geneSummarization.pairedEndScript": "paired.sh",
+                          "geneSummarization.insertDataScript": "./insertData.py",
+                          "geneSummarization.barEmailScript": "./bar_email.py",
+                          "geneSummarization.errorEmailScript": "./error_email.py",
+                          "geneSummarization.email": email
                         }
-                    """
-                )
-                # Create DB
+                
                 # Send request to Cromwell
                 path = os.path.join(SUMMARIZATION_FILES_PATH, "rpkm.wdl")
+                with open(os.getcwd() + "/inputs.json", "x") as file:
+                  file.write(jsonlib.dumps(inputs))
                 files = {
                     "workflowSource": ("rpkm.wdl", open(path, "rb")),
-                    "workflowInputs": ("rpkm_inputs.json", inputs),
+                    "workflowInputs": ("rpkm_inputs.json", open(os.getcwd() + "/inputs.json", "rb")),
                 }
-                requests.post(CROMWELL_URL + "/api/workflows/v1", files=files)
+                a = requests.post(CROMWELL_URL + "/api/workflows/v1", files=files)
+                if os.path.exists(os.getcwd() + "/inputs.json"):
+                  os.remove(os.getcwd() + "/inputs.json")
                 # Return ID for future accessing
                 return BARUtils.success_exit(key), 200
             else:
@@ -198,6 +189,7 @@ class SummarizationGeneExpressionCsvUpload(Resource):
             if file:
                 filename = secure_filename(file.filename)
                 key = request.headers.get("X-Api-Key")
+                print(key)
                 file.save(os.path.join(DATA_FOLDER, key, filename))
                 if SummarizationGeneExpressionUtils.decrement_uses(key):
                     inputs = (
