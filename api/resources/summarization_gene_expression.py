@@ -1,5 +1,4 @@
 import requests
-import io
 import json as jsonlib
 import os
 import re
@@ -130,18 +129,17 @@ class SummarizationGeneExpressionSummarize(Resource):
                           "geneSummarization.errorEmailScript": "./error_email.py",
                           "geneSummarization.email": email
                         }
-                
                 # Send request to Cromwell
                 path = os.path.join(SUMMARIZATION_FILES_PATH, "rpkm.wdl")
                 with open(os.getcwd() + "/inputs.json", "x") as file:
-                  file.write(jsonlib.dumps(inputs))
+                    file.write(jsonlib.dumps(inputs))
                 files = {
                     "workflowSource": ("rpkm.wdl", open(path, "rb")),
                     "workflowInputs": ("rpkm_inputs.json", open(os.getcwd() + "/inputs.json", "rb")),
                 }
-                a = requests.post(CROMWELL_URL + "/api/workflows/v1", files=files)
+                requests.post(CROMWELL_URL + "/api/workflows/v1", files=files)
                 if os.path.exists(os.getcwd() + "/inputs.json"):
-                  os.remove(os.getcwd() + "/inputs.json")
+                    os.remove(os.getcwd() + "/inputs.json")
                 # Return ID for future accessing
                 return BARUtils.success_exit(key), 200
             else:
