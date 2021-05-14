@@ -7,7 +7,3 @@ class Tomato32SequenceInfo(db.Model):
 
     gene_id = db.Column(db.String(20), nullable=False, primary_key=True)
     full_seq = db.Column(db.String(9999), nullable=True, primary_key=False)
-    full_seq_len = db.Column(db.Integer(), nullable=True, primary_key=False)
-    phyre2_seq = db.Column(db.String(9999), nullable=True, primary_key=False)
-    phyre2_seq_start = db.Column(db.Integer(), nullable=True, primary_key=False)
-    phyre2_seq_end = db.Column(db.Integer(), nullable=True, primary_key=False)
