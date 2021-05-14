@@ -188,7 +188,6 @@ class SummarizationGeneExpressionCsvUpload(Resource):
             if file:
                 filename = secure_filename(file.filename)
                 key = request.headers.get("X-Api-Key")
-                print(key)
                 file.save(os.path.join(DATA_FOLDER, key, filename))
                 if SummarizationGeneExpressionUtils.decrement_uses(key):
                     inputs = (
