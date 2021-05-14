@@ -16,7 +16,7 @@ from sqlalchemy.exc import SQLAlchemyError
 DATA_FOLDER = "/home/bpereira/dev/summarization-data"
 # DATA_FOLDER = '/windir/c/Users/Bruno/Documents/SummarizationCache'
 SUMMARIZATION_FILES_PATH = "/home/bpereira/dev/gene-summarization-bar/summarization"
-CROMWELL_URL = "http://localhost:8000"
+CROMWELL_URL = "http://localhost:3020"
 GTF_DICT = {
     "Hsapiens": "./data/hg38.ensGene.gtf",
     "Athaliana": "./data/Araport11_GFF3_genes_transposons.201606.gtf",
