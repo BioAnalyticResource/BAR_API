@@ -20,6 +20,8 @@ class Sequence(Resource):
     def get(self, species="", gene_id=""):
         """
         Endpoint returns sequence for a given gene of a particular species
+        Response JSON designed to be like current PHP one:
+        https://bar.utoronto.ca/webservices/bar_araport/get_protein_sequence_by_identifier.php?locus=AT1G01010.1
         Species Supported:
         - Tomato (ITAG3.2) - e.g. Solyc00g005445.1.1
         """
@@ -40,12 +42,14 @@ class Sequence(Resource):
                         )
                     else:
                         return {
-                            "gene_id": rows[0].gene_id,
-                            "sequence": rows[0].full_seq,
-                            "length": rows[0].full_seq_len,
-                            "phyre2_seq": rows[0].phyre2_seq,
-                            "phyre2_seq_start": rows[0].phyre2_seq_start,
-                            "phyre2_seq_end": rows[0].phyre2_seq_end,
+                            "status": "success",
+                            "result": [
+                                {
+                                    "length": len(rows[0].full_seq) - 1,
+                                    "gene_id": rows[0].gene_id,
+                                    "sequence": rows[0].full_seq,
+                                }
+                            ]
                         }
                 except OperationalError:
                     return BARUtils.error_exit("An internal error has occurred"), 500
