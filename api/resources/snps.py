@@ -2,18 +2,18 @@ from flask_restx import Namespace, Resource
 from markupsafe import escape
 from sqlalchemy.exc import OperationalError
 from api.models.poplar_nssnp import (
-    PopProteinReference,
-    PopSnpsToProtein,
-    PopSnpsReference,
+    ProteinReference as PoplarProteinReference,
+    SnpsToProtein as PoplarSnpsToProtein,
+    SnpsReference as PoplarSnpsReference,
 )
 from api.models.tomato_nssnp import (
-    TomProteinReference,
-    TomSnpsToProtein,
-    TomSnpsReference,
-    TomLinesLookup,
+    ProteinReference as TomatoProteinReference,
+    SnpsToProtein as TomatoSnpsToProtein,
+    SnpsReference as TomatoSnpsReference,
+    LinesLookup as TomatoLinesLookup,
 )
 from api.utils.bar_utils import BARUtils
-from api import cache, poplar_nssnp_db as popdb, tomato_nssnp_db as tomdb
+from api import cache, poplar_nssnp_db, tomato_nssnp_db
 import re
 import subprocess
 import requests
@@ -36,7 +36,7 @@ class Phenix(Resource):
 
         arabidopsis_pdb_path = "/var/www/html/eplant_legacy/java/Phyre2-Models/Phyre2_"
         poplar_pdb_path = "/var/www/html/eplant_poplar/pdb/"
-        tomato_pdb_path = 'TODO: ASHER PLS LINK TO SERVERS PUBLIC TOMATO DIR'  # TODO: Asher
+        tomato_pdb_path = "/var/www/html/eplant_tomato/pdb/"
         phenix_pdb_link = "//bar.utoronto.ca/phenix-pdbs/"
         phenix_pdb_path = "/var/www/html/phenix-pdbs/"
 
@@ -97,25 +97,27 @@ class GeneNameAlias(Resource):
         gene_id = escape(gene_id)
 
         if species == "poplar" and BARUtils.is_poplar_gene_valid(gene_id):
-            queryDb = popdb
-            ProteinReference = PopProteinReference
-            SnpsToProtein = PopSnpsToProtein
-            SnpsReference = PopSnpsReference
-        elif species == "tomato" and BARUtils.is_tomato_gene_valid(gene_id):
-            queryDb = tomdb
-            ProteinReference = TomProteinReference
-            SnpsToProtein = TomSnpsToProtein
-            SnpsReference = TomSnpsReference
+            query_db = poplar_nssnp_db
+            protein_reference = PoplarProteinReference
+            snps_to_protein = PoplarSnpsToProtein
+            snps_reference = PoplarSnpsReference
+        elif species == "tomato" and BARUtils.is_tomato_gene_valid(gene_id, True):
+            query_db = tomato_nssnp_db
+            protein_reference = TomatoProteinReference
+            snps_to_protein = TomatoSnpsToProtein
+            snps_reference = TomatoSnpsReference
         else:
             return BARUtils.error_exit("Invalid gene id"), 400
 
         try:
             rows = (
-                queryDb.session.query(ProteinReference, SnpsToProtein, SnpsReference)
-                .select_from(ProteinReference)
-                .join(SnpsToProtein)
-                .join(SnpsReference)
-                .filter(ProteinReference.gene_identifier == gene_id)
+                query_db.session.query(
+                    protein_reference, snps_to_protein, snps_reference
+                )
+                .select_from(protein_reference)
+                .join(snps_to_protein)
+                .join(snps_reference)
+                .filter(protein_reference.gene_identifier == gene_id)
                 .all()
             )
 
@@ -158,7 +160,7 @@ class GeneNameAlias(Resource):
 class SampleDefinitions(Resource):
     @snps.param("species", _in="path", default="tomato")
     @cache.cached()
-    def get(self, species="", gene_id=""):
+    def get(self, species=""):
         """
         Endpoint returns sample/individual data for a given dataset(species).
         Data may vary between species.
@@ -170,7 +172,7 @@ class SampleDefinitions(Resource):
             return BARUtils.error_exit("Invalid gene id"), 400
 
         try:
-            rows = TomLinesLookup.query.all()
+            rows = TomatoLinesLookup.query.all()
         except OperationalError:
             return BARUtils.error_exit("An internal error has occurred"), 500
         for row in rows:
