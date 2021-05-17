@@ -33,3 +33,5 @@ services:
     depends_on:
       - redis
       - mysqldb
+    volumes:
+      - './api:/usr/src/app/api'

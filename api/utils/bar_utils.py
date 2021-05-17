@@ -43,6 +43,20 @@ class BARUtils:
             return False
 
     @staticmethod
+    def is_tomato_gene_valid(gene, isoform_id=False):
+        """This function verifies if ITAG Solyc gene is valid
+        :param gene:
+        :param isoform_id: True if you want to verifiy isoform ID
+        :return: True if valid
+        """
+        if isoform_id and re.search(r"^Solyc\d\dg\d{6}\.\d\.\d$", gene, re.I):
+            return True
+        elif isoform_id is False and re.search(r"^Solyc\d\dg\d{6}$", gene, re.I):
+            return True
+        else:
+            return False
+
+    @staticmethod
     def is_integer(data):
         """Check if the input is at max ten figure number.
         :param data: int number

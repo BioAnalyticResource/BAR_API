@@ -43,8 +43,8 @@ class TestIntegrations(TestCase):
         Note: This is using proof of principle database with only one row. Testing on the BAR will fail for now.
         """
 
-        # Valid request
-        response = self.app_client.get("/snps/gene_alias/Potri.019G123900.1")
+        # Valid request poplar
+        response = self.app_client.get("/snps/poplar/Potri.019G123900.1")
         expected = {
             "wasSuccessful": True,
             "data": [
@@ -68,13 +68,38 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
+        # Valid request tomato
+        response = self.app_client.get("/snps/tomato/Solyc00g005060.1.1")
+        expected = {
+            "wasSuccessful": True,
+            "data": [
+                [
+                    0,
+                    51,
+                    "001",
+                    "missense_variant",
+                    "MODERATE",
+                    "MISSENSE",
+                    "154T>G",
+                    "TrpGly",
+                    None,
+                    "Solyc00g005060.1",
+                    "protein_coding",
+                    "CODING",
+                    "Solyc00g005060.1.1",
+                    None
+                ]
+            ],
+        }
+        self.assertEqual(response.json, expected)
+
         # Invalid gene id
-        response = self.app_client.get("/snps/gene_alias/abc")
+        response = self.app_client.get("/snps/poplar/abc")
         expected = {"wasSuccessful": False, "error": "Invalid gene id"}
         self.assertEqual(response.json, expected)
 
         # Gene does not exist
-        response = self.app_client.get("/snps/gene_alias/Potri.019G123901.1")
+        response = self.app_client.get("/snps/poplar/Potri.019G123901.1")
         expected = {
             "wasSuccessful": False,
             "error": "There are no data found for the given gene",
