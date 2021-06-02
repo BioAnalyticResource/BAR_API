@@ -61,8 +61,6 @@ CREATE TABLE `requests` (
   `first_name` text DEFAULT NULL,
   `last_name` text DEFAULT NULL,
   `email` text DEFAULT NULL,
-  `telephone` text DEFAULT NULL,
-  `contact_type` text DEFAULT NULL,
   `notes` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -88,8 +86,6 @@ CREATE TABLE `users` (
   `first_name` varchar(32) DEFAULT NULL,
   `last_name` varchar(32) DEFAULT NULL,
   `email` varchar(120) DEFAULT NULL,
-  `telephone` varchar(12) DEFAULT NULL,
-  `contact_type` varchar(5) DEFAULT NULL,
   `api_key` varchar(120) NOT NULL,
   `status` varchar(32) DEFAULT NULL,
   `date_added` date NOT NULL,
