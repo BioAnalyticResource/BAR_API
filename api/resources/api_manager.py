@@ -135,8 +135,6 @@ class ApiManagerGetPending(Resource):
                             "first_name": row.first_name,
                             "last_name": row.last_name,
                             "email": row.email,
-                            "telephone": row.telephone,
-                            "contact_type": row.contact_type,
                             "notes": row.notes,
                         }
                     )
@@ -191,8 +189,6 @@ class ApiManagerApproveRequest(Resource):
                             "first_name": row.first_name,
                             "last_name": row.last_name,
                             "email": row.email,
-                            "telephone": row.telephone,
-                            "contact_type": row.contact_type,
                             "date_added": datetime.now(),
                             "status": "user",
                             "api_key": key,
