@@ -71,7 +71,7 @@ CREATE TABLE `requests` (
 
 LOCK TABLES `requests` WRITE;
 /*!40000 ALTER TABLE `requests` DISABLE KEYS */;
-INSERT INTO `requests` VALUES ('Some','Request','request@gmail.com','1234567890','Phone','Test notes');
+INSERT INTO `requests` VALUES ('Some','Request','request@gmail.com','Test notes');
 /*!40000 ALTER TABLE `requests` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -105,7 +105,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES ('Test','User','test@gmail.com','2345678901','Phone','bb5a52387069485486b2f4861c2826dd','user','2020-12-07',100);
+INSERT INTO `users` VALUES ('Test','User','test@gmail.com','bb5a52387069485486b2f4861c2826dd','user','2020-12-07',100);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
