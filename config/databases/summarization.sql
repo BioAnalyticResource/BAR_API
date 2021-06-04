@@ -61,8 +61,6 @@ CREATE TABLE `requests` (
   `first_name` text DEFAULT NULL,
   `last_name` text DEFAULT NULL,
   `email` text DEFAULT NULL,
-  `telephone` text DEFAULT NULL,
-  `contact_type` text DEFAULT NULL,
   `notes` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -73,7 +71,7 @@ CREATE TABLE `requests` (
 
 LOCK TABLES `requests` WRITE;
 /*!40000 ALTER TABLE `requests` DISABLE KEYS */;
-INSERT INTO `requests` VALUES ('Some','Request','request@gmail.com','1234567890','Phone','Test notes');
+INSERT INTO `requests` VALUES ('Some','Request','request@gmail.com','Test notes');
 /*!40000 ALTER TABLE `requests` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -88,8 +86,6 @@ CREATE TABLE `users` (
   `first_name` varchar(32) DEFAULT NULL,
   `last_name` varchar(32) DEFAULT NULL,
   `email` varchar(120) DEFAULT NULL,
-  `telephone` varchar(12) DEFAULT NULL,
-  `contact_type` varchar(5) DEFAULT NULL,
   `api_key` varchar(120) NOT NULL,
   `status` varchar(32) DEFAULT NULL,
   `date_added` date NOT NULL,
@@ -109,7 +105,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES ('Test','User','test@gmail.com','2345678901','Phone','bb5a52387069485486b2f4861c2826dd','user','2020-12-07',100);
+INSERT INTO `users` VALUES ('Test','User','test@gmail.com','bb5a52387069485486b2f4861c2826dd','user','2020-12-07',100);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
