@@ -166,7 +166,6 @@ class SummarizationGeneExpressionUser(Resource):
                         row.first_name,
                         row.last_name,
                         row.email,
-                        row.contact_type,
                     ]
                 )
                 for row in rows
