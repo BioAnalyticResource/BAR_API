@@ -11,6 +11,7 @@ from werkzeug.utils import secure_filename
 from api.utils.bar_utils import BARUtils
 from flask_restx import Namespace, Resource
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.inspection import inspect
 
 
 DATA_FOLDER = "/home/bpereira/dev/summarization-data"
@@ -127,7 +128,6 @@ class SummarizationGeneExpressionSummarize(Resource):
                     "geneSummarization.pairedEndScript": "./paired.sh",
                     "geneSummarization.insertDataScript": "./insertData.py",
                     "geneSummarization.barEmailScript": "./bar_email.py",
-                    "geneSummarization.errorEmailScript": "./error_email.py",
                     "geneSummarization.email": email,
                 }
                 # Send request to Cromwell
@@ -166,7 +166,6 @@ class SummarizationGeneExpressionUser(Resource):
                         row.first_name,
                         row.last_name,
                         row.email,
-                        row.telephone,
                         row.contact_type,
                     ]
                 )
@@ -346,7 +345,7 @@ class SummarizationGeneExpressionTableExists(Resource):
     def get(self, table_id=""):
         """Checks if a given table exists"""
         con = db.get_engine(bind="summarization")
-        if con.dialect.has_table(con, table_id):
+        if inspect(con).has_table(table_id):
             return BARUtils.success_exit(True)
         else:
             return BARUtils.success_exit(False)

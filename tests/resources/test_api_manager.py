@@ -25,13 +25,11 @@ class TestIntegrations(TestCase):
                 "first_name": "Unit",
                 "last_name": "Test",
                 "email": "unittest@gmail.com",
-                "telephone": "1234567890",
-                "contact_type": "Phone",
                 "notes": "Unit test notes.",
             },
         )
         data = json.loads(response.get_data(as_text=True))
-        expected = {"wasSuccessful": True, "data": "Data added, email failed"}
+        expected = {"wasSuccessful": True, "data": "Data added"}
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data, expected)
 
@@ -47,16 +45,12 @@ class TestIntegrations(TestCase):
                     "first_name": "Some",
                     "last_name": "Request",
                     "email": "request@gmail.com",
-                    "telephone": "1234567890",
-                    "contact_type": "Phone",
                     "notes": "Test notes",
                 },
                 {
                     "first_name": "Unit",
                     "last_name": "Test",
                     "email": "unittest@gmail.com",
-                    "telephone": "1234567890",
-                    "contact_type": "Phone",
                     "notes": "Unit test notes.",
                 },
             ],
