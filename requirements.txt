@@ -11,7 +11,7 @@ coveralls==3.1.0
 cryptography==3.4.7
 docopt==0.6.2
 flake8==3.9.2
-Flask==2.0.1
+Flask<2
 Flask-Caching==1.10.1
 Flask-Cors==3.0.10
 Flask-Limiter==1.4
@@ -21,8 +21,8 @@ Flask-SQLAlchemy==2.5.1
 greenlet==1.1.0
 idna==2.10
 iniconfig==1.1.1
-itsdangerous==2.0.1
-Jinja2==3.0.1
+itsdangerous<2
+Jinja2<3
 jsonschema==3.2.0
 limits==1.5.1
 MarkupSafe==2.0.1
@@ -55,4 +55,4 @@ typed-ast==1.4.3
 typing-extensions==3.10.0.0
 urllib3==1.26.5
 wcwidth==0.2.5
-Werkzeug==2.0.1
+Werkzeug<2
