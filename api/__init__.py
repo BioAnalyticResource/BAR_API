@@ -85,6 +85,7 @@ def create_app():
     from api.resources.thalemine import thalemine
     from api.resources.snps import snps
     from api.resources.sequence import sequence
+    from api.resources.gene_annotation import gene_annotation
 
     bar_api.add_namespace(gene_information)
     bar_api.add_namespace(rnaseq_gene_expression)
@@ -94,6 +95,7 @@ def create_app():
     bar_api.add_namespace(thalemine)
     bar_api.add_namespace(snps)
     bar_api.add_namespace(sequence)
+    bar_api.add_namespace(gene_annotation)
     bar_api.init_app(bar_app)
     return bar_app
 
