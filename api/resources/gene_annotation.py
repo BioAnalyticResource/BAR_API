@@ -14,17 +14,15 @@ gene_annotation = Namespace(
 @gene_annotation.route("/<string:query>")
 class GeneAnnotation(Resource):
     @gene_annotation.param("query", _in="path", default="alpha-1 protein")
-    def get(self, species="", query=""):
+    def get(self, query=""):
         """
         Endpoint returns gene locus for given gene keywords 
         """
         annotation_db_list={'tomato':eplant_tomato_annotation,'poplar':eplant_poplar_annotation,'arabidopsis':[AgiAnnotation, TAIR10, GeneRIFs]}
 
-        species = escape(species.lower())
-        query = escape(query.capitalize())
+        query = escape(query)
 
         res=[]
-        db=annotation_db_list.get(species,False)
         for species,db in annotation_db_list.items():           
             try:
                 if species=="arabidopsis":
@@ -40,7 +38,7 @@ class GeneAnnotation(Resource):
                     res+=[{'gene':i.gene,'species':species,'gene_annotation':i.RIF} for i in RIFs_info]
                 else:
                     rows = db.query.filter(db.annotation.op('regexp')(query)).all()
-                    res=[{'gene':i.gene,'species':species,'gene_annotation':i.annotation} for i in rows]
+                    res+=[{'gene':i.gene,'species':species,'gene_annotation':i.annotation} for i in rows]
             except OperationalError:
                 return BARUtils.error_exit("An internal error has occurred"), 500
 
