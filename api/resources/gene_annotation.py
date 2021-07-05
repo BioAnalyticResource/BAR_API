@@ -11,49 +11,86 @@ gene_annotation = Namespace(
     "Gene Annotation", description="Gene annotation API", path="/gene_annotation"
 )
 
+
 @gene_annotation.route("/<string:query>")
 class GeneAnnotation(Resource):
     @gene_annotation.param("query", _in="path", default="alpha-1 protein")
     def get(self, query=""):
         """
-        Endpoint returns gene locus for given gene keywords 
+        Endpoint returns gene locus for given gene keywords
         """
-        annotation_db_list={'tomato':eplant_tomato_annotation,'poplar':eplant_poplar_annotation,'arabidopsis':[AgiAnnotation, TAIR10, GeneRIFs]}
+        annotation_db_list = {
+            "tomato": eplant_tomato_annotation,
+            "poplar": eplant_poplar_annotation,
+            "arabidopsis": [AgiAnnotation, TAIR10, GeneRIFs],
+        }
 
         query = escape(query)
 
-        res=[]
-        for species,db in annotation_db_list.items():           
+        res = []
+        for species, db in annotation_db_list.items():
             try:
-                if species=="arabidopsis":
-                    
-                    agi_info=AgiAnnotation.query.filter(AgiAnnotation.annotation.op('regexp')(query)).all()
-                    tair10_curator_info=TAIR10.query.filter(TAIR10.Curator_summary.op('regexp')(query)).all()
-                    tair10_computational_info=TAIR10.query.filter(TAIR10.Computational_description.op('regexp')(query)).all()
-                    RIFs_info=GeneRIFs.query.filter(GeneRIFs.RIF.op('regexp')(query)).all()
+                if species == "arabidopsis":
 
-                    res+=[{'gene':i.agi,'species':species,'gene_annotation':i.annotation} for i in agi_info]
-                    res+=[{'gene':i.Model_name,'species':species,'gene_annotation':i.Curator_summary} for i in tair10_curator_info]
-                    res+=[{'gene':i.Model_name,'species':species,'gene_annotation':i.Computational_description} for i in tair10_computational_info]
-                    res+=[{'gene':i.gene,'species':species,'gene_annotation':i.RIF} for i in RIFs_info]
+                    agi_info = AgiAnnotation.query.filter(
+                        AgiAnnotation.annotation.op("regexp")(query)
+                    ).all()
+                    tair10_curator_info = TAIR10.query.filter(
+                        TAIR10.Curator_summary.op("regexp")(query)
+                    ).all()
+                    tair10_computational_info = TAIR10.query.filter(
+                        TAIR10.Computational_description.op("regexp")(query)
+                    ).all()
+                    RIFs_info = GeneRIFs.query.filter(
+                        GeneRIFs.RIF.op("regexp")(query)
+                    ).all()
+
+                    res += [
+                        {
+                            "gene": i.agi,
+                            "species": species,
+                            "gene_annotation": i.annotation,
+                        }
+                        for i in agi_info
+                    ]
+                    res += [
+                        {
+                            "gene": i.Model_name,
+                            "species": species,
+                            "gene_annotation": i.Curator_summary,
+                        }
+                        for i in tair10_curator_info
+                    ]
+                    res += [
+                        {
+                            "gene": i.Model_name,
+                            "species": species,
+                            "gene_annotation": i.Computational_description,
+                        }
+                        for i in tair10_computational_info
+                    ]
+                    res += [
+                        {"gene": i.gene, "species": species, "gene_annotation": i.RIF}
+                        for i in RIFs_info
+                    ]
                 else:
-                    rows = db.query.filter(db.annotation.op('regexp')(query)).all()
-                    res+=[{'gene':i.gene,'species':species,'gene_annotation':i.annotation} for i in rows]
+                    rows = db.query.filter(db.annotation.op("regexp")(query)).all()
+                    res += [
+                        {
+                            "gene": i.gene,
+                            "species": species,
+                            "gene_annotation": i.annotation,
+                        }
+                        for i in rows
+                    ]
             except OperationalError:
                 return BARUtils.error_exit("An internal error has occurred"), 500
 
         if len(res) == 0:
             return (
-                BARUtils.error_exit(
-                    "There are no data found for the given query"
-                ),
+                BARUtils.error_exit("There are no data found for the given query"),
                 400,
             )
         else:
             # return first 10 matches
-            return {
-                "status": "success",
-                "query": query,
-                "result": res[:10]
-            }
-
+            return {"status": "success", "query": query, "result": res[:10]}

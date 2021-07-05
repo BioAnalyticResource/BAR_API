@@ -9,6 +9,7 @@ class Isoforms(db.Model):
     gene = db.Column(db.String(20), nullable=False, primary_key=True)
     isoform = db.Column(db.String(24), nullable=False, primary_key=True)
 
+
 class GeneAnnotation(db.Model):
     __bind_key__ = "eplant_tomato"
     __tablename__ = "gene_annotation"
