@@ -46,6 +46,85 @@ LOCK TABLES `isoforms` WRITE;
 INSERT INTO `isoforms` VALUES ('AT1G01010','AT1G01010.1'),('AT1G01020','AT1G01020.1'),('AT1G01020','AT1G01020.2');
 /*!40000 ALTER TABLE `isoforms` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `agi_annotation`
+--
+
+DROP TABLE IF EXISTS `agi_annotation`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `agi_annotation` (
+  `agi` varchar(11) NOT NULL,
+  `annotation` mediumtext NOT NULL,
+  PRIMARY KEY (`agi`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `agi_annotation`
+--
+-- WHERE:  1 limit 5
+
+LOCK TABLES `agi_annotation` WRITE;
+/*!40000 ALTER TABLE `agi_annotation` DISABLE KEYS */;
+INSERT INTO `agi_annotation` VALUES ('At1g01010','ANAC001_NAC001_NTL10__NAC domain containing protein 1'),('At1g01020','ARV1__Arv1-like protein'),('At1g01030','NGA3__AP2/B3-like transcriptional factor family protein'),('At1g01040','ASU1_ATDCL1_CAF_DCL1_EMB60_EMB76_SIN1_SUS1__dicer-like 1'),('At1g01046','MIR838A__MIR838a; miRNA');
+/*!40000 ALTER TABLE `agi_annotation` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `TAIR10_functional_descriptions`
+--
+
+DROP TABLE IF EXISTS `TAIR10_functional_descriptions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `TAIR10_functional_descriptions` (
+  `Model_name` varchar(32) NOT NULL,
+  `Type` varchar(32) NOT NULL,
+  `Short_description` text,
+  `Curator_summary` text,
+  `Computational_description` text,
+  KEY `Model_name_idx` (`Model_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `TAIR10_functional_descriptions`
+--
+-- WHERE:  1 limit 5
+
+LOCK TABLES `TAIR10_functional_descriptions` WRITE;
+/*!40000 ALTER TABLE `TAIR10_functional_descriptions` DISABLE KEYS */;
+INSERT INTO `TAIR10_functional_descriptions` VALUES ('AT3G27990.1','antisense_long_noncoding_rna','other RNA',NULL,'None;(source:Araport11)'),('AT1G69587.1','antisense_long_noncoding_rna','other RNA',NULL,'Natural antisense transcript overlaps with AT1G69588;(source:Araport11)'),('AT2G31751.1','antisense_long_noncoding_rna','unknown gene','Potential natural antisense gene, locus overlaps with AT2G31750','Natural antisense transcript overlaps with AT2G31750;(source:Araport11)'),('AT1G01448.1','antisense_long_noncoding_rna','other RNA',NULL,'Natural antisense transcript overlaps with AT1G01450;(source:Araport11)'),('AT1G01448.2','antisense_long_noncoding_rna','other RNA',NULL,'Natural antisense transcript overlaps with AT1G01450;(source:Araport11)');
+/*!40000 ALTER TABLE `TAIR10_functional_descriptions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `geneRIFs`
+--
+
+DROP TABLE IF EXISTS `geneRIFs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `geneRIFs` (
+  `gene` varchar(16) NOT NULL,
+  `pubmed` varchar(16) NOT NULL,
+  `RIF` text NOT NULL,
+  KEY `rifs` (`gene`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `geneRIFs`
+--
+-- WHERE:  1 limit 5
+
+LOCK TABLES `geneRIFs` WRITE;
+/*!40000 ALTER TABLE `geneRIFs` DISABLE KEYS */;
+INSERT INTO `geneRIFs` VALUES ('AT2G01110','18930082','An approximately equimolar ratio of the TatB and TatC components was observed in tissues from Arabidopsis thaliana, whereas TatA was detectable only in minor amounts. [TatC]'),('AT2G01110','19207210','Chloroplast TatC targets to thylakoid membranes via a stromal intermediate, and that cpTatC membrane integration is not altered by competition with precursors of the cpSec and cpTat pathways.'),('AT2G01110','27609835','mitochondrial-encoded TatC is a functional gene that is translated into a protein in the model plant Arabidopsis thaliana A TatB--like subunit localized to the inner membrane was also identified that is nuclear-encoded and is essential for plant growth and development.'),('AT2G01110','29216369','MEF31 does not directly target site tatC-586, and only indirectly influences editing at this site.'),('AT2G01150','21478367','RHA2b and RHA2a may have redundant yet distinguishable functions in the regulation of abscissic acid responses.');
+/*!40000 ALTER TABLE `geneRIFs` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -56,4 +135,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-11-19 15:37:22
+-- Dump completed on 2021-06-29 22:25:37
