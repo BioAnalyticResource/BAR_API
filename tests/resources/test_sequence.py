@@ -12,13 +12,13 @@ class TestIntegrations(TestCase):
         """
         response = self.app_client.get("/sequence/tomato/Solyc00g005445.1.1")
         expected = {
-            "status" : "success",
+            "status": "success",
             "result": [
                 {
                     "length": 142,
                     "gene_id": "Solyc00g005445.1.1",
                     "sequence": "MSIFSDKIEDTIEQPTDESRSLMLADNVYIHVLSAYKLWRKYSSKKQTRKIFLLIRKEVHKQIGCQYTGVTLSEWQLEYAKLRVERADLQVVLSFIVLFIATRKDLEEATKVVQEKMIVCRIEACRGVWTKVQEGALESSVI*",
                 }
-            ]
+            ],
         }
         self.assertEqual(response.json, expected)
