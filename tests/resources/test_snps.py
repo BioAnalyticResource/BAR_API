@@ -87,7 +87,7 @@ class TestIntegrations(TestCase):
                     "protein_coding",
                     "CODING",
                     "Solyc00g005060.1.1",
-                    None
+                    None,
                 ]
             ],
         }
