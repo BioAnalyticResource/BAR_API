@@ -49,7 +49,7 @@ class Sequence(Resource):
                                     "gene_id": rows[0].gene_id,
                                     "sequence": rows[0].full_seq,
                                 }
-                            ]
+                            ],
                         }
                 except OperationalError:
                     return BARUtils.error_exit("An internal error has occurred"), 500
