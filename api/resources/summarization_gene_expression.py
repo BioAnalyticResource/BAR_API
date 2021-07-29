@@ -12,6 +12,7 @@ from api.utils.bar_utils import BARUtils
 from flask_restx import Namespace, Resource
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.inspection import inspect
+from scour.scour import scourString
 
 
 DATA_FOLDER = "/home/barapps/cromwell/summarization-data"
@@ -112,6 +113,7 @@ class SummarizationGeneExpressionSummarize(Resource):
             species = json["species"]
             email = json["email"]
             aliases = json["aliases"]
+            csvEmail = json["csvEmail"]
             gtf = GTF_DICT[species]
             if SummarizationGeneExpressionUtils.decrement_uses(key):
                 inputs = {
@@ -129,6 +131,7 @@ class SummarizationGeneExpressionSummarize(Resource):
                     "geneSummarization.insertDataScript": "./insertData.py",
                     "geneSummarization.barEmailScript": "./bar_email.py",
                     "geneSummarization.email": email,
+                    "geneSummarization.csvEmail": csvEmail
                 }
                 # Send request to Cromwell
                 path = os.path.join(SUMMARIZATION_FILES_PATH, "rpkm.wdl")
@@ -412,3 +415,18 @@ class SummarizationGeneExpressionGetFile(Resource):
                 return send_file(filename)
             else:
                 return BARUtils.error_exit("File not found"), 404
+
+
+@summarization_gene_expression.route("/clean_svg")
+class SummarizationGeneExpressionCleanSvg(Resource):
+    def post(self):
+        if request.method == "POST":
+            api_key = request.headers.get("x-api-key")
+            if api_key is None:
+                return BARUtils.error_exit("Invalid API key"), 403
+            elif SummarizationGeneExpressionUtils.decrement_uses(api_key):
+                in_string = request.get_json()['svg']
+                out_string = scourString(in_string, options={"remove_metadata": True})
+                return BARUtils.success_exit(out_string)
+            else:
+                return BARUtils.error_exit("Invalid API key")
