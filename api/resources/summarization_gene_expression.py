@@ -13,6 +13,7 @@ from flask_restx import Namespace, Resource
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.inspection import inspect
 from scour.scour import scourString
+from cryptography.fernet import Fernet
 
 
 DATA_FOLDER = "/home/barapps/cromwell/summarization-data"
@@ -114,6 +115,10 @@ class SummarizationGeneExpressionSummarize(Resource):
             email = json["email"]
             aliases = json["aliases"]
             csvEmail = json["csvEmail"]
+            if json["ifExists"] is True:
+                ifExists = "append"
+            else:
+                ifExists = "replace"
             gtf = GTF_DICT[species]
             if SummarizationGeneExpressionUtils.decrement_uses(key):
                 inputs = {
@@ -131,7 +136,8 @@ class SummarizationGeneExpressionSummarize(Resource):
                     "geneSummarization.insertDataScript": "./insertData.py",
                     "geneSummarization.barEmailScript": "./bar_email.py",
                     "geneSummarization.email": email,
-                    "geneSummarization.csvEmail": csvEmail
+                    "geneSummarization.csvEmail": csvEmail,
+                    "geneSummarization.ifExists": ifExists
                 }
                 # Send request to Cromwell
                 path = os.path.join(SUMMARIZATION_FILES_PATH, "rpkm.wdl")
@@ -144,8 +150,22 @@ class SummarizationGeneExpressionSummarize(Resource):
                 }
                 requests.post(CROMWELL_URL + "/api/workflows/v1", files=files)
                 file.close()
+                gkey = os.environ.get("DRIVE_LIST_KEY")
+                cipher_suite = Fernet(gkey)
+                with open(os.environ.get("DRIVE_LIST_FILE"), "rb") as f:
+                    for line in f:
+                        encrypted_key = line
+                uncipher_text = cipher_suite.decrypt(encrypted_key)
+                plain_text_gkey = bytes(uncipher_text).decode("utf-8")
+                r = requests.get("https://www.googleapis.com/drive/v3/files?corpora=user&includeItemsFromAllDrives=true&q=%27"
+                                 + json['folderId']
+                                 + "%27%20in%20parents&supportsAllDrives=true&key=" + plain_text_gkey)
                 # Return ID for future accessing
-                return BARUtils.success_exit(key), 200
+                if(r.status_code == 200):
+                    fs = [x["name"] for x in r.json()['files'] if ".bam" in x["name"]]
+                else:
+                    fs = r.status_code
+                return BARUtils.success_exit(fs), 200
             else:
                 return BARUtils.error_exit("Invalid API key")
 
