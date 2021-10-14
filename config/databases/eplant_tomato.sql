@@ -46,6 +46,31 @@ LOCK TABLES `isoforms` WRITE;
 INSERT INTO `isoforms` VALUES ('Solyc00g005000','Solyc00g005000.3.1'),('Solyc00g005040','Solyc00g005040.3.1'),('Solyc00g18885','Solyc00g188850.3.1');
 /*!40000 ALTER TABLE `isoforms` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `gene_annotation`
+--
+
+DROP TABLE IF EXISTS `gene_annotation`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `gene_annotation` (
+  `gene` varchar(20) NOT NULL,
+  `annotation` mediumtext NOT NULL,
+  PRIMARY KEY (`gene`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `gene_annotation`
+--
+-- WHERE:  1 limit 5
+
+LOCK TABLES `gene_annotation` WRITE;
+/*!40000 ALTER TABLE `gene_annotation` DISABLE KEYS */;
+INSERT INTO `gene_annotation` VALUES ('Solyc00g005000.2.1','PTHR13683:SF265 - PROTEIN ASPARTIC PROTEASE IN GUARD CELL 2 (1 of 2)'),('Solyc00g005040.2.1','PTHR10217//PTHR10217:SF520 - VOLTAGE AND LIGAND GATED POTASSIUM CHANNEL // SUBFAMILY NOT NAMED (1 of 4)'),('Solyc00g005050.2.1','KOG3294 - WW domain binding protein WBP-2, contains GRAM domain (1 of 2)'),('Solyc00g005130.1.1','PF02902 - Ulp1 protease family, C-terminal catalytic domain (Peptidase_C48)  (1 of 159)'),('Solyc00g005150.1.1','PF04937 - Protein of unknown function (DUF 659) (DUF659)  (1 of 46)');
+/*!40000 ALTER TABLE `gene_annotation` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -56,4 +81,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump copied and modified from eplant_poplar.sql, 2021-04-09
+-- Dump completed on 2021-06-29 20:39:38

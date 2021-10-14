@@ -11,11 +11,14 @@ from werkzeug.utils import secure_filename
 from api.utils.bar_utils import BARUtils
 from flask_restx import Namespace, Resource
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.inspection import inspect
+from scour.scour import scourString
+from cryptography.fernet import Fernet
 
 
-DATA_FOLDER = "/home/bpereira/dev/summarization-data"
+DATA_FOLDER = "/home/barapps/cromwell/summarization-data"
 # DATA_FOLDER = '/windir/c/Users/Bruno/Documents/SummarizationCache'
-SUMMARIZATION_FILES_PATH = "/home/bpereira/dev/gene-summarization-bar/summarization"
+SUMMARIZATION_FILES_PATH = "/home/barapps/cromwell/summarization"
 CROMWELL_URL = "http://localhost:3020"
 GTF_DICT = {
     "Hsapiens": "./data/hg38.ensGene.gtf",
@@ -111,6 +114,11 @@ class SummarizationGeneExpressionSummarize(Resource):
             species = json["species"]
             email = json["email"]
             aliases = json["aliases"]
+            csvEmail = json["csvEmail"]
+            if json["ifExists"] is True:
+                ifExists = "append"
+            else:
+                ifExists = "replace"
             gtf = GTF_DICT[species]
             if SummarizationGeneExpressionUtils.decrement_uses(key):
                 inputs = {
@@ -127,8 +135,9 @@ class SummarizationGeneExpressionSummarize(Resource):
                     "geneSummarization.pairedEndScript": "./paired.sh",
                     "geneSummarization.insertDataScript": "./insertData.py",
                     "geneSummarization.barEmailScript": "./bar_email.py",
-                    "geneSummarization.errorEmailScript": "./error_email.py",
                     "geneSummarization.email": email,
+                    "geneSummarization.csvEmail": csvEmail,
+                    "geneSummarization.ifExists": ifExists
                 }
                 # Send request to Cromwell
                 path = os.path.join(SUMMARIZATION_FILES_PATH, "rpkm.wdl")
@@ -141,8 +150,22 @@ class SummarizationGeneExpressionSummarize(Resource):
                 }
                 requests.post(CROMWELL_URL + "/api/workflows/v1", files=files)
                 file.close()
+                gkey = os.environ.get("DRIVE_LIST_KEY")
+                cipher_suite = Fernet(gkey)
+                with open(os.environ.get("DRIVE_LIST_FILE"), "rb") as f:
+                    for line in f:
+                        encrypted_key = line
+                uncipher_text = cipher_suite.decrypt(encrypted_key)
+                plain_text_gkey = bytes(uncipher_text).decode("utf-8")
+                r = requests.get("https://www.googleapis.com/drive/v3/files?corpora=user&includeItemsFromAllDrives=true&q=%27"
+                                 + json['folderId']
+                                 + "%27%20in%20parents&supportsAllDrives=true&key=" + plain_text_gkey)
                 # Return ID for future accessing
-                return BARUtils.success_exit(key), 200
+                if(r.status_code == 200):
+                    fs = [x["name"] for x in r.json()['files'] if ".bam" in x["name"]]
+                else:
+                    fs = r.status_code
+                return BARUtils.success_exit(fs), 200
             else:
                 return BARUtils.error_exit("Invalid API key")
 
@@ -166,8 +189,6 @@ class SummarizationGeneExpressionUser(Resource):
                         row.first_name,
                         row.last_name,
                         row.email,
-                        row.telephone,
-                        row.contact_type,
                     ]
                 )
                 for row in rows
@@ -346,7 +367,7 @@ class SummarizationGeneExpressionTableExists(Resource):
     def get(self, table_id=""):
         """Checks if a given table exists"""
         con = db.get_engine(bind="summarization")
-        if con.dialect.has_table(con, table_id):
+        if inspect(con).has_table(table_id):
             return BARUtils.success_exit(True)
         else:
             return BARUtils.success_exit(False)
@@ -414,3 +435,18 @@ class SummarizationGeneExpressionGetFile(Resource):
                 return send_file(filename)
             else:
                 return BARUtils.error_exit("File not found"), 404
+
+
+@summarization_gene_expression.route("/clean_svg")
+class SummarizationGeneExpressionCleanSvg(Resource):
+    def post(self):
+        if request.method == "POST":
+            api_key = request.headers.get("x-api-key")
+            if api_key is None:
+                return BARUtils.error_exit("Invalid API key"), 403
+            elif SummarizationGeneExpressionUtils.decrement_uses(api_key):
+                in_string = request.get_json()['svg']
+                out_string = scourString(in_string, options={"remove_metadata": True})
+                return BARUtils.success_exit(out_string)
+            else:
+                return BARUtils.error_exit("Invalid API key")
