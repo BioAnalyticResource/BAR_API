@@ -115,10 +115,10 @@ class SummarizationGeneExpressionSummarize(Resource):
             email = json["email"]
             aliases = json["aliases"]
             csvEmail = json["csvEmail"]
-            if json["ifExists"] is True:
-                ifExists = "append"
+            if json["overwrite"] is True:
+                overwrite = "append"
             else:
-                ifExists = "replace"
+                overwrite = "replace"
             gtf = GTF_DICT[species]
             if SummarizationGeneExpressionUtils.decrement_uses(key):
                 inputs = {
@@ -137,7 +137,7 @@ class SummarizationGeneExpressionSummarize(Resource):
                     "geneSummarization.barEmailScript": "./bar_email.py",
                     "geneSummarization.email": email,
                     "geneSummarization.csvEmail": csvEmail,
-                    "geneSummarization.ifExists": ifExists
+                    "geneSummarization.overwrite": overwrite
                 }
                 # Send request to Cromwell
                 path = os.path.join(SUMMARIZATION_FILES_PATH, "rpkm.wdl")
@@ -148,7 +148,7 @@ class SummarizationGeneExpressionSummarize(Resource):
                     "workflowSource": ("rpkm.wdl", open(path, "rb")),
                     "workflowInputs": ("rpkm_inputs.json", file.read()),
                 }
-                requests.post(CROMWELL_URL + "/api/workflows/v1", files=files)
+                id_and_status = requests.post(CROMWELL_URL + "/api/workflows/v1", files=files)
                 file.close()
                 gkey = os.environ.get("DRIVE_LIST_KEY")
                 cipher_suite = Fernet(gkey)
@@ -165,9 +165,22 @@ class SummarizationGeneExpressionSummarize(Resource):
                     fs = [x["name"] for x in r.json()['files'] if ".bam" in x["name"]]
                 else:
                     fs = r.status_code
-                return BARUtils.success_exit(fs), 200
+                return BARUtils.success_exit((id_and_status.id, fs)), 200
             else:
                 return BARUtils.error_exit("Invalid API key")
+
+
+@summarization_gene_expression.route("/progress/<string:job_id>", methods=["GET"], doc=False)
+class SummarizationGeneExpressionProgress(Resource):
+    @summarization_gene_expression.param("job_id", _in="path", default="")
+    def get(self, job_id):
+        """Get progress of a job given its ID"""
+        if request.method == "GET":
+            progress = requests.get(CROMWELL_URL + "/api/workflows/v1/" + job_id + "/status")
+            if(progress.status_code == 200):
+                return BARUtils.success_exit(progress.status), 200
+            else:
+                return BARUtils.error_exit(progress.status_code)
 
 
 @summarization_gene_expression.route("/user", methods=["GET"], doc=False)
@@ -196,6 +209,69 @@ class SummarizationGeneExpressionUser(Resource):
             return BARUtils.success_exit(values)
 
 
+@summarization_gene_expression.route("/tsv_upload", methods=["POST"], doc=False)
+class SummarizationGeneExpressionTsvUpload(Resource):
+    decorators = [limiter.limit("1/minute")]
+
+    def post(self):
+        """Takes a TSV file from Kallisto converts to RPKM"""
+        if request.method == "POST":
+            if "file" not in request.files:
+                return BARUtils.error_exit("No file attached"), 400
+            file = request.files["file"]
+            print(file)
+            if file:
+                filename = secure_filename(file.filename)
+                key = request.headers.get("X-Api-Key")
+                overwrite = request.form.get("overwrite")
+                addToDb = request.form.get("addToDb")
+                email = request.form.get("email")
+                print(overwrite, addToDb, email)
+                if(overwrite is True):
+                    overwrite = "replace"
+                else:
+                    overwrite = "append"
+                # Create folder for user data if it doesn't exist
+                dirName = os.path.join(DATA_FOLDER, secure_filename(key))
+                if not os.path.exists(dirName):
+                    os.makedirs(dirName)
+                file.save(os.path.join(dirName , secure_filename(filename)))
+                if SummarizationGeneExpressionUtils.decrement_uses(key):
+                    inputs = (
+                        """
+                            {
+                            "tsvUpload.insertDataScript": "./insertData.py",
+                            "tsvUpload.conversionScript": "./kallistoToRpkm.R",
+                            "tsvUpload.id": """
+                        + key
+                        + """,
+                            "tsvUpload.tsv": """
+                        + os.path.join(dirName, secure_filename(filename))
+                        + """,
+                            "tsvUpload.overwrite": """
+                        + overwrite
+                        + """,
+                            "tsvUpload.addToDb": """
+                        + addToDb
+                        + """,
+                            "tsvUpload.email": """
+                        + email
+                        + """
+                            }
+                            """
+                    )
+                    print(inputs)
+                    path = os.path.join(SUMMARIZATION_FILES_PATH, "tsvUpload.wdl")
+                    files = {
+                        "workflowSource": ("tsvUpload.wdl", open(path, "rb")),
+                        "workflowInputs": ("rpkm_inputs.json", inputs),
+                    }
+                    requests.post(CROMWELL_URL + "/api/workflows/v1", files=files)
+                    return BARUtils.success_exit(key)
+                else:
+                    return BARUtils.error_exit("Invalid API key")
+
+
 @summarization_gene_expression.route("/csv_upload", methods=["POST"], doc=False)
 class SummarizationGeneExpressionCsvUpload(Resource):
     decorators = [limiter.limit("1/minute")]
@@ -209,7 +285,18 @@ class SummarizationGeneExpressionCsvUpload(Resource):
             if file:
                 filename = secure_filename(file.filename)
                 key = request.headers.get("X-Api-Key")
-                file.save(os.path.join(DATA_FOLDER, key, filename))
+                overwrite = request.form.get("overwrite")
+                addToDb = request.form.get("addToDb")
+                email = request.form.get("email")
+                print(addToDb)
+                if(overwrite is True):
+                    overwrite = "replace"
+                else:
+                    overwrite = "append"
+                dirName = os.path.join(DATA_FOLDER, secure_filename(key))
+                if not os.path.exists(dirName):
+                    os.makedirs(dirName)
+                file.save(os.path.join(dirName , secure_filename(filename)))
                 if SummarizationGeneExpressionUtils.decrement_uses(key):
                     inputs = (
                         """
@@ -219,8 +306,17 @@ class SummarizationGeneExpressionCsvUpload(Resource):
                         + key
                         + """,
                             "csvUpload.csv": """
-                        + os.path.join(DATA_FOLDER, key, filename)
+                        + os.path.join(dirName, filename)
                         + """,
+                            "csvUpload.overwrite": """
+                        + overwrite
+                        + """,
+                            "csvUpload.addToDb": """
+                        + addToDb
+                        + """,
+                            "csvUpload.addToDb": """
+                        + email
+                        + """
                             }
                             """
                     )
@@ -395,13 +491,14 @@ class SummarizationGeneExpressionSave(Resource):
             elif SummarizationGeneExpressionUtils.decrement_uses(api_key):
                 if "file" in request.files:
                     file = request.files["file"]
+                    print(file)
                     if file.content_type == "text/json":
                         extension = ".json"
                     elif file.content_type == "image/svg+xml":
                         extension = ".svg"
                     else:
                         return BARUtils.error_exit("Invalid file type"), 400
-                    filename = os.path.join(DATA_FOLDER, api_key, api_key + extension)
+                    filename = os.path.join(DATA_FOLDER, api_key, file.filename + extension)
                     file.save(filename)
                     return BARUtils.success_exit(True)
                 else:
@@ -420,7 +517,9 @@ class SummarizationGeneExpressionGetFileList(Resource):
             if os.path.exists(os.path.join(DATA_FOLDER, api_key)):
                 for file in os.walk(os.path.join(DATA_FOLDER, api_key)):
                     files.append(file[2])
-            return BARUtils.success_exit(files)
+                return BARUtils.success_exit(files)
+            else:
+                return BARUtils.error_exit("No folder found")
 
 
 @summarization_gene_expression.route("/get_file/<string:file_id>")
