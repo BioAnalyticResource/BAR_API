@@ -28,6 +28,18 @@ def create_app():
     elif os.environ.get("BAR"):
         # The BAR
         bar_app.config.from_pyfile(os.environ.get("BAR_API_PATH"), silent=True)
+        if bar_app.config.get("ADMIN_ENCRYPT_KEY"):
+            os.environ["ADMIN_ENCRYPT_KEY"] = bar_app.config.get("ADMIN_ENCRYPT_KEY")
+        if bar_app.config.get("ADMIN_PASSWORD_FILE"):
+            os.environ["ADMIN_PASSWORD_FILE"] = bar_app.config.get(
+                "ADMIN_PASSWORD_FILE"
+            )
+        if bar_app.config.get("DRIVE_LIST_KEY"):
+            os.environ["DRIVE_LIST_KEY"] = bar_app.config.get("DRIVE_LIST_KEY")
+        if bar_app.config.get("DRIVE_LIST_FILE"):
+            os.environ["DRIVE_LIST_FILE"] = bar_app.config.get(
+                "DRIVE_LIST_FILE"
+            )
     else:
         # The localhost
         bar_app.config.from_pyfile(
