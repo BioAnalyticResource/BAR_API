@@ -149,6 +149,7 @@ class SummarizationGeneExpressionSummarize(Resource):
                     "workflowInputs": ("rpkm_inputs.json", file.read()),
                 }
                 id_and_status = requests.post(CROMWELL_URL + "/api/workflows/v1", files=files)
+                id_and_status = id_and_status.json()
                 file.close()
                 gkey = os.environ.get("DRIVE_LIST_KEY")
                 cipher_suite = Fernet(gkey)
@@ -165,7 +166,7 @@ class SummarizationGeneExpressionSummarize(Resource):
                     fs = [x["name"] for x in r.json()['files'] if ".bam" in x["name"]]
                 else:
                     fs = r.status_code
-                return BARUtils.success_exit((id_and_status.id, fs)), 200
+                return BARUtils.success_exit((id_and_status["id"], fs)), 200
             else:
                 return BARUtils.error_exit("Invalid API key")
 
@@ -219,14 +220,12 @@ class SummarizationGeneExpressionTsvUpload(Resource):
             if "file" not in request.files:
                 return BARUtils.error_exit("No file attached"), 400
             file = request.files["file"]
-            print(file)
             if file:
                 filename = secure_filename(file.filename)
                 key = request.headers.get("X-Api-Key")
                 overwrite = request.form.get("overwrite")
                 addToDb = request.form.get("addToDb")
                 email = request.form.get("email")
-                print(overwrite, addToDb, email)
                 if(overwrite is True):
                     overwrite = "replace"
                 else:
@@ -260,7 +259,6 @@ class SummarizationGeneExpressionTsvUpload(Resource):
                             }
                             """
                     )
-                    print(inputs)
                     path = os.path.join(SUMMARIZATION_FILES_PATH, "tsvUpload.wdl")
                     files = {
                         "workflowSource": ("tsvUpload.wdl", open(path, "rb")),
@@ -288,7 +286,6 @@ class SummarizationGeneExpressionCsvUpload(Resource):
                 overwrite = request.form.get("overwrite")
                 addToDb = request.form.get("addToDb")
                 email = request.form.get("email")
-                print(addToDb)
                 if(overwrite is True):
                     overwrite = "replace"
                 else:
@@ -491,7 +488,6 @@ class SummarizationGeneExpressionSave(Resource):
             elif SummarizationGeneExpressionUtils.decrement_uses(api_key):
                 if "file" in request.files:
                     file = request.files["file"]
-                    print(file)
                     if file.content_type == "text/json":
                         extension = ".json"
                     elif file.content_type == "image/svg+xml":
