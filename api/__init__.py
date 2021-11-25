@@ -78,6 +78,7 @@ def create_app():
     tomato_seq_db.init_app(bar_app)
     single_cell_db.init_app(bar_app)
     summarization_db.init_app(bar_app)
+    rice_interactions_db.init_app(bar_app)
 
     # Initialize the cache
     cache.init_app(bar_app)
@@ -104,6 +105,8 @@ def create_app():
     from api.resources.snps import snps
     from api.resources.sequence import sequence
     from api.resources.gene_annotation import gene_annotation
+    from api.resources.interactions import itrns
+    from api.resources.gene_localizations import loc
 
     bar_api.add_namespace(gene_information)
     bar_api.add_namespace(rnaseq_gene_expression)
@@ -114,6 +117,8 @@ def create_app():
     bar_api.add_namespace(snps)
     bar_api.add_namespace(sequence)
     bar_api.add_namespace(gene_annotation)
+    bar_api.add_namespace(itrns)
+    bar_api.add_namespace(loc)
     bar_api.init_app(bar_app)
     return bar_app
 
@@ -130,6 +135,7 @@ tomato_nssnp_db = SQLAlchemy(metadata=MetaData())
 tomato_seq_db = SQLAlchemy(metadata=MetaData())
 single_cell_db = SQLAlchemy(metadata=MetaData())
 summarization_db = SQLAlchemy(metadata=MetaData())
+rice_interactions_db = SQLAlchemy(metadata=MetaData())
 
 # Initialize Redis
 cache = Cache(
