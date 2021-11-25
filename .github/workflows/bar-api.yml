@@ -13,7 +13,7 @@ jobs:
     runs-on: Ubuntu-20.04
     strategy:
       matrix:
-        python-version: [3.7, 3.8, 3.9]
+        python-version: [3.7, 3.8, 3.9, 3.10.0]
 
     services:
       redis:
@@ -49,8 +49,15 @@ jobs:
     - name: Pytest run by coverage
       run: |
         coverage run
-        coverage report -m
+        coverage xml
       env:
         REDIS_HOST: localhost
         REDIS_PORT: 6379
         CI: true
+
+    - name: "Upload coverage to Codecov"
+      uses: codecov/codecov-action@v2
+      with:
+        fail_ci_if_error: true
+        token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+
