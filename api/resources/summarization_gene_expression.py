@@ -137,7 +137,7 @@ class SummarizationGeneExpressionSummarize(Resource):
                     "geneSummarization.barEmailScript": "./bar_email.py",
                     "geneSummarization.email": email,
                     "geneSummarization.csvEmail": csvEmail,
-                    "geneSummarization.overwrite": overwrite
+                    "geneSummarization.overwrite": overwrite,
                 }
                 # Send request to Cromwell
                 path = os.path.join(SUMMARIZATION_FILES_PATH, "rpkm.wdl")
@@ -148,7 +148,9 @@ class SummarizationGeneExpressionSummarize(Resource):
                     "workflowSource": ("rpkm.wdl", open(path, "rb")),
                     "workflowInputs": ("rpkm_inputs.json", file.read()),
                 }
-                id_and_status = requests.post(CROMWELL_URL + "/api/workflows/v1", files=files)
+                id_and_status = requests.post(
+                    CROMWELL_URL + "/api/workflows/v1", files=files
+                )
                 id_and_status = id_and_status.json()
                 file.close()
                 gkey = os.environ.get("DRIVE_LIST_KEY")
@@ -158,12 +160,15 @@ class SummarizationGeneExpressionSummarize(Resource):
                         encrypted_key = line
                 uncipher_text = cipher_suite.decrypt(encrypted_key)
                 plain_text_gkey = bytes(uncipher_text).decode("utf-8")
-                r = requests.get("https://www.googleapis.com/drive/v3/files?corpora=user&includeItemsFromAllDrives=true&q=%27"
-                                 + json['folderId']
-                                 + "%27%20in%20parents&supportsAllDrives=true&key=" + plain_text_gkey)
+                r = requests.get(
+                    "https://www.googleapis.com/drive/v3/files?corpora=user&includeItemsFromAllDrives=true&q=%27"
+                    + json["folderId"]
+                    + "%27%20in%20parents&supportsAllDrives=true&key="
+                    + plain_text_gkey
+                )
                 # Return ID for future accessing
-                if(r.status_code == 200):
-                    fs = [x["name"] for x in r.json()['files'] if ".bam" in x["name"]]
+                if r.status_code == 200:
+                    fs = [x["name"] for x in r.json()["files"] if ".bam" in x["name"]]
                 else:
                     fs = r.status_code
                 return BARUtils.success_exit((id_and_status["id"], fs)), 200
@@ -171,14 +176,18 @@ class SummarizationGeneExpressionSummarize(Resource):
                 return BARUtils.error_exit("Invalid API key")
 
 
-@summarization_gene_expression.route("/progress/<string:job_id>", methods=["GET"], doc=False)
+@summarization_gene_expression.route(
+    "/progress/<string:job_id>", methods=["GET"], doc=False
+)
 class SummarizationGeneExpressionProgress(Resource):
     @summarization_gene_expression.param("job_id", _in="path", default="")
     def get(self, job_id):
         """Get progress of a job given its ID"""
         if request.method == "GET":
-            progress = requests.get(CROMWELL_URL + "/api/workflows/v1/" + job_id + "/status")
-            if(progress.status_code == 200):
+            progress = requests.get(
+                CROMWELL_URL + "/api/workflows/v1/" + job_id + "/status"
+            )
+            if progress.status_code == 200:
                 return BARUtils.success_exit(progress.status), 200
             else:
                 return BARUtils.error_exit(progress.status_code)
@@ -226,7 +235,7 @@ class SummarizationGeneExpressionTsvUpload(Resource):
                 overwrite = request.form.get("overwrite")
                 addToDb = request.form.get("addToDb")
                 email = request.form.get("email")
-                if(overwrite is True):
+                if overwrite is True:
                     overwrite = "replace"
                 else:
                     overwrite = "append"
@@ -234,7 +243,7 @@ class SummarizationGeneExpressionTsvUpload(Resource):
                 dirName = os.path.join(DATA_FOLDER, secure_filename(key))
                 if not os.path.exists(dirName):
                     os.makedirs(dirName)
-                file.save(os.path.join(dirName , secure_filename(filename)))
+                file.save(os.path.join(dirName, secure_filename(filename)))
                 if SummarizationGeneExpressionUtils.decrement_uses(key):
                     inputs = (
                         """
@@ -286,14 +295,14 @@ class SummarizationGeneExpressionCsvUpload(Resource):
                 overwrite = request.form.get("overwrite")
                 addToDb = request.form.get("addToDb")
                 email = request.form.get("email")
-                if(overwrite is True):
+                if overwrite is True:
                     overwrite = "replace"
                 else:
                     overwrite = "append"
                 dirName = os.path.join(DATA_FOLDER, secure_filename(key))
                 if not os.path.exists(dirName):
                     os.makedirs(dirName)
-                file.save(os.path.join(dirName , secure_filename(filename)))
+                file.save(os.path.join(dirName, secure_filename(filename)))
                 if SummarizationGeneExpressionUtils.decrement_uses(key):
                     inputs = (
                         """
@@ -494,7 +503,9 @@ class SummarizationGeneExpressionSave(Resource):
                         extension = ".svg"
                     else:
                         return BARUtils.error_exit("Invalid file type"), 400
-                    filename = os.path.join(DATA_FOLDER, api_key, file.filename + extension)
+                    filename = os.path.join(
+                        DATA_FOLDER, api_key, file.filename + extension
+                    )
                     file.save(filename)
                     return BARUtils.success_exit(True)
                 else:
@@ -540,7 +551,7 @@ class SummarizationGeneExpressionCleanSvg(Resource):
             if api_key is None:
                 return BARUtils.error_exit("Invalid API key"), 403
             elif SummarizationGeneExpressionUtils.decrement_uses(api_key):
-                in_string = request.get_json()['svg']
+                in_string = request.get_json()["svg"]
                 out_string = scourString(in_string, options={"remove_metadata": True})
                 return BARUtils.success_exit(out_string)
             else:
