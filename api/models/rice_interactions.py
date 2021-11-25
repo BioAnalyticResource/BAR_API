@@ -15,7 +15,7 @@ class Interactions(db.Model):
     Total_hits = db.Column(db.SmallInteger(), primary_key=False)
     Num_species = db.Column(db.SmallInteger(), primary_key=False)
     Quality = db.Column(db.SmallInteger(), primary_key=False)
-    Index = db.Column(db.SmallInteger(), primary_key=False)    
+    Index = db.Column(db.SmallInteger(), primary_key=False)
     Pcc = db.Column(db.Float, primary_key=False)
     Bind_id = db.Column(db.SmallInteger(), primary_key=False)
 
