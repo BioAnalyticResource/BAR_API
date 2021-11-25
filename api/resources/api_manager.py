@@ -192,7 +192,7 @@ class ApiManagerCaptchaValidate(Resource):
         if request.method == "POST":
             json = request.get_json()
             value = json["response"]
-            key = os.environ.get("CAPTCHA_KEY")
+            key = os.environ.get("CAPTCHA_KEY_FILE")
             if key:
                 ret = requests.post(
                     "https://www.google.com/recaptcha/api/siteverify",
