@@ -55,7 +55,7 @@ class Localizations(Resource):
             except OperationalError:
                 return BARUtils.error_exit("An internal error has occurred"), 500
         else:
-            return BARUtils.error_exit("Invalid species or gene ID"), 400           
+            return BARUtils.error_exit("Invalid species or gene ID"), 400
 
 
 loc_post_ex = loc.model(
@@ -92,7 +92,7 @@ class LocalizationsPost(Resource):
         genes = json_data["genes"]
         species = json_data["species"].lower()
 
-        if species == "rice":           
+        if species == "rice":
             for gene in genes:
                 if not BARUtils.is_rice_gene_valid(gene, True):
                     return BARUtils.error_exit("Invalid gene id"), 400
