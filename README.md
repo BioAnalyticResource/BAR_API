@@ -1,77 +1,8 @@
 # BAR API
 
-**master**: [![Build Status](https://github.com/BioAnalyticResource/BAR_API/workflows/BAR-API/badge.svg?branch=master)](https://github.com/BioAnalyticResource/BAR_API/actions?query=branch%3Amaster) [![Coverage Status](https://coveralls.io/repos/github/BioAnalyticResource/BAR_API/badge.svg?branch=master)](https://coveralls.io/github/BioAnalyticResource/BAR_API?branch=master) **dev**: [![Build Status](https://github.com/BioAnalyticResource/BAR_API/workflows/BAR-API/badge.svg?branch=dev)](https://github.com/BioAnalyticResource/BAR_API/actions?query=branch%3Adev) [![Coverage Status](https://coveralls.io/repos/github/BioAnalyticResource/BAR_API/badge.svg?branch=dev)](https://coveralls.io/github/BioAnalyticResource/BAR_API?branch=dev)
+**master**: [![Build Status](https://github.com/BioAnalyticResource/BAR_API/workflows/BAR-API/badge.svg?branch=master)](https://github.com/BioAnalyticResource/BAR_API/actions?query=branch%3Amaster) [![codecov](https://codecov.io/gh/BioAnalyticResource/BAR_API/branch/master/graph/badge.svg?token=QSYUWTRYEV)](https://codecov.io/gh/BioAnalyticResource/BAR_API) **dev**: [![Build Status](https://github.com/BioAnalyticResource/BAR_API/workflows/BAR-API/badge.svg?branch=dev)](https://github.com/BioAnalyticResource/BAR_API/actions?query=branch%3Adev) [![codecov](https://codecov.io/gh/BioAnalyticResource/BAR_API/branch/dev/graph/badge.svg?token=QSYUWTRYEV)](https://codecov.io/gh/BioAnalyticResource/BAR_API)
 
 [![Website Status](https://img.shields.io/website?url=http%3A%2F%2Fbar.utoronto.ca%2Fapi%2F)](http://bar.utoronto.ca/api/) ![GitHub repo size](https://img.shields.io/github/repo-size/BioAnalyticResource/BAR_API) [![LGTM Alerts](https://img.shields.io/lgtm/alerts/github/BioAnalyticResource/BAR_API)](https://lgtm.com/projects/g/BioAnalyticResource/BAR_API/?mode=list) [![LGTM
-Grade](https://img.shields.io/lgtm/grade/python/github/BioAnalyticResource/BAR_API)](https://lgtm.com/projects/g/BioAnalyticResource/BAR_API/latest/files/?sort=name&dir=ASC&mode=heatmap) [![Requirements Status](https://requires.io/github/BioAnalyticResource/BAR_API/requirements.svg?branch=master)](https://requires.io/github/BioAnalyticResource/BAR_API/requirements/?branch=master) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+Grade](https://img.shields.io/lgtm/grade/python/github/BioAnalyticResource/BAR_API)](https://lgtm.com/projects/g/BioAnalyticResource/BAR_API/latest/files/?sort=name&dir=ASC&mode=heatmap) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) [![Documentation Status](https://readthedocs.org/projects/bar-api/badge/?version=latest)](https://bar-api.readthedocs.io/en/latest/?badge=latest)
 
-This is the official repository for the Bio-Analytic Resource API.
-
-## Status
-
-Apart from Travis CI and testing on the live BAR, we frequently test the API on systems that are not BAR for cross-platform compatibility. The most recent test is on the following systems:
-
-* OpenBSD 6.7-CURRENT (Maria DB 10.4.12v1, Python 3.8.3 and Redis 6.0.5)
-* FreeBSD 12.1-RELEASE-p6 (MySQL 8.0.20, Python 3.8.3 and Redis 5.0.9)
-
-## Run on your own computer with Docker
-
-1. Install [Docker](https://docs.docker.com/get-docker/)
-2. Install [Docker Compose](https://docs.docker.com/compose/install/)
-3. Install [Git](https://git-scm.com/downloads)
-4. Clone this repository and change directory to ```BAR_API```
-5. Build docker images
-```
-docker-compose build
-```
-6. Run docker containers (-d is detached)
-```
-docker-compose up -d
-```
-7. Load ```http://localhost:5000/``` in a web browser. Enjoy :)
-
-## Run on your own computer without Docker
-
-1. Install [MySQL](https://www.mysql.com/products/community/) or [Maria DB](https://mariadb.com/downloads/).
-2. Install [Redis](https://redis.io/download).
-3. Install [Python](https://www.python.org/downloads/) or [Pypy](https://www.pypy.org/download.html). Note: Python 2 is not supported.
-4. Install [Git](https://git-scm.com/downloads)
-5. (Optional) On Debian based systems, you may also need to install ```libmysqlclient-dev``` and ```python3-dev```. On FreeBSD, you may need to install ```py38-sqlite3```. We will update this step as we come across more OS dependencies. 
-6. Clone this repository and change directory to ```BAR_API```
-7. Set up a virtual environment
-```
-python3 -m venv venv
-```
-8. Activate the virtual environment. Bash/Zsh:
-```
-source venv/bin/activate
-```
-csh/tcsh:
-```
-source venv/bin/activate.csh
-```
-9. Install requirements
-```
-pip install --upgrade pip setuptools wheel
-pip install -r requirements.txt
-```
-10. Copy ```config/BAR_API.cgi``` to your preferred directory, for example:
-```
-cp config/BAR_API.cgi ~/.config/
-```
-Add, update, and modify passwords and environment variables as needed.
-
-11. Copy ```./config/init.sh``` to BAR_API directory:
-```
-cp config/init.sh .
-```
-Change passwords in ```./init.sh``` and run this script to load the databases:
-```
-./init.sh
-```
-Then delete ```./init.sh```
-
-12. Edit ```./api/__init__.py``` and update the location of your BAR_API.cfg file if you have changed it.
-13. Run ```pytest```. Tests should pass if the system is set up correctly.
-14. Run ```python app.py``` to start.
-15. Load ```http://localhost:5000/``` in a web browser. Enjoy :)
+This is the official repository for the Bio-Analytic Resource API. The API documentation can be found [here](https://bar-api.readthedocs.io/en/latest/).

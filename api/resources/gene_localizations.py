@@ -12,7 +12,9 @@ from sqlalchemy.exc import OperationalError
 from api.utils.bar_utils import BARUtils
 from marshmallow import Schema, ValidationError, fields as marshmallow_fields
 
-loc = Namespace("Localizations", description="Sub-cellular gene localzation endpoint", path="/loc")
+loc = Namespace(
+    "Localizations", description="Sub-cellular gene localzation endpoint", path="/loc"
+)
 
 
 # Validation is done in a different way to keep things simple
@@ -50,7 +52,7 @@ class Localizations(Resource):
                         "data": {
                             "gene": rows[0].gene_id,
                             "predicted_location": rows[0].pred_mPLoc,
-                        }
+                        },
                     }
             except OperationalError:
                 return BARUtils.error_exit("An internal error has occurred"), 500

@@ -11,7 +11,11 @@ from sqlalchemy.exc import OperationalError
 from sqlalchemy import or_
 from api.utils.bar_utils import BARUtils
 
-itrns = Namespace("Interactions", description="Interactions (protein-protein, protein-DNA, etc) endpoint", path="/interactions")
+itrns = Namespace(
+    "Interactions",
+    description="Interactions (protein-protein, protein-DNA, etc) endpoint",
+    path="/interactions",
+)
 
 
 @itrns.route("/<species>/<query_gene>")
@@ -28,7 +32,12 @@ class Interactions(Resource):
         query_gene = escape(query_gene)
         if species == "rice" and BARUtils.is_rice_gene_valid(query_gene):
             try:
-                rows = rice_interactions.query.filter(or_(rice_interactions.Protein1 == query_gene, rice_interactions.Protein2 == query_gene)).all()
+                rows = rice_interactions.query.filter(
+                    or_(
+                        rice_interactions.Protein1 == query_gene,
+                        rice_interactions.Protein2 == query_gene,
+                    )
+                ).all()
                 if len(rows) == 0:
                     return (
                         BARUtils.error_exit(
