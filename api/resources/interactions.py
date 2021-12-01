@@ -51,8 +51,8 @@ class Interactions(Resource):
                         for i in rows
                     ]
                     return {
-                        "status": "success",
-                        "result": res
+                        "wasSuccessful": True,
+                        "data": res
                     }
             except OperationalError:
                 return BARUtils.error_exit("An internal error has occurred"), 500

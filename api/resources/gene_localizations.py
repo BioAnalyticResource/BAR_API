@@ -46,8 +46,8 @@ class Localizations(Resource):
                 else:
                     print(rows)
                     return {
-                        "status": "success",
-                        "result": {
+                        "wasSuccessful": True,
+                        "data": {
                             "gene": rows[0].gene_id,
                             "predicted_location": rows[0].pred_mPLoc,
                         }
