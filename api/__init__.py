@@ -20,10 +20,10 @@ def create_app():
         print("We are now loading configuration.")
         bar_app.config.from_pyfile(os.getcwd() + "/config/BAR_API.cfg", silent=True)
         if bar_app.config.get("ADMIN_ENCRYPT_KEY"):
-            os.environ["ADMIN_ENCRYPT_KEY"] = bar_app.config.get("ADMIN_ENCRYPT_KEY")
+            os.environ["ADMIN_ENCRYPT_KEY"] = bar_app.config.get("TEST_ADMIN_ENCRYPT_KEY")
         if bar_app.config.get("ADMIN_PASSWORD_FILE"):
             os.environ["ADMIN_PASSWORD_FILE"] = bar_app.config.get(
-                "ADMIN_PASSWORD_FILE"
+                "TEST_ADMIN_PASSWORD_FILE"
             )
     elif os.environ.get("BAR"):
         # The BAR
