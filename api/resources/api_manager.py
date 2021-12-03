@@ -5,6 +5,7 @@ from flask import request
 from flask_restx import Namespace, Resource
 from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.types import String, Float
 import os
 import uuid
 import requests
@@ -167,17 +168,27 @@ class ApiManagerApproveRequest(Resource):
                             "date_added": datetime.now(),
                             "status": "user",
                             "api_key": key,
-                            "uses_left": 25,
+                            "uses_left": 100,
                         }
                     )
                     for row in rows
                 ]
                 df = pandas.DataFrame.from_records([values[0]])
+                values_df = pandas.DataFrame(columns=['Gene',
+                                                      'Sample',
+                                                      'Value'])
                 con = db.get_engine(bind="summarization")
                 try:
                     df.to_sql("users", con, if_exists="append", index=False)
+                    values_df.to_sql(key, con, index_label='index',
+                                     dtype={values_df.index.name: String(42),
+                                            'Gene': String(32),
+                                            'Sample': String(32),
+                                            'Value': Float},
+                                     if_exists="append", index=True)
                     el = table.query.filter_by(email=email).one()
                     db.session.delete(el)
+                    db.session.commit()
                 except SQLAlchemyError:
                     return BARUtils.error_exit("Internal server error"), 500
                 return BARUtils.success_exit(key)
