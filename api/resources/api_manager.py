@@ -174,18 +174,23 @@ class ApiManagerApproveRequest(Resource):
                     for row in rows
                 ]
                 df = pandas.DataFrame.from_records([values[0]])
-                values_df = pandas.DataFrame(columns=['Gene',
-                                                      'Sample',
-                                                      'Value'])
+                values_df = pandas.DataFrame(columns=["Gene", "Sample", "Value"])
                 con = db.get_engine(bind="summarization")
                 try:
                     df.to_sql("users", con, if_exists="append", index=False)
-                    values_df.to_sql(key, con, index_label='index',
-                                     dtype={values_df.index.name: String(42),
-                                            'Gene': String(32),
-                                            'Sample': String(32),
-                                            'Value': Float},
-                                     if_exists="append", index=True)
+                    values_df.to_sql(
+                        key,
+                        con,
+                        index_label="index",
+                        dtype={
+                            values_df.index.name: String(42),
+                            "Gene": String(32),
+                            "Sample": String(32),
+                            "Value": Float,
+                        },
+                        if_exists="append",
+                        index=True,
+                    )
                     el = table.query.filter_by(email=email).one()
                     db.session.delete(el)
                     db.session.commit()
