@@ -140,3 +140,4 @@ dmypy.json
 .vscode/
 output/*
 !output
+!output/placeholder.txt
