@@ -1,0 +1,1 @@
+This file exists simply so the output folder will be created when cloning repository.

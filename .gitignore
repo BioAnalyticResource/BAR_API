@@ -138,3 +138,6 @@ dmypy.json
 **/.DS_Store
 
 .vscode/
+output/*
+!output
+!output/placeholder.txt
