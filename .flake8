@@ -11,4 +11,6 @@ exclude =
     venv,
     env,
     .venv,
+    ./venv-docs,
+    docs,
     .env
