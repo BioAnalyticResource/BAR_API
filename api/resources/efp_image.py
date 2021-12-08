@@ -14,7 +14,9 @@ efp_image = Namespace(
 class eFPImageList(Resource):
     def get(self):
         """This end point returns the list of species available"""
-        species = ["efp_arabidopsis"]  # This are the only species available so far
+        # This are the only species available so far
+        # If this is updated, update get request and test as well
+        species = ["efp_arabidopsis"]
         return BARUtils.success_exit(species)
 
 
@@ -46,7 +48,7 @@ class eFPImage(Resource):
         """This end point returns eFP images."""
         # list of allowed eFPs
         # See endpoint able
-        efp_list = ["efp_arabidopsis"]
+        species = ["efp_arabidopsis"]
 
         # Escape input data
         efp = escape(efp)
@@ -56,7 +58,7 @@ class eFPImage(Resource):
         gene_2 = escape(gene_2)
 
         # Validate values
-        if efp not in efp_list:
+        if efp not in species:
             return BARUtils.error_exit("Invalid eFP."), 400
 
         # Validate view
@@ -100,7 +102,12 @@ class eFPImage(Resource):
 
         # File is not found
         if match is None:
-            return BARUtils.error_exit("Failed to retrieve image. Data for the given gene may not exist."), 500
+            return (
+                BARUtils.error_exit(
+                    "Failed to retrieve image. Data for the given gene may not exist."
+                ),
+                500,
+            )
 
         efp_file_link = (
             "https://bar.utoronto.ca/~asher/python3/" + efp + "/output/" + match[1]

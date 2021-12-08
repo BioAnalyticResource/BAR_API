@@ -95,7 +95,7 @@ class BARUtils:
         :param efp_view: string view name
         :return: True if valid
         """
-        if efp_view and re.search(r"[a-z1-9_]{1,20}", efp_view, re.I):
+        if efp_view and re.search(r"^[a-z1-9_]{1,20}$", efp_view, re.I):
             return True
         else:
             return False
