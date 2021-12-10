@@ -39,34 +39,35 @@ class ApiManagerUtils:
 
     @staticmethod
     def send_email_notification():
-        with open(os.environ.get("ADMIN_EMAIL"), "r") as f:
-            for line in f:
-                recipient = line
-        port = 465
-        key = os.environ.get('EMAIL_PASS_KEY')
-        cipher_suite = Fernet(key)
-        with open(os.environ.get('EMAIL_PASS_FILE'), "rb") as f:
-            for line in f:
-                encrypted_key = line
-        uncipher_text = cipher_suite.decrypt(encrypted_key)
-        password = bytes(uncipher_text).decode("utf-8")
-        context = create_default_context()
-        smtp_server = 'smtp.gmail.com'
-        sender_email = 'bar.summarization@gmail.com'
-        subject = "[Bio-Analytic Resource] New API key request"
-        text = """\
-            There is a new API key request.
-            You can approve or reject it at http://bar.utoronto.ca/~bpereira/webservices/bar-request-manager/build/index.html
-        """
-        m_text = MIMEText(text, _subtype='plain', _charset='UTF-8')
-        msg = MIMEMultipart()
-        msg["From"] = sender_email
-        msg["To"] = recipient
-        msg["Subject"] = subject
-        msg.attach(m_text)
-        with SMTP_SSL(smtp_server, port, context=context) as server:
-            server.login("bar.summarization@gmail.com", password)
-            server.sendmail(sender_email, recipient, msg.as_string())
+        if os.environ.get("BAR"):
+            with open(os.environ.get("ADMIN_EMAIL"), "r") as f:
+                for line in f:
+                    recipient = line
+            port = 465
+            key = os.environ.get('EMAIL_PASS_KEY')
+            cipher_suite = Fernet(key)
+            with open(os.environ.get('EMAIL_PASS_FILE'), "rb") as f:
+                for line in f:
+                    encrypted_key = line
+            uncipher_text = cipher_suite.decrypt(encrypted_key)
+            password = bytes(uncipher_text).decode("utf-8")
+            context = create_default_context()
+            smtp_server = 'smtp.gmail.com'
+            sender_email = 'bar.summarization@gmail.com'
+            subject = "[Bio-Analytic Resource] New API key request"
+            text = """\
+                There is a new API key request.
+                You can approve or reject it at http://bar.utoronto.ca/~bpereira/webservices/bar-request-manager/build/index.html
+            """
+            m_text = MIMEText(text, _subtype='plain', _charset='UTF-8')
+            msg = MIMEMultipart()
+            msg["From"] = sender_email
+            msg["To"] = recipient
+            msg["Subject"] = subject
+            msg.attach(m_text)
+            with SMTP_SSL(smtp_server, port, context=context) as server:
+                server.login("bar.summarization@gmail.com", password)
+                server.sendmail(sender_email, recipient, msg.as_string())
 
 
 @api_manager.route("/validate_admin_password", methods=["POST"], doc=False)
