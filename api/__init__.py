@@ -27,6 +27,12 @@ def create_app():
             os.environ["ADMIN_PASSWORD_FILE"] = bar_app.config.get(
                 "TEST_ADMIN_PASSWORD_FILE"
             )
+        if bar_app.config.get("ADMIN_EMAIL"):
+            os.environ["ADMIN_EMAIL"] = bar_app.config.get("ADMIN_EMAIL")
+        if bar_app.config.get("EMAIL_PASS_KEY"):
+            os.environ["EMAIL_PASS_KEY"] = bar_app.config.get("EMAIL_PASS_KEY")
+        if bar_app.config.get("EMAIL_PASS_FILE"):
+            os.environ["EMAIL_PASS_FILE"] = bar_app.config.get("EMAIL_PASS_FILE")
     elif os.environ.get("BAR"):
         # The BAR
         bar_app.config.from_pyfile(os.environ.get("BAR_API_PATH"), silent=True)
