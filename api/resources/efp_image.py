@@ -1,5 +1,8 @@
+import base64
 import re
 import requests
+import random
+import redis.connection
 from flask_restx import Namespace, Resource
 from markupsafe import escape
 from flask import send_from_directory
@@ -78,46 +81,72 @@ class eFPImage(Resource):
                 return BARUtils.error_exit("Gene 2 is invalid."), 400
 
         # Check if request is cached
+        try:
+            r = BARUtils.connect_redis()
+            key = "BAR_API_efp_image_" + "_".join([efp, view, mode, gene_1, gene_2])
+            efp_image_base64 = r.get(key)
+        except redis.connection.ConnectionError:
+            # Failed redis connection
+            r = None
+            key = None
+            efp_image_base64 = None
 
-        # If request is not cached, run the search
-        # Run eFP. Note, this is currently running from home directory
-        efp_url = (
-            "https://bar.utoronto.ca/~asher/python3/"
-            + efp
-            + "/cgi-bin/efpWeb.cgi?dataSource="
-            + view
-            + "&mode="
-            + mode
-            + "&primaryGene="
-            + gene_1
-            + "&secondaryGene="
-            + gene_2
-            + "&grey_low=None&grey_stddev=None"
-        )
-        efp_html = requests.get(efp_url)
+        if efp_image_base64 is None:
+            # Request is not cached
+            # Run eFP. Note, this is currently running from home directory!
+            efp_url = (
+                "https://bar.utoronto.ca/~asher/python3/"
+                + efp
+                + "/cgi-bin/efpWeb.cgi?dataSource="
+                + view
+                + "&mode="
+                + mode
+                + "&primaryGene="
+                + gene_1
+                + "&secondaryGene="
+                + gene_2
+                + "&grey_low=None&grey_stddev=None"
+            )
+            efp_html = requests.get(efp_url)
 
-        # Now search for something like <img src=\"../output/efp-2nBNhe.png\"
-        # This is the eFP output image
-        match = re.search(r'"\.\./output/(efp-.{1,10}\.png)', efp_html.text)
+            # Now search for something like <img src=\"../output/efp-2nBNhe.png\"
+            # This is the eFP output image
+            match = re.search(r'"\.\./output/(efp-.{1,10}\.png)', efp_html.text)
 
-        # File is not found
-        if match is None:
-            return (
-                BARUtils.error_exit(
-                    "Failed to retrieve image. Data for the given gene may not exist."
-                ),
-                500,
+            # File is not found
+            if match is None:
+                return (
+                    BARUtils.error_exit(
+                        "Failed to retrieve image. Data for the given gene may not exist."
+                    ),
+                    500,
+                )
+
+            # Save this path for later use
+            path = match[1]
+            efp_file_link = (
+                "https://bar.utoronto.ca/~asher/python3/" + efp + "/output/" + path
             )
 
-        efp_file_link = (
-            "https://bar.utoronto.ca/~asher/python3/" + efp + "/output/" + match[1]
-        )
+            # Download and serve that image
+            img_data = requests.get(efp_file_link).content
+            with open("output/" + path, "wb") as file:
+                file.write(img_data)
 
-        # Download and serve that image
-        img_data = requests.get(efp_file_link).content
-        with open("output/" + match[1], "wb") as file:
-            file.write(img_data)
+            # Cache the request if redis is alive
+            if r:
+                efp_image_base64 = base64.b64encode(img_data)
+                r.set(key, efp_image_base64)
+                r.close()
+
+        else:
+            # Request is cached
+            img_data = base64.b64decode(efp_image_base64)
+            path = key + str(random.randrange(0, 1000000)) + ".png"
+            with open("output/" + path, "wb") as file:
+                file.write(img_data)
+            r.close()
 
         return send_from_directory(
-            directory="../output/", path=match[1], mimetype="image/png"
+            directory="../output/", path=path, mimetype="image/png"
         )

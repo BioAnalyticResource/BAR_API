@@ -1,4 +1,6 @@
 import re
+import redis
+import os
 
 
 class BARUtils:
@@ -99,3 +101,14 @@ class BARUtils:
             return True
         else:
             return False
+
+    @staticmethod
+    def connect_redis():
+        """This function connects to redis
+        :returns: redis connection
+        """
+        r = redis.Redis(
+            host="localhost", port=6379, password=os.environ.get("BAR_REDIS_PASSWORD")
+        )
+
+        return r
