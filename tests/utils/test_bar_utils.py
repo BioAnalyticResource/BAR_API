@@ -28,6 +28,11 @@ class UtilsUnitTest(TestCase):
         result = BARUtils.is_arabidopsis_gene_valid("At1g01010.11")
         self.assertFalse(result)
 
+    def test_is_tomato_gene_valid(self):
+        # For some reason, coverage is saying that we need this test
+        result = BARUtils.is_tomato_gene_valid("Solyc04g014530")
+        self.assertTrue(result)
+
     def test_is_integer(self):
         # Valid result
         result = BARUtils.is_integer("5")
