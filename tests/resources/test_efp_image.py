@@ -75,19 +75,3 @@ class TestIntegrations(TestCase):
         )
         expected = {"wasSuccessful": False, "error": "Gene 2 is invalid."}
         self.assertEqual(response.json, expected)
-
-        # Test compare modes in the end
-        # A very basic test for Arabidopsis requests
-        # https://bar.utoronto.ca/api/efp_image/efp_cannabis/Cannabis_Atlas/Compare/AGQN03000001/AGQN03000012
-        response = self.app_client.get(
-            "/efp_image/efp_cannabis/Cannabis_Atlas/Compare/AGQN03000001/AGQN03000012"
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content_type, "image/png")
-
-        # Rerun for cached request. An image should be returned
-        response = self.app_client.get(
-            "/efp_image/efp_cannabis/Cannabis_Atlas/Compare/AGQN03000001/AGQN03000012"
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content_type, "image/png")
