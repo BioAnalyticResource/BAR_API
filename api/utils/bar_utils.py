@@ -73,6 +73,17 @@ class BARUtils:
             return False
 
     @staticmethod
+    def is_cannabis_gene_valid(gene):
+        """This function verifies if cannabis gene is valid: AGQN03000001
+        :param gene:
+        :return: True if valid
+        """
+        if gene and re.search(r"^AGQN\d{0,10}$", gene, re.I):
+            return True
+        else:
+            return False
+
+    @staticmethod
     def is_integer(data):
         """Check if the input is at max ten figure number.
         :param data: int number
@@ -90,17 +101,6 @@ class BARUtils:
         :return: String
         """
         return poplar_gene.translate(str.maketrans("pOTRIg", "PotriG"))
-
-    @staticmethod
-    def is_efp_view_name(efp_view):
-        """This function is used for validated eFP View names for eFP service
-        :param efp_view: string view name
-        :return: True if valid
-        """
-        if efp_view and re.search(r"^[a-z1-9_]{1,20}$", efp_view, re.I):
-            return True
-        else:
-            return False
 
     @staticmethod
     def connect_redis():
