@@ -11,7 +11,10 @@ class TestIntegrations(TestCase):
         :return:
         """
         response = self.app_client.get("/efp_image/")
-        expected = {"wasSuccessful": True, "data": ["efp_arabidopsis", "efp_cannabis"]}
+        expected = {
+            "wasSuccessful": True,
+            "data": ["efp_arabidopsis", "efp_cannabis", "efp_arachis"],
+        }
         self.assertEqual(response.json, expected)
 
     def test_get_efp_image(self):
@@ -69,7 +72,7 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
-        # Test for gene 2 using Arabidopsis
+        # Test for gene 1 using Arabidopsis
         response = self.app_client.get(
             "/efp_image/efp_arabidopsis/Root/Compare/At1g01010/Abc"
         )
