@@ -20,7 +20,7 @@ class eFPImageList(Resource):
         """This end point returns the list of species available"""
         # This are the only species available so far
         # If this is updated, update efp_utils.py and unit tests as well
-        species = ["efp_arabidopsis", "efp_cannabis"]
+        species = ["efp_arabidopsis", "efp_cannabis", "efp_arachis"]
         return BARUtils.success_exit(species)
 
 

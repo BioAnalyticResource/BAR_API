@@ -84,6 +84,19 @@ class BARUtils:
             return False
 
     @staticmethod
+    def is_arachis_gene_valid(gene):
+        """This function verifies if arachis gene is valid: Adur10000_comp0_c0_seq1
+        :param gene:
+        :return: True if valid
+        """
+        if gene and re.search(
+            r"Adur\d{1,10}_comp\d{1,3}_\D{1,3}\d{1,3}_seq\d{1,5}", gene, re.I
+        ):
+            return True
+        else:
+            return False
+
+    @staticmethod
     def is_integer(data):
         """Check if the input is at max ten figure number.
         :param data: int number
