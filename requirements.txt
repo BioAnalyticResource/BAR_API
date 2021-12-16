@@ -51,7 +51,7 @@ regex==2021.11.10
 requests==2.26.0
 scour==0.38.2
 six==1.16.0
-SQLAlchemy==1.4.27
+SQLAlchemy==1.4.28
 toml==0.10.2
 typed-ast==1.5.1
 typing_extensions==4.0.1
