@@ -38,6 +38,24 @@ class ApiManagerUtils:
             return False
 
     @staticmethod
+    def validate_captcha(self):
+        """Validates a reCaptcha value using our secret token"""
+        if request.method == "POST":
+            json = request.get_json()
+            value = json["response"]
+            with open(CAPTCHA_KEY_FILE, "rb") as f:
+                for line in f:
+                    key = line
+            if key:
+                ret = requests.post(
+                    "https://www.google.com/recaptcha/api/siteverify",
+                    data={"secret": key, "response": value}
+                )
+                return ret.json()["success"]
+            else:
+                return False
+
+    @staticmethod
     def send_email_notification():
         if os.environ.get("BAR"):
             with open(os.environ.get("ADMIN_EMAIL"), "r") as f:
@@ -109,23 +127,27 @@ class ApiManagerValidateKey(Resource):
 class ApiManagerRequest(Resource):
     def post(self):
         if request.method == "POST":
-            response_json = request.get_json()
-            df = pandas.DataFrame.from_records([response_json])
-            con = db.get_engine(bind="summarization")
-            try:
-                reqs = Requests()
-                users = Users()
-                row_req = reqs.query.filter_by(email=df.email[0]).first()
-                row_users = users.query.filter_by(email=df.email[0]).first()
+            captchaVal = request.headers.get("captchaVal")
+            if(ApiManagerUtils.validate_captcha(captchaVal)):
+                response_json = request.get_json()
+                df = pandas.DataFrame.from_records([response_json])
+                con = db.get_engine(bind="summarization")
+                try:
+                    reqs = Requests()
+                    users = Users()
+                    row_req = reqs.query.filter_by(email=df.email[0]).first()
+                    row_users = users.query.filter_by(email=df.email[0]).first()
 
-                if row_req is None and row_users is None:
-                    df.to_sql("requests", con, if_exists="append", index=False)
-                    ApiManagerUtils.send_email_notification()
-                    return BARUtils.success_exit("Data added")
-                else:
-                    return BARUtils.error_exit("E-mail already in use"), 409
-            except SQLAlchemyError:
-                return BARUtils.error_exit("Internal server error"), 500
+                    if row_req is None and row_users is None:
+                        df.to_sql("requests", con, if_exists="append", index=False)
+                        ApiManagerUtils.send_email_notification()
+                        return BARUtils.success_exit("Data added")
+                    else:
+                        return BARUtils.error_exit("E-mail already in use"), 409
+                except SQLAlchemyError:
+                    return BARUtils.error_exit("Internal server error"), 500
+            else:
+                return BARUtils.error_exit("Failed Captcha verification")
 
 
 @api_manager.route("/get_pending_requests", methods=["POST"], doc=False)
@@ -236,23 +258,3 @@ class ApiManagerApproveRequest(Resource):
                 return BARUtils.success_exit(key)
             else:
                 return BARUtils.error_exit("Forbidden"), 403
-
-
-@api_manager.route("/validate_captcha", methods=["POST"], doc=False)
-class ApiManagerCaptchaValidate(Resource):
-    def post(self):
-        """Validates a reCaptcha value using our secret token"""
-        if request.method == "POST":
-            json = request.get_json()
-            value = json["response"]
-            with open(CAPTCHA_KEY_FILE, "rb") as f:
-                for line in f:
-                    key = line
-            if key:
-                ret = requests.post(
-                    "https://www.google.com/recaptcha/api/siteverify",
-                    data={"secret": key, "response": value},
-                )
-                return BARUtils.success_exit(ret.text)
-            else:
-                return BARUtils.error_exit("Forbidden: CAPTCHA key is not found"), 403
