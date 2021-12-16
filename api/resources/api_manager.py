@@ -38,22 +38,19 @@ class ApiManagerUtils:
             return False
 
     @staticmethod
-    def validate_captcha(self):
+    def validate_captcha(value):
         """Validates a reCaptcha value using our secret token"""
-        if request.method == "POST":
-            json = request.get_json()
-            value = json["response"]
-            with open(CAPTCHA_KEY_FILE, "rb") as f:
-                for line in f:
-                    key = line
-            if key:
-                ret = requests.post(
-                    "https://www.google.com/recaptcha/api/siteverify",
-                    data={"secret": key, "response": value}
-                )
-                return ret.json()["success"]
-            else:
-                return False
+        with open(CAPTCHA_KEY_FILE, "rb") as f:
+            for line in f:
+                key = line
+        if key:
+            ret = requests.post(
+                "https://www.google.com/recaptcha/api/siteverify",
+                data={"secret": key, "response": value}
+            )
+            return ret.json()["success"]
+        else:
+            return False
 
     @staticmethod
     def send_email_notification():
