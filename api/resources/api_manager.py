@@ -62,22 +62,22 @@ class ApiManagerUtils:
                 for line in f:
                     recipient = line
             port = 465
-            key = os.environ.get('EMAIL_PASS_KEY')
+            key = os.environ.get("EMAIL_PASS_KEY")
             cipher_suite = Fernet(key)
-            with open(os.environ.get('EMAIL_PASS_FILE'), "rb") as f:
+            with open(os.environ.get("EMAIL_PASS_FILE"), "rb") as f:
                 for line in f:
                     encrypted_key = line
             uncipher_text = cipher_suite.decrypt(encrypted_key)
             password = bytes(uncipher_text).decode("utf-8")
             context = create_default_context()
-            smtp_server = 'smtp.gmail.com'
-            sender_email = 'bar.summarization@gmail.com'
+            smtp_server = "smtp.gmail.com"
+            sender_email = "bar.summarization@gmail.com"
             subject = "[Bio-Analytic Resource] New API key request"
             text = """\
                 There is a new API key request.
                 You can approve or reject it at http://bar.utoronto.ca/~bpereira/webservices/bar-request-manager/build/index.html
             """
-            m_text = MIMEText(text, _subtype='plain', _charset='UTF-8')
+            m_text = MIMEText(text, _subtype="plain", _charset="UTF-8")
             msg = MIMEMultipart()
             msg["From"] = sender_email
             msg["To"] = recipient
