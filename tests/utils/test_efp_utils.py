@@ -80,6 +80,38 @@ class UtilsUnitTest(TestCase):
         self.assertFalse(result[0])
         self.assertEqual(result[1], expected)
 
+        # eFP Soybean Absolute
+        result = eFPUtils.is_efp_input_valid(
+            "efp_soybean", "soybean", "Absolute", "Glyma06g47400"
+        )
+        self.assertTrue(result[0])
+        self.assertIsNone(result[1])
+
+        result = eFPUtils.is_efp_input_valid(
+            "efp_soybean", "soybean", "Absolute", "Abc"
+        )
+        expected = "Gene 1 is invalid."
+        self.assertFalse(result[0])
+        self.assertEqual(result[1], expected)
+
+        # eFP Soybean gene 2
+        result = eFPUtils.is_efp_input_valid(
+            "efp_soybean",
+            "soybean",
+            "Compare",
+            "Glyma06g47400",
+            "Glyma06g47390",
+        )
+        self.assertTrue(result[0])
+        self.assertIsNone(result[1])
+
+        result = eFPUtils.is_efp_input_valid(
+            "efp_soybean", "soybean", "Compare", "Glyma06g47400", "Abc"
+        )
+        expected = "Gene 2 is invalid."
+        self.assertFalse(result[0])
+        self.assertEqual(result[1], expected)
+
         # Test if both gene are the same in eFP Comare mode
         result = eFPUtils.is_efp_input_valid(
             "efp_arachis",

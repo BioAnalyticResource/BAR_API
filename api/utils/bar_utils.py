@@ -97,6 +97,19 @@ class BARUtils:
             return False
 
     @staticmethod
+    def is_soybean_gene_valid(gene):
+        """This function verifies if soybean gene is valid: Glyma06g47400
+        :param gene:
+        :return: True if valid
+        """
+        if gene and re.search(
+            r"^((Glyma\d{1,3}g\d{1,6}\.?\d?)|(Glyma\.\d{1,3}g\d{1,8}))$", gene, re.I
+        ):
+            return True
+        else:
+            return False
+
+    @staticmethod
     def is_integer(data):
         """Check if the input is at max ten figure number.
         :param data: int number
