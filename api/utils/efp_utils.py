@@ -9,7 +9,7 @@ class eFPUtils:
         :param efp_view: string view name
         :return: True if valid
         """
-        if efp_view and re.search(r"^[a-z1-9_]{1,20}$", efp_view, re.I):
+        if efp_view and re.search(r"^[a-z1-9_]{1,50}$", efp_view, re.I):
             return True
         else:
             return False
@@ -32,7 +32,7 @@ class eFPUtils:
         """Test if eFP input is valid
         :return: List with boolean and string
         """
-        species = ["efp_arabidopsis", "efp_cannabis", "efp_arachis"]
+        species = ["efp_arabidopsis", "efp_cannabis", "efp_arachis", "efp_soybean"]
 
         # Validate values
         if efp not in species:
@@ -72,6 +72,15 @@ class eFPUtils:
 
             if mode == "Compare":
                 if not BARUtils.is_arachis_gene_valid(gene_2):
+                    return False, "Gene 2 is invalid."
+
+        if efp == "efp_soybean":
+            # Validate gene ids
+            if not BARUtils.is_soybean_gene_valid(gene_1):
+                return False, "Gene 1 is invalid."
+
+            if mode == "Compare":
+                if not BARUtils.is_soybean_gene_valid(gene_2):
                     return False, "Gene 2 is invalid."
 
         # In compare mode gene1 != gene2
