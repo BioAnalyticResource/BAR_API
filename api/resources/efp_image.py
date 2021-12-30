@@ -2,11 +2,14 @@ import base64
 import re
 import requests
 import random
-import redis.connection
+import os
+import time
+import redis.exceptions
 from flask_restx import Namespace, Resource
 from markupsafe import escape
 from flask import send_from_directory
 from api.utils.bar_utils import BARUtils
+from api.utils.efp_utils import eFPUtils
 
 efp_image = Namespace(
     "eFP Image", description="eFP Image generation service", path="/efp_image"
@@ -18,8 +21,14 @@ class eFPImageList(Resource):
     def get(self):
         """This end point returns the list of species available"""
         # This are the only species available so far
-        # If this is updated, update get request and test as well
-        species = ["efp_arabidopsis"]
+        # If this is updated, update efp_utils.py and unit tests as well
+        species = [
+            "efp_arabidopsis",
+            "efp_cannabis",
+            "efp_arachis",
+            "efp_soybean",
+            "efp_maize",
+        ]
         return BARUtils.success_exit(species)
 
 
@@ -29,19 +38,6 @@ class eFPImageList(Resource):
     doc=False,
 )
 class eFPImage(Resource):
-    @staticmethod
-    def is_efp_mode(efp_mode):
-        """This function checks if the eFP mode is valid
-        :param efp_mode: string eFP Mode
-        :return: True or False
-        """
-        # This are case sensitive
-        valid_modes = ["Absolute", "Relative", "Compare"]
-        if efp_mode in valid_modes:
-            return True
-        else:
-            return False
-
     @efp_image.param("efp", _in="path", default="efp_arabidopsis")
     @efp_image.param("view", _in="path", default="Developmental_Map")
     @efp_image.param("mode", _in="path", default="Absolute")
@@ -49,10 +45,6 @@ class eFPImage(Resource):
     @efp_image.param("gene_2", _in="path", default="At3g27340")
     def get(self, efp="", view="", mode="", gene_1="", gene_2=""):
         """This end point returns eFP images."""
-        # list of allowed eFPs
-        # See endpoint able
-        species = ["efp_arabidopsis"]
-
         # Escape input data
         efp = escape(efp)
         view = escape(view)
@@ -60,32 +52,29 @@ class eFPImage(Resource):
         gene_1 = escape(gene_1)
         gene_2 = escape(gene_2)
 
-        # Validate values
-        if efp not in species:
-            return BARUtils.error_exit("Invalid eFP."), 400
+        validation = eFPUtils.is_efp_input_valid(efp, view, mode, gene_1, gene_2)
+        if validation[0] is False:
+            return BARUtils.error_exit(validation[1]), 400
 
-        # Validate view
-        if not BARUtils.is_efp_view_name(view):
-            return BARUtils.error_exit("Invalid eFP View name."), 400
+        # Data are valid. Clear directory before running
+        for file in os.listdir("output"):
+            # Full file name is required at this point
+            file = os.path.join("output", file)
 
-        # Validate mode
-        if not self.is_efp_mode(mode):
-            return BARUtils.error_exit("Invalid eFP mode."), 400
-
-        # Validate gene ids
-        if not BARUtils.is_arabidopsis_gene_valid(gene_1):
-            return BARUtils.error_exit("Gene 1 is invalid."), 400
-
-        if mode == "Compare":
-            if not BARUtils.is_arabidopsis_gene_valid(gene_2):
-                return BARUtils.error_exit("Gene 2 is invalid."), 400
+            # Check if it is a png file and is greater than 5 minutes old
+            if (
+                os.path.isfile(file)
+                and (os.path.splitext(file)[1] == ".png")
+                and (os.stat(file).st_mtime < (time.time() - 5 * 60))
+            ):
+                os.remove(file)
 
         # Check if request is cached
         try:
             r = BARUtils.connect_redis()
             key = "BAR_API_efp_image_" + "_".join([efp, view, mode, gene_1, gene_2])
             efp_image_base64 = r.get(key)
-        except redis.connection.ConnectionError:
+        except redis.exceptions.ConnectionError:
             # Failed redis connection
             r = None
             key = None
