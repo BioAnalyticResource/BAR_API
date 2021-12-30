@@ -123,3 +123,47 @@ class UtilsUnitTest(TestCase):
         expected = "In compare mode, both genes should be different."
         self.assertFalse(result[0])
         self.assertEqual(result[1], expected)
+
+        # eFP Maize Absolute
+        result = eFPUtils.is_efp_input_valid(
+            "efp_maize", "maize_iplant", "Absolute", "Zm00001d046170"
+        )
+        self.assertTrue(result[0])
+        self.assertIsNone(result[1])
+
+        result = eFPUtils.is_efp_input_valid(
+            "efp_maize", "maize_iplant", "Absolute", "Abc"
+        )
+        expected = "Gene 1 is invalid."
+        self.assertFalse(result[0])
+        self.assertEqual(result[1], expected)
+
+        # eFP Maize gene 2
+        result = eFPUtils.is_efp_input_valid(
+            "efp_maize",
+            "maize_iplant",
+            "Compare",
+            "Zm00001d046170",
+            "Zm00001d014297",
+        )
+        self.assertTrue(result[0])
+        self.assertIsNone(result[1])
+
+        result = eFPUtils.is_efp_input_valid(
+            "efp_maize", "maize_iplant", "Compare", "Zm00001d046170", "Abc"
+        )
+        expected = "Gene 2 is invalid."
+        self.assertFalse(result[0])
+        self.assertEqual(result[1], expected)
+
+        # Test if both gene are the same in eFP Comare mode
+        result = eFPUtils.is_efp_input_valid(
+            "efp_arachis",
+            "Arachis_Atlas",
+            "Compare",
+            "Adur10002_comp0_c0_seq1",
+            "Adur10002_comp0_c0_seq1",
+        )
+        expected = "In compare mode, both genes should be different."
+        self.assertFalse(result[0])
+        self.assertEqual(result[1], expected)
