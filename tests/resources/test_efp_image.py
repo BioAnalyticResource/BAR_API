@@ -13,7 +13,13 @@ class TestIntegrations(TestCase):
         response = self.app_client.get("/efp_image/")
         expected = {
             "wasSuccessful": True,
-            "data": ["efp_arabidopsis", "efp_cannabis", "efp_arachis", "efp_soybean"],
+            "data": [
+                "efp_arabidopsis",
+                "efp_cannabis",
+                "efp_arachis",
+                "efp_soybean",
+                "efp_maize",
+            ],
         }
         self.assertEqual(response.json, expected)
 

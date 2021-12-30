@@ -2,6 +2,8 @@ import base64
 import re
 import requests
 import random
+import os
+import time
 import redis.exceptions
 from flask_restx import Namespace, Resource
 from markupsafe import escape
@@ -20,7 +22,13 @@ class eFPImageList(Resource):
         """This end point returns the list of species available"""
         # This are the only species available so far
         # If this is updated, update efp_utils.py and unit tests as well
-        species = ["efp_arabidopsis", "efp_cannabis", "efp_arachis", "efp_soybean"]
+        species = [
+            "efp_arabidopsis",
+            "efp_cannabis",
+            "efp_arachis",
+            "efp_soybean",
+            "efp_maize",
+        ]
         return BARUtils.success_exit(species)
 
 
@@ -47,6 +55,19 @@ class eFPImage(Resource):
         validation = eFPUtils.is_efp_input_valid(efp, view, mode, gene_1, gene_2)
         if validation[0] is False:
             return BARUtils.error_exit(validation[1]), 400
+
+        # Data are valid. Clear directory before running
+        for file in os.listdir("output"):
+            # Full file name is required at this point
+            file = os.path.join("output", file)
+
+            # Check if it is a png file and is greater than 5 minutes old
+            if (
+                os.path.isfile(file)
+                and (os.path.splitext(file)[1] == ".png")
+                and (os.stat(file).st_mtime < (time.time() - 5 * 60))
+            ):
+                os.remove(file)
 
         # Check if request is cached
         try:

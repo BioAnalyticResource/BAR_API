@@ -110,6 +110,21 @@ class BARUtils:
             return False
 
     @staticmethod
+    def is_maize_gene_valid(gene):
+        """This function verifies if maize gene is valid: Zm00001d046170
+        :param gene:
+        :return: True if valid
+        """
+        if gene and re.search(
+            r"^(AC[0-9]{6}\.[0-9]{1}_FG[0-9]{3})|(AC[0-9]{6}\.[0-9]{1}_FGT[0-9]{3})|(GRMZM(2|5)G[0-9]{6})|(GRMZM(2|5)G[0-9]{6}_T[0-9]{2})|(Zm\d+d\d+)$",
+            gene,
+            re.I,
+        ):
+            return True
+        else:
+            return False
+
+    @staticmethod
     def is_integer(data):
         """Check if the input is at max ten figure number.
         :param data: int number

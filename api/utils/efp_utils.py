@@ -32,7 +32,13 @@ class eFPUtils:
         """Test if eFP input is valid
         :return: List with boolean and string
         """
-        species = ["efp_arabidopsis", "efp_cannabis", "efp_arachis", "efp_soybean"]
+        species = [
+            "efp_arabidopsis",
+            "efp_cannabis",
+            "efp_arachis",
+            "efp_soybean",
+            "efp_maize",
+        ]
 
         # Validate values
         if efp not in species:
@@ -46,7 +52,7 @@ class eFPUtils:
         if not eFPUtils.is_efp_mode(mode):
             return False, "Invalid eFP mode."
 
-        # Maybe this part could be imported
+        # Maybe this part could be improved
         if efp == "efp_arabidopsis":
             # Validate gene ids
             if not BARUtils.is_arabidopsis_gene_valid(gene_1):
@@ -81,6 +87,15 @@ class eFPUtils:
 
             if mode == "Compare":
                 if not BARUtils.is_soybean_gene_valid(gene_2):
+                    return False, "Gene 2 is invalid."
+
+        if efp == "efp_maize":
+            # Validate gene ids
+            if not BARUtils.is_maize_gene_valid(gene_1):
+                return False, "Gene 1 is invalid."
+
+            if mode == "Compare":
+                if not BARUtils.is_maize_gene_valid(gene_2):
                     return False, "Gene 2 is invalid."
 
         # In compare mode gene1 != gene2
