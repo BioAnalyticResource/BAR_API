@@ -11,7 +11,16 @@ class TestIntegrations(TestCase):
         :return:
         """
         response = self.app_client.get("/efp_image/")
-        expected = {"wasSuccessful": True, "data": ["efp_arabidopsis"]}
+        expected = {
+            "wasSuccessful": True,
+            "data": [
+                "efp_arabidopsis",
+                "efp_cannabis",
+                "efp_arachis",
+                "efp_soybean",
+                "efp_maize",
+            ],
+        }
         self.assertEqual(response.json, expected)
 
     def test_get_efp_image(self):
@@ -20,16 +29,16 @@ class TestIntegrations(TestCase):
         """
         # Test absolute modes in the beginning
         # A very basic test for Arabidopsis requests
-        # https://bar.utoronto.ca/api/efp_image/efp_arabidopsis/Developmental_Map/Absolute/At1g01010
+        # https://bar.utoronto.ca/api/efp_image/efp_cannabis/Cannabis_Atlas/Absolute/AGQN03000001
         response = self.app_client.get(
-            "/efp_image/efp_arabidopsis/Developmental_Map/Absolute/At1g01010"
+            "/efp_image/efp_cannabis/Cannabis_Atlas/Absolute/AGQN03000001"
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content_type, "image/png")
 
-        # Now rerun for Cached requests. A image should be return from the cache
+        # Now rerun for Cached requests. An image should be return from the cache
         response = self.app_client.get(
-            "/efp_image/efp_arabidopsis/Developmental_Map/Absolute/At1g01010"
+            "/efp_image/efp_cannabis/Cannabis_Atlas/Absolute/AGQN03000001"
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content_type, "image/png")
@@ -69,25 +78,9 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
-        # Test for gene 2 using Arabidopsis
+        # Test for gene 1 using Arabidopsis
         response = self.app_client.get(
             "/efp_image/efp_arabidopsis/Root/Compare/At1g01010/Abc"
         )
         expected = {"wasSuccessful": False, "error": "Gene 2 is invalid."}
         self.assertEqual(response.json, expected)
-
-        # Test compare modes in the end
-        # A very basic test for Arabidopsis requests
-        # https://bar.utoronto.ca/api/efp_image/efp_arabidopsis/Developmental_Map/Compare/At1g01010/At1g01030
-        response = self.app_client.get(
-            "/efp_image/efp_arabidopsis/Developmental_Map/Compare/At1g01010/At1g01030"
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content_type, "image/png")
-
-        # Rerun for cached request. An image should be returned
-        response = self.app_client.get(
-            "/efp_image/efp_arabidopsis/Developmental_Map/Compare/At1g01010/At1g01030"
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content_type, "image/png")

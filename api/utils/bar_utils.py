@@ -73,6 +73,58 @@ class BARUtils:
             return False
 
     @staticmethod
+    def is_cannabis_gene_valid(gene):
+        """This function verifies if cannabis gene is valid: AGQN03000001
+        :param gene:
+        :return: True if valid
+        """
+        if gene and re.search(r"^AGQN\d{0,10}$", gene, re.I):
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def is_arachis_gene_valid(gene):
+        """This function verifies if arachis gene is valid: Adur10000_comp0_c0_seq1
+        :param gene:
+        :return: True if valid
+        """
+        if gene and re.search(
+            r"Adur\d{1,10}_comp\d{1,3}_\D{1,3}\d{1,3}_seq\d{1,5}", gene, re.I
+        ):
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def is_soybean_gene_valid(gene):
+        """This function verifies if soybean gene is valid: Glyma06g47400
+        :param gene:
+        :return: True if valid
+        """
+        if gene and re.search(
+            r"^((Glyma\d{1,3}g\d{1,6}\.?\d?)|(Glyma\.\d{1,3}g\d{1,8}))$", gene, re.I
+        ):
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def is_maize_gene_valid(gene):
+        """This function verifies if maize gene is valid: Zm00001d046170
+        :param gene:
+        :return: True if valid
+        """
+        if gene and re.search(
+            r"^(AC[0-9]{6}\.[0-9]{1}_FG[0-9]{3})|(AC[0-9]{6}\.[0-9]{1}_FGT[0-9]{3})|(GRMZM(2|5)G[0-9]{6})|(GRMZM(2|5)G[0-9]{6}_T[0-9]{2})|(Zm\d+d\d+)$",
+            gene,
+            re.I,
+        ):
+            return True
+        else:
+            return False
+
+    @staticmethod
     def is_integer(data):
         """Check if the input is at max ten figure number.
         :param data: int number
@@ -90,17 +142,6 @@ class BARUtils:
         :return: String
         """
         return poplar_gene.translate(str.maketrans("pOTRIg", "PotriG"))
-
-    @staticmethod
-    def is_efp_view_name(efp_view):
-        """This function is used for validated eFP View names for eFP service
-        :param efp_view: string view name
-        :return: True if valid
-        """
-        if efp_view and re.search(r"^[a-z1-9_]{1,20}$", efp_view, re.I):
-            return True
-        else:
-            return False
 
     @staticmethod
     def connect_redis():

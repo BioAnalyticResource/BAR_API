@@ -40,14 +40,14 @@ class ApiManagerUtils:
     @staticmethod
     def validate_captcha(value):
         """Validates a reCaptcha value using our secret token"""
-        if(os.environ.get("BAR")):
+        if os.environ.get("BAR"):
             with open(CAPTCHA_KEY_FILE, "rb") as f:
                 for line in f:
                     key = line
             if key:
                 ret = requests.post(
                     "https://www.google.com/recaptcha/api/siteverify",
-                    data={"secret": key, "response": value}
+                    data={"secret": key, "response": value},
                 )
                 return ret.json()["success"]
             else:
@@ -128,7 +128,7 @@ class ApiManagerRequest(Resource):
     def post(self):
         if request.method == "POST":
             captchaVal = request.headers.get("captchaVal")
-            if(ApiManagerUtils.validate_captcha(captchaVal)):
+            if ApiManagerUtils.validate_captcha(captchaVal):
                 response_json = request.get_json()
                 df = pandas.DataFrame.from_records([response_json])
                 con = db.get_engine(bind="summarization")
