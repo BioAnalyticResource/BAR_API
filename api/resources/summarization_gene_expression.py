@@ -234,7 +234,7 @@ class SummarizationGeneExpressionTsvUpload(Resource):
                 key = request.headers.get("X-Api-Key")
                 overwrite = request.form.get("overwrite")
                 email = request.form.get("email")
-                if overwrite is True:
+                if overwrite == "true":
                     overwrite = "replace"
                 else:
                     overwrite = "append"
@@ -290,7 +290,7 @@ class SummarizationGeneExpressionCsvUpload(Resource):
                 key = request.headers.get("X-Api-Key")
                 overwrite = request.form.get("overwrite")
                 email = request.form.get("email")
-                if overwrite is True:
+                if overwrite == "true":
                     overwrite = "replace"
                 else:
                     overwrite = "append"
