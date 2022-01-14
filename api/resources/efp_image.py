@@ -34,8 +34,7 @@ class eFPImageList(Resource):
 
 @efp_image.route("/<string:efp>/<string:view>/<string:mode>/<string:gene_1>")
 @efp_image.route(
-    "/<string:efp>/<string:view>/<string:mode>/<string:gene_1>/<string:gene_2>",
-    doc=False,
+    "/<string:efp>/<string:view>/<string:mode>/<string:gene_1>/<string:gene_2>"
 )
 class eFPImage(Resource):
     @efp_image.param("efp", _in="path", default="efp_arabidopsis")
