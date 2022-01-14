@@ -16,7 +16,7 @@ from scour.scour import scourString
 from cryptography.fernet import Fernet
 
 
-DATA_FOLDER = "/home/barapps/cromwell/summarization-data"
+DATA_FOLDER = "/home/bpereira/data/summarization-data"
 # DATA_FOLDER = '/windir/c/Users/Bruno/Documents/SummarizationCache'
 SUMMARIZATION_FILES_PATH = "/home/barapps/cromwell/summarization"
 CROMWELL_URL = "http://localhost:3020"
@@ -233,14 +233,13 @@ class SummarizationGeneExpressionTsvUpload(Resource):
                 filename = secure_filename(file.filename)
                 key = request.headers.get("X-Api-Key")
                 overwrite = request.form.get("overwrite")
-                addToDb = request.form.get("addToDb")
                 email = request.form.get("email")
                 if overwrite is True:
                     overwrite = "replace"
                 else:
                     overwrite = "append"
                 # Create folder for user data if it doesn't exist
-                dirName = os.path.join(DATA_FOLDER, secure_filename(key))
+                dirName = os.path.join("/DATA/users/www-data/", secure_filename(key))
                 if not os.path.exists(dirName):
                     os.makedirs(dirName)
                 file.save(os.path.join(dirName, secure_filename(filename)))
@@ -258,9 +257,6 @@ class SummarizationGeneExpressionTsvUpload(Resource):
                         + """,
                             "tsvUpload.overwrite": """
                         + overwrite
-                        + """,
-                            "tsvUpload.addToDb": """
-                        + addToDb
                         + """,
                             "tsvUpload.email": """
                         + email
@@ -293,13 +289,12 @@ class SummarizationGeneExpressionCsvUpload(Resource):
                 filename = secure_filename(file.filename)
                 key = request.headers.get("X-Api-Key")
                 overwrite = request.form.get("overwrite")
-                addToDb = request.form.get("addToDb")
                 email = request.form.get("email")
                 if overwrite is True:
                     overwrite = "replace"
                 else:
                     overwrite = "append"
-                dirName = os.path.join(DATA_FOLDER, secure_filename(key))
+                dirName = os.path.join("/DATA/users/www-data/", secure_filename(key))
                 if not os.path.exists(dirName):
                     os.makedirs(dirName)
                 file.save(os.path.join(dirName, secure_filename(filename)))
@@ -317,10 +312,7 @@ class SummarizationGeneExpressionCsvUpload(Resource):
                             "csvUpload.overwrite": """
                         + overwrite
                         + """,
-                            "csvUpload.addToDb": """
-                        + addToDb
-                        + """,
-                            "csvUpload.addToDb": """
+                            "csvUpload.email": """
                         + email
                         + """
                             }

@@ -20,14 +20,28 @@ def create_app():
         print("We are now loading configuration.")
         bar_app.config.from_pyfile(os.getcwd() + "/config/BAR_API.cfg", silent=True)
         if bar_app.config.get("ADMIN_ENCRYPT_KEY"):
-            os.environ["ADMIN_ENCRYPT_KEY"] = bar_app.config.get("ADMIN_ENCRYPT_KEY")
+            os.environ["ADMIN_ENCRYPT_KEY"] = bar_app.config.get(
+                "TEST_ADMIN_ENCRYPT_KEY"
+            )
         if bar_app.config.get("ADMIN_PASSWORD_FILE"):
             os.environ["ADMIN_PASSWORD_FILE"] = bar_app.config.get(
-                "ADMIN_PASSWORD_FILE"
+                "TEST_ADMIN_PASSWORD_FILE"
             )
+        if bar_app.config.get("ADMIN_EMAIL"):
+            os.environ["ADMIN_EMAIL"] = bar_app.config.get("ADMIN_EMAIL")
+        if bar_app.config.get("EMAIL_PASS_KEY"):
+            os.environ["EMAIL_PASS_KEY"] = bar_app.config.get("EMAIL_PASS_KEY")
+        if bar_app.config.get("EMAIL_PASS_FILE"):
+            os.environ["EMAIL_PASS_FILE"] = bar_app.config.get("EMAIL_PASS_FILE")
     elif os.environ.get("BAR"):
         # The BAR
         bar_app.config.from_pyfile(os.environ.get("BAR_API_PATH"), silent=True)
+        if bar_app.config.get("ADMIN_EMAIL"):
+            os.environ["ADMIN_EMAIL"] = bar_app.config.get("ADMIN_EMAIL")
+        if bar_app.config.get("EMAIL_PASS_KEY"):
+            os.environ["EMAIL_PASS_KEY"] = bar_app.config.get("EMAIL_PASS_KEY")
+        if bar_app.config.get("EMAIL_PASS_FILE"):
+            os.environ["EMAIL_PASS_FILE"] = bar_app.config.get("EMAIL_PASS_FILE")
         if bar_app.config.get("ADMIN_ENCRYPT_KEY"):
             os.environ["ADMIN_ENCRYPT_KEY"] = bar_app.config.get("ADMIN_ENCRYPT_KEY")
         if bar_app.config.get("ADMIN_PASSWORD_FILE"):
@@ -51,6 +65,12 @@ def create_app():
             os.environ["ADMIN_PASSWORD_FILE"] = bar_app.config.get(
                 "ADMIN_PASSWORD_FILE"
             )
+        if bar_app.config.get("ADMIN_EMAIL"):
+            os.environ["ADMIN_EMAIL"] = bar_app.config.get("ADMIN_EMAIL")
+        if bar_app.config.get("EMAIL_PASS_KEY"):
+            os.environ["EMAIL_PASS_KEY"] = bar_app.config.get("EMAIL_PASS_KEY")
+        if bar_app.config.get("EMAIL_PASS_FILE"):
+            os.environ["EMAIL_PASS_FILE"] = bar_app.config.get("EMAIL_PASS_FILE")
         if bar_app.config.get("DRIVE_LIST_KEY"):
             os.environ["DRIVE_LIST_KEY"] = bar_app.config.get("DRIVE_LIST_KEY")
         if bar_app.config.get("DRIVE_LIST_FILE"):
@@ -103,6 +123,7 @@ def create_app():
     from api.resources.gene_annotation import gene_annotation
     from api.resources.interactions import itrns
     from api.resources.gene_localizations import loc
+    from api.resources.efp_image import efp_image
 
     bar_api.add_namespace(gene_information)
     bar_api.add_namespace(rnaseq_gene_expression)
@@ -115,6 +136,7 @@ def create_app():
     bar_api.add_namespace(gene_annotation)
     bar_api.add_namespace(itrns)
     bar_api.add_namespace(loc)
+    bar_api.add_namespace(efp_image)
     bar_api.init_app(bar_app)
     return bar_app
 
