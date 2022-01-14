@@ -16,9 +16,9 @@ from scour.scour import scourString
 from cryptography.fernet import Fernet
 
 
-DATA_FOLDER = "/home/bpereira/data/summarization-data"
+DATA_FOLDER = "/home/bcp/data/summarization-data"
 # DATA_FOLDER = '/windir/c/Users/Bruno/Documents/SummarizationCache'
-SUMMARIZATION_FILES_PATH = "/home/barapps/cromwell/summarization"
+SUMMARIZATION_FILES_PATH = "/home/bcp/dev/gene-summarization-bar/summarization"
 CROMWELL_URL = "http://localhost:3020"
 GTF_DICT = {
     "Hsapiens": "./data/hg38.ensGene.gtf",
@@ -234,7 +234,7 @@ class SummarizationGeneExpressionTsvUpload(Resource):
                 key = request.headers.get("X-Api-Key")
                 overwrite = request.form.get("overwrite")
                 email = request.form.get("email")
-                if overwrite is True:
+                if overwrite == "true":
                     overwrite = "replace"
                 else:
                     overwrite = "append"
@@ -290,10 +290,11 @@ class SummarizationGeneExpressionCsvUpload(Resource):
                 key = request.headers.get("X-Api-Key")
                 overwrite = request.form.get("overwrite")
                 email = request.form.get("email")
-                if overwrite is True:
+                if overwrite == "true":
                     overwrite = "replace"
                 else:
                     overwrite = "append"
+                print(overwrite)
                 dirName = os.path.join("/DATA/users/www-data/", secure_filename(key))
                 if not os.path.exists(dirName):
                     os.makedirs(dirName)
