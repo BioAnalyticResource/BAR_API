@@ -294,7 +294,6 @@ class SummarizationGeneExpressionCsvUpload(Resource):
                     overwrite = "replace"
                 else:
                     overwrite = "append"
-                print(overwrite)
                 dirName = os.path.join("/DATA/users/www-data/", secure_filename(key))
                 if not os.path.exists(dirName):
                     os.makedirs(dirName)
