@@ -16,9 +16,9 @@ from scour.scour import scourString
 from cryptography.fernet import Fernet
 
 
-DATA_FOLDER = "/home/bcp/data/summarization-data"
+DATA_FOLDER = "/home/bpereira/data/summarization-data"
 # DATA_FOLDER = '/windir/c/Users/Bruno/Documents/SummarizationCache'
-SUMMARIZATION_FILES_PATH = "/home/bcp/dev/gene-summarization-bar/summarization"
+SUMMARIZATION_FILES_PATH = "/home/barapps/cromwell/summarization"
 CROMWELL_URL = "http://localhost:3020"
 GTF_DICT = {
     "Hsapiens": "./data/hg38.ensGene.gtf",
