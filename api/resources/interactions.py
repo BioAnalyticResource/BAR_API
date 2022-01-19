@@ -136,4 +136,3 @@ class InteractionsPost(Resource):
             return BARUtils.success_exit(res)
         else:
             return BARUtils.error_exit("No data for the given species/genes"), 400
-
