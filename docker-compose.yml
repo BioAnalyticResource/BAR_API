@@ -35,4 +35,5 @@ services:
       - mysqldb
     volumes:
       - './api:/usr/src/app/api'
+      - './tests:/usr/src/app/tests'
 
