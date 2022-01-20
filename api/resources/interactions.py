@@ -111,10 +111,12 @@ class InteractionsPost(Resource):
                     return BARUtils.error_exit("Invalid gene id"), 400
 
             try:
-                rows = rice_interactions.query.filter(or_(
-                    rice_interactions.Protein1.in_(genes),
-                    rice_interactions.Protein2.in_(genes)
-                )).all()
+                rows = rice_interactions.query.filter(
+                    or_(
+                        rice_interactions.Protein1.in_(genes),
+                        rice_interactions.Protein2.in_(genes),
+                    )
+                ).all()
             except OperationalError:
                 return BARUtils.error_exit("An internal error has occurred."), 500
 

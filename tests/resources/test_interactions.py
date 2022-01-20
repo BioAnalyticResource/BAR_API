@@ -4,7 +4,6 @@ import json
 
 
 class TestIntegrations(TestCase):
-
     def setUp(self):
         self.app_client = app.test_client()
 
@@ -76,7 +75,7 @@ class TestIntegrations(TestCase):
                     "total_hits": 1,
                     "Num_species": 1,
                     "Quality": 1,
-                    "pcc": 0.65
+                    "pcc": 0.65,
                 },
                 {
                     "protein_1": "LOC_Os01g01080",
@@ -84,7 +83,7 @@ class TestIntegrations(TestCase):
                     "total_hits": 1,
                     "Num_species": 1,
                     "Quality": 1,
-                    "pcc": 0
+                    "pcc": 0,
                 },
                 {
                     "protein_1": "LOC_Os01g01080",
@@ -92,7 +91,7 @@ class TestIntegrations(TestCase):
                     "total_hits": 2,
                     "Num_species": 1,
                     "Quality": 2,
-                    "pcc": 0.789
+                    "pcc": 0.789,
                 },
                 {
                     "protein_1": "LOC_Os01g52560",
@@ -100,9 +99,9 @@ class TestIntegrations(TestCase):
                     "total_hits": 1,
                     "Num_species": 1,
                     "Quality": 1,
-                    "pcc": -0.116
-                }
-            ]
+                    "pcc": -0.116,
+                },
+            ],
         }
         self.assertEqual(data, expected)
 
