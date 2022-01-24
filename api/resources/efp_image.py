@@ -117,12 +117,15 @@ class eFPImage(Resource):
             )
 
             # Download and serve that image
-            img_data = requests.get(efp_file_link).content
+            response = requests.get(efp_file_link)
+            img_data = response.content
+            img_length = int(response.headers.get("Content-Length"))
+
             with open("output/" + path, "wb") as file:
                 file.write(img_data)
 
-            # Cache the request if redis is alive
-            if r:
+            # Cache the request if redis is alive and content is > 500
+            if r and (img_length > 500):
                 efp_image_base64 = base64.b64encode(img_data)
                 r.set(key, efp_image_base64)
                 r.close()
