@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<head>
+    <title>Test</title>
+</head>
+<html>
+<body>
+    <form method="post" enctype="multipart/form-data">
+        <h2>Upload Receptor</h2>
+        <input type="file" name="curfile">
+        <h2>Upload Ligand</h2>
+        <input type="file" name="newfile">
+        <p></p>
+        <input type="submit" value="Upload">
+    </form>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for message in messages %}
+                <div class="message_flash">{{ message }}</div>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+</body>
+</html>
