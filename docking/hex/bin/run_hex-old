@@ -1,0 +1,259 @@
+#!/bin/sh
+#-----------------------------------------------------------------------------
+#
+#  run_hex: - start-up script to run Hex in a platform-independent way ...
+#
+#  D.W. Ritchie 08/06/98 (converted from csh to sh 19/01/2000)
+#
+#-----------------------------------------------------------------------------
+
+#--------------------------- select program to run ---------------------------
+
+HEX_PROGRAM="hex"
+HEX_KILL=0
+HEX_DEBUG=0
+HEX_CUDA=2
+HEX_CUDA_VERSION=3.2
+
+# consume any command line arguments meant for this script
+
+while true; do
+   case "$1" in
+      hex|hex_test|hex_plot|hex_parser) HEX_PROGRAM="$1" ; shift ;;
+     -g) HEX_DEBUG=1    ; shift ;;
+  -kill) HEX_KILL=1     ; shift ;;
+  -cuda) HEX_CUDA=1     ; shift ;;
+-nocuda) HEX_CUDA=0     ; shift ;;
+   -v4a) HEX_VERSION=4a ; shift ;;
+   -v4b) HEX_VERSION=4b ; shift ;;
+   -v4c) HEX_VERSION=4c ; shift ;;
+   -v4d) HEX_VERSION=4d ; shift ;;
+   -v4e) HEX_VERSION=4e ; shift ;;
+   -v4f) HEX_VERSION=4f ; shift ;;
+   -v4g) HEX_VERSION=4g ; shift ;;
+   -v4h) HEX_VERSION=4h ; shift ;;
+   -v4i) HEX_VERSION=4i ; shift ;;
+   -v4j) HEX_VERSION=4j ; shift ;;
+   -v4k) HEX_VERSION=4k ; shift ;;
+   -v5a) HEX_VERSION=5a ; shift ;;
+   -v5b) HEX_VERSION=5b ; shift ;;
+   -v5c) HEX_VERSION=5c ; shift ;;
+   -v5d) HEX_VERSION=5d ; shift ;;
+   -v5e) HEX_VERSION=5e ; shift ;;
+   -v5f) HEX_VERSION=5f ; shift ;;
+   -v5g) HEX_VERSION=5g ; shift ;;
+   -v5h) HEX_VERSION=5h ; shift ;;
+   -v5i) HEX_VERSION=5i ; shift ;;
+   -v5j) HEX_VERSION=5j ; shift ;;
+   -v5k) HEX_VERSION=5k ; shift ;;
+   -v5k) HEX_VERSION=5k ; shift ;;
+   -v5l) HEX_VERSION=5l ; shift ;;
+   -v5m) HEX_VERSION=5m ; shift ;;
+   -v6a) HEX_VERSION=6a ; shift ;;
+   -v6b) HEX_VERSION=6b ; shift ;;
+   -v6c) HEX_VERSION=6c ; shift ;;
+   -v6d) HEX_VERSION=6d ; shift ;;
+   -v6e) HEX_VERSION=6e ; shift ;;
+   -v6f) HEX_VERSION=6f ; shift ;;
+      *)   break ;;
+   esac
+done
+
+#------------------------ set version & debug flag ---------------------------
+
+## case "$1" in
+##   *)                                HEX_PROGRAM="hex"        ;;
+## esac
+
+## case "$1" in                        # kill option must appear first
+## esac
+
+#--------------------- get current flavour of Unix  -------------------------
+
+HEX_OS=`uname -s`             # get current flavour of Unix
+
+case $HEX_OS in               # ISA: instruction set architecture
+   IRIX)    ISA=`uname -p`                   ;;
+   IRIX64)  ISA=`uname -p` ; HEX_OS="IRIX"   ;;
+   Linux)   ISA=`uname -m`                   ;;
+   Darwin)  ISA=`uname -p`                   ;;
+   SunOS)   ISA=`uname -p`                   ;;  
+   MINGW*)  ISA="exe" ;      HEX_OS="win32"  ;;  # MinGW Windows environment
+   CYGWIN*) ISA="cyg" ;      HEX_OS="cygwin" ;;  # Cygwin Windows environment
+   *)       ISA=`uname -p`                   ;;  # hope for the best
+esac
+
+#---------------------- select the apropriate executable --------------------
+
+# on SGI, use mips4 but R4xxx series needs the mip3 binary (NOT NOW)
+# on Pentium, use the i586 binary (i.e. assume Pentium II or higher)
+# otherwise, default to whatever ISA reports (suns should give ISA=sparc)
+
+case $ISA in
+   mips)                   HEX_ISA="mips4"  ;;
+   i386|i586|i686|i786)    HEX_ISA="i586"   ;;
+   x86_64)                 HEX_ISA="x64"    ;;
+   powerpc|powerpc64)      HEX_ISA="PPC"    ;;
+   ppc|ppc64)              HEX_ISA="ppc"    ;;
+   *)                      HEX_ISA="${ISA}" ;;
+esac
+
+#-------------- Hex may need to know which "OS" we're using -----------------
+
+export HEX_VERSION
+export HEX_ISA
+
+#--------------- select the executable: default = with cuda -----------------
+
+HEX_EXECUTABLE_NOCUDA=${HEX_PROGRAM}${HEX_VERSION}.${HEX_ISA}
+HEX_EXECUTABLE_CUDA=${HEX_PROGRAM}${HEX_VERSION}-cuda.${HEX_ISA}
+
+if [ $HEX_CUDA = 1 ]; then    # explicitly requested cuda executable
+   HEX_EXECUTABLE=$HEX_EXECUTABLE_CUDA
+elif [ $HEX_CUDA = 0 ]; then  # explicitly requested without cuda
+   HEX_EXECUTABLE=$HEX_EXECUTABLE_NOCUDA
+else
+#   echo "testing ${HEX_ROOT}/exe/${HEX_EXECUTABLE_CUDA}"
+   if [ -x "${HEX_ROOT}/exe/${HEX_EXECUTABLE_CUDA}" ]; then
+      HEX_EXECUTABLE=${HEX_EXECUTABLE_CUDA}
+   else
+      HEX_EXECUTABLE=${HEX_EXECUTABLE_NOCUDA}
+   fi
+fi
+
+# add a reasonable guess at the library path for the CUDA run-time libraries
+# (the user can explicitly set HEX_CUDA_PATH to over-ride this if necessary)
+
+if [ "$HEX_EXECUTABLE" = "$HEX_EXECUTABLE_CUDA" ]; then
+
+   if [ -z "$HEX_CUDA_PATH" ]; then
+      if [ "$HEX_ISA" = "x64" ]; then
+         HEX_CUDA_PATH=${HEX_ROOT}/cuda64-${HEX_CUDA_VERSION}
+         if [ ! -d "${HEX_CUDA_PATH}" ]; then
+            HEX_CUDA_PATH="/usr/local/cuda/lib64"
+         fi
+      else
+         HEX_CUDA_PATH=${HEX_ROOT}/cuda-${HEX_CUDA_VERSION}
+         if [ ! -d "${HEX_CUDA_PATH}" ]; then
+            HEX_CUDA_PATH="/usr/local/cuda/lib"
+         fi
+      fi
+   fi
+
+   if [ -z "$LD_LIBRARY_PATH" ]; then
+      LD_LIBRARY_PATH="${HEX_CUDA_PATH}"
+   else
+      LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${HEX_CUDA_PATH}"
+   fi
+   export LD_LIBRARY_PATH
+fi
+
+HEX_PATH_NAME="${HEX_ROOT}/exe/${HEX_EXECUTABLE}"
+
+# echo "HEX_CUDA_PATH=$HEX_CUDA_PATH"
+# echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+# ldd $HEX_PATH_NAME
+
+#------------------ special kill option for stuck processes -----------------
+
+if [ $HEX_KILL = 1 ]; then
+
+  "$HEX_ROOT/bin/hex_kill" $HEX_EXECUTABLE 
+
+  "$HEX_ROOT/bin/hex_ipcrm"
+
+  exit 1
+fi
+
+#---------------------- echo full pathname of executable --------------------
+
+
+if [ ! -f "${HEX_PATH_NAME}" ]; then
+
+   echo "Program file not found: ${HEX_PATH_NAME}"
+   echo "Please check that:"
+   echo "  a) You are logged in to a machine that can run Hex"
+   echo "  b) Hex has been installed correctly"
+   echo "  c) The version that you requested actually exists (HEX_VERSION=${HEX_VERSION})"
+   echo "Usage:"
+   echo "   hex [-v6f -cuda|-nocuda -g -kill -help]"
+   exit 1
+fi
+
+
+#-------------------- Hex currently uses the stride program -----------------
+
+if [ "$HEX_OS" = "win32" ]; then
+   HEX_STRIDE=stride.exe
+else
+   HEX_STRIDE=stride.$HEX_ISA
+fi
+
+export HEX_STRIDE
+
+#-------------------------- OpenGL settings (xptl) -------------------------
+
+case $HEX_OS in
+   Linux) 
+#         export __GL_SYNC_TO_VBLANK=0
+#         export __GL_SINGLE_THREADED=1
+#         export __GL_FSAA_MODE=1
+   ;;
+   *)
+   ;;
+esac
+
+#-------------------- Hex 4.5 Message Window Timeout ------------------------
+
+#  FIX ME - time to sleep in millisecs before connecting to Message Window 
+#  socket (assumes SGIs are slow!) - should synchronise using a pipe first?
+#
+#  On my Sun machine, the socket link between the main program and the 
+#  Gui message window fails for some reason (connection refused). Because
+#  hardly anyone uses Suns, I haven't tried very hard to fix this. Just 
+#  disable the message window and write to the terminal instead.
+#
+
+case $HEX_OS in
+   IRIX*) HEX_MESSAGES=1
+          HEX_MESSAGE_TIMEOUT=1000
+          ;;
+   SunOS) HEX_MESSAGES=0
+          HEX_MESSAGE_TIMEOUT=250
+          ;;
+   *)     HEX_MESSAGES=1
+          HEX_MESSAGE_TIMEOUT=1
+          ;;
+esac
+
+export HEX_MESSAGES
+export HEX_MESSAGE_TIMEOUT
+
+#----------------------------- run the program ------------------------------
+
+# Hex shouldn't fail, but if it does we don't need a stupid core dump
+
+case $HEX_OS in
+   win32)       export HEX_ROOT="${HEX_ROOT}"  
+            ;;
+   IRIX)        limit coredumpsize 0 
+            ;;
+   SunOS|Linux) ulimit -c          0
+            ;;
+esac
+
+if [ $HEX_DEBUG = 1 ]; then
+   case $HEX_OS in
+      Linux)  gdb "${HEX_PATH_NAME}" $* ;;
+      Darwin) gdb "${HEX_PATH_NAME}" $* ;;
+      win32)  gdb "${HEX_PATH_NAME}" $* ;;
+      *)      dbx "${HEX_PATH_NAME}" $* ;;
+   esac
+else
+   case $HEX_OS in
+      win32)      "${HEX_PATH_NAME}" $* ;;
+      *)     exec "${HEX_PATH_NAME}" $* ;;
+   esac
+fi
+
+#----------------------- done: never normally get here ----------------------

@@ -1,0 +1,185 @@
+#-----------------------------------------------------------------------------
+#  atom_templates.dat
+#  ------------------
+#
+#  This file contains template coordinates for polar hydrogen atoms for (most) 
+#  of the structures that occur in PDB files. 
+#
+#  Each template is described as an H-X bond, with two nominated neighbouring 
+#  atoms X1, X2 which define the 3D orientation of the H-X bond. 
+#  Both the "internal" and "external" hydrogen atom names are listed (the
+#  external name is the one written out to a PDB file, with "x" changed to
+#  a blank).
+#
+#  The coordinates give a unit length direction vector of the H atom relative
+#  to a coordinate frame in which X is translated to the origin, X1 is
+#  rotated onto the negative Z axis and X2 is rotated into the x-z plane.
+#
+#  Note that for the peptide hydrogens (H), C refers to the neighbouring 
+#  carbonyl atom in the PREVIOUS residue.
+#
+#  Note that the same technique could be used to add C-terminus carboxy
+#  oxygens, although these ought to appear in the PDB file anyway. Thus its
+#  questionable whether they should be added if missing. (If a protein chain
+#  has been cut by editing, should it end with CO2- ?).
+#
+#  Residues labelled as "UNK" (unknown) act as a catch-all type to match
+#  atom names not recognised as belonging to a standard amino-acid residues
+#  or DNA bases.
+#
+#-----------------------------------------------------------------------------
+#
+#  Author:     Dave Ritchie, 08/01/99
+#
+#  Copyright (C) 1999-2003 D.W. Ritchie, University of Aberdeen.
+#
+#  Explicit permission is hereby granted to Universities and British
+#  Government supported Research Institutions to copy and modify this software
+#  for educational and research purposes, provided copies include this notice;
+#  these copies may not be distributed to any other institutions without
+#  express permission from the author and the University of Aberdeen. Requests
+#  to use this software (or modified copies therof) in any other way should be
+#  sent to D.W. Ritchie, Department of Computing Science:
+#  "dritchie@csd.abdn.ac.uk".
+#
+#-----------------------------------------------------------------------------
+
+#  1TER is only for terminal prolines - never happens ??
+
+1TER H   xH   N   CA CD   -0.860  0.0  0.512 1.0
+
+NTER H1  1H   N   CA C    -0.943  0.0   0.333 1.04
+NTER H2  2H   N   CA C     0.471 -0.817 0.333 1.04
+NTER H3  3H   N   CA C     0.471  0.817 0.333 1.04
+
+# CTER OXT xOXT C   CA O    -0.878 -0.01 0.478 1.26
+
+UNK H    xH   N   CA C     -0.860  0.0  0.512 1.0
+
+PCA H    xH   N   CA C     -0.860  0.0  0.512 1.0
+
+ALA H    xH   N   CA C     -0.860  0.0  0.512 1.0
+
+ARG H    xH   N   CA C     -0.860  0.0  0.512 1.0
+
+ARG HE   xHE  NE  CD CZ    -0.890  0.0  0.45  1.0
+ARG HH11 1HH1 NH1 CZ NE    -0.866  0.0  0.50  1.0
+ARG HH12 2HH1 NH1 CZ NE     0.866  0.0  0.50  1.0
+ARG HH21 1HH2 NH2 CZ NE    -0.866  0.0  0.50  1.0
+ARG HH22 2HH2 NH2 CZ NE     0.866  0.0  0.50  1.0
+
+ASN H    xH   N   CA C     -0.860  0.0  0.512 1.0
+ASN HD21 1HD2 ND2 CG CB     0.868  0.023 0.495 1.0
+ASN HD22 2HD2 ND2 CG CB    -0.868 -0.023 0.496 1.0
+
+ASP H    xH   N   CA C     -0.860  0.0  0.512 1.0
+
+CYS H    xH   N   CA C     -0.860  0.0  0.512 1.0
+CYX H    xH   N   CA C     -0.860  0.0  0.512 1.0
+
+DOH H    xH   N   CA C     -0.860  0.0  0.512 1.0
+DOH HG1  xHG1 OG1 CB CA    -0.958  0.0  0.287 0.948
+
+GLN H    xH   N   CA C     -0.860  0.0  0.512 1.0
+GLN HE21 1HE2 NE2 CD CG     0.868 -0.028 0.496 1.0
+GLN HE22 2HE2 NE2 CD CG    -0.868  0.028 0.496 1.0
+
+GLU H    xH   N   CA C     -0.860  0.0  0.512 1.0
+
+GLY H    xH   N   CA C     -0.860  0.0  0.512 1.0
+
+HIS H    xH   N   CA  C    -0.860  0.0  0.512 1.0
+HIS HD1  xHD1 ND1 CG  CE1  -0.799  0.0  0.602 1.0
+
+HID H    xH   N   CA  C    -0.860  0.0  0.512 1.0
+HID HD1  xHD1 ND1 CG  CE1  -0.799  0.0  0.602 1.0
+
+HIE H    xH   N   CA  C    -0.860  0.0  0.512 1.0
+HIE HE2  xHE2 NE2 CD2 CE1  -0.799  0.0  0.602 1.0
+
+HSD H    xH   N   CA  C    -0.860  0.0  0.512 1.0
+HSD HE2  xHE2 NE2 CD2 CE1  -0.799  0.0  0.602 1.0
+
+HIP H    xH   N   CA  C    -0.860  0.0  0.512 1.0
+HIP HD1  xHD1 ND1 CG  CE1  -0.799  0.0  0.602 1.0
+HIP HE2  xHE2 NE2 CD2 CE1  -0.799  0.0  0.602 1.0
+
+ILE H    xH   N   CA C     -0.860  0.0  0.512 1.0
+
+LEU H    xH   N   CA C     -0.860  0.0  0.512 1.0
+
+LYS H    xH   N   CA C     -0.860  0.0   0.512 1.0
+LYS HZ1  1HZ  NZ  CE CD    -0.943  0.0   0.333 1.04
+LYS HZ2  2HZ  NZ  CE CD     0.471 -0.817 0.333 1.04
+LYS HZ3  3HZ  NZ  CE CD     0.471  0.817 0.333 1.04
+
+MET H    xH   N   CA C     -0.860  0.0  0.512 1.0
+
+MSE H    xH   N   CA C     -0.860  0.0  0.512 1.0
+
+PHE H    xH   N   CA C     -0.860  0.0  0.512 1.0
+
+SER H    xH   N   CA C     -0.860  0.0  0.512 1.0
+SER HG   xHG  OG  CB CA    -0.958  0.0  0.288 0.948
+
+THR H    xH   N   CA C     -0.860  0.0  0.512 1.0
+THR HG1  xHG1 OG1 CB CA    -0.958  0.0  0.287 0.948
+
+TRP H    xH   N   CA C     -0.860  0.0  0.512 1.0
+TRP HE1  xHE1 NE1 CD1 CE2  -0.799  0.0  0.602 0.98
+
+TYR H    xH   N   CA C     -0.860  0.0   0.512 1.0
+TYR HH   xHH  OH  CZ CD1   -0.942 -0.025 0.334 0.948
+
+VAL H    xH   N   CA C     -0.860  0.0  0.512 1.0
+
+# NB. there's about a 50% chance these should be swapped around
+
+3TER HO*3 xH3T O3* C3* C2*  -0.95 0.0 0.32 0.95
+5TER HO*5 xH5T O5* C5* C4*   0.5  0.8 0.32 0.95
+
+# some typical RNA hydroxy orientations - any is equally likely
+
+A   HO*2 2HO*  O2* C2* C1*  -0.93  -0.22 0.31 0.96
++A  HO*2 2HO*  O2* C2* C1*  -0.93  -0.22 0.31 0.96
+C   HO*2 2HO*  O2* C2* C1*  -0.92  -0.25 0.31 0.96
++C  HO*2 2HO*  O2* C2* C1*  -0.92  -0.25 0.31 0.96
+G   HO*2 2HO*  O2* C2* C1*  -0.93  -0.22 0.31 0.96
++G  HO*2 2HO*  O2* C2* C1*  -0.93  -0.22 0.31 0.96
+T   HO*2 2HO*  O2* C2* C1*   0.45  -0.80 0.4  0.95
++T  HO*2 2HO*  O2* C2* C1*   0.45  -0.80 0.4  0.95
+U   HO*2 2HO*  O2* C2* C1*   0.37   0.85 0.38 0.95
++U  HO*2 2HO*  O2* C2* C1*   0.37   0.85 0.38 0.95
+
+A   H61  1H6   N6  C6  C5   -0.866  0.0  0.500 0.98
+A   H62  2H6   N6  C6  C5    0.866  0.0  0.500 0.98
+
++A  H61  1H6   N6  C6  C5   -0.866  0.0  0.500 0.98
++A  H62  2H6   N6  C6  C5    0.866  0.0  0.500 0.98
+
+C   H41  1H4   N4   C4  N3  -0.866  0.0  0.500 0.98
+C   H42  2H4   N4   C4  N3   0.866  0.0  0.500 0.98
+
++C  H41  1H4   N4   C4  N3  -0.866  0.0  0.500 0.98
++C  H42  2H4   N4   C4  N3   0.866  0.0  0.500 0.98
+
+G   H1   xH1   N1   C2  C6  -0.886  0.0  0.464 1.02
+G   H21  1H2   N2   C2  N3   0.866  0.0  0.500 0.98
+G   H22  2H2   N2   C2  N3  -0.866  0.0  0.500 0.98
+
++G  H1   xH1   N1   C2  C6  -0.886  0.0  0.464 1.02
++G  H21  1H2   N2   C2  N3   0.866  0.0  0.500 0.98
++G  H22  2H2   N2   C2  N3  -0.866  0.0  0.500 0.98
+
+T   H3   xH3   N3  C2 C4    -0.874  0.0  0.485 1.02
+
++T  H3   xH3   N3  C2 C4    -0.874  0.0  0.485 1.02
+
+U   H3   xH3   N3  C2 C4    -0.874  0.0  0.485 1.02
+
++U  H3   xH3   N3  C2 C4    -0.874  0.0  0.485 1.02
+
+I   H1   xH1   N1   C2  C6  -0.886  0.0  0.464 1.02
++I  H1   xH1   N1   C2  C6  -0.886  0.0  0.464 1.02
+
+#------------------------------------- end ----------------------------------

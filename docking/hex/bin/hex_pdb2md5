@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+#  pdb2md5 
+#
+#  To convert multiple ".pdb" files to a single file (def="pdb.md5").
+#
+#  This produces a multi-model PDB file from multiple individual files, with
+#  and MD5 digest for each MODEL as required by the CAPRI format for scorers
+#  (sigh).
+#  
+#  In order not to confuse subsequent programs, all the CONECT, MASTER and
+#  END records from the individual files are cut out and our own are added.
+#
+#  (c) Dave Ritchie 2006, University of Aberdeen.
+#----------------------------------------------------------------------------
+
+# set MD5="the path to your local md5 digest program..."
+
+MD5="md5"
+MD5="openssl dgst -md5"
+
+# default output file...
+
+z=pdb.md5
+
+if [ -z "$1" ]; then
+   y=`ls -1 *.pdb`
+elif [ "$1" = "-o" ]; then
+   shift
+   z=$1
+   shift
+   y="$*"
+else
+   y="$*"
+fi
+
+# show what we're doing...
+
+echo "pdb2md5 $z = [$y]"
+
+exec 1>$z
+
+let m=1
+for x in $y; do
+
+   d=`$MD5 $x | awk '{print $2}'`
+
+   printf "REMARK   3 MODEL %8d MD5 %s\n" $m $d
+   printf "MODEL %8d    %s\n" $m  $x
+
+   cat $x | awk '{ 
+
+      if        ($1 == "CONECT") {
+
+      } else if ($1 == "MASTER") {
+
+      } else if ($1 == "END") {
+
+      } else {
+
+          print $0
+      }
+   }'
+   printf "ENDMDL\n"
+   let m=m+1
+done
+printf "END"

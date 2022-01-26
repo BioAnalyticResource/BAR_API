@@ -1,0 +1,43 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+#
+#  hex_gap: to renumber certain residues in a pdb file to map a gap
+#
+#  example: make a 5 residue gap in chain X starting at residue 90
+#
+#           hex_gap X 90 5 <file.pdb >new_file.pdb
+#
+#  Dave Ritchie 30/05/07 
+#
+#------------------------------------------------------------------------------
+#
+if [ -z "$2" ]; then
+   echo "usage:   hex_gap <chain> <gapfirst> <gaplen>"
+   echo " "
+   echo "example: hex_gap " \" \" " 90 5 <file.pdb >new_file.pdb"
+   exit
+fi
+
+awk '{ if ($1 == "ATOM" || $1 == "TER") {                                    
+          if (substr($0,22,1) == chain) {
+             
+             n = substr($0,23,4) + 0
+
+             if (n >= start) {
+
+                n +=  gap
+
+                res = sprintf("%4d", n)
+           
+                print substr($0,1,22) res substr($0,27)
+
+             } else {
+                print $0
+             }
+          } else {
+             print $0
+          }
+        } else {
+           print $0
+        }
+     }' chain="$1" start="$2" gap="$3"

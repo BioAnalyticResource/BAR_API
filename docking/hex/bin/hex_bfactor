@@ -1,0 +1,31 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+#
+#  hex_bfactor: to change selected B factors in a pdb file
+#
+#  example: to set the B factor to some number for chain X
+#
+#           hex_bfactor X factor <file.pdb >new_file.pdb
+#
+#  Dave Ritchie 25/06/09
+#
+#------------------------------------------------------------------------------
+#
+if [ -z "$2" ]; then
+   echo "usage:   hex_bfactor <chain> <factor>"
+   echo " "
+   echo "example: hex_bfactor " \" \" " 1.0 <file.pdb >new_file.pdb"
+   exit
+fi
+
+awk '{ if ($1 == "ATOM" || $1 == "TER") {                                    
+          if (substr($0,22,1) == chain) {
+
+             bfactor = sprintf("%5.2f", factor)
+           
+             print substr($0,1,61) bfactor substr($0,67)
+          } 
+          else                        print $0
+        }
+          else                        print $0
+     }' factor="$2" chain="$1"

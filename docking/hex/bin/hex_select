@@ -1,0 +1,51 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+#
+#  hex_select: to select a chain and/or residue range from a pdb file
+#
+#  example: select chain X residues 1 to 100 from a pdb file:
+#
+#           hex_select X 1 100 <file.pdb >new_file.pdb
+#
+#  Correctly handles residue "numbers" that contain letters...
+#
+#  Dave Ritchie 03/05/02
+#
+#------------------------------------------------------------------------------
+#
+if [ -z "$1" ]; then
+   echo "usage:   hex_select <chain> [<first_residue> [<last_residue>]]"
+   echo " "
+   echo "example: hex_select " \" \"" 1 9999 <file.pdb >new_file.pdb"
+   exit
+fi
+
+chain=$1
+
+if [ -z "$2" ]; then
+   first=1
+   last=999999
+elif [ -z $3 ]; then
+   first=$2
+   last=99999
+else
+   first=$2
+   last=$3
+fi
+
+awk '{ if ($1 == "ATOM" || $1 == "TER") { 
+
+          if (substr($0,22,1) == chain) {
+
+             st = substr($0,23,4);
+
+             if (match(st, /[0-9]+/)) {
+
+                the_num = substr(st,RSTART,RLENGTH) + 0;
+
+                if (the_num >= first && the_num <= last) print $0;
+             }
+          }
+       }
+
+     }' chain=$chain first=$first last=$last

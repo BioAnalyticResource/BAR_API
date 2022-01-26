@@ -1,0 +1,436 @@
+#-----------------------------------------------------------------------------
+#  atom_names.dat
+#  --------------
+#
+#  This file lists the names of "equivalent" atoms which may be found in PDB 
+#  files.
+#
+#  Different PDB strutures sometimes use different naming conventions for
+#  certain atoms, particularly those at chain termini, or certain residues
+#  with unusual substituents (e.g. Thymine's C5M is sometimes given as a 
+#  hetero atom). This makes it difficult to set out rules for how atoms are 
+#  connected, how atom charges are assigned and (particularly) how polar 
+#  hydrogens should be added. Defining "equivalent" atom names helps address
+#  these problems.
+#
+#  Each entry lists a pair of equivalent atom names for the given residue.
+#  On input, any "equivalent" names are mapped into the corresponding 
+#  "internal" name which is used in the bonding tables (atom_bonds.dat) and
+#  for assiging atom charges and radii (atom_types.dat). The "external" names
+#  are always used when writing out to a new PDB file.
+#
+#  NB. some 5' and 3' DNA strands have "HO" as the terminal hydroy hydrogen
+#  at both ends of the chain - a hard-code fix maps these to "HO*5" and
+#  "HO*3", as appropriate.
+#
+#  Format:  Residue-name External-atom-name  Internal-atom-name  
+#
+#-----------------------------------------------------------------------------
+#
+#  Author:     Dave Ritchie, 08/01/99
+#
+#  Copyright (C) 1999-2003 D.W. Ritchie, University of Aberdeen.
+#
+#  Explicit permission is hereby granted to Universities and British
+#  Government supported Research Institutions to copy and modify this software
+#  for educational and research purposes, provided copies include this notice;
+#  these copies may not be distributed to any other institutions without
+#  express permission from the author and the University of Aberdeen. Requests
+#  to use this software (or modified copies therof) in any other way should be
+#  sent to D.W. Ritchie, Department of Computing Science:
+#  "dritchie@csd.abdn.ac.uk".
+#
+#-----------------------------------------------------------------------------
+
+A    HN61  H61 
+A    HN62  H62
+A    2HO*  HO*2
+A    H3T   HO*3
+A    O3T   O3*
+A    H5T   HO*5
+A    O5T   O5*
+
++A   HN61  H61 
++A   HN62  H62
++A   2HO*  HO*2
++A   H3T   HO*3
++A   O3T   O3*
++A   H5T   HO*5
++A   O5T   O5*
+
+G    HN21  H21 
+G    HN22  H22
+G    2HO*  HO*2
+G    H3T   HO*3
+G    O3T   O3*
+G    H5T   HO*5
+G    O5T   O5*
+
++G   HN21  H21 
++G   HN22  H22
++G   2HO*  HO*2
++G   H3T   HO*3
++G   O3T   O3*
++G   H5T   HO*5
++G   O5T   O5*
+
+C    HN41  H41
+C    HN42  H42
+C    2HO*  HO*2
+C    H3T   HO*3
+C    O3T   O3*
+C    H5T   HO*5
+C    O5T   O5*
+
++C   HN41  H41
++C   HN42  H42
++C   2HO*  HO*2
++C   H3T   HO*3
++C   O3T   O3*
++C   H5T   HO*5
++C   O5T   O5*
+
+T    2HO*  HO*2
+T    H3T   HO*3
+T    O3T   O3*
+T    H5T   HO*5
+T    O5T   O5*
+
++T   2HO*  HO*2
++T   H3T   HO*3
++T   O3T   O3*
++T   H5T   HO*5
++T   O5T   O5*
+
+U    2HO*  HO*2
+U    H3T   HO*3
+U    O3T   O3*
+U    H5T   HO*5
+U    O5T   O5*
+
++U   2HO*  HO*2
++U   H3T   HO*3
++U   O3T   O3*
++U   H5T   HO*5
++U   O5T   O5*
+
+I    2HO*  HO*2
+I    H3T   HO*3
+I    O3T   O3*
+I    H5T   HO*5
+I    O5T   O5*
+
++I   2HO*  HO*2
++I   H3T   HO*3
++I   O3T   O3*
++I   H5T   HO*5
++I   O5T   O5*
+
+FMP  2HO*  HO*2
+FMP  3HO*  HO*3
+FMP  H5T   HO*5
+FMP  O5T   O5*
+
+ALA  HN1   H
+ALA  HN    H
+ALA  NH    N
+ALA  OT    OXT
+ALA  OT1   O
+ALA  OT    OXT2
+ALA  OCT1  O
+ALA  OCT2  OXT
+ALA  CB1   CB
+
+ARG  HN1   H
+ARG  HN    H
+ARG  NH    N
+ARG  OT    OXT
+ARG  OT1   O
+ARG  OT    OXT2
+ARG  OCT1  O
+ARG  OCT2  OXT
+ARG  CB1   CB
+ARG  CG1   CG
+ARG  CD1   CD
+
+ASN  HN1   H
+ASN  HN    H
+ASN  NH    N
+ASN  OT    OXT
+ASN  OT1   O
+ASN  OT    OXT2
+ASN  OCT1  O
+ASN  OCT2  OXT
+ASN  CB1   CB
+
+ASP  HN1   H
+ASP  HN    H
+ASP  NH    N
+ASP  OT    OXT
+ASP  OT1   O
+ASP  OT    OXT2
+ASP  OCT1  O
+ASP  OCT2  OXT
+ASP  CB1   CB
+
+CGU  HN1   H
+CGU  HN    H
+CGU  NH    N
+CGU  OT    OXT
+CGU  OT1   O
+CGU  OT    OXT2
+CGU  OCT1  O
+CGU  OCT2  OXT
+CGU  CB1   CB
+
+CYS  HN1   H
+CYS  HN    H
+CYS  NH    N
+CYS  OT    OXT
+CYS  OT1   O
+CYS  OT    OXT2
+CYS  OCT1  O
+CYS  OCT2  OXT
+CYS  CB1   CB
+
+CYX  HN1   H
+CYX  HN    H
+CYX  NH    N
+CYX  OT    OXT
+CYX  OT1   O
+CYX  OT    OXT2
+CYX  OCT1  O
+CYX  OCT2  OXT
+CYX  CB1   CB
+
+DOH  HN1   H
+DOH  HN    H
+DOH  NH    N
+DOH  OT    OXT
+DOH  OT1   O
+DOH  OT    OXT2
+DOH  OCT1  O
+DOH  OCT2  OXT
+DOH  CB1   CB
+
+GLN  HN1   H
+GLN  HN    H
+GLN  NH    N
+GLN  OT    OXT
+GLN  OT1   O
+GLN  OT    OXT2
+GLN  OCT1  O
+GLN  OCT2  OXT
+GLN  CB1   CB
+
+GLU  HN1   H
+GLU  HN    H
+GLU  NH    N
+GLU  OT    OXT
+GLU  OT1   O
+GLU  OT    OXT2
+GLU  OCT1  O
+GLU  OCT2  OXT
+GLU  CB1   CB
+
+GLY  HN1   H
+GLY  HN    H
+GLY  NH    N
+GLY  OT    OXT
+GLY  OT1   O
+GLY  OT    OXT2
+GLY  OCT1  O
+GLY  OCT2  OXT
+
+HIS  HN1   H
+HIS  HN    H
+HIS  NH    N
+HIS  OT    OXT
+HIS  OT1   O
+HIS  OT    OXT2
+HIS  OCT1  O
+HIS  OCT2  OXT
+HIS  1HE   HE1
+HIS  2HD   HD2
+HIS  CB1   CB
+
+HID  HN1   H
+HID  HN    H
+HID  NH    N
+HID  OT    OXT
+HID  OT1   O
+HID  OT    OXT2
+HID  OCT1  O
+HID  OCT2  OXT
+HID  1HE   HE1
+HID  2HD   HD2
+HID  CB1   CB
+
+ILE  HN1   H
+ILE  HN    H
+ILE  OT    OXT
+ILE  OT1   O
+ILE  OT    OXT2
+ILE  OCT1  O
+ILE  OCT2  OXT
+ILE  CB1   CB
+
+LEU  HN1   H
+LEU  HN    H
+LEU  OT    OXT
+LEU  OT1   O
+LEU  OT    OXT2
+LEU  OCT1  O
+LEU  OCT2  OXT
+LEU  CB1   CB
+
+LYS  HN1   H
+LYS  HN    H
+LYS  OT    OXT
+LYS  OT1   O
+LYS  OT    OXT2
+LYS  OCT1  O
+LYS  OCT2  OXT
+LYS  CB1   CB
+
+MET  HN1   H
+MET  HN    H
+MET  NH    N
+MET  OT    OXT
+MET  OT1   O
+MET  OT    OXT2
+MET  OCT1  O
+MET  OCT2  OXT
+MET  CB1   CB
+
+
+
+PHE  HN1   H
+PHE  HN    H
+PHE  NH    N
+PHE  OT    OXT
+PHE  OT1   O
+PHE  OT    OXT2
+PHE  OCT1  O
+PHE  OCT2  OXT
+PHE  CB1   CB
+
+PRO  HN1   H
+PRO  HN    H
+PRO  NH    N
+PRO  OT    OXT
+PRO  OT1   O
+PRO  OT    OXT2
+PRO  OCT1  O
+PRO  OCT2  OXT
+PRO  CB1   CB
+
+SER  HN1   H
+SER  HN    H
+SER  NH    N
+SER  OT    OXT
+SER  OT1   O
+SER  OT    OXT2
+SER  OCT1  O
+SER  OCT2  OXT
+SER  CB1   CB
+
+THR  HN1   H
+THR  HN    H
+THR  NH    N
+THR  OT    OXT
+THR  OT1   O
+THR  OT    OXT2
+THR  OCT1  O
+THR  OCT2  OXT
+THR  CB1   CB
+
+TRP  HN1   H
+TRP  HN    H
+TRP  NH    N
+TRP  OT    OXT
+TRP  OT1   O
+TRP  OT    OXT2
+TRP  OCT1  O
+TRP  OCT2  OXT
+TRP  CB1   CB
+
+TYR  HN1   H
+TYR  HN    H
+TYR  NH    N
+TYR  OT    OXT
+TYR  OT1   O
+TYR  OT    OXT2
+TYR  OCT1  O
+TYR  OCT2  OXT
+TYR  CB1   CB
+
+VAL  HN1   H
+VAL  HN    H
+VAL  NH    N
+VAL  OT    OXT
+VAL  OT1   O
+VAL  OT    OXT2
+VAL  OCT1  O
+VAL  OCT2  OXT
+VAL  CB1   CB
+
+MSE  HN1   H
+MSE  HN    H
+MSE  NH    N
+MSE  OT    OXT
+MSE  OT1   O
+MSE  OT    OXT2
+MSE  OCT1  O
+MSE  OCT2  OXT
+MSE  CB1   CB
+MSE  SE    Se
+
+elm  C     C    # the elements
+elm  N     N
+elm  O     O
+elm  H     H
+elm  S     S
+elm  SE    Se
+elm  P     P 
+elm  LI    Li
+elm  NA    Na  
+elm  K     K   
+elm  CS    Cs  
+elm  RB    Rb  
+elm  BE    Be  
+elm  MG    Mg  
+elm  CA    Ca  
+elm  BA    Ba  
+elm  SR    Sr  
+elm  CO    Co  
+elm  FE    Fe  
+elm  TI    Ti  
+elm  MN    Mn  
+elm  V     V   
+elm  NI    Ni  
+elm  MO    Mo  
+elm  PD    Pd  
+elm  PT    Pt  
+elm  CU    Cu  
+elm  AG    Ag  
+elm  AU    Au  
+elm  ZN    Zn  
+elm  CD    Cd  
+elm  HG    Hg  
+elm  AL    Al  
+elm  GA    Ga  
+elm  IN    In  
+elm  SN    Sn  
+elm  PB    Pb  
+elm  YB    Yb  
+elm  F     F
+elm  CL    Cl
+elm  CL1   Cl1
+elm  CL2   Cl2
+elm  BR    Br
+elm  I     I
+
+elm  ZZ    zz   # dummy atom name for graphics tricks 
+
+#----------------------------------  end  -------------------------------------

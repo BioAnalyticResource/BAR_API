@@ -1,0 +1,28 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+#
+#  hex_ipcrm: attempt to remove semaphores and shared memory segments
+#
+#  This script is invoked by "hex -kill", but it can also be used stand-alone.
+#  It assumes the Unix/Linux commands "ipcs" and "ipcrm" are available.
+#
+#  Don't run as root.
+#
+#  Dave Ritchie 10/06/02
+#
+#------------------------------------------------------------------------------
+#
+
+echo "Attempting to clean up shared memory and semaphores..."
+
+case `uname -s` in
+   SunOS)
+ipcs -m | grep `whoami` | awk '{print $2}' | xargs -l ipcrm -m
+ipcs -s | grep `whoami` | awk '{print $2}' | xargs -l ipcrm -s
+   ;;
+   *)
+ipcs -m | grep `whoami` | awk '{print $2}' | xargs ipcrm shm 
+ipcs -s | grep `whoami` | awk '{print $2}' | xargs ipcrm sem 
+   ;;
+esac
+

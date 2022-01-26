@@ -1,0 +1,695 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+#
+#  hex_setup.bin
+#
+#  This script is intended to simplify the process of installing Hex.
+#  It assumes you have downloaded the distribution tar files, and do not
+#  already have an earlier version of Hex installed. If you already have an
+#  older version of Hex, it should be safe to "overlay" the new version into
+#  your existing Hex directory structure, but if you have edited any of the
+#  Hex support files, it would be wise to make a backup before proceeding.
+#
+#  This is basically very similar to the older hex_configure.bin script,
+#  except that as of version 4.8 all of the distribution files are placed
+#  in a single tar file instead of using two separate tar files.
+#
+#  Dave Ritchie 30/04/07
+#
+#------------------------------------------------------------------------------
+#
+#  The version we are going to install ...
+#
+
+HEX_VERSION=7.1.0
+HEX_VERSION=8.0.0
+
+#
+#  Short-hand names for things
+#
+
+HEX_WWW="'http://hex.loria.fr/'"
+
+HEX_CONF="'hex_setup.bin'"
+
+HEX_PWD=`pwd`
+
+#
+#  The architecture we seem to be running on ...
+#
+
+HEX_OS=`uname -s`
+ISA=`uname -m`
+
+if   [ "$HEX_OS" = "Darwin" -a "$ISA" = "x86_64" ]; then
+   HEX_ISA="x64"
+elif [ "$HEX_OS" = "Darwin" -a "$ISA" = "i386" ]; then
+   HEX_ISA="i586"
+elif [ "$HEX_OS" = "Linux" -a "$ISA" = "ppc" ]; then
+   HEX_OS="LinuxPPC"
+   HEX_ISA="ppc"
+elif [ "$HEX_OS" = "Linux" -a "$ISA" = "ppc64" ]; then
+   HEX_OS="LinuxPPC"
+   HEX_ISA="ppc"
+elif [ "$ISA" = "i586" -o "$ISA" = "i686" -o "$ISA" = "i786" ]; then
+   if [ "$HEX_OS" = "win32" ]; then
+      HEX_ISA="exe"
+   else
+      HEX_ISA="i586"
+   fi
+elif [ "$ISA" = "x86_64" ]; then
+   HEX_OS="Linux64"
+   HEX_ISA="x64"
+else
+   HEX_ISA="$ISA"
+fi
+
+echo "HEX_ISA=$HEX_ISA"
+
+#
+#  Different Unixes even have different echo behaviour!!
+#
+
+ECHO="echo"
+
+case $HEX_OS in
+   SunOS) ECHON="/usr/ucb/$ECHO -n" ;;
+   *)     ECHON="$ECHO -n";;
+esac
+
+#
+# ---------------------------------------------------------------------------
+#
+#  Utility function
+#
+
+askyes ()
+{
+   question="$1"
+   answer=""
+
+   while [ -z "$answer" ] ; do
+      $ECHON "$question"
+      read answer
+      case "$answer" in
+         y|Y|yes|Yes|YES) 
+            return 0
+            ;;
+         n|N|no|No|NO)
+            return 1
+            ;;
+         *)
+            $ECHO "Please answer yes or no."
+            answer=""
+            ;;
+      esac
+   done
+}
+
+askno ()
+{
+   question="$1"
+   answer=""
+
+   while [ -z "$answer" ] ; do
+	$ECHON "$question"
+	read answer
+	case "$answer" in
+	 y|Y|yes|Yes|YES)
+            return 1
+            ;;
+	 n|N|no|No|NO)
+            return 0
+            ;;
+	 *)
+            $ECHO "Please answer yes or no."
+            answer=""
+            ;;
+	esac
+   done
+}
+
+#
+# ---------------------------------------------------------------------------
+#
+#  0. Tell the user whats about to happen.
+#
+
+$ECHO " "
+$ECHO "Running ${HEX_CONF} to install Hex ${HEX_VERSION} ..."
+$ECHO " "
+
+if askno "Are you willing to let this script install Hex ${HEX_VERSION} for you? " ; then
+   $ECHO "OK."
+$ECHO "1. You will need to create a directory called something/hex"
+$ECHO "2. unzip and untar the distribution files into it."
+$ECHO "3. Set the variable HEX_ROOT in your login file to the Hex directory."
+$ECHO "4. Add \$HEX_ROOT/bin to your PATH."
+$ECHO "5. Create a cache directory e.g. \$HEX_ROOT/hex_cache"
+$ECHO "6. Set the variable HEX_CACHE in your login file to the cache directory."
+$ECHO "7. Rerun your login script."
+$ECHO "8. At the command prompt, type hex to run the program."
+$ECHO "9. Have fun! - If you get curious, look at the manual!"
+   exit 1
+fi
+
+$ECHO "OK."
+$ECHO "Proceeding with the installation script ..."
+$ECHO " "
+
+#
+# ---------------------------------------------------------------------------
+#
+#  1. check for existence of distribution files.
+#
+
+case $HEX_OS in
+   Darwin)
+     if [ "$HEX_ISA" = "x86_64" ]; then
+        HEX_BINARY="hex-$HEX_VERSION-x64-osx*.t*z"
+     elif [ "$HEX_ISA" = "i386" ]; then
+        HEX_BINARY="hex-$HEX_VERSION-x32-osx*.t*z"
+     else
+        HEX_BINARY="hex-$HEX_VERSION-*-osx*.t*z"
+     fi
+      ;;
+   LinuxPPC)
+      HEX_BINARY="hex-$HEX_VERSION-ppc*.t*z"
+      ;;
+   Linux)
+      HEX_BINARY="hex-$HEX_VERSION-x32*.t*z"
+      ;;
+   Linux64)
+      HEX_BINARY="hex-$HEX_VERSION-x64*.t*z"
+      ;;
+   *)
+      $ECHO "Unrecognised operating system type: $HEX_OS"
+      $ECHO "Sorry, it appears Hex cannot be installed on your system."
+      exit 1
+      ;;
+esac
+
+
+
+GOT_BINARY=0
+
+TAR_FILES=`ls -1 $HEX_BINARY`
+
+if [ -z "$TAR_FILES" ]; then
+   
+   $ECHO "I did not find any distribution files."
+   $ECHO "For this system, you will need: $HEX_BINARY"
+   $ECHO "Please run $HEX_CONF in the directory containing this file."
+   $ECHO "The installation file is available at: $HEX_WWW"
+   exit 1
+fi
+
+for x in $TAR_FILES; do
+
+   case $x in
+      hex-$HEX_VERSION-x32*) GOT_BINARY=1
+                ;;
+      hex-$HEX_VERSION-x64*) GOT_BINARY=1
+                ;;
+      hex-$HEX_VERSION-ppc*) GOT_BINARY=1
+                ;;
+      *)                     $ECHO "Warning - Unrecognised distribution file: $x"
+                ;;
+   esac
+
+done
+
+# $ECHO "TAR_FILES=$TAR_FILES"
+
+if [ $GOT_BINARY = 0 ]; then
+
+   $ECHO "I found the following files: "
+   $ECHO $TAR_FILES
+   $ECHO "However, these do not belong to the Hex $HEX_VERSION distribution."
+   $ECHO "For this system, you will need: $HEX_BINARY"
+   $ECHO "Please run $HEX_CONF in the directory containing these files."
+   $ECHO "The installation files are available at: $HEX_WWW"
+   exit 1
+
+fi
+
+#
+# ---------------------------------------------------------------------------
+#
+#  2. Check installation directory
+#
+
+#
+#  Assume we will have to create a HEX_ROOT in the users .login or whatever
+#
+
+add_root=1 
+
+if [ -z "$HEX_ROOT" ]; then
+
+   $ECHO "It appears you have not previously installed Hex."
+   $ECHO " "
+   $ECHO "Hex should be installed in its own directory structure. Example locations:"
+   $ECHO " "
+   $ECHO "   ${HOME}/hex"
+   $ECHO "   /usr/local/hex"
+   $ECHO " "
+   $ECHO "(you may need to be root to put Hex in /usr/local)"
+   $ECHO " "
+
+   hex_dir=""
+   def_dir="${HOME}/hex"
+
+   while [ -z "$hex_dir" ] ; do
+     $ECHON "Where would you like to install Hex? [$def_dir] "
+     read answer
+     if [ -z "$answer" ] ; then
+        hex_dir="$def_dir"
+     else
+        if [ `basename $answer` = "$answer" ]; then
+           $ECHO "Please give the full pathname of a directory"
+        else
+           hex_dir="$answer"
+        fi
+     fi
+   done
+
+#    $ECHO "hex_dir=$hex_dir"
+   
+   if [ -d "$hex_dir" ]; then
+
+       if askno "Warning: directory $hex_dir exists. Continue? " ; then
+          $ECHO "OK, exiting."
+          exit 1
+       fi
+   else
+
+       if askyes "Shall I create the directory $hex_dir now? " ; then
+
+          if mkdir -p $hex_dir ; then
+             $ECHO "Done!"
+          else
+             $ECHO "Failed to create $hex_dir - please do this manually."
+             exit 1
+          fi
+       else
+          $ECHO "OK, exiting."
+          exit 1
+       fi
+    fi
+
+   add_root=1
+   HEX_ROOT="$hex_dir"
+
+else 
+
+   if [ -d $HEX_ROOT ]; then
+
+      $ECHO "You appear have a HEX_ROOT directory: $HEX_ROOT"
+      $ECHO "It should be safe to install Hex $HEX_VERSION in this directory."
+      $ECHO "However, some existing files may be over-written."
+
+      add_root=0
+   fi
+fi
+
+#
+# ---------------------------------------------------------------------------
+#
+#  3. Unpack distribution files.
+#
+
+if askno "Ready to install into $HEX_ROOT - Proceed? " ; then
+   $ECHO "OK, exiting."
+   exit 1
+fi
+
+$ECHO " "
+for x in $TAR_FILES; do
+
+   $ECHO "(cd $HEX_ROOT; gunzip -c $HEX_PWD/$x | tar xpf -)"
+          (cd $HEX_ROOT; gunzip -c $HEX_PWD/$x | tar xpf -)
+
+done
+
+#
+# ---------------------------------------------------------------------------
+#
+#  4. Set up a cache directory.
+#
+if [ -z "$HEX_CACHE" ]; then
+
+   add_cache=1
+
+   $ECHO " "
+   $ECHO "Hex's docking calculations can be accelerated by using a disc cache."
+   $ECHO "Hex locates the cache directory using the HEX_CACHE environment variable."
+   $ECHO "The cache directory can take up to 200Mb of disc space."
+   $ECHO " "
+
+   if askyes "Do you want to create a cache directory now? " ; then
+
+      cache_dir=""
+      def_dir="${HOME}/hex_cache"
+
+      while [ -z "$cache_dir" ] ; do
+         $ECHON "Where would you like to have the cache directory? [$def_dir] "
+         read answer
+         if [ -z "$answer" ] ; then
+            cache_dir="$def_dir"
+         else
+           if [ `basename $answer` = "$answer" ]; then
+               $ECHO "Please give the full pathname of a directory"
+           else
+              cache_dir="$answer"
+           fi
+         fi
+      done
+
+#     $ECHO "cache_dir=$cache_dir"
+
+      if [ ! -d "$cache_dir" ]; then
+
+         if askyes "Shall I create the cache now in $cache_dir ? " ; then
+
+            if mkdir -p $cache_dir ; then
+               $ECHO "Done!"
+            else
+               $ECHO "Failed to create $cache_dir - please do this manually."
+            fi
+         else
+            $ECHO "OK, you can do this yourself later."
+            add_cache=0
+         fi
+
+      else
+         $ECHO "The cache directory $cache_dir already exists!"
+      fi 
+
+   else
+
+      add_cache=0
+
+$ECHO "OK. If you wish, you can create a cache directory later and set the "
+$ECHO "environment variable HEX_CACHE to this location in your login script."
+
+   fi
+
+elif [ -d "$HEX_CACHE" ]; then
+
+   add_cache=0
+
+fi
+
+#
+# ---------------------------------------------------------------------------
+#
+#  5. Edit the user's .login .profile or .bash_profile files.
+#
+$ECHO " "
+$ECHO "To work properly, Hex needs HEX_ROOT to be set to the Hex directory and"
+$ECHO "it needs \$HEX_ROOT/bin to be in the command PATH. If you wish to use"
+$ECHO "the cache during docking, Hex will find the cache using the HEX_CACHE "
+$ECHO "environment variable. These variables should be set in your login file."
+$ECHO " "
+
+if [ $add_root = 1 -o $add_cache = 1 ]; then
+
+   the_shell=`basename $SHELL`
+
+   case $the_shell in
+
+      bash) $ECHO "You seem to be using the 'bash' shell."
+
+         if askyes "Shall I update your '.bash_profile' file? " ; then
+
+            cat <<EOF >>$HOME/.bash_profile
+#
+#  Lines added by $HEX_CONF for Hex $HEX_VERSION
+#
+EOF
+            if [ $add_root = 1 ]; then
+
+               cat <<EOF >>$HOME/.bash_profile
+
+export HEX_ROOT=$hex_dir
+export HEX_VERSION=$HEX_VERSION
+export PATH=\${PATH}:\${HEX_ROOT}/bin
+EOF
+            fi
+            if [ $add_cache = 1 ]; then
+
+               cat <<EOF >>$HOME/.bash_profile
+
+export HEX_CACHE=$cache_dir
+EOF
+            fi
+            $ECHO "Done!"
+
+            if askyes "Would you like to test the setup now? " ; then
+               if bash --login -c hex ; then
+                  $ECHO "Well, it seemed to work!"
+          $ECHO "You will need to log-in afresh to get the new Hex environment."
+          $ECHO "Then, just type \"hex\" (without the quotes)..."
+               else
+            $ECHO "It seemed the test failed. Please consult the README file."
+               fi
+            fi
+
+         else
+            $ECHO "OK. You should add the following to your ~/.bash_profile file"
+            cat <<EOF
+export HEX_ROOT=$hex_dir
+export HEX_VERSION=$HEX_VERSION
+export PATH=\${PATH}:\${HEX_ROOT}/bin
+export HEX_CACHE=$cache_dir
+EOF
+           $ECHO "Then, the next time you login, type hex to run the program."
+         fi
+      ;;
+
+      csh) $ECHO "You seem to be using the 'csh' shell."
+
+         if askyes "Shall I update your '.login' file? " ; then
+
+            cat <<EOF >>$HOME/.login
+#
+#  Lines added by $HEX_CONF for Hex $HEX_VERSION
+#
+EOF
+            if [ $add_root = 1 ]; then
+
+               cat <<EOF >>$HOME/.login
+
+setenv HEX_ROOT $hex_dir
+setenv HEX_VERSION $HEX_VERSION
+setenv PATH \${PATH}:\${HEX_ROOT}/bin
+EOF
+            fi
+            if [ $add_cache = 1 ]; then
+
+               cat <<EOF >>$HOME/.login
+
+setenv HEX_CACHE $cache_dir
+EOF
+            fi
+
+            $ECHO "Done!"
+
+            if askyes "Would you like to test the setup now? " ; then
+               if csh -c "source ~/.login; hex" ; then
+                  $ECHO "Well, it seemed to work!"
+          $ECHO "You will need to log-in afresh to get the new Hex environment."
+          $ECHO "Then, just type \"hex\" (without the quotes)..."
+               else
+            $ECHO "It seemed the test failed. Please consult the README file."
+               fi
+            fi
+         else
+            $ECHO "OK. You should add the following to your ~/.login file"
+            cat <<EOF
+setenv HEX_ROOT $hex_dir
+setenv HEX_VERSION $HEX_VERSION
+setenv PATH \${PATH}:\${HEX_ROOT}/bin
+setenv HEX_CACHE $cache_dir
+EOF
+           $ECHO "Then, the next time you login, type hex to run the program."
+         fi
+      ;;
+
+      tcsh) $ECHO "You seem to be using the 'tcsh' shell."
+
+         if askyes "Shall I update your '.login' file? " ; then
+
+            cat <<EOF >>$HOME/.login
+#
+#  Lines added by $HEX_CONF for Hex $HEX_VERSION
+#
+EOF
+            if [ $add_root = 1 ]; then
+
+               cat <<EOF >>$HOME/.login
+
+setenv HEX_ROOT $hex_dir
+setenv HEX_VERSION $HEX_VERSION
+setenv PATH \${PATH}:\${HEX_ROOT}/bin
+EOF
+            fi
+            if [ $add_cache = 1 ]; then
+
+               cat <<EOF >>$HOME/.login
+
+setenv HEX_CACHE $cache_dir
+EOF
+            fi
+
+            $ECHO "Done!"
+
+            if askyes "Would you like to test the setup now? " ; then
+               if csh -c "source ~/.login; hex" ; then
+                  $ECHO "Well, it seemed to work!"
+          $ECHO "You will need to log-in afresh to get the new Hex environment."
+          $ECHO "Then, just type \"hex\" (without the quotes)..."
+               else
+            $ECHO "It seemed the test failed. Please consult the README file."
+               fi
+            fi
+         else
+            $ECHO "OK. You should add the following to your ~/.login file"
+            cat <<EOF
+setenv HEX_ROOT $hex_dir
+setenv HEX_VERSION $HEX_VERSION
+setenv PATH \${PATH}:\${HEX_ROOT}/bin
+setenv HEX_CACHE $cache_dir
+EOF
+           $ECHO "Then, the next time you login, type hex to run the program."
+         fi
+      ;;
+
+      sh) $ECHO "You seem to be using the 'sh' shell."
+
+         if askyes "Shall I update your '.profile' file? " ; then
+
+            cat <<EOF >>$HOME/.profile
+#
+#  Lines added by $HEX_CONF for Hex $HEX_VERSION
+#
+EOF
+            if [ $add_root = 1 ]; then
+
+               cat <<EOF >>$HOME/.profile
+
+HEX_ROOT=$hex_dir
+HEX_VERSION=$HEX_VERSION
+PATH=\${PATH}:\${HEX_ROOT}/bin
+export HEX_ROOT PATH HEX_VERSION
+EOF
+            fi
+            if [ $add_cache = 1 ]; then
+
+               cat <<EOF >>$HOME/.profile
+
+HEX_CACHE=$cache_dir
+export HEX_CACHE
+EOF
+            fi
+
+            $ECHO "Done!"
+
+            if askyes "Would you like to test the setup now? " ; then
+               if sh -c ". ~/.profile; hex" ; then
+                  $ECHO "Well, it seemed to work!"
+          $ECHO "You will need to log-in afresh to get the new Hex environment."
+          $ECHO "Then, just type \"hex\" (without the quotes)..."
+               else
+            $ECHO "It seemed the test failed. Please consult the README file."
+               fi
+            fi
+
+         else
+            $ECHO "OK. You should add the following to your ~/.profile file"
+            cat <<EOF
+HEX_ROOT=$hex_dir
+HEX_VERSION=$HEX_VERSION
+PATH=\${PATH}:\${HEX_ROOT}/bin
+HEX_CACHE=$cache_dir
+export HEX_ROOT HEX_CACHE HEX_VERSION PATH
+EOF
+           $ECHO "Then, the next time you login, type hex to run the program."
+         fi
+      ;;
+
+      ksh) $ECHO "You seem to be using the 'ksh' shell."
+
+         if askyes "Shall I update your '.profile' file? " ; then
+
+            cat <<EOF >>$HOME/.profile
+#
+#  Lines added by $HEX_CONF for Hex $HEX_VERSION
+#
+EOF
+            if [ $add_root = 1 ]; then
+
+               cat <<EOF >>$HOME/.profile
+
+export HEX_ROOT=$hex_dir
+export HEX_VERSION=$HEX_VERSION
+export PATH=\${PATH}:\${HEX_ROOT}/bin
+EOF
+            fi
+            if [ $add_cache = 1 ]; then
+
+               cat <<EOF >>$HOME/.profile
+
+export HEX_CACHE=$cache_dir
+EOF
+            fi
+
+            $ECHO "Done!"
+
+            if askyes "Would you like to test the setup now? " ; then
+               if ksh -c ". ~/.profile; hex" ; then
+                  $ECHO "Well, it seemed to work!"
+          $ECHO "You will need to log-in afresh to get the new Hex environment."
+          $ECHO "Then, just type \"hex\" (without the quotes)..."
+               else
+            $ECHO "It seemed the test failed. Please consult the README file."
+               fi
+            fi
+
+         else
+            $ECHO "OK. You should add the following to your ~/.profile file"
+            cat <<EOF
+export HEX_ROOT=$hex_dir
+export HEX_VERSION=$HEX_VERSION
+export PATH=\${PATH}:\${HEX_ROOT}/bin
+export HEX_CACHE=$cache_dir
+EOF
+         fi
+      ;;
+
+      *) $ECHO "I don't know about the \'$the_shell\' shell."
+         $ECHO "You will have to manually edit your login file to add:"
+         cat <<EOF
+HEX_ROOT=$hex_dir
+HEX_VERSION=$HEX_VERSION
+PATH=\${PATH}:\${HEX_ROOT}/bin
+HEX_CACHE=$cache_dir
+EOF
+        $ECHO "Then, the next time you login, type hex to run the program."
+      ;;
+
+   esac
+
+else
+
+   $ECHO "You seem to have the HEX_ROOT and HEX_CACHE variables set up already."
+   $ECHO "You should be able to run the program by typing hex."
+
+fi
+
+$ECHO " "
+$ECHO "In addition to the HEX_ROOT and HEX_CACHE variables, there are some"
+$ECHO "other environment variables you can set to customise Hex's behaviour."
+$ECHO "Please see the README file or the Hex manual."
+$ECHO "Thats it!"

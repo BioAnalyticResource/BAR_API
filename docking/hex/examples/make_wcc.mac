@@ -1,0 +1,18 @@
+#
+#  make_wcc.mac    
+#
+#  This file is not needed (and is ignored) in Hex 3.0 and later. As of v3.0,
+#  The coupling coefficients are read from the disc cache and/or calculated 
+#  on-the-fly. No user intervention is required.
+#
+#  This macro causes Hex to write out a file of Wigner coupling coefficients 
+#  (multiplied by a square root or two) which are used during the calculation
+#  of the translation matrix elements needed in Hex's docking calculations.
+#
+#  In v2.4, a file of coupling coefficients is supplied with the Hex
+#  distribution ($HEX_ROOT/data/wigner_coeffs.dat), but accidents can happen.
+#
+#  We never expect to go higher than N=32...
+#
+
+MAKE_WCC 32

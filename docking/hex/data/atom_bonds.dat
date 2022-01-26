@@ -1,0 +1,1157 @@
+#-----------------------------------------------------------------------------
+#  atom_bonds.dat
+#  --------------
+#
+#  Format:  Reside Atom1 Atom2 Bond-order Bond-type
+#
+#  NB. In Hex 2.1, the bond type is *ignored* (but still necessary): instead
+#      the equivalent function is set using the "atom type" in the file
+#     "atom_types.dat".
+#
+#-----------------------------------------------------------------------------
+#
+#  Author:     Dave Ritchie, 08/01/99
+#
+#  Copyright (C) 1999-2003 D.W. Ritchie, University of Aberdeen.
+#
+#  Explicit permission is hereby granted to Universities and British
+#  Government supported Research Institutions to copy and modify this software
+#  for educational and research purposes, provided copies include this notice;
+#  these copies may not be distributed to any other institutions without
+#  express permission from the author and the University of Aberdeen. Requests 
+#  to use this software (or modified copies therof) in any other way should be 
+#  sent to D.W. Ritchie, Department of Computing Science: 
+#  "dritchie@csd.abdn.ac.uk".
+#
+#-----------------------------------------------------------------------------
+
+GLY  N    CA    1  b
+GLY  CA   C     1  b
+GLY  CA   HA1   1  s
+GLY  CA   HA2   1  s
+GLY  N    H     1  s
+GLY  N    H1    1  s  # H1-H3 only for N-terminus 
+GLY  N    H2    1  s
+GLY  N    H3    1  s
+GLY  C    O     2  s
+GLY  C    OXT   2  s
+
+ALA  N    CA    1  b
+ALA  CA   C     1  b
+ALA  CA   HA    1  s
+ALA  N    H     1  s
+ALA  N    H1    1  s
+ALA  N    H2    1  s
+ALA  N    H3    1  s
+ALA  C    O     2  s
+ALA  C    OXT   2  s
+ALA  CA   CB    1  s
+ALA  CB   HB1   1  s
+ALA  CB   HB2   1  s
+ALA  CB   HB3   1  s
+
+VAL  N    CA    1  b
+VAL  CA   C     1  b
+VAL  CA   HA    1  s
+VAL  N    H     1  s
+VAL  N    H1    1  s
+VAL  N    H2    1  s
+VAL  N    H3    1  s
+VAL  C    O     2  s
+VAL  C    OXT   2  s
+VAL  CA   CB    1  s
+VAL  CB   HB    1  s
+VAL  CB   CG1   1  s
+VAL  CG1  HG11  1  s
+VAL  CG1  HG12  1  s
+VAL  CG1  HG13  1  s
+VAL  CB   CG2   1  s
+VAL  CG2  HG21  1  s
+VAL  CG2  HG22  1  s
+VAL  CG2  HG23  1  s
+
+PRO  N    CA    1  b
+PRO  CA   C     1  b
+PRO  CA   HA    1  s
+PRO  N    H     1  s  /# terminal H ? #
+PRO  C    O     2  s
+PRO  C    OXT   2  s
+PRO  CA   CB    1  s
+PRO  CB   HB1   1  s
+PRO  CB   HB2   1  s
+PRO  CB   CG    1  s
+PRO  CG   HG1   1  s
+PRO  CG   HG2   1  s
+PRO  CG   CD    1  s
+PRO  CD   HD1   1  s
+PRO  CD   HD2   1  s
+PRO  CD   N     1  s
+
+SER  N    CA    1  b
+SER  CA   C     1  b
+SER  CA   HA    1  s
+SER  N    H     1  s
+SER  N    H1    1  s
+SER  N    H2    1  s
+SER  N    H3    1  s
+SER  C    O     2  s
+SER  C    OXT   2  s
+SER  CA   CB    1  s
+SER  CB   HB1   1  s
+SER  CB   HB2   1  s
+SER  CB   OG    1  s
+SER  OG   HG    1  s
+
+CYS  N    CA    1  b
+CYS  CA   C     1  b
+CYS  CA   HA    1  s
+CYS  N    H     1  s
+CYS  N    H1    1  s
+CYS  N    H2    1  s
+CYS  N    H3    1  s
+CYS  C    O     2  s
+CYS  C    OXT   2  s
+CYS  CA   CB    1  s
+CYS  CB   HB1   1  s
+CYS  CB   HB2   1  s
+CYS  CB   SG    1  s
+CYS  SG   LP1   0  s
+CYS  SG   LP2   0  s
+CYS  SG   HG    1  s
+
+CYX  N    CA    1  b
+CYX  CA   C     1  b
+CYX  CA   HA    1  s
+CYX  N    H     1  s
+CYX  N    H1    1  s
+CYX  N    H2    1  s
+CYX  N    H3    1  s
+CYX  C    O     2  s
+CYX  C    OXT   2  s
+CYX  CA   CB    1  s
+CYX  CB   HB1   1  s
+CYX  CB   HB2   1  s
+CYX  CB   SG    1  s
+CYX  SG   LP1   0  s
+CYX  SG   LP2   0  s
+CYX  SG   HG    1  s
+
+THR  N    CA    1  b
+THR  CA   C     1  b
+THR  CA   HA    1  s
+THR  N    H     1  s
+THR  N    H1    1  s
+THR  N    H2    1  s
+THR  N    H3    1  s
+THR  C    O     2  s
+THR  C    OXT   2  s
+THR  CA   CB    1  s
+THR  CB   HB    1  s
+THR  CB   OG1   1  s
+THR  OG1  HG1   1  s
+THR  CB   CG2   1  s
+THR  CG2  HG21  1  s
+THR  CG2  HG22  1  s
+THR  CG2  HG23  1  s
+
+ILE  N    CA    1  b
+ILE  CA   C     1  b
+ILE  CA   HA    1  s
+ILE  N    H     1  s
+ILE  N    H1    1  s
+ILE  N    H2    1  s
+ILE  N    H3    1  s
+ILE  C    O     2  s
+ILE  C    OXT   2  s
+ILE  CA   CB    1  s
+ILE  CB   HB    1  s
+ILE  CB   CG1   1  s
+ILE  CB   CG2   1  s
+ILE  CG1  HG11  1  s
+ILE  CG1  HG12  1  s
+ILE  CG2  HG21  1  s
+ILE  CG2  HG22  1  s
+ILE  CG2  HG23  1  s
+ILE  CG1  CD1   1  s
+ILE  CD1  HD11  1  s
+ILE  CD1  HD12  1  s
+ILE  CD1  HD13  1  s
+
+LEU  N    CA    1  b
+LEU  CA   C     1  b
+LEU  CA   HA    1  s
+LEU  N    H     1  s
+LEU  N    H1    1  s
+LEU  N    H2    1  s
+LEU  N    H3    1  s
+LEU  C    O     2  s
+LEU  C    OXT   2  s
+LEU  CA   CB    1  s
+LEU  CB   HB1   1  s
+LEU  CB   HB2   1  s
+LEU  CB   CG    1  s
+LEU  CG   HG    1  s
+LEU  CG   CD1   1  s
+LEU  CG   CD2   1  s
+LEU  CD1  HD11  1  s
+LEU  CD1  HD12  1  s
+LEU  CD1  HD13  1  s
+LEU  CD2  HD21  1  s
+LEU  CD2  HD22  1  s
+LEU  CD2  HD23  1  s
+
+ASP  N    CA    1  b
+ASP  CA   C     1  b
+ASP  CA   HA    1  s
+ASP  N    H     1  s
+ASP  N    H1    1  s
+ASP  N    H2    1  s
+ASP  N    H3    1  s
+ASP  C    O     2  s
+ASP  C    OXT   2  s
+ASP  CA   CB    1  s
+ASP  CB   HB1   1  s
+ASP  CB   HB2   1  s
+ASP  CB   CG    1  s
+ASP  CG   OD1   1  s
+ASP  CG   OD2   1  s
+
+DOH  N    CA    1  b
+DOH  CA   C     1  b
+DOH  CA   HA    1  s
+DOH  N    H     1  s
+DOH  N    H1    1  s
+DOH  N    H2    1  s
+DOH  N    H3    1  s
+DOH  C    O     2  s
+DOH  C    OXT   2  s
+DOH  CA   CB    1  s
+DOH  CB   HB    1  s
+DOH  CB   CG    1  s
+DOH  CG   OD1   1  s
+DOH  CG   OD2   1  s
+DOH  CB   OG1   1  s
+DOH  OG1  HG1   1  s
+
+ASN  N    CA    1  b
+ASN  CA   C     1  b
+ASN  CA   HA    1  s
+ASN  N    H     1  s
+ASN  N    H1    1  s
+ASN  N    H2    1  s
+ASN  N    H3    1  s
+ASN  C    O     2  s
+ASN  C    OXT   2  s
+ASN  CA   CB    1  s
+ASN  CB   HB1   1  s
+ASN  CB   HB2   1  s
+ASN  CB   CG    1  s
+ASN  CG   OD1   1  s
+ASN  CG   ND2   1  s
+ASN  ND2  HD21  1  s
+ASN  ND2  HD22  1  s
+ASN  CG   AD1   1  s   #  unresolved amide atoms
+ASN  CG   AD2   1  s
+
+HIS  N    CA    1  b
+HIS  CA   C     1  b
+HIS  CA   HA    1  s
+HIS  N    H     1  s
+HIS  N    H1    1  s
+HIS  N    H2    1  s
+HIS  N    H3    1  s
+HIS  C    O     2  s
+HIS  C    OXT   2  s
+HIS  CA   CB    1  s
+HIS  CB   HB1   1  s
+HIS  CB   HB2   1  s
+HIS  CB   CG    1  s
+HIS  CG   ND1   1  s
+HIS  ND1  HD1   1  s
+HIS  ND1  CE1   1  s
+HIS  CE1  HE1   1  s
+HIS  CE1  NE2   2  s
+HIS  NE2  CD2   1  s
+HIS  CD2  HD2   1  s
+HIS  CD2  CG    2  s
+
+HID  N    CA    1  b # alternate name for HIS (AMBER/GRID compatibility)
+HID  CA   C     1  b
+HID  CA   HA    1  s
+HID  N    H     1  s
+HID  N    H1    1  s
+HID  N    H2    1  s
+HID  N    H3    1  s
+HID  C    O     2  s
+HID  C    OXT   2  s
+HID  CA   CB    1  s
+HID  CB   HB1   1  s
+HID  CB   HB2   1  s
+HID  CB   CG    1  s
+HID  CG   ND1   1  s
+HID  ND1  HD1   1  s
+HID  ND1  CE1   1  s
+HID  CE1  HE1   1  s
+HID  CE1  NE2   2  s
+HID  NE2  CD2   1  s
+HID  CD2  HD2   1  s
+HID  CD2  CG    2  s
+
+HIE  N    CA    1  b  # tautomeric HIS
+HIE  CA   C     1  b
+HIE  CA   HA    1  s
+HIE  N    H     1  s
+HIE  N    H1    1  s
+HIE  N    H2    1  s
+HIE  N    H3    1  s
+HIE  C    O     2  s
+HIE  C    OXT   2  s
+HIE  CA   CB    1  s
+HIE  CB   HB1   1  s
+HIE  CB   HB2   1  s
+HIE  CB   CG    1  s
+HIE  CG   ND1   1  s
+HIE  ND1  CE1   2  s
+HIE  CE1  HE1   1  s
+HIE  CE1  NE2   1  s
+HIE  NE2  CD2   1  s
+HIE  NE2  HE2   1  s
+HIE  CD2  HD2   1  s
+HIE  CD2  CG    2  s
+
+HSD  N    CA    1  b  # HSD == HIE
+HSD  CA   C     1  b
+HSD  CA   HA    1  s
+HSD  N    H     1  s
+HSD  N    H1    1  s
+HSD  N    H2    1  s
+HSD  N    H3    1  s
+HSD  C    O     2  s
+HSD  C    OXT   2  s
+HSD  CA   CB    1  s
+HSD  CB   HB1   1  s
+HSD  CB   HB2   1  s
+HSD  CB   CG    1  s
+HSD  CG   ND1   1  s
+HSD  ND1  CE1   2  s
+HSD  CE1  HE1   1  s
+HSD  CE1  NE2   1  s
+HSD  NE2  CD2   1  s
+HSD  NE2  HE2   1  s
+HSD  CD2  HD2   1  s
+HSD  CD2  CG    2  s
+
+HIP  N    CA    1  b  # protonated HIS
+HIP  CA   C     1  b
+HIP  CA   HA    1  s
+HIP  N    H     1  s
+HIP  N    H1    1  s
+HIP  N    H2    1  s
+HIP  N    H3    1  s
+HIP  C    O     2  s
+HIP  C    OXT   2  s
+HIP  CA   CB    1  s
+HIP  CB   HB1   1  s
+HIP  CB   HB2   1  s
+HIP  CB   CG    1  s
+HIP  CG   ND1   1  s
+HIP  ND1  HD1   1  s
+HIP  ND1  CE1   1  s
+HIP  CE1  HE1   1  s
+HIP  CE1  NE2   2  s
+HIP  NE2  CD2   1  s
+HIP  NE2  HE2   1  s
+HIP  CD2  HD2   1  s
+HIP  CD2  CG    2  s
+
+PHE  N    CA    1  b
+PHE  CA   C     1  b
+PHE  CA   HA    1  s
+PHE  N    H     1  s
+PHE  N    H1    1  s
+PHE  N    H2    1  s
+PHE  N    H3    1  s
+PHE  C    O     2  s
+PHE  C    OXT   2  s
+PHE  CA   CB    1  s
+PHE  CB   HB1   1  s
+PHE  CB   HB2   1  s
+PHE  CB   CG    1  s
+PHE  CG   CD1   2  s
+PHE  CD1  HD1   1  s
+PHE  CD1  CE1   2  s
+PHE  CE1  CZ    2  s
+PHE  CE1  HE1   1  s
+PHE  CZ   CE2   2  s
+PHE  CZ   HZ    1  s
+PHE  CE2  CD2   2  s
+PHE  CE2  HE2   1  s
+PHE  CD2  CG    2  s
+PHE  CD2  HD2   1  s
+
+TYR  N    CA    1  b
+TYR  CA   C     1  b
+TYR  CA   HA    1  s
+TYR  N    H     1  s
+TYR  N    H1    1  s
+TYR  N    H2    1  s
+TYR  N    H3    1  s
+TYR  C    O     2  s
+TYR  C    OXT   2  s
+TYR  CA   CB    1  s
+TYR  CB   CG    1  s
+TYR  CB   HB1   1  s
+TYR  CB   HB2   1  s
+TYR  CG   CD1   2  s
+TYR  CD1  CE1   2  s
+TYR  CD1  HD1   1  s
+TYR  CE1  CZ    2  s
+TYR  CE1  HE1   1  s
+TYR  CZ   CE2   2  s
+TYR  CZ   OH    1  s
+TYR  OH   HH    1  s
+TYR  CE2  CD2   2  s
+TYR  CE2  HE2   1  s
+TYR  CD2  CG    2  s
+TYR  CD2  HD2   1  s
+
+TRP  N    CA    1  b
+TRP  CA   C     1  b
+TRP  CA   HA    1  s
+TRP  N    H     1  s
+TRP  N    H1    1  s
+TRP  N    H2    1  s
+TRP  N    H3    1  s
+TRP  C    O     2  s
+TRP  C    OXT   2  s
+TRP  CA   CB    1  s
+TRP  CB   CG    1  s
+TRP  CB   HB1   1  s
+TRP  CB   HB2   1  s
+TRP  CG   CD1   2  s
+TRP  CD1  NE1   2  s
+TRP  CD1  HD1   1  s
+TRP  NE1  CE2   2  s
+TRP  NE1  HE1   1  s
+TRP  CE2  CD2   2  s
+TRP  CD2  CG    2  s
+TRP  CD2  CE3   2  s
+TRP  CE3  CZ3   2  s
+TRP  CE3  HE3   1  s
+TRP  CZ3  CH2   2  s
+TRP  CZ3  HZ3   1  s
+TRP  CH2  CZ2   2  s
+TRP  CH2  HH2   1  s
+TRP  CZ2  CE2   2  s
+TRP  CZ2  HZ2   1  s
+
+MET  N    CA    1  b
+MET  CA   C     1  b
+MET  CA   HA    1  s
+MET  N    H     1  s
+MET  N    H1    1  s
+MET  N    H2    1  s
+MET  N    H3    1  s
+MET  C    O     2  s
+MET  C    OXT   2  s
+MET  CA   CB    1  s
+MET  CB   CG    1  s
+MET  CB   HB1   1  s
+MET  CB   HB2   1  s
+MET  CG   SD    1  s
+MET  CG   HG1   1  s
+MET  CG   HG2   1  s
+MET  SD   LP1   0  s
+MET  SD   LP2   0  s
+MET  SD   CE    1  s
+MET  CE   HE1   1  s
+MET  CE   HE2   1  s
+MET  CE   HE3   1  s
+
+MSE  N    CA    1  b
+MSE  CA   C     1  b
+MSE  CA   HA    1  s
+MSE  N    H     1  s
+MSE  N    H1    1  s
+MSE  N    H2    1  s
+MSE  N    H3    1  s
+MSE  C    O     2  s
+MSE  C    OXT   2  s
+MSE  CA   CB    1  s
+MSE  CB   CG    1  s
+MSE  CB   HB1   1  s
+MSE  CB   HB2   1  s
+MSE  CG   Se    1  s
+MSE  CG   HG1   1  s
+MSE  CG   HG2   1  s
+MSE  Se   LP1   0  s
+MSE  Se   LP2   0  s
+MSE  Se   CE    1  s
+MSE  CE   HE1   1  s
+MSE  CE   HE2   1  s
+MSE  CE   HE3   1  s
+
+GLU  N    CA    1  b
+GLU  CA   C     1  b
+GLU  CA   HA    1  s
+GLU  N    H     1  s
+GLU  N    H1    1  s
+GLU  N    H2    1  s
+GLU  N    H3    1  s
+GLU  C    O     2  s
+GLU  C    OXT   2  s
+GLU  CA   CB    1  s
+GLU  CB   HB1   1  s
+GLU  CB   HB2   1  s
+GLU  CB   CG    1  s
+GLU  CG   CD    1  s
+GLU  CG   HG1   1  s
+GLU  CG   HG2   1  s
+GLU  CD   OE1   1  s
+GLU  CD   OE2   1  s
+
+CGU  N    CA    1  b
+CGU  CA   C     1  b
+CGU  CA   HA    1  s
+CGU  N    H     1  s
+CGU  N    H1    1  s
+CGU  N    H2    1  s
+CGU  N    H3    1  s
+CGU  C    O     2  s
+CGU  C    OXT   2  s
+CGU  CA   CB    1  s
+CGU  CB   HB1   1  s
+CGU  CB   HB2   1  s
+CGU  CB   CG    1  s
+CGU  CG   CD1   1  s
+CGU  CG   CD2   1  s
+CGU  CG   HG    1  s
+CGU  CD1  OE1   1  s
+CGU  CD1  OE2   1  s
+CGU  CD2  OE3   1  s
+CGU  CD2  OE4   1  s
+
+GLN  N    CA    1  b
+GLN  CA   C     1  b
+GLN  CA   HA    1  s
+GLN  N    H     1  s
+GLN  N    H1    1  s
+GLN  N    H2    1  s
+GLN  N    H3    1  s
+GLN  C    O     2  s
+GLN  C    OXT   2  s
+GLN  CA   CB    1  s
+GLN  CB   CG    1  s
+GLN  CB   HB1   1  s
+GLN  CB   HB2   1  s
+GLN  CG   CD    1  s
+GLN  CG   HG1   1  s
+GLN  CG   HG2   1  s
+GLN  CD   OE1   1  s
+GLN  CD   NE2   1  s
+GLN  NE2  HE21  1  s
+GLN  NE2  HE22  1  s
+GLN  CD   AE1   1  s  # unresolved amide atoms
+GLN  CD   AE2   1  s
+
+ARG  N    CA    1  b
+ARG  CA   C     1  b
+ARG  CA   HA    1  s
+ARG  N    H     1  s
+ARG  N    H1    1  s
+ARG  N    H2    1  s
+ARG  N    H3    1  s
+ARG  C    O     2  s
+ARG  C    OXT   2  s
+ARG  CA   CB    1  s
+ARG  CB   CG    1  s
+ARG  CB   HB1   1  s
+ARG  CB   HB2   1  s
+ARG  CG   CD    1  s
+ARG  CG   HG1   1  s
+ARG  CG   HG2   1  s
+ARG  CD   NE    1  s
+ARG  CD   HD1   1  s
+ARG  CD   HD2   1  s
+ARG  NE   CZ    1  s
+ARG  NE   HE    1  s
+ARG  CZ   NH1   1  s
+ARG  CZ   NH2   1  s
+ARG  NH1  HH11  1  s
+ARG  NH1  HH12  1  s
+ARG  NH2  HH21  1  s
+ARG  NH2  HH22  1  s
+
+LYS  N    CA    1  b
+LYS  CA   C     1  b
+LYS  CA   HA    1  s
+LYS  N    H     1  s
+LYS  N    H1    1  s
+LYS  N    H2    1  s
+LYS  N    H3    1  s
+LYS  C    O     2  s
+LYS  C    OXT   2  s
+LYS  CA   CB    1  s
+LYS  CB   CG    1  s
+LYS  CB   HB1   1  s
+LYS  CB   HB2   1  s
+LYS  CG   CD    1  s
+LYS  CG   HG1   1  s
+LYS  CG   HG2   1  s
+LYS  CD   CE    1  s
+LYS  CD   HD1   1  s
+LYS  CD   HD2   1  s
+LYS  CE   NZ    1  s
+LYS  CE   HE1   1  s
+LYS  CE   HE2   1  s
+LYS  NZ   HZ1   1  s
+LYS  NZ   HZ2   1  s
+LYS  NZ   HZ3   1  s
+
+PCA  N    CA    1  b
+PCA  CA   C     1  b
+PCA  CA   HA    1  s
+PCA  N    H     1  s
+PCA  N    H1    1  s
+PCA  N    H2    1  s
+PCA  N    H3    1  s
+PCA  C    O     2  s
+PCA  C    OXT   2  s
+PCA  CA   CB    1  s
+PCA  CB   CG    1  s
+PCA  CB   HB1   1  s
+PCA  CB   HB2   1  s
+PCA  CG   CD    1  s
+PCA  CG   HG1   1  s
+PCA  CG   HG2   1  s
+PCA  CD   HD    1  s
+PCA  CD   OE    2  s
+
+HOH  O    H1    1  w
+HOH  O    H2    1  w
+TIP  OH2  H1    1  w
+TIP  OH2  H2    1  w
+
+
+
+
+A    P    O1P   1  b    # Adenosine
+A    P    O2P   1  b
+A    P    O5*   1  b
+A    O5*  C5*   1  b
+A    C5*  C4*   1  b
+A    C4*  O4*   1  b
+A    C4*  C3*   1  b
+A    O4*  C1*   1  b
+A    C3*  O3*   1  b
+A    C3*  C2*   1  b
+A    C2*  H2*   1  b    # for RNA/DNA #
+A    C2*  O2*   1  b    # for RNA de-oxy loses this oxygen #
+A    O2*  HO*2  1  b    # only in RNA #
+A    C2*  H2*1  1  b    # for RNA #
+A    C2*  H2*2  1  b    # for DNA #
+A    C2*  C1*   1  b
+A    C1*  H1*   1  b
+A    C3*  H3*   1  b
+A    C4*  H4*   1  b
+A    C5*  H5*1  1  b
+A    C5*  H5*2  1  b
+A    P    O5*   1  b    # only on 5' terminus #
+A    O5*  HO*5  1  b    # only on 5' terminus #
+A    O3*  HO*3  1  b
+A    C1*  N9    1  s
+A    N9   C8    1  s
+A    C8   N7    2  s
+A    N7   C5    1  s
+A    C5   C6    1  s
+A    C6   N6    1  s
+A    C6   N1    2  s
+A    N1   C2    1  s
+A    C2   N3    2  s
+A    N3   C4    1  s
+A    C4   C5    2  s
+A    C4   N9    1  s
+A    C2   H2    1  s
+A    N6   H61   1  s
+A    N6   H62   1  s
+A    C8   H8    1  s
+
++A   P    O1P   1  b   # Substituted Adenosine
++A   P    S1P   1  b   # S substituted for O
++A   P    O2P   1  b
++A   P    O5*   1  b
++A   O5*  C5*   1  b
++A   C5*  C4*   1  b
++A   C4*  O4*   1  b
++A   C4*  C3*   1  b
++A   O4*  C1*   1  b
++A   C3*  O3*   1  b
++A   C3*  C2*   1  b
++A   C2*  H2*   1  b    # for RNA/DNA #
++A   C2*  O2*   1  b    # for RNA de-oxy loses this oxygen #
++A   O2*  HO*2  1  b    # only in RNA #
++A   C2*  H2*1  1  b    # for RNA #
++A   C2*  H2*2  1  b    # for DNA #
++A   C2*  C1*   1  b
++A   C1*  H1*   1  b
++A   C3*  H3*   1  b
++A   C4*  H4*   1  b
++A   C5*  H5*1  1  b
++A   C5*  H5*2  1  b
++A   P    O5*   1  b    # only on 5' terminus #
++A   O5*  HO*5  1  b    # only on 5' terminus #
++A   O3*  HO*3  1  b
++A   C1*  N9    1  s
++A   N9   C8    1  s
++A   C8   N7    2  s
++A   N7   C5    1  s
++A   C5   C6    1  s
++A   C6   N6    1  s
++A   C6   N1    2  s
++A   N1   C2    1  s
++A   C2   N3    2  s
++A   N3   C4    1  s
++A   C4   C5    2  s
++A   C4   N9    1  s
++A   C2   H2    1  s
++A   N6   H61   1  s
++A   N6   H62   1  s
++A   C8   H8    1  s
+
+G    P    O1P   1  b   # Guanine
+G    P    O2P   1  b
+G    P    O5*   1  b
+G    O5*  C5*   1  b
+G    C5*  C4*   1  b
+G    C4*  O4*   1  b
+G    C4*  C3*   1  b
+G    O4*  C1*   1  b
+G    C3*  O3*   1  b
+G    C3*  C2*   1  b
+G    C2*  H2*   1  b    # for RNA/DNA #
+G    C2*  O2*   1  b    # for RNA de-oxy loses this oxygen #
+G    O2*  HO*2  1  b    # only in RNA #
+G    C2*  H2*1  1  b    # for RNA #
+G    C2*  H2*2  1  b    # for DNA #
+G    C2*  C1*   1  b
+G    C1*  H1*   1  b
+G    C3*  H3*   1  b
+G    C4*  H4*   1  b
+G    C5*  H5*1  1  b
+G    C5*  H5*2  1  b
+G    P    O5*   1  b    # only on 5' terminus #
+G    O5*  HO*5  1  b    # only on 5' terminus #
+G    O3*  HO*3  1  b
+G    C1*  N9    1  s
+G    N9   C8    1  s
+G    C8   N7    2  s
+G    N7   C5    1  s
+G    C5   C6    1  s
+G    C6   O6    2  s
+G    C6   N1    2  s
+G    N1   C2    1  s
+G    C2   N2    1  s
+G    C2   N3    2  s
+G    N3   C4    1  s
+G    C4   C5    2  s
+G    C4   N9    1  s
+G    N1   H1    1  s
+G    N2   H21   1  s
+G    N2   H22   1  s
+G    C8   H8    1  s
+
++G   P    O1P   1  b   # Guanine
++G   P    O2P   1  b
++G   P    O5*   1  b
++G   O5*  C5*   1  b
++G   C5*  C4*   1  b
++G   C4*  O4*   1  b
++G   C4*  C3*   1  b
++G   O4*  C1*   1  b
++G   C3*  O3*   1  b
++G   C3*  C2*   1  b
++G   C2*  H2*   1  b    # for RNA/DNA #
++G   C2*  O2*   1  b    # for RNA de-oxy loses this oxygen #
++G   O2*  HO*2  1  b    # only in RNA #
++G   C2*  H2*1  1  b    # for RNA #
++G   C2*  H2*2  1  b    # for DNA #
++G   C2*  C1*   1  b
++G   C1*  H1*   1  b
++G   C3*  H3*   1  b
++G   C4*  H4*   1  b
++G   C5*  H5*1  1  b
++G   C5*  H5*2  1  b
++G   P    O5*   1  b    # only on 5' terminus #
++G   O5*  HO*5  1  b    # only on 5' terminus #
++G   O3*  HO*3  1  b
++G   C1*  N9    1  s
++G   N9   C8    1  s
++G   C8   N7    2  s
++G   N7   C5    1  s
++G   C5   C6    1  s
++G   C6   O6    2  s
++G   C6   N1    2  s
++G   N1   C2    1  s
++G   C2   N2    1  s
++G   C2   N3    2  s
++G   N3   C4    1  s
++G   C4   C5    2  s
++G   C4   N9    1  s
++G   N1   H1    1  s
++G   N2   H21   1  s
++G   N2   H22   1  s
++G   C8   H8    1  s
+
+I    P    O1P   1  b   # Inosine - from Adenosine
+I    P    O2P   1  b
+I    P    O5*   1  b
+I    O5*  C5*   1  b
+I    C5*  C4*   1  b
+I    C4*  O4*   1  b
+I    C4*  C3*   1  b
+I    O4*  C1*   1  b
+I    C3*  O3*   1  b
+I    C3*  C2*   1  b
+I    C2*  H2*   1  b    # for RNA/DNA #
+I    C2*  O2*   1  b    # for RNA de-oxy loses this oxygen #
+I    O2*  HO*2  1  b    # only in RNA #
+I    C2*  H2*1  1  b    # for RNA #
+I    C2*  H2*2  1  b    # for DNA #
+I    C2*  C1*   1  b
+I    C1*  H1*   1  b
+I    C3*  H3*   1  b
+I    C4*  H4*   1  b
+I    C5*  H5*1  1  b
+I    C5*  H5*2  1  b
+I    P    O5*   1  b    # only on 5' terminus #
+I    O5*  HO*5  1  b    # only on 5' terminus #
+I    O3*  HO*3  1  b
+I    C1*  N9    1  s
+I    N9   C8    1  s
+I    C8   N7    2  s
+I    N7   C5    1  s
+I    C5   C6    1  s
+I    C6   O6    1  s
+I    C6   N1    2  s
+I    N1   C2    1  s
+I    C2   N3    2  s
+I    N3   C4    1  s
+I    C4   C5    2  s
+I    C4   N9    1  s
+I    N1   H1    1  s
+I    C2   H2    1  s
+I    C8   H8    1  s
+
++I   P    O1P   1  b   # Inosine - from Adenosine
++I   P    O2P   1  b
++I   P    O5*   1  b
++I   O5*  C5*   1  b
++I   C5*  C4*   1  b
++I   C4*  O4*   1  b
++I   C4*  C3*   1  b
++I   O4*  C1*   1  b
++I   C3*  O3*   1  b
++I   C3*  C2*   1  b
++I   C2*  H2*   1  b    # for RNA/DNA #
++I   C2*  O2*   1  b    # for RNA de-oxy loses this oxygen #
++I   O2*  HO*2  1  b    # only in RNA #
++I   C2*  H2*1  1  b    # for RNA #
++I   C2*  H2*2  1  b    # for DNA #
++I   C2*  C1*   1  b
++I   C1*  H1*   1  b
++I   C3*  H3*   1  b
++I   C4*  H4*   1  b
++I   C5*  H5*1  1  b
++I   C5*  H5*2  1  b
++I   P    O5*   1  b    # only on 5' terminus #
++I   O5*  HO*5  1  b    # only on 5' terminus #
++I   O3*  HO*3  1  b
++I   C1*  N9    1  s
++I   N9   C8    1  s
++I   C8   N7    2  s
++I   N7   C5    1  s
++I   C5   C6    1  s
++I   C6   O6    1  s
++I   C6   N1    2  s
++I   N1   C2    1  s
++I   C2   N3    2  s
++I   N3   C4    1  s
++I   C4   C5    2  s
++I   C4   N9    1  s
++I   N1   H1    1  s
++I   C2   H2    1  s
++I   C8   H8    1  s
+
+C    P    O1P   1  b   # Cytosine 
+C    P    O2P   1  b
+C    P    O5*   1  b
+C    O5*  C5*   1  b
+C    C5*  C4*   1  b
+C    C4*  O4*   1  b
+C    C4*  C3*   1  b
+C    O4*  C1*   1  b
+C    C3*  O3*   1  b
+C    C3*  C2*   1  b
+C    C2*  H2*   1  b    # for RNA/DNA #
+C    C2*  O2*   1  b    # for RNA de-oxy loses this oxygen #
+C    O2*  HO*2  1  b    # only in RNA #
+C    C2*  H2*1  1  b    # for RNA #
+C    C2*  H2*2  1  b    # for DNA #
+C    C2*  C1*   1  b
+C    C1*  H1*   1  b
+C    C3*  H3*   1  b
+C    C4*  H4*   1  b
+C    C5*  H5*1  1  b
+C    C5*  H5*2  1  b
+C    P    O5*   1  b    # only on 5' terminus #
+C    O5*  HO*5  1  b    # only on 5' terminus #
+C    O3*  HO*3  1  b
+C    C1*  N1    1  s
+C    N1   C2    1  s
+C    C2   O2    2  s
+C    C2   N3    1  s
+C    N3   C4    2  s
+C    C4   N4    1  s
+C    C4   C5    1  s
+C    C5   C6    2  s
+C    C6   N1    1  s
+C    N4   H41   1  s
+C    N4   H42   1  s
+C    C5   H5    1  s
+C    C6   H6    1  s
+
++C   P    O1P   1  b   # Substituted Cytosine
++C   P    S1P   1  b   # S substituted for O
++C   P    O2P   1  b
++C   P    O5*   1  b
++C   O5*  C5*   1  b
++C   C5*  C4*   1  b
++C   C4*  O4*   1  b
++C   C4*  C3*   1  b
++C   O4*  C1*   1  b
++C   C3*  O3*   1  b
++C   C3*  C2*   1  b
++C   C2*  H2*   1  b    # for RNA/DNA #
++C   C2*  O2*   1  b    # for RNA de-oxy loses this oxygen #
++C   O2*  HO*2  1  b    # only in RNA #
++C   C2*  H2*1  1  b    # for RNA #
++C   C2*  H2*2  1  b    # for DNA #
++C   C2*  C1*   1  b
++C   C1*  H1*   1  b
++C   C3*  H3*   1  b
++C   C4*  H4*   1  b
++C   C5*  H5*1  1  b
++C   C5*  H5*2  1  b
++C   P    O5*   1  b    # only on 5' terminus #
++C   O5*  HO*5  1  b    # only on 5' terminus #
++C   O3*  HO*3  1  b
++C   C1*  N1    1  s
++C   N1   C2    1  s
++C   C2   O2    2  s
++C   C2   N3    1  s
++C   N3   C4    2  s
++C   C4   N4    1  s
++C   C4   C5    1  s
++C   C5   C6    2  s
++C   C6   N1    1  s
++C   N4   H41   1  s
++C   N4   H42   1  s
++C   C5   H5    1  s
++C   C6   H6    1  s
+
+T    P    O1P   1  b   # Thymine
+T    P    O2P   1  b
+T    P    O5*   1  b
+T    O5*  C5*   1  b
+T    C5*  C4*   1  b
+T    C4*  O4*   1  b
+T    C4*  C3*   1  b
+T    O4*  C1*   1  b
+T    C3*  O3*   1  b
+T    C3*  C2*   1  b
+T    C2*  H2*   1  b    # for RNA/DNA #
+T    C2*  O2*   1  b    # for RNA de-oxy loses this oxygen #
+T    O2*  HO*2  1  b    # only in RNA #
+T    C2*  H2*1  1  b    # for RNA #
+T    C2*  H2*2  1  b    # for DNA #
+T    C2*  C1*   1  b
+T    C1*  H1*   1  b
+T    C3*  H3*   1  b
+T    C4*  H4*   1  b
+T    C5*  H5*1  1  b
+T    C5*  H5*2  1  b
+T    P    O5*   1  b    # only on 5' terminus #
+T    O5*  HO*5  1  b    # only on 5' terminus #
+T    O3*  HO*3  1  b
+T    C1*  N1    1  s
+T    N1   C2    1  s
+T    C2   O2    2  s
+T    C2   N3    1  s
+T    N3   C4    1  s
+T    C4   O4    2  s
+T    C4   C5    1  s
+T    C5   C5M   1  s
+T    C5   C6    2  s
+T    C6   N1    1  s
+T    N3   H3    1  s
+T    C5M  H5M1  1  s
+T    C5M  H5M2  1  s
+T    C5M  H5M3  1  s
+T    C6   H6    1  s
+
++T   P    O1P   1  b   # Thymine
++T   P    O2P   1  b
++T   P    O5*   1  b
++T   O5*  C5*   1  b
++T   C5*  C4*   1  b
++T   C4*  O4*   1  b
++T   C4*  C3*   1  b
++T   O4*  C1*   1  b
++T   C3*  O3*   1  b
++T   C3*  C2*   1  b
++T   C2*  H2*   1  b    # for RNA/DNA #
++T   C2*  O2*   1  b    # for RNA de-oxy loses this oxygen #
++T   O2*  HO*2  1  b    # only in RNA #
++T   C2*  H2*1  1  b    # for RNA #
++T   C2*  H2*2  1  b    # for DNA #
++T   C2*  C1*   1  b
++T   C1*  H1*   1  b
++T   C3*  H3*   1  b
++T   C4*  H4*   1  b
++T   C5*  H5*1  1  b
++T   C5*  H5*2  1  b
++T   P    O5*   1  b    # only on 5' terminus #
++T   O5*  HO*5  1  b    # only on 5' terminus #
++T   O3*  HO*3  1  b
++T   C1*  N1    1  s
++T   N1   C2    1  s
++T   C2   O2    2  s
++T   C2   N3    1  s
++T   N3   C4    1  s
++T   C4   O4    2  s
++T   C4   C5    1  s
++T   C5   C5M   1  s
++T   C5   C6    2  s
++T   C6   N1    1  s
++T   N3   H3    1  s
++T   C5M  H5M1  1  s
++T   C5M  H5M2  1  s
++T   C5M  H5M3  1  s
++T   C6   H6    1  s
+
+U    P    O1P   1  b   # Uracil
+U    P    O2P   1  b
+U    P    O5*   1  b
+U    O5*  C5*   1  b
+U    C5*  C4*   1  b
+U    C4*  O4*   1  b
+U    C4*  C3*   1  b
+U    O4*  C1*   1  b
+U    C3*  O3*   1  b
+U    C3*  C2*   1  b
+U    C2*  H2*   1  b    # for RNA/DNA #
+U    C2*  O2*   1  b    # for RNA de-oxy loses this oxygen #
+U    O2*  HO*2  1  b    # only in RNA #
+U    C2*  H2*1  1  b    # for RNA #
+U    C2*  H2*2  1  b    # for DNA #
+U    C2*  C1*   1  b
+U    C1*  H1*   1  b
+U    C3*  H3*   1  b
+U    C4*  H4*   1  b
+U    C5*  H5*1  1  b
+U    C5*  H5*2  1  b
+U    P    O5*   1  b    # only on 5' terminus #
+U    O5*  HO*5  1  b    # only on 5' terminus #
+U    O3*  HO*3  1  b
+U    C1*  N1    1  s
+U    N1   C2    1  s
+U    C2   O2    2  s
+U    C2   N3    1  s
+U    N3   C4    1  s
+U    C4   O4    2  s
+U    C4   C5    1  s
+U    C5   C6    2  s
+U    C6   N1    1  s
+U    N3   H3    1  s
+U    C5   H5    1  s
+U    C6   H6    1  s
+
++U   P    O1P   1  b   # Uracil
++U   P    O2P   1  b
++U   P    O5*   1  b
++U   O5*  C5*   1  b
++U   C5*  C4*   1  b
++U   C4*  O4*   1  b
++U   C4*  C3*   1  b
++U   O4*  C1*   1  b
++U   C3*  O3*   1  b
++U   C3*  C2*   1  b
++U   C2*  H2*   1  b    # for RNA/DNA #
++U   C2*  O2*   1  b    # for RNA de-oxy loses this oxygen #
++U   O2*  HO*2  1  b    # only in RNA #
++U   C2*  H2*1  1  b    # for RNA #
++U   C2*  H2*2  1  b    # for DNA #
++U   C2*  C1*   1  b
++U   C1*  H1*   1  b
++U   C3*  H3*   1  b
++U   C4*  H4*   1  b
++U   C5*  H5*1  1  b
++U   C5*  H5*2  1  b
++U   P    O5*   1  b    # only on 5' terminus #
++U   O5*  HO*5  1  b    # only on 5' terminus #
++U   O3*  HO*3  1  b
++U   C1*  N1    1  s
++U   N1   C2    1  s
++U   C2   O2    2  s
++U   C2   N3    1  s
++U   N3   C4    1  s
++U   C4   O4    2  s
++U   C4   C5    1  s
++U   C5   C6    2  s
++U   C6   N1    1  s
++U   N3   H3    1  s
++U   C5   H5    1  s
++U   C6   H6    1  s
+
+FMP  P    O1P   1  b   # Formycin monophosphate
+FMP  P    O2P   1  b   
+FMP  P    O5*   1  b
+FMP  O5*  C5*   1  b
+FMP  C5*  C4*   1  b
+FMP  C4*  O4*   1  b
+FMP  C4*  C3*   1  b
+FMP  O4*  C1*   1  b
+FMP  C3*  O3*   1  b
+FMP  C3*  C2*   1  b
+FMP  C2*  O2*   1  b
+FMP  O2*  HO*2  1  b
+FMP  C2*  H2*1  1  b
+FMP  C2*  C1*   1  b
+FMP  C1*  H1*   1  b
+FMP  C3*  H3*   1  b
+FMP  C4*  H4*   1  b
+FMP  C5*  H5*1  1  b
+FMP  C5*  H5*2  1  b
+FMP  O5*  HO*5  1  b
+FMP  O3*  HO*3  1  b
+FMP  C1*  C9    1  b
+FMP  C9   N8    2  b
+FMP  N8   N7    1  b
+FMP  N7   C5    1  b
+FMP  N7   H71   1  b
+FMP  C5   C6    1  b
+FMP  C6   N1    2  b
+FMP  C6   H61   1  b
+FMP  N1   C2    1  b
+FMP  C2   N3    2  b
+FMP  N3   C4    1  b
+FMP  C4   C5    2  b
+FMP  C4   C9    1  b
+FMP  C2   H2    1  b
+
+# acetyl group
+
+ACE  C    O     2  b
+ACE  C    CH3   1  b
+
+#----------------------------------  end  -------------------------------------

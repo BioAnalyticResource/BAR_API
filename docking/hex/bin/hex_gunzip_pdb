@@ -1,0 +1,34 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+#
+#  hex_gunzip_pdb: uncompress all "pdbxxxx.ent.gz" to "xxxx.pdb" in PDB tree
+#
+#  Dave Ritchie 10/04/03
+#
+#------------------------------------------------------------------------------
+#
+if [ -z "$1" ]; then
+   echo "usage:   hex_gunzip_pdb root-directory"
+   echo " "
+   echo "example: hex_gunzip_pdb /usr/local/pdb"
+   exit
+fi
+
+for d in entries models; do
+
+   cd ${1}/$d
+
+   for x in `ls -1`; do
+      (
+       cd $x
+       chmod u+rw *
+       chmod guo+rx *
+       gunzip *.gz
+       for q in `ls pdb*`; do
+          y=${q#pdb}
+          mv $q $y.pdb
+          echo $x/$y.pdb
+       done
+      )
+   done
+done

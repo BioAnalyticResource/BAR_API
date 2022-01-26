@@ -1,0 +1,28 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+#
+#  hex_model_delta: to renumber the models in a pdb file
+#
+#  example: add 5 to residues in chain X
+#
+#           hex_model_delta  5 <file.pdb >new_file.pdb
+#
+#  Dave Ritchie 17/09/09 - cloned from hex_delta
+#
+#------------------------------------------------------------------------------
+#
+if [ -z "$1" ]; then
+   echo "example: hex_model_delta 5 <file.pdb >new_file.pdb"
+   exit
+fi
+
+awk '{ if (substr($0,0,5) == "MODEL") {                                    
+
+             n = substr($0,7,14) + delta
+
+             m = sprintf("MODEL %8d", n)
+           
+             print m
+        }
+          else                        print $0
+     }' delta="$1" 

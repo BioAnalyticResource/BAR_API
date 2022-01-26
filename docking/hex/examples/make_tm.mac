@@ -1,0 +1,20 @@
+#
+#  make_tm.mac    
+#
+#  To explicitly calculate and save translation matrices to the disc cache.
+#
+#  Normally, Hex calculates translation matrices as it needs them and saves
+#  them to the disc cache (directory) if caching is enabled. This is usually
+#  sufficient for most (single) users, but if multiple Hex processes are all
+#  competing to write to the same cache directory, then its safer to 
+#  pre-calculate all the integrals in advance of any docking runs. 
+#
+#  To use and populate the disc cache, create a directory, set the HEX_CACHE
+#  envorinment variable to point to it and then run this macro, which creates
+#  all translation matrices to N=32 and R=50 Angstrom. This will take about
+#  3 hours on an SGI O2 (R5000 processor) and will occupy about 200Mb of disc.
+#
+
+DISC_CACHE 1
+
+MAKE_TM 32 50

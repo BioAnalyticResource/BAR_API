@@ -1,0 +1,11 @@
+#
+#  2kai.mac 
+#
+
+CLOSE_ALL
+
+OPEN_RECEPTOR 2kai_e.pdb
+OPEN_LIGAND   2kai_i.pdb
+OPEN_COMPLEX  2kai.pdb
+
+FIT_LIGAND

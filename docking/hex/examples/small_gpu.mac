@@ -1,0 +1,11 @@
+
+open_receptor       small.pdb
+open_ligand         small.pdb
+
+docking_fft_device  1
+docking_fft_type    4
+
+docking_main_scan   0
+docking_main_search 25
+
+activate_docking

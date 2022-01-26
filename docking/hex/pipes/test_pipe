@@ -1,0 +1,15 @@
+#!/bin/sh
+#
+#  $HEX_ROOT/pipes/test_pipe: 
+#
+#  Invoked by Hex to write a PDB-format version of the current scene as 
+#  standard input for an arbitrary script to do something useful with it. 
+#
+#  This script just illustrates whats happening by using "cat" to show what 
+#  appears on standard input... A more useful application would be to invoke 
+#  molscript, for example.
+#
+#  Dave Ritchie, October 2000
+#
+
+cat

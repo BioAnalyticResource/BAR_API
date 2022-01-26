@@ -1,0 +1,793 @@
+#-----------------------------------------------------------------------------
+#  atom_data.dat
+#  -------------
+#
+#  This file contains atom radii and effective atom charges for (most) atom
+#  types that occur in PDB files. The atom charges are taken from the AMBER 
+#  force field model (Weiner et al., J. Am. Chem. Soc. (1984) 106, 765-784),
+#  but the "lone pair" charges on the MET and CYS sulphurs have been removed
+#  and the net sulphur charge has been set to zero (or to give a net residue
+#  charge of zero).
+#
+#  Non-polar hydrogens are not included in this file.
+#
+#  Atom radii are those of "united atoms", thus all hydrogens have been
+#  assigned a radius of zero.
+#
+#  Residues labelled as "UNK" (unknown) act as a catch-all type to match
+#  atom names not recognised as belonging to a standard amino-acid residues
+#  or DNA bases.
+#
+#  The un-modified dataset is in the alternate file: "atom_data_amber.dat".
+#
+#  NB. in Hex 2.0, this file is superceded by "atom_types.dat".
+#
+#-----------------------------------------------------------------------------
+#
+#  Author:     Dave Ritchie, 08/01/99
+#
+#  Copyright (C) 1999-2003 D.W. Ritchie, University of Aberdeen.
+#
+#  Explicit permission is hereby granted to Universities and British
+#  Government supported Research Institutions to copy and modify this software
+#  for educational and research purposes, provided copies include this notice;
+#  these copies may not be distributed to any other institutions without
+#  express permission from the author and the University of Aberdeen. Requests
+#  to use this software (or modified copies therof) in any other way should be
+#  sent to D.W. Ritchie, Department of Computing Science:
+#  "dritchie@csd.abdn.ac.uk".
+#
+#-----------------------------------------------------------------------------
+
+UNK C    1.85       0.50
+UNK N    1.75      -0.50
+UNK O    1.60      -0.50
+UNK H    0          0.2480
+UNK HN   0          0.2480
+
+UNK P    1.80       1.36
+UNK LI   1.5        1.0
+UNK NA   1.5        1.0
+UNK K    1.5        1.0
+UNK CS   1.5        1.0
+UNK RB   1.5        1.0
+UNK BE   1.5        2.0
+UNK MG   1.5        2.0
+UNK CA   1.5        2.0
+UNK BA   1.5        2.0
+UNK SR   1.5        2.0
+UNK CO   1.5        2.0
+UNK FE   1.5        2.0
+UNK TI   1.5        2.0
+UNK MN   1.5        2.0
+UNK V    1.5        2.0
+UNK NI   1.5        2.0
+UNK MO   1.5        4.0
+UNK PD   1.5        2.0
+UNK PT   1.5        2.0
+UNK CU   1.5        1.0
+UNK AG   1.5        1.0
+UNK AU   1.5        1.0
+UNK ZN   1.5        2.0
+UNK CD   1.5        2.0
+UNK HG   1.5        2.0
+UNK AL   1.5        3.0
+UNK GA   1.5        3.0
+UNK IN   1.5        3.0
+UNK SN   1.5        2.0
+UNK PB   1.5        2.0
+UNK F    1.2       -1.0
+UNK CL   1.5       -1.0
+UNK BR   1.5       -1.0
+UNK I    1.5       -1.0
+
+UNK ZZ   0.25       0.0  # tiny dummy atom for graphics tricks
+
+SO4 S    1.8        0.32
+SO4 O1   1.4       -0.58
+SO4 O2   1.4       -0.58
+SO4 O3   1.4       -0.58
+SO4 O4   1.4       -0.58
+PO4 P    1.8        0.765
+PO4 O1   1.4       -0.941
+PO4 O2   1.4       -0.941
+PO4 O3   1.4       -0.941
+PO4 O4   1.4       -0.941
+
+HOH O    1.60      -0.83
+HOH H1   0          0.417
+HOH H2   0          0.417
+
+NTER N   1.4       -0.3    # N-terminal patch values
+NTER H1  0          0.35
+NTER H2  0          0.35
+NTER H3  0          0.35
+
+CTER C    1.4        0.14  # C-terminal patch values
+CTER O    1.5       -0.57
+CTER OXT  1.5       -0.57
+
+ALA C    1.4        0.5260
+ALA CA   1.5        0.2150
+ALA HA   0          0
+ALA CB   1.9        0.0310
+ALA H    0          0.2480
+ALA N    1.4       -0.5200
+ALA O    1.5       -0.5000
+ALA HB1  0          0
+ALA HB2  0          0
+ALA HB3  0          0
+
+ARG C    1.4        0.5260
+ARG CA   1.5        0.2370
+ARG HA   0          0
+ARG CB   1.7        0.0490
+ARG HB1  0          0
+ARG HB2  0          0
+ARG CD   1.7        0.1110
+ARG HD1  0          0
+ARG HD2  0          0
+ARG CG   1.7        0.0580
+ARG HG1  0          0
+ARG HG2  0          0
+ARG CZ   1.4        0.8130
+ARG H    0          0.2480
+ARG HE   0          0.2940
+ARG HH11 0          0.3615
+ARG HH12 0          0.3615
+ARG HH21 0          0.3615
+ARG HH22 0          0.3615
+ARG N    1.4       -0.5200
+ARG NE   1.4       -0.4930
+ARG NH1  1.7       -0.6345
+ARG NH2  1.7       -0.6345
+ARG O    1.5       -0.5000
+
+ASN C    1.4        0.5260
+ASN CA   1.5        0.2170
+ASN HA   0          0
+ASN CB   1.7        0.0030
+ASN HB1  0          0
+ASN HB2  0          0
+ASN CG   1.4        0.6750
+ASN H    0          0.2480
+ASN HD21 0          0.3440
+ASN HD22 0          0.3440
+ASN N    1.4       -0.5200
+ASN ND2  1.4       -0.8670
+ASN O    1.5       -0.5000
+ASN OD1  1.5       -0.4700
+
+ASP C    1.4        0.5260
+ASP CA   1.5        0.2460
+ASP HA   0          0
+ASP CB   1.7       -0.2080
+ASP CG   1.4        0.6200
+ASP HB1  0          0
+ASP HB2  0          0
+ASP H    0          0.2480
+ASP N    1.4       -0.5200
+ASP O    1.5       -0.5000
+ASP OD1  1.5       -0.7060
+ASP OD2  1.5       -0.7060
+
+CYS C    1.4        0.5260
+CYS CA   1.5        0.1460
+CYS HA   0          0
+CYS CB   1.7        0.1000
+CYS H    0          0.2480
+CYS HG   0          0
+CYS HB1  0          0
+CYS HB2  0          0
+CYS N    1.4       -0.5200
+CYS O    1.5       -0.5000
+CYS SG   1.8        0.0
+
+GLN C    1.4        0.5260
+GLN CA   1.5        0.2100
+GLN HA   0          0
+GLN CB   1.7        0.0530
+GLN HB1  0          0
+GLN HB2  0          0
+GLN CD   1.4        0.6750
+GLN CG   1.7       -0.0430
+GLN HG1  0          0
+GLN HG2  0          0
+GLN H    0          0.2480
+GLN HE21 0          0.3440
+GLN HE22 0          0.3440
+GLN N    1.4       -0.5200
+GLN NE2  1.4       -0.8670
+GLN O    1.5       -0.5000
+GLN OE1  1.5       -0.4700
+
+GLU C    1.4        0.5260
+GLU CA   1.5        0.2460
+GLU HA   0          0
+GLU CB   1.7        0.0000
+GLU HB1  0          0
+GLU HB2  0          0
+GLU CD   1.4        0.6200
+GLU CG   1.7       -0.2080
+GLU HG1  0          0
+GLU HG2  0          0
+GLU H    0          0.2480
+GLU N    1.4       -0.5200
+GLU O    1.5       -0.5000
+GLU OE1  1.5       -0.7060
+GLU OE2  1.5       -0.7060
+
+GLY C    1.4        0.5260
+GLY CA   1.7        0.2460
+GLY HA1  0          0
+GLY HA2  0          0
+GLY H    0          0.2480
+GLY N    1.4       -0.5200
+GLY O    1.5       -0.5000
+GLY HA1  0          0
+GLY HA2  0          0
+
+HIS C    1.4        0.5260
+HIS CA   1.5        0.2190
+HIS HA   0          0
+HIS CB   1.7        0.0600
+HIS HB1  0          0
+HIS HB2  0          0
+HIS CD2  1.5        0.1450
+HIS CE1  1.5        0.3840
+HIS HE1  0          0
+HIS CG   1.4        0.0890
+HIS H    0          0.2480
+HIS HD1  0          0.3200
+HIS HD2  0          0
+HIS N    1.4       -0.5200
+HIS ND1  1.4       -0.4440
+HIS NE2  1.4       -0.5270
+HIS O    1.5       -0.5000
+
+ILE C    1.4        0.5260
+ILE CA   1.5        0.1990
+ILE HA   0          0
+ILE CB   1.5        0.0300
+ILE HB   0          0
+ILE CD   0         -0.0010
+ILE CD1  1.9        0.0000
+ILE CG1  1.7        0.0170
+ILE CG2  1.9        0.0010
+ILE HG11 0          0
+ILE HG12 0          0
+ILE HG21 0          0
+ILE HG22 0          0
+ILE HG23 0          0
+ILE HD11 0          0
+ILE HD12 0          0
+ILE HD13 0          0
+ILE H    0          0.2480
+ILE N    1.4       -0.5200
+ILE O    1.5       -0.5000
+
+LEU C    1.4        0.5260
+LEU CA   1.5        0.2040
+LEU HA   0          0
+LEU CB   1.7        0.0160
+LEU HB1  0          0
+LEU HB2  0          0
+LEU CD1  1.9       -0.0140
+LEU CD2  1.9       -0.0140
+LEU CG   1.5        0.0540
+LEU HD11 0          0
+LEU HD12 0          0
+LEU HD13 0          0
+LEU HD21 0          0
+LEU HD22 0          0
+LEU HD23 0          0
+LEU H    0          0.2480
+LEU N    1.4       -0.5200
+LEU O    1.5       -0.5000
+
+LYS C    1.4        0.5260
+LYS CA   1.5        0.2270
+LYS HA   0          0
+LYS CB   1.7        0.0390
+LYS HB1  0          0
+LYS HB2  0          0
+LYS CD   1.7        0.0480
+LYS HD1  0          0
+LYS HD2  0          0
+LYS CE   1.7        0.2180
+LYS HE1  0          0
+LYS HE2  0          0
+LYS CG   1.7        0.0530
+LYS HG1  0          0
+LYS HG2  0          0
+LYS H    0          0.2480
+LYS HZ1  0          0.3110
+LYS HZ2  0          0.3110
+LYS HZ3  0          0.3110
+LYS N    1.4       -0.5200
+LYS NZ   1.9       -0.2720
+LYS O    1.5       -0.5000
+
+MET C    1.4        0.5260
+MET CA   1.5        0.1370
+MET HA   0          0
+MET CB   1.7        0.0370
+MET HB1  0          0
+MET HB2  0          0
+MET CE   1.9        0.0070
+MET HE1  0          0
+MET HE2  0          0
+MET HE3  0          0
+MET CG   1.7        0.0900
+MET HG1  0          0
+MET HG2  0          0
+MET H    0          0.2480
+MET N    1.4       -0.5200
+MET O    1.5       -0.5000
+MET SD   1.8       -0.025
+
+PHE C    1.4        0.5260
+PHE CA   1.5        0.2140
+PHE HA   0          0
+PHE CB   1.7        0.0380
+PHE HB1  0          0
+PHE HB2  0          0
+PHE CD1  1.5       -0.0110
+PHE HD1  0          0
+PHE CD2  1.5       -0.0110
+PHE HD2  0          0
+PHE CE1  1.5        0.0040
+PHE HE1  0          0
+PHE CE2  1.5        0.0040
+PHE HE2  0          0
+PHE CG   1.4        0.0110
+PHE CZ   1.5       -0.0030
+PHE HZ   0          0
+PHE H    0          0.2480
+PHE N    1.4       -0.5200
+PHE O    1.5       -0.5000
+
+PRO C    1.4        0.5260
+PRO CA   1.5        0.1120
+PRO CB   1.7       -0.0010
+PRO CD   1.7        0.0840
+PRO CG   1.7        0.0360
+PRO N    1.4       -0.2570
+PRO O    1.5       -0.5000
+PRO HA   0          0
+PRO HB1  0          0
+PRO HB2  0          0
+PRO HD1  0          0
+PRO HD2  0          0
+PRO HG1  0          0
+PRO HG2  0          0
+
+SER C    1.4        0.5260
+SER CA   1.5        0.2920
+SER HA   0          0
+SER CB   1.7        0.1940
+SER H    0          0.2480
+SER HG   0          0.3100
+SER N    1.4       -0.5200
+SER O    1.5       -0.5000
+SER OG   1.7       -0.5500
+SER HB1  0          0
+SER HB2  0          0
+
+THR C    1.4        0.5260
+THR CA   1.5        0.2680
+THR HA   0          0
+THR CB   1.5        0.2110
+THR HB   0          0
+THR CG2  1.9        0.0070
+THR H    0          0.2480
+THR HG1  0          0.3100
+THR HG21 0          0
+THR HG22 0          0
+THR HG23 0          0
+THR N    1.4       -0.5200
+THR O    1.5       -0.5000
+THR OG1  1.7       -0.5500
+
+TRP C    1.4        0.5260
+TRP CA   1.5        0.2480
+TRP HA   0          0
+TRP CB   1.7        0.0200
+TRP HB1  0          0
+TRP HB2  0          0
+TRP CD1  1.5        0.1170
+TRP HD1  0          0
+TRP CD2  1.4       -0.2750
+TRP CE2  1.4        0.0000
+TRP CE3  1.5        0.1450
+TRP HE3  0          0
+TRP CG   1.4        0.0460
+TRP CH2  1.5        0.0340
+TRP HH2  0          0
+TRP CZ2  1.5        0.0290
+TRP HZ2  0          0
+TRP CZ3  1.5       -0.0820
+TRP HZ3  0          0
+TRP H    0          0.2480
+TRP HE1  0          0.2940
+TRP N    1.4       -0.5200
+TRP NE1  1.4       -0.3300
+TRP O    1.5       -0.5000
+
+TYR C    1.4        0.5260
+TYR CA   1.5        0.2450
+TYR HA   0          0
+TYR CB   1.7        0.0220
+TYR HB1  0          0
+TYR HB2  0          0
+TYR CD1  1.5       -0.0350
+TYR HD1  0          0
+TYR CD2  1.5       -0.0350
+TYR HD2  0          0
+TYR CE1  1.5        0.1000
+TYR HE1  0          0
+TYR CE2  1.5        0.1000
+TYR HE2  0          0
+TYR CG   1.4       -0.0010
+TYR CZ   1.4       -0.1210
+TYR H    0          0.2480
+TYR HH   0          0.3390
+TYR N    1.4       -0.5200
+TYR O    1.5       -0.5000
+TYR OH   1.7       -0.3680
+
+VAL C    1.4        0.5260
+VAL CA   1.5        0.2010
+VAL HA   0          0
+VAL CB   1.5        0.0330
+VAL HB   0          0
+VAL CG1  1.9        0.0060
+VAL CG2  1.9        0.0060
+VAL H    0          0.2480
+VAL N    1.4       -0.5200
+VAL O    1.5       -0.5000
+VAL HG11 0          0
+VAL HG12 0          0
+VAL HG13 0          0
+VAL HG21 0          0
+VAL HG22 0          0
+VAL HG23 0          0
+
+PCA C    1.4        0.5260
+PCA CA   1.5        0.2040
+PCA HA   0          0
+PCA CB   1.7        0.0390
+PCA HB1  0          0
+PCA HB2  0          0
+PCA CD   1.5        0.5260
+PCA HD   0          0
+PCA CG   1.5        0.0540
+PCA HG1  0          0
+PCA HG2  0          0
+PCA H    0          0.2480
+PCA N    1.4       -0.5200
+PCA O    1.5       -0.5000
+PCA OE   1.5       -0.5000
+
+#
+#  DNA/RNA structures - hydroxy termini the commonest way to cap the chains
+#
+
+3TER C3*  1.74      0.25  # patch 3' hydroxyl atoms & charges
+3TER O3*  1.4      -0.65
+3TER H3T  0         0.40 
+
+5TER C5*  1.74      0.25  # patch 5' hydroxyl atoms & charges
+5TER O5*  1.4      -0.65
+5TER H5T  0         0.4
+
+PTER P    1.80      0.90  # may get terminal phosphate group at 5' end
+PTER O1P  1.4      -0.62
+PTER O2P  1.4      -0.62
+
+RNAP C2*  1.74      0.30  # patch O2' hydroxyl group for RNA
+RNAP O2*  1.4      -0.65
+RNAP HO*2 0         0.35
+
+UNK C5M  1.74      -0.05  # NB. Thymine's methyl sometimes appears as HETATM #
+
+UNK P    1.80       1.36
+UNK O1P  1.4       -0.72
+UNK O2P  1.4       -0.72
+UNK O5*  1.4       -0.46
+UNK C5*  1.74       0.07
+UNK H5*1 0          0     # non-polar #
+UNK H5*2 0          0     # non-polar #
+UNK C4*  1.74       0.10
+UNK H4*  0          0     # non-polar #
+UNK O4*  1.4       -0.37
+UNK C3*  1.74       0.00
+UNK H3*  0          0     # non-polar #
+UNK O3*  1.4       -0.46
+UNK C2*  1.74       0.07  # in DNA only #
+UNK C2*  1.74       0.32  # in RNA only #
+UNK H2*  0          0     # non polar H in RNA/DNA #
+UNK H2** 0          0     # non polar H in DNA #
+UNK O2*  1.4       -0.65  # RNA only - DNA loses this #
+UNK H2*  0          0.40  # RNA only - DNA loses this #
+UNK C1*  1.74       0.20
+
+A   P    1.80       1.36
+A   O1P  1.4       -0.72
+A   O2P  1.4       -0.72
+A   O5*  1.4       -0.46
+A   C5*  1.74       0.07
+A   H5*1 0          0     # non-polar #
+A   H5*2 0          0     # non-polar #
+A   C4*  1.74       0.10
+A   H4*  0          0     # non-polar #
+A   O4*  1.4       -0.37
+A   C3*  1.74       0.00
+A   H3*  0          0     # non-polar #
+A   O3*  1.4       -0.46
+A   C2*  1.74       0.07  # in DNA only #
+A   H2*  0          0     # non polar generic H in RNA #
+A   H2*1 0          0     # non polar H in RNA/DNA #
+A   H2*2 0          0     # non polar H in DNA #
+A   C1*  1.74       0.20
+A   H1*  0          0     # non-polar #
+
+A   N9   1.80      -0.35
+A   C8   1.74       0.42
+A   H8   0          0     # non-polar #
+A   N7   1.80      -0.54
+A   C5   1.74      -0.10
+A   C6   1.74       0.77
+A   N6   1.80      -0.77
+A   H61  0          0.33
+A   H62  0          0.33
+A   N1   1.80      -0.77
+A   C2   1.74       0.79
+A   H2   0          0     # non-polar #
+A   N3   1.80      -0.73
+A   C4   1.74       0.55
+
+#
+#  +A is substituted Adenosine - should really have charges for substituents !!
+#
+
++A  P    1.80       1.36
++A  O1P  1.4       -0.72
++A  O2P  1.4       -0.72
++A  O5*  1.4       -0.46
++A  C5*  1.74       0.07
++A  H5*1 0          0     # non-polar #
++A  H5*2 0          0     # non-polar #
++A  C4*  1.74       0.10
++A  H4*  0          0     # non-polar #
++A  O4*  1.4       -0.37
++A  C3*  1.74       0.00
++A  H3*  0          0     # non-polar #
++A  O3*  1.4       -0.46
++A  C2*  1.74       0.07  # in DNA only #
++A  H2*  0          0     # non polar H in RNA/DNA #
++A  H2*1 0          0     # non polar H in DNA #
++A  H2*2 0          0     # non polar H in DNA #
++A  C1*  1.74       0.20
++A  H1*  0          0     # non-polar #
+
++A  N9   1.80      -0.35
++A  C8   1.74       0.42
++A  H8   0          0     # non-polar #
++A  N7   1.80      -0.54
++A  C5   1.74      -0.10
++A  C6   1.74       0.77
++A  N6   1.80      -0.77
++A  H61  0          0.33
++A  H62  0          0.33
++A  N1   1.80      -0.77
++A  C2   1.74       0.79
++A  H2   0          0     # non-polar #
++A  N3   1.80      -0.73
++A  C4   1.74       0.55
+
+I   P    1.80       1.36
+I   O1P  1.4       -0.72
+I   O2P  1.4       -0.72
+I   O5*  1.4       -0.46
+I   C5*  1.74       0.07
+I   H5*1 0          0     # non-polar #
+I   H5*2 0          0     # non-polar #
+I   C4*  1.74       0.10
+I   H4*  0          0     # non-polar #
+I   O4*  1.4       -0.37
+I   C3*  1.74       0.00
+I   H3*  0          0     # non-polar #
+I   O3*  1.4       -0.46
+I   C2*  1.74       0.07  # in DNA only #
+I   H2*  0          0     # non polar H in RNA/DNA #
+I   H2*1 0          0     # non polar H in DNA #
+I   H2*2 0          0     # non polar H in DNA #
+I   C1*  1.74       0.20
+I   H1*  0          0     # non-polar #
+
+I   N9   1.80      -0.35
+I   C8   1.74       0.42
+I   H8   0          0     # non-polar #
+I   N7   1.80      -0.54
+I   C5   1.74      -0.10
+I   C6   1.74       0.69
+I   O6   1.40      -0.55
+I   N1   1.80      -0.59
+I   H1   0          0.34
+I   C2   1.74       0.79
+I   H2   0          0     # non-polar #
+I   N3   1.80      -0.73
+I   C4   1.74       0.55
+
+G   P    1.80       1.36
+G   O1P  1.4       -0.72
+G   O2P  1.4       -0.72
+G   O5*  1.4       -0.46
+G   C5*  1.74       0.07
+G   H5*1 0          0     # non-polar #
+G   H5*2 0          0     # non-polar #
+G   C4*  1.74       0.10
+G   H4*  0          0     # non-polar #
+G   O4*  1.4       -0.37
+G   C3*  1.74       0.00
+G   H3*  0          0     # non-polar #
+G   O3*  1.4       -0.46
+G   C2*  1.74       0.07
+G   C2*  1.74       0.07  # in DNA only #
+G   H2*  0          0     # non polar H in RNA/DNA #
+G   H2*1 0          0     # non polar H in DNA #
+G   H2*2 0          0     # non polar H in DNA #
+G   C1*  1.74       0.20
+G   H1*  0          0     # non-polar #
+
+G   N9   1.80      -0.18
+G   C8   1.74       0.32
+G   H8   0          0     # non-polar #
+G   N7   1.80      -0.54
+G   C5   1.74      -0.06
+G   C6   1.74       0.69
+G   O6   1.4       -0.55
+G   N1   1.80      -0.59
+G   H1   0          0.34
+G   C2   1.74       0.87
+G   N2   1.80      -0.78
+G   H21  0          0.33
+G   H22  0          0.33
+G   N3   1.80      -0.71
+G   C4   1.74       0.39
+
+C   P    1.80       1.36
+C   O1P  1.4       -0.72
+C   O2P  1.4       -0.72
+C   O5*  1.4       -0.46
+C   C5*  1.74       0.07
+C   H5*1 0          0     # non-polar #
+C   H5*2 0          0     # non-polar #
+C   C4*  1.74       0.10
+C   H4*  0          0     # non-polar #
+C   O4*  1.4       -0.37
+C   C3*  1.74       0.00
+C   H3*  0          0     # non-polar #
+C   O3*  1.4       -0.46
+C   C2*  1.74       0.07  # in DNA only #
+C   H2*  0          0     # non polar H in RNA/DNA #
+C   H2*1 0          0     # non polar H in DNA #
+C   H2*2 0          0     # non polar H in DNA #
+C   C1*  1.74       0.20
+C   H1*  0          0     # non-polar #
+
+C   N1   1.80      -0.21
+C   C2   1.74       0.86
+C   O2   1.4       -0.55
+C   N3   1.80      -0.86
+C   C4   1.74       0.94
+C   N4   1.80      -0.83
+C   H41  0          0.33
+C   H42  0          0.33
+C   C5   1.74      -0.43
+C   H5   0          0      # non-polar #
+C   C6   1.74       0.35
+C   H6   0          0      # non-polar #
+
++C  P    1.80       1.36
++C  O1P  1.4       -0.72
++C  O2P  1.4       -0.72
++C  O5*  1.4       -0.46
++C  C5*  1.74       0.07
++C  H5*1 0          0     # non-polar #
++C  H5*2 0          0     # non-polar #
++C  C4*  1.74       0.10
++C  H4*  0          0     # non-polar #
++C  O4*  1.4       -0.37
++C  C3*  1.74       0.00
++C  H3*  0          0     # non-polar #
++C  O3*  1.4       -0.46
++C  C2*  1.74       0.07  # in DNA only #
++C  H2*  0          0     # non polar H in RNA/DNA #
++C  H2*1 0          0     # non polar H in DNA #
++C  H2*2 0          0     # non polar H in DNA #
++C  C1*  1.74       0.20
++C  H1*  0          0     # non-polar #
+
++C  N1   1.80      -0.21
++C  C2   1.74       0.86
++C  O2   1.4       -0.55
++C  N3   1.80      -0.86
++C  C4   1.74       0.94
++C  N4   1.80      -0.83
++C  H41  0          0.33
++C  H42  0          0.33
++C  C5   1.74      -0.43
++C  H5   0          0      # non-polar #
++C  C6   1.74       0.35
++C  H6   0          0      # non-polar #
+
+T   P    1.80       1.36
+T   O1P  1.4       -0.72
+T   O2P  1.4       -0.72
+T   O5*  1.4       -0.46
+T   C5*  1.74       0.07
+T   H5*1 0          0     # non-polar #
+T   H5*2 0          0     # non-polar #
+T   C4*  1.74       0.10
+T   H4*  0          0     # non-polar #
+T   O4*  1.4       -0.37
+T   C3*  1.74       0.00
+T   H3*  0          0     # non-polar #
+T   O3*  1.4       -0.46
+T   C2*  1.74       0.07  # in DNA only #
+T   H2*  0          0     # non polar H in RNA/DNA #
+T   H2*1 0          0     # non polar H in DNA #
+T   H2*2 0          0     # non polar H in DNA #
+T   C1*  1.74       0.20
+T   H1*  0          0     # non-polar #
+
+T   N1   1.80      -0.18
+T   C2   1.74       0.80
+T   O2   1.4       -0.55
+T   N3   1.80      -0.85
+T   H3   0          0.45
+T   C4   1.74       0.87
+T   O4   1.4       -0.55
+T   C5   1.74      -0.17
+T   C5M  1.74      -0.05  # NB. sometimes appears as HETATM #
+T   H5M1 0          0     # non-polar #
+T   H5M2 0          0
+T   H5M3 0          0
+T   C6   1.74       0.16
+T   H6   0          0     # non-polar #
+
+U   P    1.80       1.36
+U   O1P  1.4       -0.72
+U   O2P  1.4       -0.72
+U   O5*  1.4       -0.46
+U   C5*  1.74       0.07
+U   H5*1 0          0     # non-polar #
+U   H5*2 0          0     # non-polar #
+U   C4*  1.74       0.10
+U   H4*  0          0     # non-polar #
+U   O4*  1.4       -0.37
+U   C3*  1.74       0.00
+U   H3*  0          0     # non-polar #
+U   O3*  1.4       -0.46
+U   C2*  1.74       0.07  # in DNA only #
+U   H2*  0          0     # non polar H in RNA/DNA #
+U   H2*1 0          0     # non polar H in DNA #
+U   H2*2 0          0     # non polar H in DNA #
+U   C1*  1.74       0.20
+U   H1*  0          0     # non-polar #
+
+U   N1   1.80      -0.18
+U   C2   1.74       0.80
+U   O2   1.4       -0.55
+U   N3   1.80      -0.81
+U   H3   0          0.45
+U   C4   1.74       0.87
+U   O4   1.4       -0.55
+U   C5   1.74      -0.30
+U   H5   0          0     # non-polar #
+U   C6   1.74       0.20
+U   H6   0          0     # non-polar #
+
+#----------------------------------  end  -------------------------------------

@@ -1,0 +1,25 @@
+#
+#  dock_3hfl.mac - global docking (tests recognition of bound subunits)
+#
+
+DOCKING_RECEPTOR_SAMPLES  492
+DOCKING_LIGAND_SAMPLES    492
+DOCKING_ALPHA_SAMPLES     128
+
+RECEPTOR_RANGE_ANGLE       30
+LIGAND_RANGE_ANGLE         30
+TWIST_RANGE_ANGLE         360
+
+R12_RANGE                  31
+R12_STEP                 0.75
+GRID_SIZE                0.6
+LIGAND_RANGE_ANGLE        180
+RECEPTOR_RANGE_ANGLE      180
+
+DOCKING_MAIN_SCAN          16
+DOCKING_MAIN_SEARCH        25
+
+RUN_MACRO 3hfl_fv.mac
+
+ACTIVATE_DOCKING
+

@@ -1,0 +1,83 @@
+!-----------------------------------------------------------------------------
+!  hex.Xdefaults
+!  -------------
+!
+!  This file contains the Motif "resources" used in Hex's graphical user
+!  interface (GUI). Hex does not *require* this file to be present to execute
+!  correctly. Rather, it is  provided as a template with which to customise 
+!  the appearance of the various gadgets in the GUI (and it serves to remind 
+!  *me* that not all widgets are named systematically and so are not properly
+!  customisable yet!). Its also intended that (one or more) resource files 
+!  such as this be used to handle different display sizes, without having 
+!  to hard-wire things within the main program. This is "work-in-progress".
+!
+!  Similar to the .Xdefaults file, this file is processed at program startup 
+!  time, just before the main application window is opened. The "hex" startup
+!  script sets the environment variable XENVIRONMENT to point to this file,
+!  unless the variable is already set (why would anyone use this instead of
+!  the .Xdefaults mechanism ?) in which case Hex's built-in defaults are 
+!  used directly.
+!
+!  As usual, command-line options take full precedence, so use:
+!
+!      hex -xrm some_other.Xdefaults ...
+!
+!  or, over-ride XENVIRONMENT by assigning it to your own defaults file, to 
+!  try out different resources from some other file.
+!
+!-----------------------------------------------------------------------------
+!
+!  Author:     Dave Ritchie, 28/08/99
+!
+!  Copyright (C) : D.W. Ritchie, University of Aberdeen.
+!
+!  This software was developed at the University of Aberdeen 1998-2000, by
+!  Dave Ritchie, as part of a project funded by the BBSRC.
+!
+!  Explicit permission is hereby granted to Universities and British
+!  Government supported Research Institutions to copy and modify this software
+!  for educational and research purposes, provided copies include this notice;
+!  these copies may not be distributed to any other institutions without
+!  express permission from the author and the University of Aberdeen.
+!
+!  Requests to use it in any other way, should be sent to Prof. P.M.D. Gray,
+!  Department of Computing Science: pgray@csd.abdn.ac.uk
+!
+!-----------------------------------------------------------------------------
+
+! set the size of the main window (not working yet)
+
+!Hex*hexmain*frame*width               850   ! = 841 + 3 + 3 + 1
+!Hex*hexmain*frame*height              604   ! = 595 + 3 + 3 + 1
+
+! control the appearance of the "built-in" help widgets
+
+!Hex*hexhelp*fontList:            -*-screen-medium-r-normal-*-*-150-*-*-*-*-*-*
+Hex*hexhelp*fontList:             -*-fixed-medium-r-normal-*-*-120-*-*-*-*-*-*
+Hex*hexhelp*foreground:               white
+Hex*hexhelp*background:               MidnightBlue
+
+Hex*hexhelpSW.Scrollbar.foreground:   black
+Hex*hexhelpSW.Scrollbar.background:   gray
+Hex*hexhelpSW.foreground:             black
+Hex*hexhelpSW.background:             gray
+
+! generic behaviour ... 
+
+Hex*frame*shadowType:                 SHADOW_IN
+Hex*scaleFrame*XmScale.width:         50
+
+! !! testing only !!
+!
+!Hex*background:                       red
+
+Hex*background:                       LightBlue
+Hex*foreground:                       black
+
+! This is a must with all the "control panels" used in Hex
+
+Hex*keyboardFocusPolicy:              pointer
+
+Hex*fontList:                   -*-helvetica-bold-r-normal-*-*-100-*-*-*-*-*-*
+
+!-----------------------------------------------------------------------------
