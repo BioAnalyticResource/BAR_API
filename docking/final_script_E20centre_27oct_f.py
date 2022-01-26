@@ -9,8 +9,8 @@ import json
 import subprocess
 
 def hex_docking(rec_lig, rec_lig2, receptor, ligand):
-	code = """ open_receptor ./results/receptor_to_dock_f/""" + receptor + """.pdb
-open_ligand ./results/ligand_to_dock_f/""" + ligand + """.pdb
+	code = """ open_receptor ./results/receptor_to_dock/""" + receptor + """.pdb
+open_ligand ./results/ligand_to_dock/""" + ligand + """.pdb
 docking_correlation 1
 docking_score_threshold 0
 max_docking_solutions 5000
@@ -149,7 +149,7 @@ def ligand_reserved(monomer, rec_lig, receptor, ligand):
 def result_dict_generator(threshold, monomer, rec_lig, receptor, ligand):
 
     result_dir_path = str('./results/'+ rec_lig + '_folder' + '/' + receptor + '_' + monomer + '_' + ligand + '/ligand_reserved_pdb/')
-    receptor_file_path = str('./results/receptor_to_dock_f/monomers/' + receptor + '_' + monomer + '.pdb')
+    receptor_file_path = str('./results/receptor_to_dock/monomers/' + receptor + '_' + monomer + '.pdb')
 
     # Store receptor coordinate information as reference
     with open(receptor_file_path, 'r') as file:
@@ -343,9 +343,11 @@ def pipeline(rec_lig, is_monomer, receptor, ligand, monomers_list):
 def start():
 
     # Check if the receptor is a monomer or a cmomplex and save the receptor and ligand names as variables
-    receptor_folder = './results/receptor_to_dock_f'
+    receptor_folder = './results/receptor_to_dock'
     receptor_folder_list = os.listdir(receptor_folder)
-    ligand_folder = os.listdir('./results/ligand_to_dock_f')
+    os.makedirs(receptor_folder)
+    os.makedirs('./results/ligand_to_dock')
+    ligand_folder = os.listdir('./results/ligand_to_dock')
     
     for rec in receptor_folder_list:
         # There could be hidden files in the receptor or ligand directory
@@ -376,19 +378,19 @@ def start():
     
     # Call to the pipeline with different parameters whether the receptor is a monomer or a complex
     if is_monomer == False: 
-        dir_final = './results/receptor_to_dock_f/monomers'
+        dir_final = './results/receptor_to_dock/monomers'
         for monomer in monomers_list:
             print('separating monomer: ' + monomer)
             separate_monomers(monomer, receptor_folder, receptor, dir_final, monomers_list)
         pipeline(rec_lig, is_monomer, receptor, ligand, monomers_list)   
     else:
-        dir_final = './results/receptor_to_dock_f/monomers'
+        dir_final = './results/receptor_to_dock/monomers'
         monomers_list = ['monomer']
         separate_monomers('monomer', receptor_folder, receptor, dir_final, monomers_list)
         pipeline(rec_lig, is_monomer, receptor, ligand, monomers_list)
           
     # To remove the temporary files and directories created
     for m in monomers_list:
-        shutil.rmtree('./results/receptor_to_dock_f/monomers', ignore_errors = True)
+        shutil.rmtree('./results/receptor_to_dock/monomers', ignore_errors = True)
 
     print('completed')
