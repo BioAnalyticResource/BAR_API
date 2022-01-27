@@ -1,0 +1,31 @@
+{
+  "modelName": "genomic",
+  "columnHeaders": [
+    "Gene > DB identifier",
+    "Gene > Name",
+    "Gene > Secondary Identifier",
+    "Gene > Brief Description",
+    "Gene > Symbol",
+    "Gene > TAIR Aliases",
+    "Gene > TAIR Computational Description",
+    "Gene > TAIR Curator Summary",
+    "Gene > TAIR Short Description"
+  ],
+  "rootClass": "Gene",
+  "start": 0,
+  "views": [
+    "Gene.primaryIdentifier",
+    "Gene.name",
+    "Gene.secondaryIdentifier",
+    "Gene.briefDescription",
+    "Gene.symbol",
+    "Gene.tairAliases",
+    "Gene.tairComputationalDescription",
+    "Gene.tairCuratorSummary",
+    "Gene.tairShortDescription"
+  ],
+  "results": [],
+  "wasSuccessful": true,
+  "error": null,
+  "statusCode": 200
+}
