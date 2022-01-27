@@ -16,10 +16,10 @@ from scour.scour import scourString
 from cryptography.fernet import Fernet
 
 
-DATA_FOLDER = "/home/bpereira/data/summarization-data"
+DATA_FOLDER = "/home/bcp/data/summarization-data"
 # DATA_FOLDER = '/windir/c/Users/Bruno/Documents/SummarizationCache'
-SUMMARIZATION_FILES_PATH = "/home/barapps/cromwell/summarization"
-CROMWELL_URL = "http://localhost:3020"
+SUMMARIZATION_FILES_PATH = "/home/bcp/dev/gene-summarization-bar/summarization"
+CROMWELL_URL = "http://localhost:8000"
 GTF_DICT = {
     "Hsapiens": "./data/hg38.ensGene.gtf",
     "Athaliana": "./data/Araport11_GFF3_genes_transposons.201606.gtf",
@@ -226,53 +226,52 @@ class SummarizationGeneExpressionTsvUpload(Resource):
     def post(self):
         """Takes a TSV file from Kallisto converts to RPKM"""
         if request.method == "POST":
-            if "file" not in request.files:
-                return BARUtils.error_exit("No file attached"), 400
-            file = request.files["file"]
-            if file:
-                filename = secure_filename(file.filename)
-                key = request.headers.get("X-Api-Key")
-                overwrite = request.form.get("overwrite")
-                email = request.form.get("email")
-                if overwrite == "true":
-                    overwrite = "replace"
-                else:
-                    overwrite = "append"
-                # Create folder for user data if it doesn't exist
-                dirName = os.path.join("/DATA/users/www-data/", secure_filename(key))
+            key = request.headers.get("X-Api-Key")
+            overwrite = request.form.get("overwrite")
+            email = request.form.get("email")
+            if overwrite == "true":
+                overwrite = "replace"
+            else:
+                overwrite = "append"
+            # Create folder for user data if it doesn't exist
+            files = request.files.items()
+            for i in files:
+                filename = secure_filename(i[0])
+                #dirName = os.path.join("/DATA/users/www-data/", secure_filename(key))
+                dirName = os.path.join("/home/bcp/data/", secure_filename(key))
                 if not os.path.exists(dirName):
                     os.makedirs(dirName)
-                file.save(os.path.join(dirName, secure_filename(filename)))
-                if SummarizationGeneExpressionUtils.decrement_uses(key):
-                    inputs = (
+                i[1].save(os.path.join(dirName, filename))
+            if SummarizationGeneExpressionUtils.decrement_uses(key):
+                inputs = (
+                    """
+                        {
+                        "tsvUpload.insertDataScript": "./insertData.py",
+                        "tsvUpload.conversionScript": "./kallistoToRpkm.R",
+                        "tsvUpload.id": """
+                    + key
+                    + """,
+                        "tsvUpload.tsv": """
+                    + str(os.listdir(dirName))
+                    + """,
+                        "tsvUpload.overwrite": """
+                    + overwrite
+                    + """,
+                        "tsvUpload.email": """
+                    + email
+                    + """
+                        }
                         """
-                            {
-                            "tsvUpload.insertDataScript": "./insertData.py",
-                            "tsvUpload.conversionScript": "./kallistoToRpkm.R",
-                            "tsvUpload.id": """
-                        + key
-                        + """,
-                            "tsvUpload.tsv": """
-                        + os.path.join(dirName, secure_filename(filename))
-                        + """,
-                            "tsvUpload.overwrite": """
-                        + overwrite
-                        + """,
-                            "tsvUpload.email": """
-                        + email
-                        + """
-                            }
-                            """
-                    )
-                    path = os.path.join(SUMMARIZATION_FILES_PATH, "tsvUpload.wdl")
-                    files = {
-                        "workflowSource": ("tsvUpload.wdl", open(path, "rb")),
-                        "workflowInputs": ("rpkm_inputs.json", inputs),
-                    }
-                    requests.post(CROMWELL_URL + "/api/workflows/v1", files=files)
-                    return BARUtils.success_exit(key)
-                else:
-                    return BARUtils.error_exit("Invalid API key")
+                )
+                path = os.path.join(SUMMARIZATION_FILES_PATH, "tsvUpload.wdl")
+                files = {
+                    "workflowSource": ("tsvUpload.wdl", open(path, "rb")),
+                    "workflowInputs": ("rpkm_inputs.json", inputs),
+                }
+                requests.post(CROMWELL_URL + "/api/workflows/v1", files=files)
+                return BARUtils.success_exit(key)
+            else:
+                return BARUtils.error_exit("Invalid API key")
 
 
 @summarization_gene_expression.route("/csv_upload", methods=["POST"], doc=False)
@@ -495,9 +494,12 @@ class SummarizationGeneExpressionSave(Resource):
                         extension = ".svg"
                     else:
                         return BARUtils.error_exit("Invalid file type"), 400
+                    dirName = os.path.join(DATA_FOLDER, api_key)
                     filename = os.path.join(
-                        DATA_FOLDER, api_key, file.filename + extension
+                        dirName, file.filename + extension
                     )
+                    if not os.path.exists(dirName):
+                        os.makedirs(dirName)
                     file.save(filename)
                     return BARUtils.success_exit(True)
                 else:
