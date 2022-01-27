@@ -1,0 +1,43 @@
+{
+  "modelName": "genomic",
+  "columnHeaders": [
+    "Gene > DB identifier",
+    "Gene > Name",
+    "Gene > Secondary Identifier",
+    "Gene > Brief Description",
+    "Gene > Symbol",
+    "Gene > TAIR Aliases",
+    "Gene > TAIR Computational Description",
+    "Gene > TAIR Curator Summary",
+    "Gene > TAIR Short Description"
+  ],
+  "rootClass": "Gene",
+  "start": 0,
+  "views": [
+    "Gene.primaryIdentifier",
+    "Gene.name",
+    "Gene.secondaryIdentifier",
+    "Gene.briefDescription",
+    "Gene.symbol",
+    "Gene.tairAliases",
+    "Gene.tairComputationalDescription",
+    "Gene.tairCuratorSummary",
+    "Gene.tairShortDescription"
+  ],
+  "results": [
+    [
+      "AT1G01010",
+      "NAC domain containing protein 1",
+      "locus:2200935",
+      "NAC domain containing protein 1",
+      "NAC001",
+      "ANAC001, NAC001, NTL10",
+      "NAC domain containing protein 1;(source:Araport11)",
+      null,
+      "NAC domain containing protein 1"
+    ]
+  ],
+  "wasSuccessful": true,
+  "error": null,
+  "statusCode": 200
+}

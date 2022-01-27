@@ -85,3 +85,36 @@ class TestIntegrations(TestCase):
         response = self.app_client.get("/thalemine/publications/At1g0101x")
         expected = {"wasSuccessful": False, "error": "Invalid gene id"}
         self.assertEqual(response.json, expected)
+
+    def test_get_thalemine_gene_information(self):
+        """This tests the data returned by the ThaleMine gene information endpoint
+        :return:
+        """
+        # Valid data
+        response = self.app_client.get("/thalemine/gene_information/At1g01010")
+
+        # Delete query time data. It will always be different
+        response = response.json
+        response.pop("executionTime")
+
+        # Note: pytest is running from project root. So path is relative to project root
+        # Also, delete execution time from output before saving.
+        with open("tests/data/get_thalemine_gene_information_1.json") as json_file:
+            expected = load(json_file)
+        self.assertEqual(response, expected)
+
+        # Valid but does not exists
+        response = self.app_client.get("/thalemine/gene_information/At1g01011")
+
+        # Again, delete time data.
+        response = response.json
+        response.pop("executionTime")
+
+        with open("tests/data/get_thalemine_gene_information_2.json") as json_file:
+            expected = load(json_file)
+        self.assertEqual(response, expected)
+
+        # Invalid gene id
+        response = self.app_client.get("/thalemine/gene_information/At1g0101x")
+        expected = {"wasSuccessful": False, "error": "Invalid gene id"}
+        self.assertEqual(response.json, expected)
