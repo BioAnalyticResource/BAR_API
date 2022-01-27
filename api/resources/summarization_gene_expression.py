@@ -16,10 +16,10 @@ from scour.scour import scourString
 from cryptography.fernet import Fernet
 
 
-DATA_FOLDER = "/home/bcp/data/summarization-data"
+DATA_FOLDER = "/home/bpereira/data/summarization-data"
 # DATA_FOLDER = '/windir/c/Users/Bruno/Documents/SummarizationCache'
-SUMMARIZATION_FILES_PATH = "/home/bcp/dev/gene-summarization-bar/summarization"
-CROMWELL_URL = "http://localhost:8000"
+SUMMARIZATION_FILES_PATH = "/home/barapps/cromwell/summarization"
+CROMWELL_URL = "http://localhost:3020"
 GTF_DICT = {
     "Hsapiens": "./data/hg38.ensGene.gtf",
     "Athaliana": "./data/Araport11_GFF3_genes_transposons.201606.gtf",
@@ -237,8 +237,7 @@ class SummarizationGeneExpressionTsvUpload(Resource):
             files = request.files.items()
             for i in files:
                 filename = secure_filename(i[0])
-                #dirName = os.path.join("/DATA/users/www-data/", secure_filename(key))
-                dirName = os.path.join("/home/bcp/data/", secure_filename(key))
+                dirName = os.path.join("/DATA/users/www-data/", secure_filename(key))
                 if not os.path.exists(dirName):
                     os.makedirs(dirName)
                 i[1].save(os.path.join(dirName, filename))
