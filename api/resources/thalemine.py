@@ -75,3 +75,34 @@ class ThaleMinePublications(Resource):
         )
 
         return resp.json()
+
+
+@thalemine.route("/gene_information/<string:gene_id>")
+class ThaleMineGeneInformation(Resource):
+    @thalemine.param("gene_id", _in="path", default="At1g01010")
+    @cache.cached()
+    def get(self, gene_id=""):
+        """This end point retrieves gene infromation from ThaleMine given an AGI ID"""
+        gene_id = escape(gene_id)
+
+        # Is data valid
+        if not BARUtils.is_arabidopsis_gene_valid(gene_id):
+            return BARUtils.error_exit("Invalid gene id"), 400
+
+        query = (
+            '<query name="" model="genomic" view="Gene.primaryIdentifier Gene.name Gene.secondaryIdentifier '
+            "Gene.briefDescription Gene.symbol Gene.tairAliases Gene.tairComputationalDescription "
+            'Gene.tairCuratorSummary Gene.tairShortDescription" longDescription="" sortOrder="Gene.briefDescription '
+            'asc"><constraint path="Gene.primaryIdentifier" op="=" value="{}"/></query> '
+        )
+        query = query.format(gene_id)
+
+        # Now query the web service
+        payload = {"format": "json", "query": query}
+        resp = requests.post(
+            "https://bar.utoronto.ca/thalemine/service/query/results",
+            data=payload,
+            headers=request_headers,
+        )
+
+        return resp.json()
