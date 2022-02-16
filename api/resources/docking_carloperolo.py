@@ -41,7 +41,7 @@ save_range 1 500 """ + RESULTS_FOLDER + """%s_folder/%s/result %s pdb""" % (rec_
     subprocess.Popen('hex', stdin=subprocess.PIPE, stderr=subprocess.STDOUT).communicate(bytes(code.encode('utf-8')))
 
 def best_result(file_name, monomer, rec_lig, receptor, ligand):
-    file_name_dir = str(RESULTS FOLDER + receptor + '_' + ligand + '_folder/' + receptor + '_' + monomer + '_' + ligand + '/result/')
+    file_name_dir = str(RESULTS_FOLDER + receptor + '_' + ligand + '_folder/' + receptor + '_' + monomer + '_' + ligand + '/result/')
     file_name_path = str(file_name_dir + file_name[:-20] + '.pdb')
 
     des1=file_name_dir + 'best_docking_results_for_' + file_name[:-24] + '.pdb'
