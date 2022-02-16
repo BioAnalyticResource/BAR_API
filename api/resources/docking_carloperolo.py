@@ -46,8 +46,8 @@ def best_result(file_name, monomer, rec_lig, receptor, ligand):
 
     des1=file_name_dir + 'best_docking_results_for_' + file_name[:-24] + '.pdb'
     shutil.copyfile(file_name_path,des1)
-    ori2=RESULTS FOLDER + receptor + '_' + ligand + '_folder/' + receptor + '_' + monomer + '_' + ligand + '/ligand_reserved_pdb/' + file_name
-    des2=RESULTS FOLDER + receptor + '_' + ligand + '_folder/' + receptor + '_' + monomer + '_' + ligand + '/ligand_reserved_pdb/best_docking_results.pdb'
+    ori2=RESULTS_FOLDER + receptor + '_' + ligand + '_folder/' + receptor + '_' + monomer + '_' + ligand + '/ligand_reserved_pdb/' + file_name
+    des2=RESULTS_FOLDER + receptor + '_' + ligand + '_folder/' + receptor + '_' + monomer + '_' + ligand + '/ligand_reserved_pdb/best_docking_results.pdb'
     shutil.copyfile(ori2,des2)
     with open(str(file_name_dir + 'best_docking_results_for_' + file_name[:-24] + '.pdb'), 'r') as file:
         lines = file.readlines()
@@ -134,7 +134,7 @@ def separate_monomers(monomer, file_dir, file_name, dir_final, monomers_list):
 
 def ligand_reserved(monomer, rec_lig, receptor, ligand):
 
-    dir_path = str(RESULTS FOLDER+ rec_lig + '_folder' + '/' + receptor + '_' + monomer + '_' + ligand + '/result')
+    dir_path = str(RESULTS_FOLDER+ rec_lig + '_folder' + '/' + receptor + '_' + monomer + '_' + ligand + '/result')
     print('Isolating ' + rec_lig)
     os.makedirs(RESULTS FOLDER+ rec_lig + '_folder' + '/' + receptor + '_' + monomer + '_' + ligand + '/ligand_reserved_pdb')
     file_list = os.listdir(dir_path)
@@ -146,7 +146,7 @@ def ligand_reserved(monomer, rec_lig, receptor, ligand):
             result_list.append(i)
     for r in result_list:
         file_path = str(dir_path + '/' + r)
-        ligand_reserved_file_path = str(RESULTS FOLDER+ rec_lig + '_folder' + '/' + receptor + '_' + monomer + '_' + ligand + '/ligand_reserved_pdb/' + r[:-4] + '_ligand_reserved.pdb')
+        ligand_reserved_file_path = str(RESULTS_FOLDER+ rec_lig + '_folder' + '/' + receptor + '_' + monomer + '_' + ligand + '/ligand_reserved_pdb/' + r[:-4] + '_ligand_reserved.pdb')
         with open(file_path, 'r') as file:
             lines = [line for line in file.readlines()]
             # Everything below the line 'REMARK    Docked ligand coordinates...' is data of the ligand
@@ -158,8 +158,8 @@ def ligand_reserved(monomer, rec_lig, receptor, ligand):
 
 def result_dict_generator(threshold, monomer, rec_lig, receptor, ligand):
 
-    result_dir_path = str(RESULTS FOLDER+ rec_lig + '_folder' + '/' + receptor + '_' + monomer + '_' + ligand + '/ligand_reserved_pdb/')
-    receptor_file_path = str(RESULTS FOLDER + 'receptor_to_dock/monomers/' + receptor + '_' + monomer + '.pdb')
+    result_dir_path = str(RESULTS_FOLDER+ rec_lig + '_folder' + '/' + receptor + '_' + monomer + '_' + ligand + '/ligand_reserved_pdb/')
+    receptor_file_path = str(RESULTS_FOLDER + 'receptor_to_dock/monomers/' + receptor + '_' + monomer + '.pdb')
 
     # Store receptor coordinate information as reference
     with open(receptor_file_path, 'r') as file:
@@ -266,14 +266,14 @@ def color_surfaces(monomer, receptor, ligand, rec_lig):
     folder_name = str(receptor + '_' + monomer + '_' + ligand)
     if receptor + '_' + monomer not in result_dict.keys():
         result_dict[receptor + '_' + monomer] = {}
-    if os.path.isfile(RESULTS FOLDER + rec_lig + '_folder' + '/' + folder_name + '/ligand_reserved_pdb/res_dict.json') == False:
+    if os.path.isfile(RESULTS_FOLDER + rec_lig + '_folder' + '/' + folder_name + '/ligand_reserved_pdb/res_dict.json') == False:
         result_dict[receptor+ '_' + monomer][ligand] = result_dict_generator(5, monomer, rec_lig, receptor, ligand)
     else:
         result_dict[receptor+ '_' + monomer][ligand] = eval(
-            open(RESULTS FOLDER + rec_lig + '_folder' + '/' + folder_name + '/ligand_reserved_pdb/res_dict.json', 'r').read())
+            open(RESULTS_FOLDER + rec_lig + '_folder' + '/' + folder_name + '/ligand_reserved_pdb/res_dict.json', 'r').read())
         print('res_dict.json previously exists and has read')
 
-    resultjson_path = RESULTS FOLDER + rec_lig + '_folder' + '/' + folder_name + '/results.json'
+    resultjson_path = RESULTS_FOLDER + rec_lig + '_folder' + '/' + folder_name + '/results.json'
     # Initialize results.json
     ini = {}
     with open(resultjson_path, 'w') as file:
@@ -321,27 +321,27 @@ def pipeline(rec_lig, is_monomer, receptor, ligand, monomers_list):
     if is_monomer == True:
         rec_lig2 = receptor + '_monomer_' + ligand
         rec_lig3 = receptor + '_' + ligand + '_monomer'
-        os.makedirs(RESULTS FOLDER + rec_lig + '_folder' + '/' + rec_lig2 + '/result/')
+        os.makedirs(RESULTS_FOLDER + rec_lig + '_folder' + '/' + rec_lig2 + '/result/')
         hex_docking(rec_lig, rec_lig2, receptor, ligand)
-        results_dir = RESULTS FOLDER + rec_lig + '_folder/' + rec_lig2 + '/result/'
+        results_dir = RESULTS_FOLDER + rec_lig + '_folder/' + rec_lig2 + '/result/'
         results_list = os.listdir(results_dir)
         for r in results_list:
-            re = RESULTS FOLDER + rec_lig + '_folder/' + rec_lig2 + '/result/' + r
+            re = RESULTS_FOLDER + rec_lig + '_folder/' + rec_lig2 + '/result/' + r
             new_r = re[:-4] + '_monomer.pdb'
             os.rename(re, new_r)
         first_file_name = str(receptor + '_' + ligand + '0001.pdb')
 
     else:
-        os.makedirs(RESULTS FOLDER + rec_lig + '_folder' + '/' + rec_lig + '/result/')
+        os.makedirs(RESULTS_FOLDER + rec_lig + '_folder' + '/' + rec_lig + '/result/')
         hex_docking(rec_lig, rec_lig, receptor, ligand)        
-        results_dir = RESULTS FOLDER + rec_lig + '_folder/' + rec_lig + '/result/'
+        results_dir = RESULTS_FOLDER + rec_lig + '_folder/' + rec_lig + '/result/'
         results_list = os.listdir(results_dir)
         first_file_name = str(receptor + '_' + ligand + '0001.pdb')
     
     # Repeats the analysis for every monomer in the receptor
 
     for monomer in monomers_list:
-        dir_final = RESULTS FOLDER+ rec_lig + '_folder' + '/' + receptor + '_' + monomer + '_' + ligand + '/result/'
+        dir_final = RESULTS_FOLDER+ rec_lig + '_folder' + '/' + receptor + '_' + monomer + '_' + ligand + '/result/'
         print('plotting monomer: ' + monomer + ' with the ligand: ' + ligand)
         separate_results(monomer, results_dir, first_file_name, dir_final, monomers_list)
         ligand_reserved(monomer, rec_lig, receptor, ligand)
@@ -353,11 +353,11 @@ def pipeline(rec_lig, is_monomer, receptor, ligand, monomers_list):
 def start():
 
     # Check if the receptor is a monomer or a cmomplex and save the receptor and ligand names as variables
-    receptor_folder = RESULTS FOLDER + 'receptor_to_dock'
+    receptor_folder = RESULTS_FOLDER + 'receptor_to_dock'
     receptor_folder_list = os.listdir(receptor_folder)
     os.makedirs(receptor_folder)
-    os.makedirs(RESULTS FOLDER + 'ligand_to_dock')
-    ligand_folder = RESULTS FOLDER + 'ligand_to_dock'
+    os.makedirs(RESULTS_FOLDER + 'ligand_to_dock')
+    ligand_folder = RESULTS_FOLDER + 'ligand_to_dock'
     ligand_folder_list = os.listdir(ligand_folder)
     
     for rec in receptor_folder_list:
@@ -389,22 +389,22 @@ def start():
     
     # Call to the pipeline with different parameters whether the receptor is a monomer or a complex
     if is_monomer == False: 
-        dir_final = RESULTS FOLDER + 'receptor_to_dock/monomers'
+        dir_final = RESULTS_FOLDER + 'receptor_to_dock/monomers'
         for monomer in monomers_list:
             print('separating monomer: ' + monomer)
             separate_monomers(monomer, receptor_folder, receptor, dir_final, monomers_list)
         pipeline(rec_lig, is_monomer, receptor, ligand, monomers_list)   
     else:
-        dir_final = RESULTS FOLDER + 'receptor_to_dock/monomers'
+        dir_final = RESULTS_FOLDER + 'receptor_to_dock/monomers'
         monomers_list = ['monomer']
         separate_monomers('monomer', receptor_folder, receptor, dir_final, monomers_list)
         pipeline(rec_lig, is_monomer, receptor, ligand, monomers_list)
 
     #to put together the json files
-    new_json = RESULTS FOLDER+ rec_lig + '_folder' + '/final.json'
+    new_json = RESULTS_FOLDER+ rec_lig + '_folder' + '/final.json'
     final_json = {}
     for monomer in monomers_list:
-        monomer_json = RESULTS FOLDER + rec_lig + '_folder' + '/' + str(receptor + '_' + monomer + '_' + ligand) + '/results.json'
+        monomer_json = RESULTS_FOLDER + rec_lig + '_folder' + '/' + str(receptor + '_' + monomer + '_' + ligand) + '/results.json'
         with open(monomer_json, 'r') as file:
             monomer_dict = json.load(file)
             final_json.update(monomer_dict)
@@ -415,14 +415,14 @@ def start():
 
     # To remove the temporary files and directories created
     for m in monomers_list:
-        shutil.rmtree(RESULTS FOLDER + 'receptor_to_dock/monomers', ignore_errors = True)
+        shutil.rmtree(RESULTS_FOLDER + 'receptor_to_dock/monomers', ignore_errors = True)
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def move_ligand(ligand):
-    os.replace(UPLOAD_FOLDER + '/' + ligand, RESULTS FOLDER + 'ligand_to_dock/' + ligand)
+    os.replace(UPLOAD_FOLDER + '/' + ligand, RESULTS_FOLDER+ 'ligand_to_dock/' + ligand)
     
     
 
