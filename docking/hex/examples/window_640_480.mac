@@ -1,6 +1,0 @@
-#
-#  window_640_480.mac
-#
-#  MJPEGTOOLS (jpeg2yuv) requires jpeg dimensions divisible by 16...
-#
-resize_window 640 480

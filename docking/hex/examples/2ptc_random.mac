@@ -1,4 +1,0 @@
-CLOSE_ALL
-OPEN_RECEPTOR 2ptc_e.pdb
-OPEN_LIGAND 2ptc_i_random.pdb
-OPEN_COMPLEX 2ptc.pdb

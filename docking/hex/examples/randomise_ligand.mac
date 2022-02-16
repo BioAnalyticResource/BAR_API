@@ -1,7 +1,0 @@
-#
-#  randomise_ligand.mac
-#
-MOVING_THING 1
-RANDOMISE_MOLECULE
-COMMIT_EDITS
-MOVING_THING -1

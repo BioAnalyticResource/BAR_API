@@ -1,7 +1,0 @@
-CLOSE_ALL
-# OPEN_RECEPTOR 3hfl_fv.pdb
-OPEN_RECEPTOR 3hfl_fab.pdb
-OPEN_LIGAND 1lza_y_random.pdb
-OPEN_COMPLEX 3hfl.pdb
-RECEPTOR_ORIGIN H-36
-
