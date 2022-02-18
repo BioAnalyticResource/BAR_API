@@ -494,9 +494,7 @@ class SummarizationGeneExpressionSave(Resource):
                     else:
                         return BARUtils.error_exit("Invalid file type"), 400
                     dirName = os.path.join(DATA_FOLDER, api_key)
-                    filename = os.path.join(
-                        dirName, file.filename + extension
-                    )
+                    filename = os.path.join(dirName, file.filename + extension)
                     if not os.path.exists(dirName):
                         os.makedirs(dirName)
                     file.save(filename)

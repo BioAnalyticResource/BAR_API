@@ -10,6 +10,7 @@ class TestIntegrations(TestCase):
         """This function tests the gene sequence endpoint
         :return:
         """
+        # Valid request
         response = self.app_client.get("/sequence/tomato/Solyc00g005445.1.1")
         expected = {
             "status": "success",
@@ -21,4 +22,14 @@ class TestIntegrations(TestCase):
                 }
             ],
         }
+        self.assertEqual(response.json, expected)
+
+        # Invalid species
+        response = self.app_client.get("/sequence/abc/Solyc00g005445.1.1")
+        expected = {"wasSuccessful": False, "error": "Invalid species"}
+        self.assertEqual(response.json, expected)
+
+        # Invalid gene id
+        response = self.app_client.get("/sequence/Tomato/abc")
+        expected = {"wasSuccessful": False, "error": "Invalid gene id"}
         self.assertEqual(response.json, expected)
