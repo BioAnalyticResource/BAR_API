@@ -4,10 +4,11 @@ import json
 
 
 class TestIntegrations(TestCase):
+    # Currently, the test needs to run in order below
     def setUp(self):
         self.app_client = app.test_client()
 
-    def test_validate_admin_password(self):
+    def test_0_validate_admin_password(self):
         # Invalid password
         response = self.app_client.post(
             "/api_manager/validate_admin_password", json={"password": "abc"}
@@ -16,7 +17,7 @@ class TestIntegrations(TestCase):
         expected = {"wasSuccessful": True, "data": False}
         self.assertEqual(data, expected)
 
-    def test_validate_api_key(self):
+    def test_1_validate_api_key(self):
         # Valid API key
         response = self.app_client.post(
             "/api_manager/validate_api_key",
@@ -37,7 +38,7 @@ class TestIntegrations(TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(data, expected)
 
-    def test_request(self):
+    def test_2_request(self):
         # testPassword set in the test config
         response = self.app_client.post(
             "/api_manager/request",
@@ -50,10 +51,10 @@ class TestIntegrations(TestCase):
         )
         data = json.loads(response.get_data(as_text=True))
         expected = {"wasSuccessful": True, "data": "Data added"}
-        self.assertEqual(response.status_code, 200)
         self.assertEqual(data, expected)
+        self.assertEqual(response.status_code, 200)
 
-    def test_get_pending_requests(self):
+    def test_3_get_pending_requests(self):
         # Password is correct
         response = self.app_client.post(
             "/api_manager/get_pending_requests", json={"password": "testPassword"}
@@ -88,7 +89,7 @@ class TestIntegrations(TestCase):
         self.assertEqual(response.status_code, 403)
         self.assertEqual(data, expected)
 
-    def test_reject_request(self):
+    def test_4_reject_request(self):
         # Correct password
         response = self.app_client.post(
             "/api_manager/reject_request",

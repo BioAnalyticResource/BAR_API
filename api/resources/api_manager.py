@@ -9,7 +9,6 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.types import String, Float
 import uuid
 import pandas
-import os
 
 CAPTCHA_KEY_FILE = "/home/bpereira/data/bar.summarization/key"
 api_manager = Namespace("API Manager", description="API Manager", path="/api_manager")
@@ -128,6 +127,7 @@ class ApiManagerRejectRequest(Resource):
 class ApiManagerApproveRequest(Resource):
     def post(self):
         """Approve a request from the database and add it to the Users table"""
+        # This needs to run on the test CI for some reason
         response_json = request.get_json()
         email = response_json["email"]
         password = response_json["password"]
