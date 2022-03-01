@@ -128,64 +128,62 @@ class ApiManagerRejectRequest(Resource):
 class ApiManagerApproveRequest(Resource):
     def post(self):
         """Approve a request from the database and add it to the Users table"""
-        # For now let's keep this to BAR only
-        if os.environ.get("BAR"):
-            response_json = request.get_json()
-            email = response_json["email"]
-            password = response_json["password"]
+        response_json = request.get_json()
+        email = response_json["email"]
+        password = response_json["password"]
 
-            if ApiManagerUtils.check_admin_pass(password):
-                table = Requests()
-                values = []
+        if ApiManagerUtils.check_admin_pass(password):
+            table = Requests()
+            values = []
 
-                try:
-                    rows = table.query.filter_by(email=email).all()
-                except SQLAlchemyError:
-                    return BARUtils.error_exit("Internal server error"), 500
+            try:
+                rows = table.query.filter_by(email=email).all()
+            except SQLAlchemyError:
+                return BARUtils.error_exit("Internal server error"), 500
 
-                key = uuid.uuid4().hex
-                [
-                    values.append(
-                        {
-                            "first_name": row.first_name,
-                            "last_name": row.last_name,
-                            "email": row.email,
-                            "date_added": datetime.now(),
-                            "status": "user",
-                            "api_key": key,
-                            "uses_left": 100,
-                        }
-                    )
-                    for row in rows
-                ]
+            key = uuid.uuid4().hex
+            [
+                values.append(
+                    {
+                        "first_name": row.first_name,
+                        "last_name": row.last_name,
+                        "email": row.email,
+                        "date_added": datetime.now(),
+                        "status": "user",
+                        "api_key": key,
+                        "uses_left": 100,
+                    }
+                )
+                for row in rows
+            ]
 
-                df = pandas.DataFrame.from_records([values[0]])
-                values_df = pandas.DataFrame(columns=["Gene", "Sample", "Value"])
-                con = db.get_engine(bind="summarization")
+            df = pandas.DataFrame.from_records([values[0]])
+            values_df = pandas.DataFrame(columns=["Gene", "Sample", "Value"])
+            con = db.get_engine(bind="summarization")
 
-                try:
-                    df.to_sql("users", con, if_exists="append", index=False)
-                    values_df.to_sql(
-                        key,
-                        con,
-                        index_label="index",
-                        dtype={
-                            values_df.index.name: String(42),
-                            "Gene": String(32),
-                            "Sample": String(32),
-                            "Value": Float,
-                        },
-                        if_exists="append",
-                        index=True,
-                    )
+            try:
+                df.to_sql("users", con, if_exists="append", index=False)
+                values_df.to_sql(
+                    key,
+                    con,
+                    index_label="index",
+                    dtype={
+                        values_df.index.name: String(42),
+                        "Gene": String(32),
+                        "Sample": String(32),
+                        "Value": Float,
+                    },
+                    if_exists="append",
+                    index=True,
+                )
 
-                    el = table.query.filter_by(email=email).one()
-                    db.session.delete(el)
-                    db.session.commit()
+                el = table.query.filter_by(email=email).one()
+                db.session.delete(el)
+                db.session.commit()
 
-                except SQLAlchemyError:
-                    return BARUtils.error_exit("Internal server error"), 500
-                return BARUtils.success_exit(key)
+            except SQLAlchemyError:
+                return BARUtils.error_exit("Internal server error"), 500
+            return BARUtils.success_exit(key)
 
-            else:
-                return BARUtils.error_exit("Forbidden"), 403
+        else:
+            return BARUtils.error_exit("Forbidden"), 403
