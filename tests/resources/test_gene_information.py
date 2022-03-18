@@ -64,6 +64,12 @@ class TestIntegrations(TestCase):
         expected = {"wasSuccessful": True, "data": ["Potri.001G000300.1"]}
         self.assertEqual(response.json, expected)
 
+        response = self.app_client.get(
+            "/gene_information/gene_isoforms/tomato/Solyc00g005000"
+        )
+        expected = {"wasSuccessful": True, "data": ["Solyc00g005000.3.1"]}
+        self.assertEqual(response.json, expected)
+
         # Data not found, but gene is valid
         response = self.app_client.get(
             "/gene_information/gene_isoforms/arabidopsis/At3g24651"
@@ -84,6 +90,15 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
+        response = self.app_client.get(
+            "/gene_information/gene_isoforms/tomato/Solyc00g005001"
+        )
+        expected = {
+            "wasSuccessful": False,
+            "error": "There are no data found for the given gene",
+        }
+        self.assertEqual(response.json, expected)
+
         # Invalid Gene
         response = self.app_client.get(
             "/gene_information/gene_isoforms/arabidopsis/At3g2465x"
@@ -93,6 +108,12 @@ class TestIntegrations(TestCase):
 
         response = self.app_client.get(
             "/gene_information/gene_isoforms/poplar/Potri.001G00020x"
+        )
+        expected = {"wasSuccessful": False, "error": "Invalid gene id"}
+        self.assertEqual(response.json, expected)
+
+        response = self.app_client.get(
+            "/gene_information/gene_isoforms/tomato/Solyc00g00500x"
         )
         expected = {"wasSuccessful": False, "error": "Invalid gene id"}
         self.assertEqual(response.json, expected)
@@ -131,6 +152,14 @@ class TestIntegrations(TestCase):
                     "Potri.001G000400.4",
                 ],
             },
+        }
+        self.assertEqual(response.json, expected)
+
+        data = {"species": "tomato", "genes": ["Solyc00g005000"]}
+        response = self.app_client.post("/gene_information/gene_isoforms/", json=data)
+        expected = {
+            "wasSuccessful": True,
+            "data": {"Solyc00g005000": ["Solyc00g005000.3.1"]},
         }
         self.assertEqual(response.json, expected)
 
@@ -190,6 +219,11 @@ class TestIntegrations(TestCase):
         expected = {"wasSuccessful": False, "error": "Invalid gene id"}
         self.assertEqual(response.json, expected)
 
+        data = {"species": "tomato", "genes": ["abc"]}
+        response = self.app_client.post("/gene_information/gene_isoforms/", json=data)
+        expected = {"wasSuccessful": False, "error": "Invalid gene id"}
+        self.assertEqual(response.json, expected)
+
         # Check if there is data for the given gene
         data = {"species": "arabidopsis", "genes": ["AT1G01011"]}
         response = self.app_client.post("/gene_information/gene_isoforms/", json=data)
@@ -215,6 +249,14 @@ class TestIntegrations(TestCase):
         self.assertEqual(response.json, expected)
 
         data = {"species": "poplar", "genes": ["Potri.001G000201"]}
+        response = self.app_client.post("/gene_information/gene_isoforms/", json=data)
+        expected = {
+            "wasSuccessful": False,
+            "error": "No data for the given species/genes",
+        }
+        self.assertEqual(response.json, expected)
+
+        data = {"species": "tomato", "genes": ["Solyc00g005001"]}
         response = self.app_client.post("/gene_information/gene_isoforms/", json=data)
         expected = {
             "wasSuccessful": False,
