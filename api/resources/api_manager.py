@@ -194,4 +194,3 @@ class ApiManagerApproveRequest(Resource):
             return BARUtils.success_exit(key)
         else:
             return BARUtils.error_exit("Forbidden"), 403
-
