@@ -340,7 +340,7 @@ class SummarizationGeneExpressionInsert(Resource):
                 db_id = request.get_json()["uid"]
                 df = pandas.read_csv(csv)
                 db_id = db_id.split(".")[0]
-                df = df.melt(id_vars=["Gene"], var_name="Sample", value_name="Value")
+                df = df.melt(id_vars=["data_probeset_id"], var_name="data_bot_id", value_name="data_signal")
                 db_id = db_id.split("/")[len(db_id.split("/")) - 1]
                 con = db.get_engine(bind="summarization")
                 df.to_sql(db_id, con, if_exists="append", index=True)
@@ -372,19 +372,19 @@ class SummarizationGeneExpressionValue(Resource):
                     values = {}
                     try:
                         rows = con.execute(
-                            tbl.select(tbl.c.Value).where(tbl.c.Gene == gene)
+                            tbl.select(tbl.c.data_signal).where(tbl.c.data_probeset_id == gene)
                         )
                     except SQLAlchemyError:
                         return BARUtils.error_exit("Internal server error"), 500
                     for row in rows:
-                        values.update({str(row.Sample): float(row.Value)})
+                        values.update({str(row.data_bot_id): float(row.data_signal)})
                 else:
                     values = []
                     try:
                         rows = con.execute(
-                            tbl.select(tbl.c.Value)
-                            .where(tbl.c.Sample == sample)
-                            .where(tbl.c.Gene == gene)
+                            tbl.select(tbl.c.data_signal)
+                            .where(tbl.c.data_bot_id == sample)
+                            .where(tbl.c.data_probeset_id == gene)
                         )
                     except SQLAlchemyError:
                         return BARUtils.error_exit("Internal server error"), 500
@@ -403,10 +403,10 @@ class SummarizationGeneExpressionSamples(Resource):
         tbl = SummarizationGeneExpressionUtils.get_table_object(table_id)
         values = []
         try:
-            rows = con.execute(db.select([tbl.c.Sample]).distinct())
+            rows = con.execute(db.select([tbl.c.data_bot_id]).distinct())
         except SQLAlchemyError:
             return BARUtils.error_exit("Internal server error"), 500
-        [values.append(row.Sample) for row in rows]
+        [values.append(row.data_bot_id) for row in rows]
         return BARUtils.success_exit(values)
 
 
@@ -421,10 +421,10 @@ class SummarizationGeneExpressionGenes(Resource):
             tbl = SummarizationGeneExpressionUtils.get_table_object(table_id)
             values = []
             try:
-                rows = con.execute(db.select([tbl.c.Gene]).distinct())
+                rows = con.execute(db.select([tbl.c.data_probeset_id]).distinct())
             except SQLAlchemyError:
                 return BARUtils.error_exit("Internal server error"), 500
-            [values.append(row.Gene) for row in rows]
+            [values.append(row.data_probeset_id) for row in rows]
             return BARUtils.success_exit(values)
         else:
             return BARUtils.error_exit("Invalid API key")
@@ -443,13 +443,13 @@ class SummarizationGeneExpressionFindGene(Resource):
         values = []
         try:
             rows = con.execute(
-                db.select([tbl.c.Gene])
-                .where(tbl.c.Gene.contains(user_string))
+                db.select([tbl.c.data_probeset_id])
+                .where(tbl.c.data_probeset_id.contains(user_string))
                 .distinct()
             )
         except SQLAlchemyError:
             return BARUtils.error_exit("Internal server error"), 500
-        [values.append(row.Gene) for row in rows]
+        [values.append(row.data_probeset_id) for row in rows]
         return BARUtils.success_exit(values)
 
 
