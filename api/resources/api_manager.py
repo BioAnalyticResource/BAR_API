@@ -1,3 +1,5 @@
+import uuid
+
 from api import summarization_db as db
 from api.models.summarization import Users, Requests
 from api.utils.bar_utils import BARUtils
@@ -6,8 +8,7 @@ from flask import request
 from flask_restx import Namespace, Resource
 from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.types import String, Float
-import uuid
+from sqlalchemy.orm import object_mapper
 import pandas
 
 CAPTCHA_KEY_FILE = "/home/bpereira/data/bar.summarization/key"
@@ -127,20 +128,16 @@ class ApiManagerRejectRequest(Resource):
 class ApiManagerApproveRequest(Resource):
     def post(self):
         """Approve a request from the database and add it to the Users table"""
-        # This needs to run on the test CI for some reason
         response_json = request.get_json()
         email = response_json["email"]
         password = response_json["password"]
-
         if ApiManagerUtils.check_admin_pass(password):
             table = Requests()
             values = []
-
             try:
                 rows = table.query.filter_by(email=email).all()
             except SQLAlchemyError:
                 return BARUtils.error_exit("Internal server error"), 500
-
             key = uuid.uuid4().hex
             [
                 values.append(
@@ -156,34 +153,44 @@ class ApiManagerApproveRequest(Resource):
                 )
                 for row in rows
             ]
-
             df = pandas.DataFrame.from_records([values[0]])
-            values_df = pandas.DataFrame(columns=["Gene", "Sample", "Value"])
             con = db.get_engine(bind="summarization")
-
             try:
                 df.to_sql("users", con, if_exists="append", index=False)
-                values_df.to_sql(
-                    key,
-                    con,
-                    index_label="index",
-                    dtype={
-                        values_df.index.name: String(42),
-                        "Gene": String(32),
-                        "Sample": String(32),
-                        "Value": Float,
-                    },
-                    if_exists="append",
-                    index=True,
-                )
 
+                class UserTable(db.Model):
+                    __bind_key__ = "summarization"
+                    __tablename__ = key
+                    __table_args__ = (
+                        db.Index(
+                            "data_probeset_id",
+                            "data_probeset_id",
+                            "data_bot_id",
+                            "data_signal",
+                        ),
+                    )
+                    proj_id = db.Column(db.String(5), nullable=False)
+                    sample_id = db.Column(
+                        db.Integer, nullable=False, server_default=db.FetchedValue()
+                    )
+                    data_probeset_id = db.Column(
+                        db.String(24), nullable=False, primary_key=True
+                    )
+                    data_signal = db.Column(
+                        db.Float, server_default=db.FetchedValue(), primary_key=True
+                    )
+                    data_bot_id = db.Column(
+                        db.String(32), nullable=False, primary_key=True
+                    )
+
+                UserTable.__table__.create(
+                    db.session().get_bind(object_mapper(UserTable())), checkfirst=True
+                )
                 el = table.query.filter_by(email=email).one()
                 db.session.delete(el)
                 db.session.commit()
-
             except SQLAlchemyError:
                 return BARUtils.error_exit("Internal server error"), 500
             return BARUtils.success_exit(key)
-
         else:
             return BARUtils.error_exit("Forbidden"), 403
