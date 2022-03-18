@@ -32,11 +32,12 @@ DROP TABLE IF EXISTS `bb5a52387069485486b2f4861c2826dd`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `bb5a52387069485486b2f4861c2826dd` (
-  `index` bigint(20) DEFAULT NULL,
-  `Gene` text DEFAULT NULL,
-  `Sample` text DEFAULT NULL,
-  `Value` float DEFAULT NULL,
-  KEY `ix_bb5a52387069485486b2f4861c2826dd_index` (`index`)
+  `proj_id` varchar(5) NOT NULL,
+  `sample_id` int(10) unsigned NOT NULL DEFAULT 0,
+  `data_probeset_id` varchar(24) NOT NULL,
+  `data_signal` float DEFAULT 0,
+  `data_bot_id` varchar(32) NOT NULL,
+  KEY `data_probeset_id` (`data_probeset_id`,`data_bot_id`,`data_signal`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -46,7 +47,7 @@ CREATE TABLE `bb5a52387069485486b2f4861c2826dd` (
 
 LOCK TABLES `bb5a52387069485486b2f4861c2826dd` WRITE;
 /*!40000 ALTER TABLE `bb5a52387069485486b2f4861c2826dd` DISABLE KEYS */;
-INSERT INTO `bb5a52387069485486b2f4861c2826dd` VALUES (0,'AT1G01010','sample1',32),(1,'AT1G01020','sample1',546),(2,'AT1G01030','sample1',43),(3,'AT1G01010','sample2',54),(4,'AT1G01020','sample2',65),(5,'AT1G01030','sample2',123);
+INSERT INTO `bb5a52387069485486b2f4861c2826dd` VALUES (1, 1, 'AT1G01010',32,'sample1'),(1, 2,'AT1G01020',546,'sample1'),(1, 3, 'AT1G01030',43,'sample1'),(1, 4, 'AT1G01010',54,'sample2'),(1, 5, 'AT1G01020',65,'sample2'),(1, 6, 'AT1G01030',123,'sample2');
 /*!40000 ALTER TABLE `bb5a52387069485486b2f4861c2826dd` ENABLE KEYS */;
 UNLOCK TABLES;
 

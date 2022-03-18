@@ -1,5 +1,3 @@
-import uuid
-
 from api import summarization_db as db
 from api.models.summarization import Users, Requests
 from api.utils.bar_utils import BARUtils
@@ -9,6 +7,7 @@ from flask_restx import Namespace, Resource
 from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import object_mapper
+import uuid
 import pandas
 
 CAPTCHA_KEY_FILE = "/home/bpereira/data/bar.summarization/key"
@@ -169,6 +168,7 @@ class ApiManagerApproveRequest(Resource):
                             "data_signal",
                         ),
                     )
+
                     proj_id = db.Column(db.String(5), nullable=False)
                     sample_id = db.Column(
                         db.Integer, nullable=False, server_default=db.FetchedValue()
@@ -194,3 +194,4 @@ class ApiManagerApproveRequest(Resource):
             return BARUtils.success_exit(key)
         else:
             return BARUtils.error_exit("Forbidden"), 403
+
