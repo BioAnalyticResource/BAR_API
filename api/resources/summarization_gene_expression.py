@@ -275,7 +275,11 @@ class SummarizationGeneExpressionInsert(Resource):
                 db_id = request.get_json()["uid"]
                 df = pandas.read_csv(csv)
                 db_id = db_id.split(".")[0]
-                df = df.melt(id_vars=["data_probeset_id"], var_name="data_bot_id", value_name="data_signal")
+                df = df.melt(
+                    id_vars=["data_probeset_id"],
+                    var_name="data_bot_id",
+                    value_name="data_signal",
+                )
                 db_id = db_id.split("/")[len(db_id.split("/")) - 1]
                 con = db.get_engine(bind="summarization")
                 df.to_sql(db_id, con, if_exists="append", index=True)
@@ -307,7 +311,9 @@ class SummarizationGeneExpressionValue(Resource):
                     values = {}
                     try:
                         rows = con.execute(
-                            tbl.select(tbl.c.data_signal).where(tbl.c.data_probeset_id == gene)
+                            tbl.select(tbl.c.data_signal).where(
+                                tbl.c.data_probeset_id == gene
+                            )
                         )
                     except SQLAlchemyError:
                         return BARUtils.error_exit("Internal server error"), 500
