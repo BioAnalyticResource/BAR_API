@@ -5,7 +5,7 @@ from flask import request
 from flask_restx import Namespace, Resource
 from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.types import String, Float
+from sqlalchemy.orm import object_mapper
 import os
 import uuid
 import requests
@@ -233,23 +233,24 @@ class ApiManagerApproveRequest(Resource):
                     for row in rows
                 ]
                 df = pandas.DataFrame.from_records([values[0]])
-                values_df = pandas.DataFrame(columns=["Gene", "Sample", "Value"])
                 con = db.get_engine(bind="summarization")
                 try:
                     df.to_sql("users", con, if_exists="append", index=False)
-                    values_df.to_sql(
-                        key,
-                        con,
-                        index_label="index",
-                        dtype={
-                            values_df.index.name: String(42),
-                            "Gene": String(32),
-                            "Sample": String(32),
-                            "Value": Float,
-                        },
-                        if_exists="append",
-                        index=True,
-                    )
+
+                    class UserTable(db.Model):
+                        __bind_key__ = "summarization"
+                        __tablename__ = key
+                        __table_args__ = (
+                            db.Index("data_probeset_id", "data_probeset_id", "data_bot_id", "data_signal"),
+                        )
+                        proj_id = db.Column(db.String(5), nullable=False)
+                        sample_id = db.Column(db.Integer, nullable=False, server_default=db.FetchedValue())
+                        data_probeset_id = db.Column(db.String(24), nullable=False, primary_key=True)
+                        data_signal = db.Column(
+                            db.Float, server_default=db.FetchedValue(), primary_key=True
+                        )
+                        data_bot_id = db.Column(db.String(32), nullable=False, primary_key=True)
+                    UserTable.__table__.create(db.session().get_bind(object_mapper(UserTable())), checkfirst=True)
                     el = table.query.filter_by(email=email).one()
                     db.session.delete(el)
                     db.session.commit()
