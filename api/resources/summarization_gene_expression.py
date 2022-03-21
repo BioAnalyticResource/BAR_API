@@ -137,8 +137,11 @@ class SummarizationGeneExpressionUser(Resource):
             tbl = SummarizationGeneExpressionUtils.get_table_object("users")
             con = db.get_engine(bind="summarization")
             values = []
+
+            validated_key = SummarizationGeneExpressionUtils.validated_api_key(key)
+
             try:
-                rows = con.execute(db.select("*").where(tbl.c.api_key == key))
+                rows = con.execute(db.select("*").where(tbl.c.api_key == validated_key))
             except SQLAlchemyError:
                 return BARUtils.error_exit("Internal server error"), 500
             [
@@ -423,9 +426,12 @@ class SummarizationGeneExpressionSave(Resource):
         """Saves the given file if the user has a valid API key"""
         if request.method == "POST":
             api_key = request.headers.get("x-api-key")
-            if api_key is None:
+
+            validated_key = SummarizationGeneExpressionUtils.validated_api_key(api_key)
+
+            if validated_key is None:
                 return BARUtils.error_exit("Invalid API key"), 403
-            elif SummarizationGeneExpressionUtils.decrement_uses(api_key):
+            elif SummarizationGeneExpressionUtils.decrement_uses(validated_key):
                 if "file" in request.files:
                     file = request.files["file"]
                     if file.content_type == "text/json":
@@ -434,16 +440,16 @@ class SummarizationGeneExpressionSave(Resource):
                         extension = ".svg"
                     else:
                         return BARUtils.error_exit("Invalid file type"), 400
-                    dirName = os.path.join(DATA_FOLDER, api_key)
-                    filename = os.path.join(dirName, file.filename + extension)
-                    if not os.path.exists(dirName):
-                        os.makedirs(dirName)
+                    dir_name = os.path.join(DATA_FOLDER, validated_key)
+                    filename = os.path.join(dir_name, file.filename + extension)
+                    if not os.path.exists(dir_name):
+                        os.makedirs(dir_name)
                     file.save(filename)
                     return BARUtils.success_exit(True)
                 else:
                     return BARUtils.error_exit("No file attached"), 400
             else:
-                return BARUtils.error_exit("Invalid API key")
+                return BARUtils.error_exit("Invalid API key"), 403
 
 
 @summarization_gene_expression.route("/get_file_list", methods=["POST"])
@@ -452,9 +458,15 @@ class SummarizationGeneExpressionGetFileList(Resource):
         """Returns a list of files stored in the user's folder"""
         if request.method == "POST":
             api_key = request.headers.get("x-api-key")
+
+            # Check Key
+            validated_key = SummarizationGeneExpressionUtils.validated_api_key(api_key)
+            if validated_key is None:
+                return BARUtils.error_exit("Invalid API key"), 403
+
             files = []
-            if os.path.exists(os.path.join(DATA_FOLDER, api_key)):
-                for file in os.walk(os.path.join(DATA_FOLDER, api_key)):
+            if os.path.exists(os.path.join(DATA_FOLDER, validated_key)):
+                for file in os.walk(os.path.join(DATA_FOLDER, validated_key)):
                     files.append(file[2])
                 return BARUtils.success_exit(files)
             else:
@@ -468,7 +480,13 @@ class SummarizationGeneExpressionGetFile(Resource):
         """Returns a specific file stored in the user's folder"""
         if request.method == "GET":
             api_key = request.headers.get("x-api-key")
-            filename = os.path.join(DATA_FOLDER, api_key, file_id)
+
+            # Check key
+            validated_key = SummarizationGeneExpressionUtils(api_key)
+            if validated_key is None:
+                return BARUtils.error_exit("Invalid API key"), 403
+
+            filename = os.path.join(DATA_FOLDER, validated_key, file_id)
             if os.path.isfile(filename):
                 return send_file(filename)
             else:
@@ -480,9 +498,12 @@ class SummarizationGeneExpressionCleanSvg(Resource):
     def post(self):
         if request.method == "POST":
             api_key = request.headers.get("x-api-key")
-            if api_key is None:
+
+            validated_key = SummarizationGeneExpressionUtils(api_key)
+
+            if validated_key is None:
                 return BARUtils.error_exit("Invalid API key"), 403
-            elif SummarizationGeneExpressionUtils.decrement_uses(api_key):
+            elif SummarizationGeneExpressionUtils.decrement_uses(validated_key):
                 in_string = request.get_json()["svg"]
                 out_string = scourString(in_string, options={"remove_metadata": True})
                 return BARUtils.success_exit(out_string)
