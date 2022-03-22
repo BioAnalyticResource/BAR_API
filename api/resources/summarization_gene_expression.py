@@ -434,8 +434,12 @@ class SummarizationGeneExpressionSave(Resource):
                     extension = ".svg"
                 else:
                     return BARUtils.error_exit("Invalid file type"), 400
-                dir_name = os.path.join(DATA_FOLDER, validated_key)
-                filename = os.path.join(dir_name, file.filename + extension)
+
+                dir_name = secure_filename(os.path.join(DATA_FOLDER, validated_key))
+                filename = secure_filename(
+                    os.path.join(dir_name, file.filename + extension)
+                )
+
                 if not os.path.exists(dir_name):
                     os.makedirs(dir_name)
                 file.save(filename)
@@ -458,8 +462,10 @@ class SummarizationGeneExpressionGetFileList(Resource):
             return BARUtils.error_exit("Invalid API key"), 403
 
         files = []
-        if os.path.exists(os.path.join(DATA_FOLDER, validated_key)):
-            for file in os.walk(os.path.join(DATA_FOLDER, validated_key)):
+        sec_file = secure_filename(os.path.join(DATA_FOLDER, validated_key))
+
+        if os.path.exists(sec_file):
+            for file in os.walk(sec_file):
                 files.append(file[2])
             return BARUtils.success_exit(files)
         else:
@@ -478,7 +484,7 @@ class SummarizationGeneExpressionGetFile(Resource):
         if validated_key is None:
             return BARUtils.error_exit("Invalid API key"), 403
 
-        filename = os.path.join(DATA_FOLDER, validated_key, file_id)
+        filename = secure_filename(os.path.join(DATA_FOLDER, validated_key, file_id))
         if os.path.isfile(filename):
             return send_file(filename)
         else:
