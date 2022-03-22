@@ -28,6 +28,14 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
+        # Valid request
+        response = self.app_client.get("/snps/phenix/SOLYC01G097110.2.1/AT5G01040.1")
+        expected = {
+            "wasSuccessful": True,
+            "data": "//bar.utoronto.ca/phenix-pdbs/SOLYC01G097110.2.1-AT5G01040.1-phenix.pdb",
+        }
+        self.assertEqual(response.json, expected)
+
         # Invalid fixed gene
         response = self.app_client.get("/snps/phenix/abc/AT5G01040.1")
         expected = {"wasSuccessful": False, "error": "Invalid fixed pdb gene id"}
@@ -104,4 +112,19 @@ class TestIntegrations(TestCase):
             "wasSuccessful": False,
             "error": "There are no data found for the given gene",
         }
+        self.assertEqual(response.json, expected)
+
+    def test_get_samples(self):
+        """This functions test sample. Maybe this is place holder code?"""
+        # Valid data
+        response = self.app_client.get("/snps/tomato/samples")
+        expected = {
+            "wasSuccessful": True,
+            "data": {"001": {"alias": "Moneymaker", "species": "Solanum lycopersicum"}},
+        }
+        self.assertEqual(response.json, expected)
+
+        # Invalid data
+        response = self.app_client.get("/snps/abc/samples")
+        expected = {"wasSuccessful": False, "error": "Invalid gene id"}
         self.assertEqual(response.json, expected)

@@ -4,9 +4,11 @@ from api import summarization_db as db
 class SummarizationGeneExpression(db.Model):
     __bind_key__ = "summarization"
     __tablename__ = "summarization"
-    Gene = db.Column(db.String(24), primary_key=True)
-    Value = db.Column(db.Integer, primary_key=True)
-    Sample = db.Column(db.String(32), primary_key=True)
+    proj_id = db.Column(db.String(5), nullable=False)
+    sample_id = db.Column(db.Integer, nullable=False, server_default=db.FetchedValue())
+    data_probeset_id = db.Column(db.String(24), primary_key=True)
+    data_signal = db.Column(db.Integer, primary_key=True)
+    data_bot_id = db.Column(db.String(32), primary_key=True)
 
 
 class Requests(db.Model):
