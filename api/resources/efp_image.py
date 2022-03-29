@@ -93,7 +93,7 @@ class eFPImage(Resource):
                 + gene_1
                 + "&secondaryGene="
                 + gene_2
-                + "&grey_low=None&grey_stddev=None"
+                + "&grey_low=None&grey_stddev=None&navbar=0"
             )
             efp_html = requests.get(efp_url)
 
