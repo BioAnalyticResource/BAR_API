@@ -46,8 +46,8 @@ class TestIntegrations(TestCase):
         expected = {"wasSuccessful": False, "error": "Invalid moving pdb gene id"}
         self.assertEqual(response.json, expected)
 
-    def test_get_gene_alias(self):
-        """This function test gene alias.
+    def test_get_snps(self):
+        """This function will test retrieving SNPs for several supported species.
         Note: This is using proof of principle database with only one row. Testing on the BAR will fail for now.
         """
 
@@ -99,6 +99,63 @@ class TestIntegrations(TestCase):
                 ]
             ],
         }
+        self.assertEqual(response.json, expected)
+
+        # Valid request soybean
+        response = self.app_client.get("/snps/soybean/GLYMA.01G000100")
+        expected = {
+            "wasSuccessful": True,
+            "data": [
+                [
+                    1,
+                    83,
+                    "Gm_H002",
+                    "missense_variant",
+                    "MODERATE",
+                    "MISSENSE",
+                    "250G>T",
+                    "ValPhe",
+                    None,
+                    "GLYMA.01G0001",
+                    "protein_coding",
+                    "CODING",
+                    "GLYMA.01G000100",
+                    None
+                ],
+                [
+                    1,
+                    83,
+                    "Gm_H003",
+                    "missense_variant",
+                    "MODERATE",
+                    "MISSENSE",
+                    "250G>T",
+                    "ValPhe",
+                    None,
+                    "GLYMA.01G0001",
+                    "protein_coding",
+                    "CODING",
+                    "GLYMA.01G000100",
+                    None
+                ],
+                [
+                    1,
+                    83,
+                    "Gm_H004",
+                    "missense_variant",
+                    "MODERATE",
+                    "MISSENSE",
+                    "250G>T",
+                    "ValPhe",
+                    None,
+                    "GLYMA.01G0001",
+                    "protein_coding",
+                    "CODING",
+                    "GLYMA.01G000100",
+                    None
+                ]
+            ]
+            }
         self.assertEqual(response.json, expected)
 
         # Invalid gene id
