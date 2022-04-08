@@ -5,6 +5,7 @@ from sqlalchemy.exc import OperationalError
 from api.models.eplant_rice import GeneAnnotation as EplantRiceAnnotation
 from api.models.eplant_poplar import GeneAnnotation as EplantPoplarAnnotation
 from api.models.eplant_tomato import GeneAnnotation as EplantTomatoAnnotation
+from api.models.eplant_soybean import GeneAnnotation as EplantSoybeanAnnotation
 from api.models.eplant2 import AgiAnnotation, TAIR10, GeneRIFs
 from api.utils.bar_utils import BARUtils
 from marshmallow import Schema, ValidationError, fields as marshmallow_fields
@@ -26,6 +27,7 @@ class GeneAnnotation(Resource):
             "tomato": EplantTomatoAnnotation,
             "poplar": EplantPoplarAnnotation,
             "rice": EplantRiceAnnotation,
+            "soybean": EplantSoybeanAnnotation,
             "arabidopsis": [AgiAnnotation, TAIR10, GeneRIFs],
         }
 
