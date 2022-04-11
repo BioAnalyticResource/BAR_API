@@ -12,8 +12,14 @@ from api.models.tomato_nssnp import (
     SnpsReference as TomatoSnpsReference,
     LinesLookup as TomatoLinesLookup,
 )
+from api.models.soybean_nssnp import (
+    ProteinReference as SoybeanProteinReference,
+    SnpsToProtein as SoybeanSnpsToProtein,
+    SnpsReference as SoybeanSnpsReference,
+    SamplesLookup as SoybeanSampleNames,
+)
 from api.utils.bar_utils import BARUtils
-from api import cache, poplar_nssnp_db, tomato_nssnp_db
+from api import cache, poplar_nssnp_db, tomato_nssnp_db, soybean_nssnp_db
 import re
 import subprocess
 import requests
@@ -87,10 +93,13 @@ class GeneNameAlias(Resource):
     @snps.param("gene_id", _in="path", default="Potri.019G123900.1")
     @cache.cached()
     def get(self, species="", gene_id=""):
-        """Endpoint returns annotated SNP poplar data in order of (to match A th API format):
+        """
+        Supported species = poplar, soybean, tomato
+        Endpoint returns annotated SNP poplar data in order of (to match A th API format):
         AA pos (zero-indexed), sample id, 'missense_variant','MODERATE', 'MISSENSE', codon/DNA base change,
         AA change (DH), pro length, gene ID, 'protein_coding', 'CODING', transcript id, biotype
-        values with single quotes are fixed"""
+        values with single quotes are fixed
+        """
         results_json = []
 
         # Escape input
@@ -106,6 +115,11 @@ class GeneNameAlias(Resource):
             protein_reference = TomatoProteinReference
             snps_to_protein = TomatoSnpsToProtein
             snps_reference = TomatoSnpsReference
+        elif species == "soybean" and BARUtils.is_soybean_gene_valid(gene_id):
+            query_db = soybean_nssnp_db
+            protein_reference = SoybeanProteinReference
+            snps_to_protein = SoybeanSnpsToProtein
+            snps_reference = SoybeanSnpsReference
         else:
             return BARUtils.error_exit("Invalid gene id"), 400
 
@@ -159,7 +173,7 @@ class GeneNameAlias(Resource):
 @snps.route("/<string:species>/samples")
 class SampleDefinitions(Resource):
     @snps.param("species", _in="path", default="tomato")
-    @cache.cached()
+    # @cache.cached()
     def get(self, species=""):
         """
         Endpoint returns sample/individual data for a given dataset(species).
@@ -168,15 +182,21 @@ class SampleDefinitions(Resource):
 
         aliases = {}
 
-        if species != "tomato":
+        if species == "tomato":
+            try:
+                rows = tomato_nssnp_db.session.query(TomatoLinesLookup).all()
+            except OperationalError:
+                return BARUtils.error_exit("An internal error has occurred"), 500
+            for row in rows:
+                aliases[row.lines_id] = {"alias": row.alias, "species": row.species}
+        elif species == "soybean":
+            try:
+                rows = soybean_nssnp_db.session.query(SoybeanSampleNames).all()
+            except OperationalError:
+                return BARUtils.error_exit("An internal error has occurred"), 500
+            for row in rows:
+                aliases[row.sample_id] = {"dataset": row.dataset, "PI number": row.dataset_sample}
+        else:
             return BARUtils.error_exit("Invalid gene id"), 400
-
-        try:
-            rows = TomatoLinesLookup.query.all()
-        except OperationalError:
-            return BARUtils.error_exit("An internal error has occurred"), 500
-        for row in rows:
-            aliases[row.lines_id] = {"alias": row.alias, "species": row.species}
-        # [aliases.append(row.alias) for row in rows]
 
         return BARUtils.success_exit(aliases)
