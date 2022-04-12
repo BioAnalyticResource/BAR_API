@@ -11,7 +11,9 @@ from api.utils.bar_utils import BARUtils
 from flask_restx import Namespace, Resource
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.inspection import inspect
+from sqlalchemy import func
 from scour.scour import scourString
+from math import floor
 from cryptography.fernet import Fernet
 from api.utils.summarization_gene_expression_utils import (
     SummarizationGeneExpressionUtils,
@@ -506,3 +508,80 @@ class SummarizationGeneExpressionCleanSvg(Resource):
             return BARUtils.success_exit(out_string)
         else:
             return BARUtils.error_exit("Invalid API key")
+
+
+@summarization_gene_expression.route("/add_median_ctrls")
+class SummarizationGeneExpressionAddMedianCtrls(Resource):
+    def post(self):
+        if request.method == "POST":
+            api_key = request.headers.get("x-api-key")
+            if api_key is None:
+                return BARUtils.error_exit("Invalid API key"), 403
+            elif SummarizationGeneExpressionUtils.decrement_uses(api_key):
+                con = db.get_engine(bind="summarization")
+                tbl = SummarizationGeneExpressionUtils.get_table_object(api_key)
+                values = []
+                try:
+                    rows = con.execute(db.select([tbl.c.data_probeset_id]).distinct())
+                except SQLAlchemyError as e:
+                    print(e)
+                    return BARUtils.error_exit("Internal server error"), 500
+                # Get all genes
+                [values.append(row.data_probeset_id) for row in rows]
+                for gene in values:
+                    signals = []
+                    print(gene)
+                    try:
+                        rows = con.execute(db.select([tbl.c.data_signal]).where(tbl.c.data_probeset_id == gene))
+                    except SQLAlchemyError as e:
+                        print(e)
+                        return BARUtils.error_exit("Internal server error"), 500
+                    # Get values for this gene
+                    [signals.append(row.data_signal) for row in rows]
+                    # Sort values
+                    signals.sort()
+                    # Get middle value(s)
+                    if len(signals) % 2 == 0:
+                        median = (signals[int(len(signals)/2)-1] + signals[int(len(signals)/2)]) / 2
+                    else:
+                        median = signals[floor(len(signals)/2)]
+                    # Insert as CTRL_Median
+                    try:
+                        last_index = con.execute(db.select(func.max(tbl.c.sample_id))).scalar()
+                        print(last_index)
+                        con.execute(db.insert(tbl).values(index=last_index+1, proj_id=1, sample_id=last_index+1, data_probeset_id=gene, data_bot_id="CTRL_Median", data_signal=median))
+                        last_index = last_index + 1
+                    except SQLAlchemyError as e:
+                        print(e)
+                        return BARUtils.error_exit("Internal server error"), 500
+                return BARUtils.success_exit("CTRL_Medians added")
+
+
+@summarization_gene_expression.route("/get_median/<string:gene>")
+class SummarizationGeneExpressionAddMedianCtrls(Resource):
+    @summarization_gene_expression.param("gene", _in="path", default="AT1G01010")
+    def get(self, gene):
+        if request.method == "GET":
+            api_key = request.headers.get("x-api-key")
+            if api_key is None:
+                return BARUtils.error_exit("Invalid API key"), 403
+            elif SummarizationGeneExpressionUtils.decrement_uses(api_key):
+                con = db.get_engine(bind="summarization")
+                tbl = SummarizationGeneExpressionUtils.get_table_object(api_key)
+                signals = []
+                try:
+                    rows = con.execute(db.select([tbl.c.data_signal]).where(tbl.c.data_probeset_id == gene))
+                except SQLAlchemyError:
+                    return BARUtils.error_exit("Internal server error"), 500
+                # Get values for this gene
+                [signals.append(row.data_signal) for row in rows]
+                # Sort values
+                signals.sort()
+                # Get middle value(s)
+                if len(signals) % 2 == 0:
+                    median = (signals[int(len(signals)/2)-1] + signals[int(len(signals)/2)]) / 2
+                else:
+                    median = signals[floor(len(signals)/2)]
+                # Insert as CTRL_Median
+                return BARUtils.success_exit(median)
+            return BARUtils.error_exit("Internal server error"), 500
