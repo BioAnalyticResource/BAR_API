@@ -558,7 +558,7 @@ class SummarizationGeneExpressionAddMedianCtrls(Resource):
 
 
 @summarization_gene_expression.route("/get_median/<string:gene>")
-class SummarizationGeneExpressionAddMedianCtrls(Resource):
+class SummarizationGeneExpressionGetMedian(Resource):
     @summarization_gene_expression.param("gene", _in="path", default="AT1G01010")
     def get(self, gene):
         if request.method == "GET":
