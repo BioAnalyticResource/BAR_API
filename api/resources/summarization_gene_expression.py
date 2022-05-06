@@ -510,53 +510,6 @@ class SummarizationGeneExpressionCleanSvg(Resource):
             return BARUtils.error_exit("Invalid API key")
 
 
-@summarization_gene_expression.route("/add_median_ctrls")
-class SummarizationGeneExpressionAddMedianCtrls(Resource):
-    def post(self):
-        if request.method == "POST":
-            api_key = request.headers.get("x-api-key")
-            if api_key is None:
-                return BARUtils.error_exit("Invalid API key"), 403
-            elif SummarizationGeneExpressionUtils.decrement_uses(api_key):
-                con = db.get_engine(bind="summarization")
-                tbl = SummarizationGeneExpressionUtils.get_table_object(api_key)
-                values = []
-                try:
-                    rows = con.execute(db.select([tbl.c.data_probeset_id]).distinct())
-                except SQLAlchemyError as e:
-                    print(e)
-                    return BARUtils.error_exit("Internal server error"), 500
-                # Get all genes
-                [values.append(row.data_probeset_id) for row in rows]
-                for gene in values:
-                    signals = []
-                    print(gene)
-                    try:
-                        rows = con.execute(db.select([tbl.c.data_signal]).where(tbl.c.data_probeset_id == gene))
-                    except SQLAlchemyError as e:
-                        print(e)
-                        return BARUtils.error_exit("Internal server error"), 500
-                    # Get values for this gene
-                    [signals.append(row.data_signal) for row in rows]
-                    # Sort values
-                    signals.sort()
-                    # Get middle value(s)
-                    if len(signals) % 2 == 0:
-                        median = (signals[int(len(signals)/2)-1] + signals[int(len(signals)/2)]) / 2
-                    else:
-                        median = signals[floor(len(signals)/2)]
-                    # Insert as CTRL_Median
-                    try:
-                        last_index = con.execute(db.select(func.max(tbl.c.sample_id))).scalar()
-                        print(last_index)
-                        con.execute(db.insert(tbl).values(index=last_index+1, proj_id=1, sample_id=last_index+1, data_probeset_id=gene, data_bot_id="CTRL_Median", data_signal=median))
-                        last_index = last_index + 1
-                    except SQLAlchemyError as e:
-                        print(e)
-                        return BARUtils.error_exit("Internal server error"), 500
-                return BARUtils.success_exit("CTRL_Medians added")
-
-
 @summarization_gene_expression.route("/get_median/<string:gene>")
 class SummarizationGeneExpressionGetMedian(Resource):
     @summarization_gene_expression.param("gene", _in="path", default="AT1G01010")
@@ -579,9 +532,56 @@ class SummarizationGeneExpressionGetMedian(Resource):
                 signals.sort()
                 # Get middle value(s)
                 if len(signals) % 2 == 0:
-                    median = (signals[int(len(signals)/2)-1] + signals[int(len(signals)/2)]) / 2
+                    median = float(signals[int(len(signals)/2)-1] + signals[int(len(signals)/2)]) / 2
                 else:
                     median = signals[floor(len(signals)/2)]
                 # Insert as CTRL_Median
                 return BARUtils.success_exit(median)
             return BARUtils.error_exit("Internal server error"), 500
+
+
+@summarization_gene_expression.route("/submit", methods=["POST"], doc=False)
+class SummarizationGeneExpressionSubmit(Resource):
+    decorators = [limiter.limit("1/minute")]
+
+    def post(self):
+        print(request.files)
+        svg_file = request.files.get("svg")
+        xml_file = request.files.get("xml")
+        user = request.get_json()["user"]
+        svg_filename = secure_filename(svg_file.filename)
+        xml_filename = secure_filename(xml_file.filename)
+        key = request.headers.get("X-Api-Key")
+        dir_name = os.path.join("/DATA/users/www-data/", secure_filename(key))
+        if not os.path.exists(dir_name):
+            os.makedirs(dir_name)
+        svg_file.save(os.path.join(dir_name, secure_filename(svg_filename)))
+        xml_file.save(os.path.join(dir_name, secure_filename(xml_filename)))
+        if SummarizationGeneExpressionUtils.decrement_uses(key):
+            inputs = (
+                """
+                    {
+                    "finalSubmissionEmail.id": """
+                    + key
+                    + """,
+                    "finalSubmissionEmail.user": """
+                    + user
+                    + """,
+                    "finalSubmissionEmail.svg": """
+                    + os.path.join(dir_name, secure_filename(svg_filename))
+                    + """,
+                    "finalSubmissionEmail.xml": """
+                    + os.path.join(dir_name, secure_filename(xml_filename))
+                    + """
+                    }
+                """
+            )
+            path = os.path.join(SUMMARIZATION_FILES_PATH, "finalSubmissionEmail.wdl")
+            files = {
+                "workflowSource": ("finalSubmissionEmail.wdl", open(path, "rb")),
+                "workflowInputs": ("inputs.json", inputs),
+            }
+            requests.post(CROMWELL_URL + "/api/workflows/v1", files=files)
+            return BARUtils.success_exit(key)
+        else:
+            return BARUtils.error_exit("Invalid API key")
