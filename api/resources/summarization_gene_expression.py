@@ -11,7 +11,6 @@ from api.utils.bar_utils import BARUtils
 from flask_restx import Namespace, Resource
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.inspection import inspect
-from sqlalchemy import func
 from scour.scour import scourString
 from math import floor
 from cryptography.fernet import Fernet
@@ -562,17 +561,17 @@ class SummarizationGeneExpressionSubmit(Resource):
                 """
                     {
                     "finalSubmissionEmail.id": """
-                    + key
-                    + """,
+                + key
+                + """,
                     "finalSubmissionEmail.user": """
-                    + user
-                    + """,
+                + user
+                + """,
                     "finalSubmissionEmail.svg": """
-                    + os.path.join(dir_name, secure_filename(svg_filename))
-                    + """,
+                + os.path.join(dir_name, secure_filename(svg_filename))
+                + """,
                     "finalSubmissionEmail.xml": """
-                    + os.path.join(dir_name, secure_filename(xml_filename))
-                    + """
+                + os.path.join(dir_name, secure_filename(xml_filename))
+                + """
                     }
                 """
             )
