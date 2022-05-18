@@ -157,13 +157,11 @@ class GeneAnnotationPost(Resource):
 
             try:
                 rows = EplantRiceAnnotation.query.filter(
-                        EplantRiceAnnotation.gene.in_(genes)
+                    EplantRiceAnnotation.gene.in_(genes)
                 ).all()
                 if len(rows) == 0:
                     return (
-                        BARUtils.error_exit(
-                            "No data for the given species/genes"
-                        ),
+                        BARUtils.error_exit("No data for the given species/genes"),
                         400,
                     )
                 else:
