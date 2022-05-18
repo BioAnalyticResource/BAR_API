@@ -327,7 +327,7 @@ class Pymol(Resource):
             if chain != 'NONE':  # but chain input is not none
                 return BARUtils.error_exit("Invalid chain input, the model is monomer"), 400
         else:
-            chain_string_index = re.search(r'CHAIN:[\s+\S+]*?;', content).span()  # Looking for a CHAIN header e.g. "COMPND   3 CHAIN: A, B;"
+            chain_string_index = re.search(r'CHAIN:[\s\S]*?;', content).span()  # Looking for a CHAIN header e.g. "COMPND   3 CHAIN: A, B;"
             sliced_chains = content[chain_string_index[0]+6:chain_string_index[1]-1].split(",")  # e.g. ['A', 'B', 'C']
             chains = []
             for each in sliced_chains:
