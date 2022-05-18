@@ -54,13 +54,13 @@ class TestIntegrations(TestCase):
             "data": [
                 {
                     "gene": "LOC_Os01g01010",
-                    "annotation": "protein TBC domain containing protein, expressed"
+                    "annotation": "protein TBC domain containing protein, expressed",
                 },
                 {
                     "gene": "LOC_Os01g01050",
-                    "annotation": "protein R3H domain containing protein, expressed"
-                }
-            ]
+                    "annotation": "protein R3H domain containing protein, expressed",
+                },
+            ],
         }
         self.assertEqual(data, expected)
 
