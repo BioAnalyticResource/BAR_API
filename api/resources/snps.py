@@ -24,6 +24,9 @@ from flask import request
 import re
 import subprocess
 import requests
+from api.utils.pymol_script import PymolCmds
+import sys
+
 
 snps = Namespace("SNPs", description="Information about SNPs", path="/snps")
 
@@ -210,7 +213,7 @@ parser.add_argument('chain', type=str,
 @snps.route("/pymol/<string:model>")
 class Pymol(Resource):
     decorators = [
-        limiter.limit("5/minute")
+        limiter.limit("6/minute")
     ]
 
     @snps.param("model", _in="path", default="Potri.016G107900.1", description="gene ID for PDB")
@@ -302,16 +305,13 @@ class Pymol(Resource):
         else:
             filename = model.upper() + snps_string + ".pdb"
 
-        # Check if all snps are within sequence range
-        # wd_path = os.getcwd()  # the wd for all later pymol tasks. Should be root (/var/www/html) during PROD
-        wd_path = "/var/www/html"
+        # pymol_path = "/var/www/html" + pymol_path the wd for all later pymol tasks. Should be root (/var/www/html) during PROD
 
         # new: separate the loading url from rcsb and from bar
         if 'rcsb' in gene_pdb_path:
             loading_url = gene_pdb_path
         else:  # bar.utoronto.ca server files
             loading_url = str(gene_pdb_path).replace("/var/www/html/", "//bar.utoronto.ca/")
-        pymol_script_path = "./api/resources/pymol_script.py"  # the wd for pymol_script.py
 
         # 1. chain validation
         # new: checking pdb file instead of running pymol_script.py
@@ -336,39 +336,18 @@ class Pymol(Resource):
                 return BARUtils.error_exit("Invalid chain input, chains in the model are %s" % chains), 400
 
         # 2. original AAs match the model:
-        check_snps_command = "pymol -cr " + pymol_script_path + " -- check_residue " \
-            + loading_url + " " \
-            + chain\
-            + snps_string.replace('-', ' ')
-
-        check_res_output = subprocess.run([check_snps_command], shell=True, stdout=subprocess.PIPE)
-
-        check_res_message = (check_res_output.stdout.splitlines()[-1]).decode("utf-8")
-        print(check_res_message)
-        if 'invalid' in check_res_message:
-            loc = check_res_message.split(' ')[0].split(':')[1]
-            ori = check_res_message.split(' ')[1].split(':')[1]
-            return BARUtils.error_exit("Invalid SNP input, residue {loc} of the model is {ori}".format(
-                loc=loc, ori=ori)), 400
-        elif 'out of range' in check_res_message:
-            loc = check_res_message.split(';')[1]
-            range_info = check_res_message.split(';')[2]
-            return BARUtils.error_exit("Invalid SNP input, locus {loc} out of range, {info}".format(
-                loc=loc, info=range_info)), 400
-        elif "pymol.CmdException" in check_res_message:
-            return BARUtils.error_exit("Internal error in checking residues"), 500
+        print(snps_string, 'snps string', file=sys.stderr)
+        validate_aas = PymolCmds.residue_validation(loading_url, chain, snps_string.split('-')[1:])
+        if validate_aas["status"] is False:
+            return BARUtils.error_exit(validate_aas["msg"]), 400
 
         # Search if the query already exists
         response = requests.get("https:" + pymol_link + filename)
 
         if response.status_code != 200:
             # Execute mutate_snps, saving at wd_path: /var/www/html/pymol/
-            execute_command = "pymol -cr " + pymol_script_path + " -- mutate_snps " \
-                      + loading_url + " " \
-                      + wd_path + pymol_path + filename + " " \
-                      + chain \
-                      + snps_string.replace('-', ' ')
-            subprocess.run([execute_command], shell=True, cwd=wd_path)
+            PymolCmds.compute_mutation(loading_url, pymol_path + filename, chain, snps_string.split('-')[1:])
+
         # currently return url of local folder: wd_path/var/www/html/pymol
         # return BARUtils.success_exit(wd_path + pymol_path + filename)
         # should use pymol_link in API:
