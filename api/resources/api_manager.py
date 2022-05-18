@@ -63,7 +63,12 @@ class ApiManagerRequest(Resource):
 
                 if row_req is None and row_users is None:
                     df.to_sql("requests", con, if_exists="append", index=False)
-                    ApiManagerUtils.send_email_notification()
+                    subject = "[Bio-Analytic Resource] New API key request"
+                    text = """\
+                        There is a new API key request.
+                        You can approve or reject it at http://bar.utoronto.ca/~bpereira/webservices/bar-request-manager/build/index.html
+                    """
+                    ApiManagerUtils.send_email_notification(subject, text)
                     return BARUtils.success_exit("Data added")
                 else:
                     return BARUtils.error_exit("E-mail already in use"), 409
