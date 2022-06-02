@@ -1,5 +1,6 @@
 from api import app
 from unittest import TestCase
+import pytest
 
 
 class TestIntegrations(TestCase):
@@ -25,14 +26,6 @@ class TestIntegrations(TestCase):
         expected = {
             "wasSuccessful": True,
             "data": "//bar.utoronto.ca/phenix-pdbs/AT5G01040.1-POTRI.016G107900.1-phenix.pdb",
-        }
-        self.assertEqual(response.json, expected)
-
-        # Valid request
-        response = self.app_client.get("/snps/phenix/SOLYC01G097110.2.1/AT5G01040.1")
-        expected = {
-            "wasSuccessful": True,
-            "data": "//bar.utoronto.ca/phenix-pdbs/SOLYC01G097110.2.1-AT5G01040.1-phenix.pdb",
         }
         self.assertEqual(response.json, expected)
 
@@ -101,63 +94,6 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
-        # Valid request soybean
-        response = self.app_client.get("/snps/soybean/GLYMA.01G000100")
-        expected = {
-            "wasSuccessful": True,
-            "data": [
-                [
-                    1,
-                    83,
-                    "Gm_H002",
-                    "missense_variant",
-                    "MODERATE",
-                    "MISSENSE",
-                    "250G>T",
-                    "ValPhe",
-                    None,
-                    "GLYMA.01G0001",
-                    "protein_coding",
-                    "CODING",
-                    "GLYMA.01G000100",
-                    None
-                ],
-                [
-                    1,
-                    83,
-                    "Gm_H003",
-                    "missense_variant",
-                    "MODERATE",
-                    "MISSENSE",
-                    "250G>T",
-                    "ValPhe",
-                    None,
-                    "GLYMA.01G0001",
-                    "protein_coding",
-                    "CODING",
-                    "GLYMA.01G000100",
-                    None
-                ],
-                [
-                    1,
-                    83,
-                    "Gm_H004",
-                    "missense_variant",
-                    "MODERATE",
-                    "MISSENSE",
-                    "250G>T",
-                    "ValPhe",
-                    None,
-                    "GLYMA.01G0001",
-                    "protein_coding",
-                    "CODING",
-                    "GLYMA.01G000100",
-                    None
-                ]
-            ]
-            }
-        self.assertEqual(response.json, expected)
-
         # Invalid gene id
         response = self.app_client.get("/snps/poplar/abc")
         expected = {"wasSuccessful": False, "error": "Invalid gene id"}
@@ -171,17 +107,103 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
-    def test_get_samples(self):
-        """This functions test sample. Maybe this is place holder code?"""
-        # Valid data
-        response = self.app_client.get("/snps/tomato/samples")
+    @pytest.mark.pymolneeded
+    def test_pymol_snps(self):
+        """
+        Test for class of Pymol:
+        test_1: valid input + successful response
+        test_2: valid input + ignore cases + repeated identical SNP string
+        test_3: invalid input for snps + incorrect locus
+        test_4: invalid input for snps + incorrect residue name
+        test_5: invalid input for snps + conflict strings
+        test_6: invalid input for chain
+        """
+
+        # test_1: valid input + successful response
+        response = self.app_client.get(
+            "/snps/pymol/Potri.016G107900.1?snps=V25L&snps=E26A&chain=None"
+        )
         expected = {
             "wasSuccessful": True,
-            "data": {"001": {"alias": "Moneymaker", "species": "Solanum lycopersicum"}},
+            "data": "//bar.utoronto.ca/pymol-mutated-pdbs/POTRI.016G107900.1-V25L-E26A.pdb",
         }
         self.assertEqual(response.json, expected)
 
-        # Invalid data
-        response = self.app_client.get("/snps/abc/samples")
+        # test_2: valid input + ignore cases + repeated identical SNP string
+        response = self.app_client.get(
+            "/snps/pymol/Potri.016G107900.1?snps=V25L&snps=v25l&chain=None"
+        )
+        expected = {
+            "wasSuccessful": True,
+            "data": "//bar.utoronto.ca/pymol-mutated-pdbs/POTRI.016G107900.1-V25L.pdb",
+        }
+        self.assertEqual(response.json, expected)
+
+        # test_3: invalid input for snps + incorrect locus
+        response = self.app_client.get(
+            "/snps/pymol/Potri.016G107900.1?snps=V1L&chain=None"
+        )
+        expected = {
+            "wasSuccessful": False,
+            "error": "Invalid SNP input range, see locus 1; residues range start from 24(I) to 569(C)",
+        }
+        self.assertEqual(response.json, expected)
+
+        # test_4: invalid input for snps + incorrect residue name
+        response = self.app_client.get(
+            "/snps/pymol/Potri.016G107900.1?snps=K25L&chain=None"
+        )
+        expected = {
+            "wasSuccessful": False,
+            "error": "Invalid SNP residue, residue 25 of the model is V",
+        }
+        self.assertEqual(response.json, expected)
+
+        # test_5: invalid input for snps + conflict strings
+        response = self.app_client.get(
+            "/snps/pymol/Potri.016G107900.1?snps=V25L&snps=V25A&chain=None"
+        )
+        expected = {
+            "wasSuccessful": False,
+            "error": "Conflict SNPs input at loci: [25]",
+        }
+        self.assertEqual(response.json, expected)
+
+        # test_6: invalid input for chain
+        response = self.app_client.get(
+            "/snps/pymol/Potri.016G107900.1?snps=V25L&chain=A"
+        )
+        expected = {
+            "wasSuccessful": False,
+            "error": "Invalid chain input, the model is monomer",
+        }
+        self.assertEqual(response.json, expected)
+
+    def test_pymol_snps_pymol_unneeded(self):
+        """This function test our Pymol endpoint for where Pymol is not needed to be installed.
+        These unit-tests will thus run on local environments and CI, regardless of Pymol.
+        test_1: invalid input for gene name
+        test_2: invalid input for snps + incorrect protein letter code
+        test_3: invalid input for snps + incorrect format
+        """
+        # test_1: invalid input for gene name
+        response = self.app_client.get("/snps/pymol/aaa?snps=V25L&chain=None")
         expected = {"wasSuccessful": False, "error": "Invalid gene id"}
+        self.assertEqual(response.json, expected)
+
+        # test_2: invalid input for snps + incorrect protein letter code
+        response = self.app_client.get(
+            "/snps/pymol/Potri.016G107900.1?snps=B25A&chain=None"
+        )
+        expected = {
+            "wasSuccessful": False,
+            "error": "Invalid SNP string for protein letters",
+        }
+        self.assertEqual(response.json, expected)
+
+        # test_3: invalid input for snps + incorrect format
+        response = self.app_client.get(
+            "/snps/pymol/Potri.016G107900.1?snps=25l&chain=None"
+        )
+        expected = {"wasSuccessful": False, "error": "Invalid SNP string format"}
         self.assertEqual(response.json, expected)
