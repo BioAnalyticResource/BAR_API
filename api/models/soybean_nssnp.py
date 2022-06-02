@@ -4,9 +4,7 @@ from api import soybean_nssnp_db as db
 class ProteinReference(db.Model):
     __bind_key__ = "soybean_nssnp"
     __tablename__ = "protein_reference"
-    __table_args__ = (
-        db.Index("protein_gene_id_idx", "gene_identifier"),
-    )
+    __table_args__ = (db.Index("protein_gene_id_idx", "gene_identifier"),)
     protein_reference_id = db.Column(db.Integer(), primary_key=True)
     gene_identifier = db.Column(db.String(45), primary_key=False)
     gene_name = db.Column(db.String(45), primary_key=False)

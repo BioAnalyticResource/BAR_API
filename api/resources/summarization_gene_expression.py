@@ -522,7 +522,11 @@ class SummarizationGeneExpressionGetMedian(Resource):
                 tbl = SummarizationGeneExpressionUtils.get_table_object(api_key)
                 signals = []
                 try:
-                    rows = con.execute(db.select([tbl.c.data_signal]).where(tbl.c.data_probeset_id == gene))
+                    rows = con.execute(
+                        db.select([tbl.c.data_signal]).where(
+                            tbl.c.data_probeset_id == gene
+                        )
+                    )
                 except SQLAlchemyError:
                     return BARUtils.error_exit("Internal server error"), 500
                 # Get values for this gene
@@ -531,9 +535,15 @@ class SummarizationGeneExpressionGetMedian(Resource):
                 signals.sort()
                 # Get middle value(s)
                 if len(signals) % 2 == 0:
-                    median = float(signals[int(len(signals)/2)-1] + signals[int(len(signals)/2)]) / 2
+                    median = (
+                        float(
+                            signals[int(len(signals) / 2) - 1]
+                            + signals[int(len(signals) / 2)]
+                        )
+                        / 2
+                    )
                 else:
-                    median = signals[floor(len(signals)/2)]
+                    median = signals[floor(len(signals) / 2)]
                 # Insert as CTRL_Median
                 return BARUtils.success_exit(median)
             return BARUtils.error_exit("Internal server error"), 500
