@@ -71,7 +71,7 @@ class SummarizationGeneExpressionSummarize(Resource):
                 "geneSummarization.insertDataScript": "./insertData.py",
                 "geneSummarization.barEmailScript": "./bar_email.py",
                 "geneSummarization.email": email,
-                "geneSummarization.csv_email": csv_email,
+                "geneSummarization.csvEmail": csv_email,
                 "geneSummarization.overwrite": overwrite,
             }
             # Send request to Cromwell
