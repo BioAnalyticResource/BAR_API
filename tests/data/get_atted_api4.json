@@ -8,8 +8,8 @@
     "type": null,
     "value": null,
     "topN": 5,
-    "database": "Ath-u.c2-0",
-    "database_version": "c2-0"
+    "database": "Ath-u.c3-0",
+    "database_version": "c3-0"
   },
   "result_set": [
     {
@@ -18,32 +18,32 @@
         {
           "gene": 831644,
           "other_id": "AT5G17760",
-          "mutual_rank": 482.65,
-          "logit_score": 5.2584
+          "mutual_rank": 509.98,
+          "logit_score": 5.1768
         },
         {
           "gene": 842367,
           "other_id": "AT1G60730",
-          "mutual_rank": 767.19,
-          "logit_score": 4.5674
+          "mutual_rank": 807.94,
+          "logit_score": 4.4895
         },
         {
           "gene": 837321,
           "other_id": "AT1G08050",
-          "mutual_rank": 1076.41,
-          "logit_score": 4.0541
+          "mutual_rank": 1125.71,
+          "logit_score": 3.9855
+        },
+        {
+          "gene": 844034,
+          "other_id": "AT1G76980",
+          "mutual_rank": 1134.11,
+          "logit_score": 3.9741
         },
         {
           "gene": 814770,
           "other_id": "AT2G02390",
-          "mutual_rank": 1148.08,
-          "logit_score": 3.9553
-        },
-        {
-          "gene": 832064,
-          "other_id": "AT5G19440",
-          "mutual_rank": 1148.08,
-          "logit_score": 3.9553
+          "mutual_rank": 1186.04,
+          "logit_score": 3.9053
         }
       ],
       "other_id": "AT1G01010"
