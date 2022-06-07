@@ -180,7 +180,10 @@ class TestIntegrations(TestCase):
         response = self.app_client.post("/gene_information/gene_isoforms/", json=data)
         expected = {
             "wasSuccessful": True,
-            "data": {"Glyma.01G000100": ["Glyma.01G000100"], "Glyma.01G000200": ["Glyma.01G000200"]},
+            "data": {
+                "Glyma.01G000100": ["Glyma.01G000100"],
+                "Glyma.01G000200": ["Glyma.01G000200"],
+            },
         }
         self.assertEqual(response.json, expected)
 
