@@ -186,7 +186,7 @@ class SummarizationGeneExpressionTsvUpload(Resource):
                 + key
                 + """,
                     "tsvUpload.tsv": """
-                + str(os.listdir(dir_name))
+                + str([os.path.join("/DATA/users/www-data/", secure_filename(key), x) for x in os.listdir(dir_name)])
                 + """,
                     "tsvUpload.overwrite": """
                 + overwrite
