@@ -481,7 +481,7 @@ class SummarizationGeneExpressionGetFile(Resource):
         if validated_key is None:
             return BARUtils.error_exit("Invalid API key"), 403
 
-        filename = os.path.join(DATA_FOLDER, validated_key, secure_filename(file_id))
+        filename = os.path.join(DATA_FOLDER, secure_filename(validated_key), secure_filename(file_id))
         if os.path.isfile(filename):
             return send_file(filename)
         else:
