@@ -71,7 +71,7 @@ class SummarizationGeneExpressionSummarize(Resource):
                 "geneSummarization.insertDataScript": "./insertData.py",
                 "geneSummarization.barEmailScript": "./bar_email.py",
                 "geneSummarization.email": email,
-                "geneSummarization.csv_email": csv_email,
+                "geneSummarization.csvEmail": csv_email,
                 "geneSummarization.overwrite": overwrite,
             }
             # Send request to Cromwell
@@ -186,7 +186,12 @@ class SummarizationGeneExpressionTsvUpload(Resource):
                 + key
                 + """,
                     "tsvUpload.tsv": """
-                + str(os.listdir(dir_name))
+                + str(
+                    [
+                        os.path.join("/DATA/users/www-data/", secure_filename(key), x)
+                        for x in os.listdir(dir_name)
+                    ]
+                )
                 + """,
                     "tsvUpload.overwrite": """
                 + overwrite
@@ -435,12 +440,10 @@ class SummarizationGeneExpressionSave(Resource):
                     extension = ".svg"
                 else:
                     return BARUtils.error_exit("Invalid file type"), 400
-
-                dir_name = secure_filename(os.path.join(DATA_FOLDER, validated_key))
-                filename = secure_filename(
-                    os.path.join(dir_name, file.filename + extension)
+                dir_name = os.path.join(DATA_FOLDER, secure_filename(validated_key))
+                filename = os.path.join(
+                    dir_name, secure_filename(file.filename), extension
                 )
-
                 if not os.path.exists(dir_name):
                     os.makedirs(dir_name)
                 file.save(filename)
@@ -485,7 +488,9 @@ class SummarizationGeneExpressionGetFile(Resource):
         if validated_key is None:
             return BARUtils.error_exit("Invalid API key"), 403
 
-        filename = secure_filename(os.path.join(DATA_FOLDER, validated_key, file_id))
+        filename = os.path.join(
+            DATA_FOLDER, secure_filename(validated_key), secure_filename(file_id)
+        )
         if os.path.isfile(filename):
             return send_file(filename)
         else:
