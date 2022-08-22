@@ -83,7 +83,7 @@ class eFPImage(Resource):
             # Request is not cached
             # Run eFP. Note, this is currently running from home directory!
             efp_url = (
-                "https://bar.utoronto.ca/~asher/python3/"
+                "https://bar.utoronto.ca/"
                 + efp
                 + "/cgi-bin/efpWeb.cgi?dataSource="
                 + view
@@ -95,6 +95,8 @@ class eFPImage(Resource):
                 + gene_2
                 + "&grey_low=None&grey_stddev=None&navbar=0"
             )
+            # This is important to fix the eFP Url which as &amp; instead of &
+            efp_url = re.sub(r"amp;", "", efp_url)
             efp_html = requests.get(efp_url)
 
             # Now search for something like <img src=\"../output/efp-2nBNhe.png\"
@@ -112,9 +114,7 @@ class eFPImage(Resource):
 
             # Save this path for later use
             path = match[1]
-            efp_file_link = (
-                "https://bar.utoronto.ca/~asher/python3/" + efp + "/output/" + path
-            )
+            efp_file_link = "https://bar.utoronto.ca/" + efp + "/output/" + path
 
             # Download and serve that image
             response = requests.get(efp_file_link)
