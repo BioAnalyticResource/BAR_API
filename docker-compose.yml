@@ -3,7 +3,7 @@ version: "3.7"
 services:
 
   mysqldb:
-    image: mysql:8.0.28
+    image: mysql:8.0.30
     container_name: BAR_mysqldb
     # Must use this for mariadb client to connect
     command: --default-authentication-plugin=mysql_native_password
@@ -12,7 +12,7 @@ services:
       - MYSQL_ROOT_PASSWORD=root
 
   redis:
-    image: redis:6.2.6
+    image: redis:7.0.4
     container_name: BAR_redis
     restart: always
     ports:

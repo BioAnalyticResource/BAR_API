@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = "BAR API"
-copyright = "2021, BAR Developers"
+copyright = "2022, BAR Developers"
 author = "BAR Developers"
 
 # The full version, including alpha/beta/rc tags
