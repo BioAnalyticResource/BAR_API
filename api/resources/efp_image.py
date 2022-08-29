@@ -149,20 +149,20 @@ class eFPXMLSVGList(Resource):
     def get(self, species=""):
         """
         Return the SVG and XML links for a given eplant species
-        Supported species: Arabidopsis, Poplar 
+        Supported species: Arabidopsis, Poplar
         """
 
         species = species.lower()
 
         if species == "arabidopsis":
-            # efp_base_path = "/usr/src/efp_example_files"
-            efp_base_path = "/var/www/html/eplant/efp/data/"
+            efp_base_path = "/usr/src/efp_example_files"
+            # efp_base_path = "/var/www/html/eplant/efp/data/"
             XML_name = "Arabidopsis_thaliana.xml"
             SVG_name = "Arabidopsis_thaliana.svg"
             base_url = "//bar.utoronto.ca/eplant/data/"
         elif species == "poplar":
-            # efp_base_path = "/usr/src/efp_example_files_poplar"
-            efp_base_path = "/var/www/html/eplant_poplar/data"
+            efp_base_path = "/usr/src/efp_example_files_poplar"
+            # efp_base_path = "/var/www/html/eplant_poplar/data"
             XML_name = "Populus_trichocarpa.xml"
             SVG_name = "Populus_trichocarpa.svg"
             base_url = "//bar.utoronto.ca/eplant_poplar/data/"
@@ -180,7 +180,7 @@ class eFPXMLSVGList(Resource):
                             'SVG_link' : base_url + folder + "/" + SVG_name,
                             'name' : folder
                     }
-            if folder == "experiment" or (folder == "plant" and "plant" not in return_obj):  # experiment and plant can have multiple folders                 
+            if folder == "experiment" or (folder == "plant" and "plant" not in return_obj):  # experiment and plant can have multiple folders      
                 return_obj[folder] = {}
                 efp_path = abs_path_inner_dir + '/efps' if folder == 'experiment' else abs_path_inner_dir
                 efp_url = '/efps/' if folder == 'experiment' else "/"
