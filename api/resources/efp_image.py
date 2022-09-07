@@ -155,14 +155,14 @@ class eFPXMLSVGList(Resource):
         species = species.lower()
 
         if species == "arabidopsis":
-            efp_base_path = "/usr/src/efp_example_files"
-            # efp_base_path = "/var/www/html/eplant/efp/data/"
+            # efp_base_path = "/usr/src/efp_example_files"
+            efp_base_path = "/var/www/html/eplant/efp/data/"
             XML_name = "Arabidopsis_thaliana.xml"
             SVG_name = "Arabidopsis_thaliana.svg"
             base_url = "//bar.utoronto.ca/eplant/data/"
         elif species == "poplar":
-            efp_base_path = "/usr/src/efp_example_files_poplar"
-            # efp_base_path = "/var/www/html/eplant_poplar/data"
+            # efp_base_path = "/usr/src/efp_example_files_poplar"
+            efp_base_path = "/var/www/html/eplant_poplar/data"
             XML_name = "Populus_trichocarpa.xml"
             SVG_name = "Populus_trichocarpa.svg"
             base_url = "//bar.utoronto.ca/eplant_poplar/data/"
