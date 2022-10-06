@@ -172,24 +172,46 @@ class eFPXMLSVGList(Resource):
         return_obj = {}
 
         for folder in efp_folders:
-            abs_path_inner_dir = efp_base_path + '/' + folder
-            if folder in ['cell', 'plant']:
-                if XML_name in next(os.walk(abs_path_inner_dir))[2]:  # check if XML/SVG valid for this ePlant species; as A th XML can be in Poplar dirs
+            abs_path_inner_dir = efp_base_path + "/" + folder
+            if folder in ["cell", "plant"]:
+                if (
+                    XML_name in next(os.walk(abs_path_inner_dir))[2]
+                ):  # check if XML/SVG valid for this ePlant species; as A th XML can be in Poplar dirs
                     return_obj[folder] = {
-                            'XML-link' : base_url + folder + "/" + XML_name,
-                            'SVG_link' : base_url + folder + "/" + SVG_name,
-                            'name' : folder
+                        "XML-link": base_url + folder + "/" + XML_name,
+                        "SVG_link": base_url + folder + "/" + SVG_name,
+                        "name": folder,
                     }
-            if folder == "experiment" or (folder == "plant" and "plant" not in return_obj):  # experiment and plant can have multiple folders
+            if folder == "experiment" or (
+                folder == "plant" and "plant" not in return_obj
+            ):  # experiment and plant can have multiple folders
                 return_obj[folder] = {}
-                efp_path = abs_path_inner_dir + '/efps' if folder == 'experiment' else abs_path_inner_dir
-                efp_url = '/efps/' if folder == 'experiment' else "/"
-                for exp_folder in next(os.walk(efp_path))[1]:  # next(os.walk)[1] returns dirnames only, no files
-                    if XML_name in next(os.walk(efp_path + "/" + exp_folder))[2]:  # check if XML/SVG valid for this ePlant species
+                efp_path = (
+                    abs_path_inner_dir + "/efps"
+                    if folder == "experiment"
+                    else abs_path_inner_dir
+                )
+                efp_url = "/efps/" if folder == "experiment" else "/"
+                for exp_folder in next(os.walk(efp_path))[
+                    1
+                ]:  # next(os.walk)[1] returns dirnames only, no files
+                    if (
+                        XML_name in next(os.walk(efp_path + "/" + exp_folder))[2]
+                    ):  # check if XML/SVG valid for this ePlant species
                         return_obj[folder][exp_folder] = {
-                            'XML-link' : base_url + folder + efp_url + exp_folder + "/" + XML_name,
-                            'SVG_link' : base_url + folder + efp_url + exp_folder + "/" + SVG_name,
-                            'name' : exp_folder
+                            "XML-link": base_url
+                            + folder
+                            + efp_url
+                            + exp_folder
+                            + "/"
+                            + XML_name,
+                            "SVG_link": base_url
+                            + folder
+                            + efp_url
+                            + exp_folder
+                            + "/"
+                            + SVG_name,
+                            "name": exp_folder,
                         }
 
         return BARUtils.success_exit(return_obj)
