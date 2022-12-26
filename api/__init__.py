@@ -40,6 +40,7 @@ def create_app():
             )
 
     # Initialize the databases
+    annotations_lookup_db.init_app(bar_app)
     eplant2_db.init_app(bar_app)
     eplant_poplar_db.init_app(bar_app)
     eplant_soybean_db.init_app(bar_app)
