@@ -19,39 +19,10 @@ def create_app():
         # Travis
         print("We are now loading configuration.")
         bar_app.config.from_pyfile(os.getcwd() + "/config/BAR_API.cfg", silent=True)
-        if bar_app.config.get("ADMIN_ENCRYPT_KEY"):
-            os.environ["ADMIN_ENCRYPT_KEY"] = bar_app.config.get(
-                "TEST_ADMIN_ENCRYPT_KEY"
-            )
-        if bar_app.config.get("ADMIN_PASSWORD_FILE"):
-            os.environ["ADMIN_PASSWORD_FILE"] = bar_app.config.get(
-                "TEST_ADMIN_PASSWORD_FILE"
-            )
-        if bar_app.config.get("ADMIN_EMAIL"):
-            os.environ["ADMIN_EMAIL"] = bar_app.config.get("ADMIN_EMAIL")
-        if bar_app.config.get("EMAIL_PASS_KEY"):
-            os.environ["EMAIL_PASS_KEY"] = bar_app.config.get("EMAIL_PASS_KEY")
-        if bar_app.config.get("EMAIL_PASS_FILE"):
-            os.environ["EMAIL_PASS_FILE"] = bar_app.config.get("EMAIL_PASS_FILE")
+
     elif os.environ.get("BAR"):
         # The BAR
         bar_app.config.from_pyfile(os.environ.get("BAR_API_PATH"), silent=True)
-        if bar_app.config.get("ADMIN_EMAIL"):
-            os.environ["ADMIN_EMAIL"] = bar_app.config.get("ADMIN_EMAIL")
-        if bar_app.config.get("EMAIL_PASS_KEY"):
-            os.environ["EMAIL_PASS_KEY"] = bar_app.config.get("EMAIL_PASS_KEY")
-        if bar_app.config.get("EMAIL_PASS_FILE"):
-            os.environ["EMAIL_PASS_FILE"] = bar_app.config.get("EMAIL_PASS_FILE")
-        if bar_app.config.get("ADMIN_ENCRYPT_KEY"):
-            os.environ["ADMIN_ENCRYPT_KEY"] = bar_app.config.get("ADMIN_ENCRYPT_KEY")
-        if bar_app.config.get("ADMIN_PASSWORD_FILE"):
-            os.environ["ADMIN_PASSWORD_FILE"] = bar_app.config.get(
-                "ADMIN_PASSWORD_FILE"
-            )
-        if bar_app.config.get("DRIVE_LIST_KEY"):
-            os.environ["DRIVE_LIST_KEY"] = bar_app.config.get("DRIVE_LIST_KEY")
-        if bar_app.config.get("DRIVE_LIST_FILE"):
-            os.environ["DRIVE_LIST_FILE"] = bar_app.config.get("DRIVE_LIST_FILE")
     else:
         # The localhost
         bar_app.config.from_pyfile(
@@ -59,22 +30,6 @@ def create_app():
         )
 
         # Load environment variables
-        if bar_app.config.get("ADMIN_ENCRYPT_KEY"):
-            os.environ["ADMIN_ENCRYPT_KEY"] = bar_app.config.get("ADMIN_ENCRYPT_KEY")
-        if bar_app.config.get("ADMIN_PASSWORD_FILE"):
-            os.environ["ADMIN_PASSWORD_FILE"] = bar_app.config.get(
-                "ADMIN_PASSWORD_FILE"
-            )
-        if bar_app.config.get("ADMIN_EMAIL"):
-            os.environ["ADMIN_EMAIL"] = bar_app.config.get("ADMIN_EMAIL")
-        if bar_app.config.get("EMAIL_PASS_KEY"):
-            os.environ["EMAIL_PASS_KEY"] = bar_app.config.get("EMAIL_PASS_KEY")
-        if bar_app.config.get("EMAIL_PASS_FILE"):
-            os.environ["EMAIL_PASS_FILE"] = bar_app.config.get("EMAIL_PASS_FILE")
-        if bar_app.config.get("DRIVE_LIST_KEY"):
-            os.environ["DRIVE_LIST_KEY"] = bar_app.config.get("DRIVE_LIST_KEY")
-        if bar_app.config.get("DRIVE_LIST_FILE"):
-            os.environ["DRIVE_LIST_FILE"] = bar_app.config.get("DRIVE_LIST_FILE")
         if bar_app.config.get("PHENIX"):
             os.environ["PHENIX"] = bar_app.config.get("PHENIX")
         if bar_app.config.get("PHENIX_VERSION"):
@@ -96,7 +51,6 @@ def create_app():
     tomato_nssnp_db.init_app(bar_app)
     tomato_seq_db.init_app(bar_app)
     single_cell_db.init_app(bar_app)
-    summarization_db.init_app(bar_app)
     rice_interactions_db.init_app(bar_app)
 
     # Initialize the cache
@@ -115,10 +69,7 @@ def create_app():
     # Now add routes
     from api.resources.gene_information import gene_information
     from api.resources.rnaseq_gene_expression import rnaseq_gene_expression
-    from api.resources.summarization_gene_expression import (
-        summarization_gene_expression,
-    )
-    from api.resources.api_manager import api_manager
+
     from api.resources.proxy import bar_proxy
     from api.resources.thalemine import thalemine
     from api.resources.snps import snps
@@ -130,8 +81,6 @@ def create_app():
 
     bar_api.add_namespace(gene_information)
     bar_api.add_namespace(rnaseq_gene_expression)
-    bar_api.add_namespace(summarization_gene_expression)
-    bar_api.add_namespace(api_manager)
     bar_api.add_namespace(bar_proxy)
     bar_api.add_namespace(thalemine)
     bar_api.add_namespace(snps)
@@ -158,7 +107,6 @@ tomato_nssnp_db = SQLAlchemy(metadata=MetaData())
 soybean_nssnp_db = SQLAlchemy(metadata=MetaData())
 tomato_seq_db = SQLAlchemy(metadata=MetaData())
 single_cell_db = SQLAlchemy(metadata=MetaData())
-summarization_db = SQLAlchemy(metadata=MetaData())
 rice_interactions_db = SQLAlchemy(metadata=MetaData())
 
 # Initialize Redis
