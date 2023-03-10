@@ -1,4 +1,4 @@
-from api import eplant_tomato_db as db
+from api import db
 
 
 class Isoforms(db.Model):

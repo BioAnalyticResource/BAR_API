@@ -1,4 +1,4 @@
-from api import tomato_seq_db as db
+from api import db
 
 
 class Tomato32SequenceInfo(db.Model):

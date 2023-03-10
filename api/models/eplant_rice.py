@@ -1,4 +1,4 @@
-from api import eplant_rice_db as db
+from api import db
 
 
 class GeneAnnotation(db.Model):
