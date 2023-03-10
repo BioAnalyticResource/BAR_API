@@ -1,4 +1,4 @@
-from api import eplant2_db as db
+from api import db
 from sqlalchemy.dialects.mysql import TEXT
 
 
