@@ -40,18 +40,7 @@ def create_app():
             )
 
     # Initialize the databases
-    annotations_lookup_db.init_app(bar_app)
-    eplant2_db.init_app(bar_app)
-    eplant_poplar_db.init_app(bar_app)
-    eplant_soybean_db.init_app(bar_app)
-    eplant_rice_db.init_app(bar_app)
-    eplant_tomato_db.init_app(bar_app)
-    poplar_nssnp_db.init_app(bar_app)
-    soybean_nssnp_db.init_app(bar_app)
-    tomato_nssnp_db.init_app(bar_app)
-    tomato_seq_db.init_app(bar_app)
-    single_cell_db.init_app(bar_app)
-    rice_interactions_db.init_app(bar_app)
+    db.init_app(bar_app)
 
     # Initialize the cache
     cache.init_app(bar_app)
@@ -72,7 +61,8 @@ def create_app():
 
     from api.resources.proxy import bar_proxy
     from api.resources.thalemine import thalemine
-    from api.resources.snps import snps
+
+    # from api.resources.snps import snps
     from api.resources.sequence import sequence
     from api.resources.gene_annotation import gene_annotation
     from api.resources.interactions import itrns
@@ -83,7 +73,7 @@ def create_app():
     bar_api.add_namespace(rnaseq_gene_expression)
     bar_api.add_namespace(bar_proxy)
     bar_api.add_namespace(thalemine)
-    bar_api.add_namespace(snps)
+    # bar_api.add_namespace(snps)
     bar_api.add_namespace(sequence)
     bar_api.add_namespace(gene_annotation)
     bar_api.add_namespace(itrns)
@@ -94,20 +84,7 @@ def create_app():
 
 
 # Initialize database system
-# This is needed because multiple databases have the same database name
-# Metadata cannot have multiple tables with the same name
-annotations_lookup_db = SQLAlchemy(metadata=MetaData())
-eplant2_db = SQLAlchemy(metadata=MetaData())
-eplant_poplar_db = SQLAlchemy(metadata=MetaData())
-eplant_rice_db = SQLAlchemy(metadata=MetaData())
-eplant_soybean_db = SQLAlchemy(metadata=MetaData())
-eplant_tomato_db = SQLAlchemy(metadata=MetaData())
-poplar_nssnp_db = SQLAlchemy(metadata=MetaData())
-tomato_nssnp_db = SQLAlchemy(metadata=MetaData())
-soybean_nssnp_db = SQLAlchemy(metadata=MetaData())
-tomato_seq_db = SQLAlchemy(metadata=MetaData())
-single_cell_db = SQLAlchemy(metadata=MetaData())
-rice_interactions_db = SQLAlchemy(metadata=MetaData())
+db = SQLAlchemy(metadata=MetaData())
 
 # Initialize Redis
 cache = Cache(

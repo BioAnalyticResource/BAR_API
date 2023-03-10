@@ -1,4 +1,4 @@
-from api import rice_interactions_db as db
+from api import db
 
 
 class Interactions(db.Model):

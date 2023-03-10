@@ -1,4 +1,4 @@
-from api import soybean_nssnp_db as db
+from api import db
 
 
 class ProteinReference(db.Model):

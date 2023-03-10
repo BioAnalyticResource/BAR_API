@@ -1,4 +1,4 @@
-from api import annotations_lookup_db as db
+from api import db
 
 
 class AgiAlias(db.Model):
