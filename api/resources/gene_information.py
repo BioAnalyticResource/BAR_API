@@ -102,7 +102,7 @@ class GeneIsoforms(Resource):
             gene_id = BARUtils.format_poplar(gene_id)
 
         elif species == "tomato":
-            database = db.engines["eplant_tomoto"]
+            database = db.engines["eplant_tomato"]
 
             if not BARUtils.is_tomato_gene_valid(gene_id, False):
                 return BARUtils.error_exit("Invalid gene id"), 400
