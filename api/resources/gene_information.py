@@ -4,7 +4,7 @@ from markupsafe import escape
 from api.utils.bar_utils import BARUtils
 from marshmallow import Schema, ValidationError, fields as marshmallow_fields
 from api import cache
-from sqlalchemy import text, engine
+from sqlalchemy import text
 from api import db
 
 gene_information = Namespace(
@@ -55,7 +55,10 @@ class GeneAlias(Resource):
         if species == "arabidopsis":
             if BARUtils.is_arabidopsis_gene_valid(gene_id):
                 with db.engines["annotations_lookup"].connect() as conn:
-                    rows = conn.execute(text("select alias from agi_alias where agi=:agi"), {"agi": gene_id})
+                    rows = conn.execute(
+                        text("select alias from agi_alias where agi=:agi"),
+                        {"agi": gene_id},
+                    )
                     [aliases.append(row.alias) for row in rows]
             else:
                 return BARUtils.error_exit("Invalid gene id"), 400
@@ -114,7 +117,9 @@ class GeneIsoforms(Resource):
 
         # Now get the data
         with database.connect() as conn:
-            rows = conn.execute(text("select isoform from isoforms where gene=:gene"), {"gene": gene_id})
+            rows = conn.execute(
+                text("select isoform from isoforms where gene=:gene"), {"gene": gene_id}
+            )
             [gene_isoforms.append(row.isoform) for row in rows]
 
         # Found isoforms
@@ -180,7 +185,10 @@ class PostGeneIsoforms(Resource):
 
         # Query must be run individually for each species
         with database.connect() as conn:
-            results = conn.execute(text("select gene, isoform from isoforms where gene in :genes"), {"genes": genes})
+            results = conn.execute(
+                text("select gene, isoform from isoforms where gene in :genes"),
+                {"genes": genes},
+            )
             rows = results.fetchall()
 
         # If there any isoforms found, return data
