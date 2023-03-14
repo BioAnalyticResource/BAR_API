@@ -1,34 +1,33 @@
 from flask_restx import Namespace, Resource
 from markupsafe import escape
-from sqlalchemy.exc import OperationalError
-from api.models.poplar_nssnp import (
-    ProteinReference as PoplarProteinReference,
-    SnpsToProtein as PoplarSnpsToProtein,
-    SnpsReference as PoplarSnpsReference,
-)
-from api.models.tomato_nssnp import (
-    ProteinReference as TomatoProteinReference,
-    SnpsToProtein as TomatoSnpsToProtein,
-    SnpsReference as TomatoSnpsReference,
-    LinesLookup as TomatoLinesLookup,
-)
-from api.models.soybean_nssnp import (
-    ProteinReference as SoybeanProteinReference,
-    SnpsToProtein as SoybeanSnpsToProtein,
-    SnpsReference as SoybeanSnpsReference,
-    SamplesLookup as SoybeanSampleNames,
-)
 from api.utils.bar_utils import BARUtils
-from api import cache, poplar_nssnp_db, tomato_nssnp_db, soybean_nssnp_db, limiter
 from flask import request
 import re
 import subprocess
 import requests
 from api.utils.pymol_script import PymolCmds
 import sys
+from api import db, cache, limiter
+from sqlalchemy import text
 
 
 snps = Namespace("SNPs", description="Information about SNPs", path="/snps")
+
+parser = snps.parser()
+parser.add_argument(
+    "snps",
+    type=str,
+    action="append",
+    required=True,
+    help="SNP locations, format: OriLocMut i.e. V25L",
+    default=["V25L", "E26A"],
+)
+parser.add_argument(
+    "chain",
+    type=str,
+    help="[Optional]\n For multimers, enter chain ID only (i.e. A)\n For monomers, remain 'None' as default.",
+    default="None",
+)
 
 
 @snps.route("/phenix/<fixed_pdb>/<moving_pdb>")
@@ -107,62 +106,44 @@ class GeneNameAlias(Resource):
         gene_id = escape(gene_id)
 
         if species == "poplar" and BARUtils.is_poplar_gene_valid(gene_id):
-            query_db = poplar_nssnp_db
-            protein_reference = PoplarProteinReference
-            snps_to_protein = PoplarSnpsToProtein
-            snps_reference = PoplarSnpsReference
+            query_db = db.engines["poplar_nssnp"]
         elif species == "tomato" and BARUtils.is_tomato_gene_valid(gene_id, True):
-            query_db = tomato_nssnp_db
-            protein_reference = TomatoProteinReference
-            snps_to_protein = TomatoSnpsToProtein
-            snps_reference = TomatoSnpsReference
+            query_db = db.engines["tomato_nssnp"]
         elif species == "soybean" and BARUtils.is_soybean_gene_valid(gene_id):
-            query_db = soybean_nssnp_db
-            protein_reference = SoybeanProteinReference
-            snps_to_protein = SoybeanSnpsToProtein
-            snps_reference = SoybeanSnpsReference
+            query_db = db.engines["soybean_nssnp"]
         else:
             return BARUtils.error_exit("Invalid gene id"), 400
 
-        try:
-            rows = (
-                query_db.session.query(
-                    protein_reference, snps_to_protein, snps_reference
-                )
-                .select_from(protein_reference)
-                .join(snps_to_protein)
-                .join(snps_reference)
-                .filter(protein_reference.gene_identifier == gene_id)
-                .all()
+        with query_db.connect() as conn:
+            rows = conn.execute(
+                text(
+                    "select * from protein_reference join snps_to_protein join snps_reference where protein_reference.gene_identifier = :gene"
+                ),
+                {"gene": gene_id},
             )
 
             # BAR A Th API format is chr, AA pos (zero-indexed), sample id, 'missense_variant',
             # 'MODERATE', 'MISSENSE', codon/DNA base change, AA change (DH),
             # pro length, gene ID, 'protein_coding', 'CODING', transcript id, biotype
-            for protein, snpsjoin, snpstbl in rows:
+            for row in rows:
                 itm_lst = [
-                    snpstbl.chromosome,
+                    row.chromosome,
                     # snpstbl.chromosomal_loci,
-                    snpsjoin.aa_pos - 1,  # zero index-ed
-                    snpstbl.sample_id,
+                    int(row.aa_pos) - 1,  # zero index-ed
+                    row.sample_id,
                     "missense_variant",
                     "MODERATE",
                     "MISSENSE",
-                    str(snpsjoin.transcript_pos)
-                    + snpsjoin.ref_DNA
-                    + ">"
-                    + snpsjoin.alt_DNA,
-                    snpsjoin.ref_aa + snpsjoin.alt_aa,
+                    str(row.transcript_pos) + row.ref_DNA + ">" + row.alt_DNA,
+                    row.ref_aa + row.alt_aa,
                     None,
-                    re.sub(r".\d$", "", protein.gene_identifier),
+                    re.sub(r".\d$", "", row.gene_identifier),
                     "protein_coding",
                     "CODING",
-                    protein.gene_identifier,
+                    row.gene_identifier,
                     None,
                 ]
                 results_json.append(itm_lst)
-        except OperationalError:
-            return BARUtils.error_exit("An internal error has occurred"), 500
 
         # Return results if there are data
         if len(results_json) > 0:
@@ -184,43 +165,29 @@ class SampleDefinitions(Resource):
         aliases = {}
 
         if species == "tomato":
-            try:
-                rows = tomato_nssnp_db.session.query(TomatoLinesLookup).all()
-            except OperationalError:
-                return BARUtils.error_exit("An internal error has occurred"), 500
-            for row in rows:
-                aliases[row.lines_id] = {"alias": row.alias, "species": row.species}
+            with db.engines["tomato_nssnp"].connect() as conn:
+                rows = conn.execute(
+                    text("select lines_id, species, alias from lines_lookup")
+                )
+
+                for row in rows:
+                    aliases[row.lines_id] = {"alias": row.alias, "species": row.species}
+
         elif species == "soybean":
-            try:
-                rows = soybean_nssnp_db.session.query(SoybeanSampleNames).all()
-            except OperationalError:
-                return BARUtils.error_exit("An internal error has occurred"), 500
-            for row in rows:
-                aliases[row.sample_id] = {
-                    "dataset": row.dataset,
-                    "PI number": row.dataset_sample,
-                }
+            with db.engines["soybean_nssnp"].connect() as conn:
+                rows = conn.execute(
+                    text("select sample_id, dataset, dataset_sample from sample_lookup")
+                )
+
+                for row in rows:
+                    aliases[row.sample_id] = {
+                        "dataset": row.dataset,
+                        "PI number": row.dataset_sample,
+                    }
         else:
             return BARUtils.error_exit("Invalid gene id"), 400
 
         return BARUtils.success_exit(aliases)
-
-
-parser = snps.parser()
-parser.add_argument(
-    "snps",
-    type=str,
-    action="append",
-    required=True,
-    help="SNP locations, format: OriLocMut i.e. V25L",
-    default=["V25L", "E26A"],
-)
-parser.add_argument(
-    "chain",
-    type=str,
-    help="[Optional]\n For multimers, enter chain ID only (i.e. A)\n For monomers, remain 'None' as default.",
-    default="None",
-)
 
 
 @snps.route("/pymol/<string:model>")

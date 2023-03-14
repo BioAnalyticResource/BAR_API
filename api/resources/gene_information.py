@@ -1,15 +1,11 @@
 from flask_restx import Namespace, Resource, fields
 from flask import request
 from markupsafe import escape
-from sqlalchemy.exc import OperationalError
-from api.models.annotations_lookup import AgiAlias
-from api.models.eplant2 import Isoforms as eplant2_isoforms
-from api.models.eplant_poplar import Isoforms as eplant_poplar_isoforms
-from api.models.eplant_tomato import Isoforms as eplant_tomato_isoforms
-from api.models.eplant_soybean import Isoforms as eplant_soybean_isoforms
 from api.utils.bar_utils import BARUtils
 from marshmallow import Schema, ValidationError, fields as marshmallow_fields
-from api import cache
+from api import cache, db
+from sqlalchemy import text
+
 
 gene_information = Namespace(
     "Gene Information", description="Information about Genes", path="/gene_information"
@@ -58,11 +54,12 @@ class GeneAlias(Resource):
 
         if species == "arabidopsis":
             if BARUtils.is_arabidopsis_gene_valid(gene_id):
-                try:
-                    rows = AgiAlias.query.filter_by(agi=gene_id).all()
-                except OperationalError:
-                    return BARUtils.error_exit("An internal error has occurred"), 500
-                [aliases.append(row.alias) for row in rows]
+                with db.engines["annotations_lookup"].connect() as conn:
+                    rows = conn.execute(
+                        text("select alias from agi_alias where agi=:agi"),
+                        {"agi": gene_id},
+                    )
+                    [aliases.append(row.alias) for row in rows]
             else:
                 return BARUtils.error_exit("Invalid gene id"), 400
         else:
@@ -90,13 +87,13 @@ class GeneIsoforms(Resource):
 
         # Set the database and check if genes are valid
         if species == "arabidopsis":
-            database = eplant2_isoforms()
+            database = db.engines["eplant2"]
 
             if not BARUtils.is_arabidopsis_gene_valid(gene_id):
                 return BARUtils.error_exit("Invalid gene id"), 400
 
         elif species == "poplar":
-            database = eplant_poplar_isoforms
+            database = db.engines["eplant_poplar"]
 
             if not BARUtils.is_poplar_gene_valid(gene_id):
                 return BARUtils.error_exit("Invalid gene id"), 400
@@ -105,13 +102,13 @@ class GeneIsoforms(Resource):
             gene_id = BARUtils.format_poplar(gene_id)
 
         elif species == "tomato":
-            database = eplant_tomato_isoforms
+            database = db.engines["eplant_tomato"]
 
             if not BARUtils.is_tomato_gene_valid(gene_id, False):
                 return BARUtils.error_exit("Invalid gene id"), 400
 
         elif species == "soybean":
-            database = eplant_soybean_isoforms
+            database = db.engines["eplant_soybean"]
 
             if not BARUtils.is_soybean_gene_valid(gene_id):
                 return BARUtils.error_exit("Invalid gene id"), 400
@@ -119,11 +116,11 @@ class GeneIsoforms(Resource):
             return BARUtils.error_exit("No data for the given species")
 
         # Now get the data
-        try:
-            rows = database.query.filter_by(gene=gene_id).all()
-        except OperationalError:
-            return BARUtils.error_exit("An internal error has occurred"), 500
-        [gene_isoforms.append(row.isoform) for row in rows]
+        with database.connect() as conn:
+            rows = conn.execute(
+                text("select isoform from isoforms where gene=:gene"), {"gene": gene_id}
+            )
+            [gene_isoforms.append(row.isoform) for row in rows]
 
         # Found isoforms
         if len(gene_isoforms) > 0:
@@ -153,68 +150,48 @@ class PostGeneIsoforms(Resource):
 
         # Set species and check gene ID format
         if species == "arabidopsis":
-            database = eplant2_isoforms()
+            database = db.engines["eplant2"]
 
             # Check if gene is valid
             for gene in genes:
                 if not BARUtils.is_arabidopsis_gene_valid(gene):
                     return BARUtils.error_exit("Invalid gene id"), 400
 
-            # Query must be run individually for each species
-            try:
-                rows = database.query.filter(eplant2_isoforms.gene.in_(genes)).all()
-            except OperationalError:
-                return BARUtils.error_exit("An internal error has occurred."), 500
-
         elif species == "poplar":
-            database = eplant_poplar_isoforms()
+            database = db.engines["eplant_poplar"]
 
             for gene in genes:
                 # Check if gene is valid
                 if not BARUtils.is_poplar_gene_valid(gene):
                     return BARUtils.error_exit("Invalid gene id"), 400
 
-            try:
-                rows = database.query.filter(
-                    eplant_poplar_isoforms.gene.in_(genes)
-                ).all()
-            except OperationalError:
-                return BARUtils.error_exit("An internal error has occurred."), 500
-
         elif species == "tomato":
-            database = eplant_tomato_isoforms()
-
+            database = db.engines["eplant_tomato"]
             for gene in genes:
                 # Check if gene is valid
                 if not BARUtils.is_tomato_gene_valid(gene, False):
                     return BARUtils.error_exit("Invalid gene id"), 400
 
-            try:
-                rows = database.query.filter(
-                    eplant_tomato_isoforms.gene.in_(genes)
-                ).all()
-            except OperationalError:
-                return BARUtils.error_exit("An internal error has occurred."), 500
-
         elif species == "soybean":
-            database = eplant_soybean_isoforms()
+            database = db.engines["eplant_soybean"]
 
             for gene in genes:
                 # Check if gene is valid
                 if not BARUtils.is_soybean_gene_valid(gene):
                     return BARUtils.error_exit("Invalid gene id"), 400
 
-            try:
-                rows = database.query.filter(
-                    eplant_soybean_isoforms.gene.in_(genes)
-                ).all()
-            except OperationalError:
-                return BARUtils.error_exit("An internal error has occurred."), 500
-
         else:
             return BARUtils.error_exit("Invalid species"), 400
 
-        # If there any isoforms found, return data
+        # Query must be run individually for each species
+        with database.connect() as conn:
+            results = conn.execute(
+                text("select gene, isoform from isoforms where gene in :genes"),
+                {"genes": genes},
+            )
+            rows = results.fetchall()
+
+        # If there are any isoforms found, return data
         if len(rows) > 0:
             for row in rows:
                 if row.gene in data:
