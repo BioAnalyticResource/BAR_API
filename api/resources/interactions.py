@@ -6,12 +6,11 @@ Interactions (Protein-Protein, Protein-DNA, etc.) endpoint
 
 from flask_restx import Namespace, Resource, fields
 from flask import request
-from api.models.rice_interactions import Interactions as rice_interactions
 from markupsafe import escape
-from sqlalchemy.exc import OperationalError
-from sqlalchemy import or_
 from api.utils.bar_utils import BARUtils
 from marshmallow import Schema, ValidationError, fields as marshmallow_fields
+from api import db
+from sqlalchemy import text
 
 itrns = Namespace(
     "Interactions",
@@ -37,14 +36,17 @@ class Interactions(Resource):
 
         species = escape(species.lower())
         query_gene = escape(query_gene)
+
         if species == "rice" and BARUtils.is_rice_gene_valid(query_gene):
-            try:
-                rows = rice_interactions.query.filter(
-                    or_(
-                        rice_interactions.Protein1 == query_gene,
-                        rice_interactions.Protein2 == query_gene,
-                    )
-                ).all()
+            with db.engines["rice_interactions"].connect() as conn:
+                results = conn.execute(
+                    text(
+                        "select Protein1, Protein2, Total_hits, Num_species, Quality, Pcc from interactions where Protein1 = :gene or Protein2 = :gene"
+                    ),
+                    {"gene": query_gene},
+                )
+                rows = results.fetchall()
+
                 if len(rows) == 0:
                     return (
                         BARUtils.error_exit(
@@ -53,8 +55,6 @@ class Interactions(Resource):
                         400,
                     )
                 else:
-                    print(rows)
-                    # res = []
                     res = [
                         {
                             "protein_1": i.Protein1,
@@ -67,8 +67,6 @@ class Interactions(Resource):
                         for i in rows
                     ]
                     return BARUtils.success_exit(res)
-            except OperationalError:
-                return BARUtils.error_exit("An internal error has occurred"), 500
         else:
             return BARUtils.error_exit("Invalid species or gene ID"), 400
 
@@ -110,15 +108,14 @@ class InteractionsPost(Resource):
                 if not BARUtils.is_rice_gene_valid(gene):
                     return BARUtils.error_exit("Invalid gene id"), 400
 
-            try:
-                rows = rice_interactions.query.filter(
-                    or_(
-                        rice_interactions.Protein1.in_(genes),
-                        rice_interactions.Protein2.in_(genes),
-                    )
-                ).all()
-            except OperationalError:
-                return BARUtils.error_exit("An internal error has occurred."), 500
+            with db.engines["rice_interactions"].connect() as conn:
+                results = conn.execute(
+                    text(
+                        "select Protein1, Protein2, Total_hits, Num_species, Quality, Pcc from interactions where Protein1 in :gene or Protein2 in :gene"
+                    ),
+                    {"gene": genes},
+                )
+                rows = results.fetchall()
 
         else:
             return BARUtils.error_exit("Invalid species"), 400

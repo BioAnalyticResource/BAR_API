@@ -6,14 +6,26 @@ Localizations (for various species and their respective genes) endpoint
 
 from flask_restx import Namespace, Resource, fields
 from flask import request
-from api.models.rice_interactions import Rice_mPLoc as rice_loc_db
 from markupsafe import escape
-from sqlalchemy.exc import OperationalError
 from api.utils.bar_utils import BARUtils
 from marshmallow import Schema, ValidationError, fields as marshmallow_fields
+from api import db
+from sqlalchemy import text
 
 loc = Namespace(
-    "Localizations", description="Sub-cellular gene localzation endpoint", path="/loc"
+    "Localizations", description="Sub-cellular gene localization endpoint", path="/loc"
+)
+
+loc_post_ex = loc.model(
+    "GeneIsoforms",
+    {
+        "species": fields.String(required=True, example="rice"),
+        "genes": fields.List(
+            required=True,
+            example=["LOC_Os01g01080.1", "LOC_Os01g52560.1"],
+            cls_or_instance=fields.String,
+        ),
+    },
 )
 
 
@@ -29,15 +41,22 @@ class Localizations(Resource):
     @loc.param("query_gene", _in="path", default="LOC_Os01g52560.1")
     def get(self, species="", query_gene=""):
         """
-        Returns the protein-protein interactions for a particular query gene
+        Returns the protein localization for a particular query gene
         Supported species: 'rice'
         """
 
         species = escape(species.lower())
         query_gene = escape(query_gene)
         if species == "rice" and BARUtils.is_rice_gene_valid(query_gene, True):
-            try:
-                rows = rice_loc_db.query.filter_by(gene_id=query_gene).all()
+            with db.engines["rice_interactions"].connect() as conn:
+                results = conn.execute(
+                    text(
+                        "select gene_id, pred_mPLoc from Rice_mPLoc where gene_id = :gene"
+                    ),
+                    {"gene": query_gene},
+                )
+                rows = results.fetchall()
+
                 if len(rows) == 0:
                     return (
                         BARUtils.error_exit(
@@ -46,7 +65,6 @@ class Localizations(Resource):
                         400,
                     )
                 else:
-                    print(rows)
                     return {
                         "wasSuccessful": True,
                         "data": {
@@ -54,23 +72,9 @@ class Localizations(Resource):
                             "predicted_location": rows[0].pred_mPLoc,
                         },
                     }
-            except OperationalError:
-                return BARUtils.error_exit("An internal error has occurred"), 500
+
         else:
             return BARUtils.error_exit("Invalid species or gene ID"), 400
-
-
-loc_post_ex = loc.model(
-    "GeneIsoforms",
-    {
-        "species": fields.String(required=True, example="rice"),
-        "genes": fields.List(
-            required=True,
-            example=["LOC_Os01g01080.1", "LOC_Os01g52560.1"],
-            cls_or_instance=fields.String,
-        ),
-    },
-)
 
 
 @loc.route("/")
@@ -99,10 +103,14 @@ class LocalizationsPost(Resource):
                 if not BARUtils.is_rice_gene_valid(gene, True):
                     return BARUtils.error_exit("Invalid gene id"), 400
 
-            try:
-                rows = rice_loc_db.query.filter(rice_loc_db.gene_id.in_(genes)).all()
-            except OperationalError:
-                return BARUtils.error_exit("An internal error has occurred."), 500
+            with db.engines["rice_interactions"].connect() as conn:
+                results = conn.execute(
+                    text(
+                        "select gene_id, pred_mPLoc from Rice_mPLoc where gene_id in :genes"
+                    ),
+                    {"genes": genes},
+                )
+                rows = results.fetchall()
         else:
             return BARUtils.error_exit("Invalid species"), 400
 

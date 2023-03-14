@@ -1,11 +1,11 @@
 import re
 from flask_restx import Namespace, Resource, fields
 from flask import request
-from sqlalchemy.exc import OperationalError
-from api.models.single_cell import SingleCell
 from api.utils.bar_utils import BARUtils
 from marshmallow import Schema, ValidationError, fields as marshmallow_fields
 from markupsafe import escape
+from api import db
+from sqlalchemy import text
 
 rnaseq_gene_expression = Namespace(
     "RNA-Seq Gene Expression",
@@ -63,7 +63,7 @@ class RNASeqUtils:
 
         # Set model
         if database == "single_cell":
-            database = SingleCell()
+            database = db.engines["single_cell"]
             # Example: cluster0_WT1.ExprMean
             sample_regex = re.compile(r"^\D+\d+_WT\d+.ExprMean$", re.I)
         else:
@@ -71,16 +71,14 @@ class RNASeqUtils:
 
         # Now query the database
         if len(sample_ids) == 0 or sample_ids is None:
-            try:
-                rows = database.query.filter_by(data_probeset_id=gene_id).all()
-            except OperationalError:
-                return {
-                    "success": False,
-                    "error": "An internal error has occurred",
-                    "error_code": 500,
-                }
+            with database.connect() as conn:
+                rows = conn.execute(
+                    text(
+                        "select data_signal, data_bot_id from sample_data where data_probeset_id = :gene"
+                    ),
+                    {"gene": gene_id},
+                )
 
-            if len(rows) > 0:
                 for row in rows:
                     data[row.data_bot_id] = row.data_signal
         else:
@@ -93,20 +91,14 @@ class RNASeqUtils:
                         "error_code": 400,
                     }
 
-            try:
-                # This optimizes query of MySQL in operator.
-                rows = database.query.filter(
-                    SingleCell.data_probeset_id == gene_id,
-                    SingleCell.data_bot_id.in_(sample_ids),
-                ).all()
-            except OperationalError:
-                return {
-                    "success": False,
-                    "error": "An internal error has occurred",
-                    "error_code": 500,
-                }
+            with database.connect() as conn:
+                rows = conn.execute(
+                    text(
+                        "select data_signal, data_bot_id from sample_data where data_probeset_id = :gene and data_bot_id in :samples"
+                    ),
+                    {"gene": gene_id, "samples": sample_ids},
+                )
 
-            if len(rows) > 0:
                 for row in rows:
                     data[row.data_bot_id] = row.data_signal
 

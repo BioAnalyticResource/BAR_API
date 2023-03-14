@@ -7,8 +7,8 @@ for predicted sequences (Phyre2) that we host
 from flask_restx import Namespace, Resource
 from api.utils.bar_utils import BARUtils
 from markupsafe import escape
-from sqlalchemy.exc import OperationalError
-from api.models.tomato_sequence import Tomato32SequenceInfo
+from api import db
+from sqlalchemy import text
 
 sequence = Namespace("Sequence", description="Sequence API", path="/sequence")
 
@@ -31,8 +31,15 @@ class Sequence(Resource):
 
         if species == "tomato":
             if BARUtils.is_tomato_gene_valid(gene_id, True):
-                try:
-                    rows = Tomato32SequenceInfo.query.filter_by(gene_id=gene_id).all()
+                with db.engines["tomato_sequence"].connect() as conn:
+                    results = conn.execute(
+                        text(
+                            "select gene_id, full_seq from tomato_3_2_sequence_info where gene_id = :gene"
+                        ),
+                        {"gene": gene_id},
+                    )
+                    rows = results.fetchall()
+
                     if len(rows) == 0:
                         return (
                             BARUtils.error_exit(
@@ -51,8 +58,6 @@ class Sequence(Resource):
                                 }
                             ],
                         }
-                except OperationalError:
-                    return BARUtils.error_exit("An internal error has occurred"), 500
             else:
                 return BARUtils.error_exit("Invalid gene id"), 400
         else:
