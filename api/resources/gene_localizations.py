@@ -9,8 +9,8 @@ from flask import request
 from markupsafe import escape
 from api.utils.bar_utils import BARUtils
 from marshmallow import Schema, ValidationError, fields as marshmallow_fields
+from api.models.rice_interactions import Rice_mPLoc
 from api import db
-from sqlalchemy import text
 
 loc = Namespace(
     "Localizations", description="Sub-cellular gene localization endpoint", path="/loc"
@@ -48,30 +48,27 @@ class Localizations(Resource):
         species = escape(species.lower())
         query_gene = escape(query_gene)
         if species == "rice" and BARUtils.is_rice_gene_valid(query_gene, True):
-            with db.engines["rice_interactions"].connect() as conn:
-                results = conn.execute(
-                    text(
-                        "select gene_id, pred_mPLoc from Rice_mPLoc where gene_id = :gene"
-                    ),
-                    {"gene": query_gene},
+            rows = (
+                db.session.execute(
+                    db.select(Rice_mPLoc).where(Rice_mPLoc.gene_id == query_gene)
                 )
-                rows = results.fetchall()
+                .scalars()
+                .all()
+            )
 
-                if len(rows) == 0:
-                    return (
-                        BARUtils.error_exit(
-                            "There are no data found for the given gene"
-                        ),
-                        400,
-                    )
-                else:
-                    return {
-                        "wasSuccessful": True,
-                        "data": {
-                            "gene": rows[0].gene_id,
-                            "predicted_location": rows[0].pred_mPLoc,
-                        },
-                    }
+            if len(rows) == 0:
+                return (
+                    BARUtils.error_exit("There are no data found for the given gene"),
+                    400,
+                )
+            else:
+                return {
+                    "wasSuccessful": True,
+                    "data": {
+                        "gene": rows[0].gene_id,
+                        "predicted_location": rows[0].pred_mPLoc,
+                    },
+                }
 
         else:
             return BARUtils.error_exit("Invalid species or gene ID"), 400
@@ -103,14 +100,13 @@ class LocalizationsPost(Resource):
                 if not BARUtils.is_rice_gene_valid(gene, True):
                     return BARUtils.error_exit("Invalid gene id"), 400
 
-            with db.engines["rice_interactions"].connect() as conn:
-                results = conn.execute(
-                    text(
-                        "select gene_id, pred_mPLoc from Rice_mPLoc where gene_id in :genes"
-                    ),
-                    {"genes": genes},
+            rows = (
+                db.session.execute(
+                    db.select(Rice_mPLoc).where(Rice_mPLoc.gene_id.in_(genes))
                 )
-                rows = results.fetchall()
+                .scalars()
+                .all()
+            )
         else:
             return BARUtils.error_exit("Invalid species"), 400
 

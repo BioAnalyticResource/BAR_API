@@ -19,7 +19,7 @@ class AgiAnnotation(db.Model):
     annotation = db.Column(db.String(64000), nullable=False, primary_key=False)
 
 
-class TAIR10(db.Model):
+class TAIR10FunctionalDescriptions(db.Model):
     __bind_key__ = "eplant2"
     __tablename__ = "TAIR10_functional_descriptions"
 
