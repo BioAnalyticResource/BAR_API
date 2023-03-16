@@ -5,7 +5,8 @@ from api.utils.bar_utils import BARUtils
 from marshmallow import Schema, ValidationError, fields as marshmallow_fields
 from markupsafe import escape
 from api import db
-from sqlalchemy import text
+from api.models.single_cell import SingleCell
+from sqlalchemy import and_
 
 rnaseq_gene_expression = Namespace(
     "RNA-Seq Gene Expression",
@@ -63,7 +64,7 @@ class RNASeqUtils:
 
         # Set model
         if database == "single_cell":
-            database = db.engines["single_cell"]
+            table = SingleCell
             # Example: cluster0_WT1.ExprMean
             sample_regex = re.compile(r"^\D+\d+_WT\d+.ExprMean$", re.I)
         else:
@@ -71,16 +72,16 @@ class RNASeqUtils:
 
         # Now query the database
         if len(sample_ids) == 0 or sample_ids is None:
-            with database.connect() as conn:
-                rows = conn.execute(
-                    text(
-                        "select data_signal, data_bot_id from sample_data where data_probeset_id = :gene"
-                    ),
-                    {"gene": gene_id},
+            rows = (
+                db.session.execute(
+                    db.select(table).where(table.data_probeset_id == gene_id)
                 )
+                .scalars()
+                .all()
+            )
+            for row in rows:
+                data[row.data_bot_id] = row.data_signal
 
-                for row in rows:
-                    data[row.data_bot_id] = row.data_signal
         else:
             # Validate all samples
             for sample_id in sample_ids:
@@ -91,16 +92,20 @@ class RNASeqUtils:
                         "error_code": 400,
                     }
 
-            with database.connect() as conn:
-                rows = conn.execute(
-                    text(
-                        "select data_signal, data_bot_id from sample_data where data_probeset_id = :gene and data_bot_id in :samples"
-                    ),
-                    {"gene": gene_id, "samples": sample_ids},
+            rows = (
+                db.session.execute(
+                    db.select(table).where(
+                        and_(
+                            table.data_probeset_id == gene_id,
+                            table.data_bot_id.in_(sample_ids),
+                        )
+                    )
                 )
-
-                for row in rows:
-                    data[row.data_bot_id] = row.data_signal
+                .scalars()
+                .all()
+            )
+            for row in rows:
+                data[row.data_bot_id] = row.data_signal
 
         return {"success": True, "data": data}
 
