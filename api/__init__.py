@@ -5,7 +5,6 @@ from flask_cors import CORS
 from flask_caching import Cache
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from sqlalchemy import MetaData
 import os
 
 
@@ -82,7 +81,7 @@ def create_app():
 
 
 # Initialize database system
-db = SQLAlchemy(metadata=MetaData())
+db = SQLAlchemy()
 
 # Initialize Redis
 cache = Cache(
