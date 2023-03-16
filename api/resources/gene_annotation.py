@@ -1,11 +1,14 @@
 from flask_restx import Namespace, Resource, fields
 from flask import request
 from markupsafe import escape
+from api.models.eplant_rice import GeneAnnotation as EplantRiceAnnotation
+from api.models.eplant_poplar import GeneAnnotation as EplantPoplarAnnotation
+from api.models.eplant_tomato import GeneAnnotation as EplantTomatoAnnotation
+from api.models.eplant_soybean import GeneAnnotation as EplantSoybeanAnnotation
+from api.models.eplant2 import AgiAnnotation, TAIR10FunctionalDescriptions, GeneRIFs
 from api.utils.bar_utils import BARUtils
 from marshmallow import Schema, ValidationError, fields as marshmallow_fields
 from api import db
-from sqlalchemy import text
-
 
 gene_annotation = Namespace(
     "Gene Annotation", description="Gene annotation API", path="/gene_annotation"
@@ -37,11 +40,11 @@ class GeneAnnotation(Resource):
         Endpoint returns gene locus for given gene keywords
         """
         annotation_db_list = {
-            "tomato": "eplant_tomato",
-            "poplar": "eplant_poplar",
-            "rice": "eplant_rice",
-            "soybean": "eplant_soybean",
-            "arabidopsis": "eplant2",
+            "tomato": EplantTomatoAnnotation,
+            "poplar": EplantPoplarAnnotation,
+            "rice": EplantRiceAnnotation,
+            "soybean": EplantSoybeanAnnotation,
+            "arabidopsis": [AgiAnnotation, TAIR10FunctionalDescriptions, GeneRIFs],
         }
 
         query = escape(query)
@@ -50,101 +53,118 @@ class GeneAnnotation(Resource):
         for species, annot_db in annotation_db_list.items():
             if species == "arabidopsis":
                 # Only Arabidopsis queries from multiple databases
-                with db.engines[annot_db].connect() as conn:
-                    # Query AGI Annotation table
-                    agi_info = conn.execute(
-                        text(
-                            "select agi, annotation from agi_annotation where annotation REGEXP :annot"
-                        ),
-                        {"annot": query},
-                    )
 
-                    # Query TAIR10 table
-                    tair10_curator_info = conn.execute(
-                        text(
-                            "select Model_name, Curator_summary from TAIR10_functional_descriptions where Curator_summary REGEXP :summary"
-                        ),
-                        {"summary": query},
+                # Query AGI Annotation table
+                agi_info = (
+                    db.session.execute(
+                        db.select(AgiAnnotation).where(
+                            AgiAnnotation.annotation.regexp_match(query)
+                        )
                     )
+                    .scalars()
+                    .all()
+                )
 
-                    # Query TAIR10 computation_info
-                    tair10_computational_info = conn.execute(
-                        text(
-                            "select Model_name, Computational_description from TAIR10_functional_descriptions where Computational_description REGEXP :desc"
-                        ),
-                        {"desc": query},
+                # Query TAIR10 table
+                tair10_curator_info = (
+                    db.session.execute(
+                        db.select(TAIR10FunctionalDescriptions).where(
+                            TAIR10FunctionalDescriptions.Curator_summary.regexp_match(
+                                query
+                            )
+                        )
                     )
+                    .scalars()
+                    .all()
+                )
 
-                    # Query GeneRIFs
-                    RIFs_info = conn.execute(
-                        text("select gene, RIF from geneRIFs where RIF REGEXP :rif"),
-                        {"rif": query},
+                # Query TAIR10 computation_info
+                tair10_computational_info = (
+                    db.session.execute(
+                        db.select(TAIR10FunctionalDescriptions).where(
+                            TAIR10FunctionalDescriptions.Computational_description.regexp_match(
+                                query
+                            )
+                        )
                     )
+                    .scalars()
+                    .all()
+                )
 
-                    res.extend(
-                        [
-                            {
-                                "gene": i.agi,
-                                "species": species,
-                                "gene_annotation": i.annotation,
-                            }
-                            for i in agi_info
-                        ]
+                # Query GeneRIFs
+                RIFs_info = (
+                    db.session.execute(
+                        db.select(GeneRIFs).where(GeneRIFs.RIF.regexp_match(query))
                     )
+                    .scalars()
+                    .all()
+                )
 
-                    res.extend(
-                        [
-                            {
-                                "gene": i.Model_name,
-                                "species": species,
-                                "gene_annotation": i.Curator_summary,
-                            }
-                            for i in tair10_curator_info
-                        ]
-                    )
+                res.extend(
+                    [
+                        {
+                            "gene": i.agi,
+                            "species": species,
+                            "gene_annotation": i.annotation,
+                        }
+                        for i in agi_info
+                    ]
+                )
 
-                    res.extend(
-                        [
-                            {
-                                "gene": i.Model_name,
-                                "species": species,
-                                "gene_annotation": i.Computational_description,
-                            }
-                            for i in tair10_computational_info
-                        ]
-                    )
+                res.extend(
+                    [
+                        {
+                            "gene": i.Model_name,
+                            "species": species,
+                            "gene_annotation": i.Curator_summary,
+                        }
+                        for i in tair10_curator_info
+                    ]
+                )
 
-                    res.extend(
-                        [
-                            {
-                                "gene": i.gene,
-                                "species": species,
-                                "gene_annotation": i.RIF,
-                            }
-                            for i in RIFs_info
-                        ]
-                    )
+                res.extend(
+                    [
+                        {
+                            "gene": i.Model_name,
+                            "species": species,
+                            "gene_annotation": i.Computational_description,
+                        }
+                        for i in tair10_computational_info
+                    ]
+                )
 
+                res.extend(
+                    [
+                        {
+                            "gene": i.gene,
+                            "species": species,
+                            "gene_annotation": i.RIF,
+                        }
+                        for i in RIFs_info
+                    ]
+                )
             else:
                 # For all other genes
-                with db.engines[annot_db].connect() as conn:
-                    rows = conn.execute(
-                        text(
-                            "select gene, annotation from gene_annotation where annotation REGEXP :annot"
-                        ),
-                        {"annot": query},
+                rows = (
+                    db.session.execute(
+                        db.select(annot_db).where(
+                            annot_db.annotation.regexp_match(query)
+                        )
                     )
+                    .scalars()
+                    .all()
+                )
 
-                    res.extend(
-                        [
-                            {
-                                "gene": i.gene,
-                                "species": species,
-                                "gene_annotation": i.annotation,
-                            }
-                            for i in rows
-                        ]
-                    )
+                res.extend(
+                    [
+                        {
+                            "gene": i.gene,
+                            "species": species,
+                            "gene_annotation": i.annotation,
+                        }
+                        for i in rows
+                    ]
+                )
 
         if len(res) == 0:
             return (
@@ -181,31 +201,28 @@ class GeneAnnotationPost(Resource):
                 if not BARUtils.is_rice_gene_valid(gene):
                     return BARUtils.error_exit("Invalid gene id"), 400
 
-            database = "eplant_rice"
+            database = EplantRiceAnnotation
         else:
             return BARUtils.error_exit("Invalid species"), 400
 
         # Now query the database
-        with db.engines[database].connect() as conn:
-            results = conn.execute(
-                text(
-                    "select gene, annotation from gene_annotation where gene in :genes"
-                ),
-                {"genes": genes},
-            )
-            rows = results.fetchall()
+        rows = (
+            db.session.execute(db.select(database).where(database.gene.in_(genes)))
+            .scalars()
+            .all()
+        )
 
-            if len(rows) == 0:
-                return (
-                    BARUtils.error_exit("No data for the given species/genes"),
-                    400,
-                )
-            else:
-                res = [
-                    {
-                        "gene": i.gene,
-                        "annotation": i.annotation,
-                    }
-                    for i in rows
-                ]
-                return BARUtils.success_exit(res)
+        if len(rows) == 0:
+            return (
+                BARUtils.error_exit("No data for the given species/genes"),
+                400,
+            )
+        else:
+            res = [
+                {
+                    "gene": i.gene,
+                    "annotation": i.annotation,
+                }
+                for i in rows
+            ]
+            return BARUtils.success_exit(res)
