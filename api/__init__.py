@@ -22,13 +22,8 @@ def create_app():
     elif os.environ.get("BAR"):
         # The BAR
         bar_app.config.from_pyfile(os.environ.get("BAR_API_PATH"), silent=True)
-    else:
-        # The localhost
-        bar_app.config.from_pyfile(
-            os.path.expanduser("~") + "/.config/BAR_API.cfg", silent=True
-        )
 
-        # Load environment variables
+        # Load environment variables on the BAR
         if bar_app.config.get("PHENIX"):
             os.environ["PHENIX"] = bar_app.config.get("PHENIX")
         if bar_app.config.get("PHENIX_VERSION"):
@@ -37,6 +32,11 @@ def create_app():
             os.environ["PATH"] = (
                 bar_app.config.get("PATH") + ":/usr/local/phenix-1.18.2-3874/build/bin"
             )
+    else:
+        # The localhost
+        bar_app.config.from_pyfile(
+            os.path.expanduser("~") + "/.config/BAR_API.cfg", silent=True
+        )
 
     # Initialize the databases
     db.init_app(bar_app)
