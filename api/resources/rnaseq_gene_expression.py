@@ -71,16 +71,15 @@ class RNASeqUtils:
             return {"success": False, "error": "Invalid database", "error_code": 400}
 
         # Now query the database
+        # We are querying only some columns because full indexes are made on some columns, now the whole table
         if len(sample_ids) == 0 or sample_ids is None:
-            rows = (
-                db.session.execute(
-                    db.select(table).where(table.data_probeset_id == gene_id)
-                )
-                .scalars()
-                .all()
-            )
+            rows = db.session.execute(
+                db.select(
+                    table.data_probeset_id, table.data_bot_id, table.data_signal
+                ).where(table.data_probeset_id == gene_id)
+            ).all()
             for row in rows:
-                data[row.data_bot_id] = row.data_signal
+                data[row[1]] = row[2]
 
         else:
             # Validate all samples
@@ -92,20 +91,18 @@ class RNASeqUtils:
                         "error_code": 400,
                     }
 
-            rows = (
-                db.session.execute(
-                    db.select(table).where(
-                        and_(
-                            table.data_probeset_id == gene_id,
-                            table.data_bot_id.in_(sample_ids),
-                        )
+            rows = db.session.execute(
+                db.select(
+                    table.data_probeset_id, table.data_bot_id, table.data_signal
+                ).where(
+                    and_(
+                        table.data_probeset_id == gene_id,
+                        table.data_bot_id.in_(sample_ids),
                     )
                 )
-                .scalars()
-                .all()
-            )
+            ).all()
             for row in rows:
-                data[row.data_bot_id] = row.data_signal
+                data[row[1]] = row[2]
 
         return {"success": True, "data": data}
 

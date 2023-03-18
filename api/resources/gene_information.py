@@ -2,10 +2,10 @@ from flask_restx import Namespace, Resource, fields
 from flask import request
 from markupsafe import escape
 from api.models.annotations_lookup import AgiAlias
-from api.models.eplant2 import Isoforms as eplant2_isoforms
-from api.models.eplant_poplar import Isoforms as eplant_poplar_isoforms
-from api.models.eplant_tomato import Isoforms as eplant_tomato_isoforms
-from api.models.eplant_soybean import Isoforms as eplant_soybean_isoforms
+from api.models.eplant2 import Isoforms as EPlant2Isoforms
+from api.models.eplant_poplar import Isoforms as EPlantPoplarIsoforms
+from api.models.eplant_tomato import Isoforms as EPlantTomatoIsoforms
+from api.models.eplant_soybean import Isoforms as EPlantSoybeanIsoforms
 from api.utils.bar_utils import BARUtils
 from marshmallow import Schema, ValidationError, fields as marshmallow_fields
 from api import cache, db
@@ -93,13 +93,13 @@ class GeneIsoforms(Resource):
 
         # Set the database and check if genes are valid
         if species == "arabidopsis":
-            database = eplant2_isoforms
+            database = EPlant2Isoforms
 
             if not BARUtils.is_arabidopsis_gene_valid(gene_id):
                 return BARUtils.error_exit("Invalid gene id"), 400
 
         elif species == "poplar":
-            database = eplant_poplar_isoforms
+            database = EPlantPoplarIsoforms
 
             if not BARUtils.is_poplar_gene_valid(gene_id):
                 return BARUtils.error_exit("Invalid gene id"), 400
@@ -108,13 +108,13 @@ class GeneIsoforms(Resource):
             gene_id = BARUtils.format_poplar(gene_id)
 
         elif species == "tomato":
-            database = eplant_tomato_isoforms
+            database = EPlantTomatoIsoforms
 
             if not BARUtils.is_tomato_gene_valid(gene_id, False):
                 return BARUtils.error_exit("Invalid gene id"), 400
 
         elif species == "soybean":
-            database = eplant_soybean_isoforms
+            database = EPlantSoybeanIsoforms
 
             if not BARUtils.is_soybean_gene_valid(gene_id):
                 return BARUtils.error_exit("Invalid gene id"), 400
@@ -157,7 +157,7 @@ class PostGeneIsoforms(Resource):
 
         # Set species and check gene ID format
         if species == "arabidopsis":
-            database = eplant2_isoforms
+            database = EPlant2Isoforms
 
             # Check if gene is valid
             for gene in genes:
@@ -165,7 +165,7 @@ class PostGeneIsoforms(Resource):
                     return BARUtils.error_exit("Invalid gene id"), 400
 
         elif species == "poplar":
-            database = eplant_poplar_isoforms
+            database = EPlantPoplarIsoforms
 
             for gene in genes:
                 # Check if gene is valid
@@ -173,7 +173,7 @@ class PostGeneIsoforms(Resource):
                     return BARUtils.error_exit("Invalid gene id"), 400
 
         elif species == "tomato":
-            database = eplant_tomato_isoforms
+            database = EPlantTomatoIsoforms
 
             for gene in genes:
                 # Check if gene is valid
@@ -181,7 +181,7 @@ class PostGeneIsoforms(Resource):
                     return BARUtils.error_exit("Invalid gene id"), 400
 
         elif species == "soybean":
-            database = eplant_soybean_isoforms
+            database = EPlantSoybeanIsoforms
 
             for gene in genes:
                 # Check if gene is valid
