@@ -11,9 +11,7 @@ from marshmallow import Schema, ValidationError, fields as marshmallow_fields
 from api import cache, db
 
 
-gene_information = Namespace(
-    "Gene Information", description="Information about Genes", path="/gene_information"
-)
+gene_information = Namespace("Gene Information", description="Information about Genes", path="/gene_information")
 
 # I think this is only needed for Swagger UI POST
 gene_isoforms_request_fields = gene_information.model(
@@ -58,13 +56,7 @@ class GeneAlias(Resource):
 
         if species == "arabidopsis":
             if BARUtils.is_arabidopsis_gene_valid(gene_id):
-                rows = (
-                    db.session.execute(
-                        db.select(AgiAlias).where(AgiAlias.agi == gene_id)
-                    )
-                    .scalars()
-                    .all()
-                )
+                rows = db.session.execute(db.select(AgiAlias).where(AgiAlias.agi == gene_id)).scalars().all()
                 [aliases.append(row.alias) for row in rows]
             else:
                 return BARUtils.error_exit("Invalid gene id"), 400
@@ -122,11 +114,7 @@ class GeneIsoforms(Resource):
             return BARUtils.error_exit("No data for the given species")
 
         # Now get the data
-        rows = (
-            db.session.execute(db.select(database).where(database.gene == gene_id))
-            .scalars()
-            .all()
-        )
+        rows = db.session.execute(db.select(database).where(database.gene == gene_id)).scalars().all()
         [gene_isoforms.append(row.isoform) for row in rows]
 
         # Found isoforms
@@ -192,11 +180,7 @@ class PostGeneIsoforms(Resource):
             return BARUtils.error_exit("Invalid species"), 400
 
         # Query must be run individually for each species
-        rows = (
-            db.session.execute(db.select(database).where(database.gene.in_(genes)))
-            .scalars()
-            .all()
-        )
+        rows = db.session.execute(db.select(database).where(database.gene.in_(genes))).scalars().all()
 
         # If there are any isoforms found, return data
         if len(rows) > 0:

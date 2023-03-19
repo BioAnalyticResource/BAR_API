@@ -74,9 +74,9 @@ class RNASeqUtils:
         # We are querying only some columns because full indexes are made on some columns, now the whole table
         if len(sample_ids) == 0 or sample_ids is None:
             rows = db.session.execute(
-                db.select(
-                    table.data_probeset_id, table.data_bot_id, table.data_signal
-                ).where(table.data_probeset_id == gene_id)
+                db.select(table.data_probeset_id, table.data_bot_id, table.data_signal).where(
+                    table.data_probeset_id == gene_id
+                )
             ).all()
             for row in rows:
                 data[row[1]] = row[2]
@@ -92,9 +92,7 @@ class RNASeqUtils:
                     }
 
             rows = db.session.execute(
-                db.select(
-                    table.data_probeset_id, table.data_bot_id, table.data_signal
-                ).where(
+                db.select(table.data_probeset_id, table.data_bot_id, table.data_signal).where(
                     and_(
                         table.data_probeset_id == gene_id,
                         table.data_bot_id.in_(sample_ids),
@@ -161,16 +159,12 @@ class GetRNASeqGeneExpression(Resource):
             return BARUtils.error_exit(results["error"]), results["error_code"]
 
 
-@rnaseq_gene_expression.route(
-    "/<string:species>/<string:database>/<string:gene_id>/<string:sample_id>"
-)
+@rnaseq_gene_expression.route("/<string:species>/<string:database>/<string:gene_id>/<string:sample_id>")
 class GetRNASeqGeneExpressionSample(Resource):
     @rnaseq_gene_expression.param("species", _in="path", default="arabidopsis")
     @rnaseq_gene_expression.param("database", _in="path", default="single_cell")
     @rnaseq_gene_expression.param("gene_id", _in="path", default="At1g01010")
-    @rnaseq_gene_expression.param(
-        "sample_id", _in="path", default="cluster0_WT1.ExprMean"
-    )
+    @rnaseq_gene_expression.param("sample_id", _in="path", default="cluster0_WT1.ExprMean")
     def get(self, species="", database="", gene_id="", sample_id=""):
         """This end point returns RNA-Seq gene expression data"""
         # Variables

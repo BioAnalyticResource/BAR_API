@@ -12,9 +12,7 @@ from marshmallow import Schema, ValidationError, fields as marshmallow_fields
 from api.models.rice_interactions import Rice_mPLoc
 from api import db
 
-loc = Namespace(
-    "Localizations", description="Sub-cellular gene localization endpoint", path="/loc"
-)
+loc = Namespace("Localizations", description="Sub-cellular gene localization endpoint", path="/loc")
 
 loc_post_ex = loc.model(
     "GeneIsoforms",
@@ -48,13 +46,7 @@ class Localizations(Resource):
         species = escape(species.lower())
         query_gene = escape(query_gene)
         if species == "rice" and BARUtils.is_rice_gene_valid(query_gene, True):
-            rows = (
-                db.session.execute(
-                    db.select(Rice_mPLoc).where(Rice_mPLoc.gene_id == query_gene)
-                )
-                .scalars()
-                .all()
-            )
+            rows = db.session.execute(db.select(Rice_mPLoc).where(Rice_mPLoc.gene_id == query_gene)).scalars().all()
 
             if len(rows) == 0:
                 return (
@@ -100,13 +92,7 @@ class LocalizationsPost(Resource):
                 if not BARUtils.is_rice_gene_valid(gene, True):
                     return BARUtils.error_exit("Invalid gene id"), 400
 
-            rows = (
-                db.session.execute(
-                    db.select(Rice_mPLoc).where(Rice_mPLoc.gene_id.in_(genes))
-                )
-                .scalars()
-                .all()
-            )
+            rows = db.session.execute(db.select(Rice_mPLoc).where(Rice_mPLoc.gene_id.in_(genes))).scalars().all()
         else:
             return BARUtils.error_exit("Invalid species"), 400
 

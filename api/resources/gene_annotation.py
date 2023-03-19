@@ -10,9 +10,7 @@ from api.utils.bar_utils import BARUtils
 from marshmallow import Schema, ValidationError, fields as marshmallow_fields
 from api import db
 
-gene_annotation = Namespace(
-    "Gene Annotation", description="Gene annotation API", path="/gene_annotation"
-)
+gene_annotation = Namespace("Gene Annotation", description="Gene annotation API", path="/gene_annotation")
 
 anntn_post_ex = gene_annotation.model(
     "AntnRiceGenes",
@@ -56,11 +54,7 @@ class GeneAnnotation(Resource):
 
                 # Query AGI Annotation table
                 agi_info = (
-                    db.session.execute(
-                        db.select(AgiAnnotation).where(
-                            AgiAnnotation.annotation.regexp_match(query)
-                        )
-                    )
+                    db.session.execute(db.select(AgiAnnotation).where(AgiAnnotation.annotation.regexp_match(query)))
                     .scalars()
                     .all()
                 )
@@ -69,9 +63,7 @@ class GeneAnnotation(Resource):
                 tair10_curator_info = (
                     db.session.execute(
                         db.select(TAIR10FunctionalDescriptions).where(
-                            TAIR10FunctionalDescriptions.Curator_summary.regexp_match(
-                                query
-                            )
+                            TAIR10FunctionalDescriptions.Curator_summary.regexp_match(query)
                         )
                     )
                     .scalars()
@@ -82,9 +74,7 @@ class GeneAnnotation(Resource):
                 tair10_computational_info = (
                     db.session.execute(
                         db.select(TAIR10FunctionalDescriptions).where(
-                            TAIR10FunctionalDescriptions.Computational_description.regexp_match(
-                                query
-                            )
+                            TAIR10FunctionalDescriptions.Computational_description.regexp_match(query)
                         )
                     )
                     .scalars()
@@ -93,11 +83,7 @@ class GeneAnnotation(Resource):
 
                 # Query GeneRIFs
                 RIFs_info = (
-                    db.session.execute(
-                        db.select(GeneRIFs).where(GeneRIFs.RIF.regexp_match(query))
-                    )
-                    .scalars()
-                    .all()
+                    db.session.execute(db.select(GeneRIFs).where(GeneRIFs.RIF.regexp_match(query))).scalars().all()
                 )
 
                 res.extend(
@@ -146,11 +132,7 @@ class GeneAnnotation(Resource):
             else:
                 # For all other genes
                 rows = (
-                    db.session.execute(
-                        db.select(annot_db).where(
-                            annot_db.annotation.regexp_match(query)
-                        )
-                    )
+                    db.session.execute(db.select(annot_db).where(annot_db.annotation.regexp_match(query)))
                     .scalars()
                     .all()
                 )
@@ -206,11 +188,7 @@ class GeneAnnotationPost(Resource):
             return BARUtils.error_exit("Invalid species"), 400
 
         # Now query the database
-        rows = (
-            db.session.execute(db.select(database).where(database.gene.in_(genes)))
-            .scalars()
-            .all()
-        )
+        rows = db.session.execute(db.select(database).where(database.gene.in_(genes))).scalars().all()
 
         if len(rows) == 0:
             return (
