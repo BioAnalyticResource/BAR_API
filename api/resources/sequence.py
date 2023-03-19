@@ -32,20 +32,14 @@ class Sequence(Resource):
         if species == "tomato":
             if BARUtils.is_tomato_gene_valid(gene_id, True):
                 rows = (
-                    db.session.execute(
-                        db.select(Tomato32SequenceInfo).where(
-                            Tomato32SequenceInfo.gene_id == gene_id
-                        )
-                    )
+                    db.session.execute(db.select(Tomato32SequenceInfo).where(Tomato32SequenceInfo.gene_id == gene_id))
                     .scalars()
                     .all()
                 )
 
                 if len(rows) == 0:
                     return (
-                        BARUtils.error_exit(
-                            "There are no data found for the given gene"
-                        ),
+                        BARUtils.error_exit("There are no data found for the given gene"),
                         400,
                     )
                 else:

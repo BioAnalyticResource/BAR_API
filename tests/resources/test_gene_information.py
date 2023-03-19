@@ -19,16 +19,12 @@ class TestIntegrations(TestCase):
         :return:
         """
         # Valid data
-        response = self.app_client.get(
-            "/gene_information/gene_alias/arabidopsis/At3g24650"
-        )
+        response = self.app_client.get("/gene_information/gene_alias/arabidopsis/At3g24650")
         expected = {"wasSuccessful": True, "data": ["ABI3", "AtABI3", "SIS10"]}
         self.assertEqual(response.json, expected)
 
         # Data not found, but gene is valid
-        response = self.app_client.get(
-            "/gene_information/gene_alias/arabidopsis/At3g24651"
-        )
+        response = self.app_client.get("/gene_information/gene_alias/arabidopsis/At3g24651")
         expected = {
             "wasSuccessful": False,
             "error": "There are no data found for the given gene",
@@ -36,9 +32,7 @@ class TestIntegrations(TestCase):
         self.assertEqual(response.json, expected)
 
         # Invalid Gene
-        response = self.app_client.get(
-            "/gene_information/gene_alias/arabidopsis/At3g2465x"
-        )
+        response = self.app_client.get("/gene_information/gene_alias/arabidopsis/At3g2465x")
         expected = {"wasSuccessful": False, "error": "Invalid gene id"}
         self.assertEqual(response.json, expected)
 
@@ -52,34 +46,24 @@ class TestIntegrations(TestCase):
         :return:
         """
         # Valid data
-        response = self.app_client.get(
-            "/gene_information/gene_isoforms/arabidopsis/AT1G01020"
-        )
+        response = self.app_client.get("/gene_information/gene_isoforms/arabidopsis/AT1G01020")
         expected = {"wasSuccessful": True, "data": ["AT1G01020.1", "AT1G01020.2"]}
         self.assertEqual(response.json, expected)
 
-        response = self.app_client.get(
-            "/gene_information/gene_isoforms/poplar/Potri.001G000300"
-        )
+        response = self.app_client.get("/gene_information/gene_isoforms/poplar/Potri.001G000300")
         expected = {"wasSuccessful": True, "data": ["Potri.001G000300.1"]}
         self.assertEqual(response.json, expected)
 
-        response = self.app_client.get(
-            "/gene_information/gene_isoforms/tomato/Solyc00g005000"
-        )
+        response = self.app_client.get("/gene_information/gene_isoforms/tomato/Solyc00g005000")
         expected = {"wasSuccessful": True, "data": ["Solyc00g005000.3.1"]}
         self.assertEqual(response.json, expected)
 
-        response = self.app_client.get(
-            "/gene_information/gene_isoforms/soybean/Glyma.01G000100"
-        )
+        response = self.app_client.get("/gene_information/gene_isoforms/soybean/Glyma.01G000100")
         expected = {"wasSuccessful": True, "data": ["Glyma.01G000100"]}
         self.assertEqual(response.json, expected)
 
         # Data not found, but gene is valid
-        response = self.app_client.get(
-            "/gene_information/gene_isoforms/arabidopsis/At3g24651"
-        )
+        response = self.app_client.get("/gene_information/gene_isoforms/arabidopsis/At3g24651")
         expected = {
             "wasSuccessful": False,
             "error": "There are no data found for the given gene",
@@ -87,27 +71,21 @@ class TestIntegrations(TestCase):
         self.assertEqual(response.json, expected)
 
         # Data not found, but gene is valid
-        response = self.app_client.get(
-            "/gene_information/gene_isoforms/poplar/Potri.001G000201"
-        )
+        response = self.app_client.get("/gene_information/gene_isoforms/poplar/Potri.001G000201")
         expected = {
             "wasSuccessful": False,
             "error": "There are no data found for the given gene",
         }
         self.assertEqual(response.json, expected)
 
-        response = self.app_client.get(
-            "/gene_information/gene_isoforms/tomato/Solyc00g005001"
-        )
+        response = self.app_client.get("/gene_information/gene_isoforms/tomato/Solyc00g005001")
         expected = {
             "wasSuccessful": False,
             "error": "There are no data found for the given gene",
         }
         self.assertEqual(response.json, expected)
 
-        response = self.app_client.get(
-            "/gene_information/gene_isoforms/soybean/Glyma.01G000102"
-        )
+        response = self.app_client.get("/gene_information/gene_isoforms/soybean/Glyma.01G000102")
         expected = {
             "wasSuccessful": False,
             "error": "There are no data found for the given gene",
@@ -115,27 +93,19 @@ class TestIntegrations(TestCase):
         self.assertEqual(response.json, expected)
 
         # Invalid Gene
-        response = self.app_client.get(
-            "/gene_information/gene_isoforms/arabidopsis/At3g2465x"
-        )
+        response = self.app_client.get("/gene_information/gene_isoforms/arabidopsis/At3g2465x")
         expected = {"wasSuccessful": False, "error": "Invalid gene id"}
         self.assertEqual(response.json, expected)
 
-        response = self.app_client.get(
-            "/gene_information/gene_isoforms/poplar/Potri.001G00020x"
-        )
+        response = self.app_client.get("/gene_information/gene_isoforms/poplar/Potri.001G00020x")
         expected = {"wasSuccessful": False, "error": "Invalid gene id"}
         self.assertEqual(response.json, expected)
 
-        response = self.app_client.get(
-            "/gene_information/gene_isoforms/tomato/Solyc00g00500x"
-        )
+        response = self.app_client.get("/gene_information/gene_isoforms/tomato/Solyc00g00500x")
         expected = {"wasSuccessful": False, "error": "Invalid gene id"}
         self.assertEqual(response.json, expected)
 
-        response = self.app_client.get(
-            "/gene_information/gene_isoforms/soybean/Glyma.01G00010x"
-        )
+        response = self.app_client.get("/gene_information/gene_isoforms/soybean/Glyma.01G00010x")
         expected = {"wasSuccessful": False, "error": "Invalid gene id"}
         self.assertEqual(response.json, expected)
 

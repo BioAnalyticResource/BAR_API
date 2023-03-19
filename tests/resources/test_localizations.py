@@ -74,9 +74,7 @@ class TestIntegrations(TestCase):
         self.assertEqual(data, expected)
 
         # Invalid gene ID
-        response = self.app_client.post(
-            "/loc/", json={"species": "rice", "genes": ["abc", "xyz"]}
-        )
+        response = self.app_client.post("/loc/", json={"species": "rice", "genes": ["abc", "xyz"]})
         data = json.loads(response.get_data(as_text=True))
         expected = {"wasSuccessful": False, "error": "Invalid gene id"}
         self.assertEqual(data, expected)

@@ -15,43 +15,25 @@ class AgiAnnotation(db.Model):
     __bind_key__ = "eplant2"
     __tablename__ = "agi_annotation"
 
-    agi: db.Mapped[str] = db.mapped_column(
-        db.String(11), nullable=False, primary_key=True
-    )
-    annotation: db.Mapped[str] = db.mapped_column(
-        db.String(64000), nullable=False, primary_key=False
-    )
+    agi: db.Mapped[str] = db.mapped_column(db.String(11), nullable=False, primary_key=True)
+    annotation: db.Mapped[str] = db.mapped_column(db.String(64000), nullable=False, primary_key=False)
 
 
 class TAIR10FunctionalDescriptions(db.Model):
     __bind_key__ = "eplant2"
     __tablename__ = "TAIR10_functional_descriptions"
 
-    Model_name: db.Mapped[str] = db.mapped_column(
-        db.String(32), nullable=False, primary_key=True
-    )
-    Type: db.Mapped[str] = db.mapped_column(
-        db.String(32), nullable=False, primary_key=True
-    )
-    Short_description: db.Mapped[str] = db.mapped_column(
-        TEXT(), nullable=True, primary_key=True
-    )
-    Curator_summary: db.Mapped[str] = db.mapped_column(
-        TEXT(), nullable=True, primary_key=True
-    )
-    Computational_description: db.Mapped[str] = db.mapped_column(
-        TEXT(), nullable=True, primary_key=True
-    )
+    Model_name: db.Mapped[str] = db.mapped_column(db.String(32), nullable=False, primary_key=True)
+    Type: db.Mapped[str] = db.mapped_column(db.String(32), nullable=False, primary_key=True)
+    Short_description: db.Mapped[str] = db.mapped_column(TEXT(), nullable=True, primary_key=True)
+    Curator_summary: db.Mapped[str] = db.mapped_column(TEXT(), nullable=True, primary_key=True)
+    Computational_description: db.Mapped[str] = db.mapped_column(TEXT(), nullable=True, primary_key=True)
 
 
 class GeneRIFs(db.Model):
     __bind_key__ = "eplant2"
     __tablename__ = "geneRIFs"
 
-    gene: db.Mapped[str] = db.mapped_column(
-        db.String(11), nullable=False, primary_key=True
-    )
-    pubmed: db.Mapped[str] = db.mapped_column(
-        db.String(11), nullable=False, primary_key=True
-    )
+    gene: db.Mapped[str] = db.mapped_column(db.String(11), nullable=False, primary_key=True)
+    pubmed: db.Mapped[str] = db.mapped_column(db.String(11), nullable=False, primary_key=True)
     RIF: db.Mapped[str] = db.mapped_column(TEXT(), nullable=False, primary_key=True)

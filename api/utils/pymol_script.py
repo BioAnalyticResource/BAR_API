@@ -42,31 +42,21 @@ def findRange(chain):
     endResidue = sequence.strip()[-1]  # get residue name of the last AA
     cmd.select(
         "start",
-        "(first resn {start} {chain})".format(
-            start=protein_letters[startResidue], chain=chain_str
-        ),
+        "(first resn {start} {chain})".format(start=protein_letters[startResidue], chain=chain_str),
     )  # select the first
     cmd.select(
         "end",
-        "(last resn {end} {chain})".format(
-            end=protein_letters[endResidue], chain=chain_str
-        ),
+        "(last resn {end} {chain})".format(end=protein_letters[endResidue], chain=chain_str),
     )  # select the last
     stored.residues = []  # place holder array
-    cmd.iterate(
-        "start", "stored.residues.append(resv)"
-    )  # append the first residue postion int to place holder
-    cmd.iterate(
-        "end", "stored.residues.append(resv)"
-    )  # append the last residue position int
+    cmd.iterate("start", "stored.residues.append(resv)")  # append the first residue postion int to place holder
+    cmd.iterate("end", "stored.residues.append(resv)")  # append the last residue position int
     if chain == "":
-        return (
-            "residues range start from {start}({startRes}) to {end}({endRes})".format(
-                start=stored.residues[0],
-                startRes=startResidue,
-                end=stored.residues[1],
-                endRes=endResidue,
-            )
+        return "residues range start from {start}({startRes}) to {end}({endRes})".format(
+            start=stored.residues[0],
+            startRes=startResidue,
+            end=stored.residues[1],
+            endRes=endResidue,
         )
     else:
         return "residues range in chain {c} start from {start}({startRes}) to {end}({endRes})".format(
@@ -94,9 +84,7 @@ class PymolCmds:
         for each in snps:
             print("each", each)
             try:
-                locus_selected = cmd.select(
-                    query_string + each[1:-1]
-                )  # select by residue postion
+                locus_selected = cmd.select(query_string + each[1:-1])  # select by residue postion
                 resn_selected = cmd.select(
                     query_string + each[1:-1] + " & resn " + protein_letters[each[0]]
                 )  # select by residue position + name
@@ -104,23 +92,15 @@ class PymolCmds:
                 return {"status": False, "msg": "CmdException error for select"}
             else:
                 if locus_selected == 0:  # empty select by residue position, wrong locus
-                    rangeInfo = findRange(
-                        chain
-                    )  # get sequence start and end information
+                    rangeInfo = findRange(chain)  # get sequence start and end information
                     # print('out of range;' + each[1:-1] + ';' + rangeInfo)
                     return {
                         "status": False,
                         "msg": f"Invalid SNP input range, see locus {each[1:-1]}; {rangeInfo}",
                     }
-                if (
-                    resn_selected == 0
-                ):  # empty select by residue position + name, unmatch original AA
-                    cmd.select(
-                        "curr", query_string + each[1:-1]
-                    )  # select the residue at the postion, named "curr"
-                    ori = cmd.get_fastastr("curr").strip()[
-                        -1
-                    ]  # get the residue name for "curr"
+                if resn_selected == 0:  # empty select by residue position + name, unmatch original AA
+                    cmd.select("curr", query_string + each[1:-1])  # select the residue at the postion, named "curr"
+                    ori = cmd.get_fastastr("curr").strip()[-1]  # get the residue name for "curr"
                     # print('invalid:' + each[1:-1] + " ori:%s" % ori)  # print the correct original AA
                     return {
                         "status": False,
