@@ -187,12 +187,12 @@ class SampleDefinitions(Resource):
         aliases = {}
 
         if species == "tomato":
-            rows = db.session.execute(TomatoLinesLookup).scalars().all()
+            rows = db.session.execute(db.select(TomatoLinesLookup)).scalars().all()
             for row in rows:
                 aliases[row.lines_id] = {"alias": row.alias, "species": row.species}
 
         elif species == "soybean":
-            rows = db.session.execute(SoybeanSampleNames).scalars().all()
+            rows = db.session.execute(db.select(SoybeanSampleNames)).scalars().all()
             for row in rows:
                 aliases[row.sample_id] = {
                     "dataset": row.dataset,
