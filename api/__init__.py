@@ -5,7 +5,6 @@ from flask_cors import CORS
 from flask_caching import Cache
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from sqlalchemy import MetaData
 import os
 
 
@@ -23,21 +22,17 @@ def create_app():
     elif os.environ.get("BAR"):
         # The BAR
         bar_app.config.from_pyfile(os.environ.get("BAR_API_PATH"), silent=True)
-    else:
-        # The localhost
-        bar_app.config.from_pyfile(
-            os.path.expanduser("~") + "/.config/BAR_API.cfg", silent=True
-        )
 
-        # Load environment variables
+        # Load environment variables on the BAR
         if bar_app.config.get("PHENIX"):
             os.environ["PHENIX"] = bar_app.config.get("PHENIX")
         if bar_app.config.get("PHENIX_VERSION"):
             os.environ["PHENIX_VERSION"] = bar_app.config.get("PHENIX_VERSION")
         if bar_app.config.get("PATH"):
-            os.environ["PATH"] = (
-                bar_app.config.get("PATH") + ":/usr/local/phenix-1.18.2-3874/build/bin"
-            )
+            os.environ["PATH"] = bar_app.config.get("PATH") + ":/usr/local/phenix-1.18.2-3874/build/bin"
+    else:
+        # The localhost
+        bar_app.config.from_pyfile(os.path.expanduser("~") + "/.config/BAR_API.cfg", silent=True)
 
     # Initialize the databases
     db.init_app(bar_app)
@@ -58,11 +53,9 @@ def create_app():
     # Now add routes
     from api.resources.gene_information import gene_information
     from api.resources.rnaseq_gene_expression import rnaseq_gene_expression
-
     from api.resources.proxy import bar_proxy
     from api.resources.thalemine import thalemine
-
-    # from api.resources.snps import snps
+    from api.resources.snps import snps
     from api.resources.sequence import sequence
     from api.resources.gene_annotation import gene_annotation
     from api.resources.interactions import itrns
@@ -73,7 +66,7 @@ def create_app():
     bar_api.add_namespace(rnaseq_gene_expression)
     bar_api.add_namespace(bar_proxy)
     bar_api.add_namespace(thalemine)
-    # bar_api.add_namespace(snps)
+    bar_api.add_namespace(snps)
     bar_api.add_namespace(sequence)
     bar_api.add_namespace(gene_annotation)
     bar_api.add_namespace(itrns)
@@ -84,7 +77,7 @@ def create_app():
 
 
 # Initialize database system
-db = SQLAlchemy(metadata=MetaData())
+db = SQLAlchemy()
 
 # Initialize Redis
 cache = Cache(

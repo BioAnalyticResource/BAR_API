@@ -11,9 +11,7 @@ from flask import send_from_directory
 from api.utils.bar_utils import BARUtils
 from api.utils.efp_utils import eFPUtils
 
-efp_image = Namespace(
-    "eFP Image", description="eFP Image generation service", path="/efp_image"
-)
+efp_image = Namespace("eFP Image", description="eFP Image generation service", path="/efp_image")
 
 
 @efp_image.route("/")
@@ -33,9 +31,7 @@ class eFPImageList(Resource):
 
 
 @efp_image.route("/<string:efp>/<string:view>/<string:mode>/<string:gene_1>")
-@efp_image.route(
-    "/<string:efp>/<string:view>/<string:mode>/<string:gene_1>/<string:gene_2>"
-)
+@efp_image.route("/<string:efp>/<string:view>/<string:mode>/<string:gene_1>/<string:gene_2>")
 class eFPImage(Resource):
     @efp_image.param("efp", _in="path", default="efp_arabidopsis")
     @efp_image.param("view", _in="path", default="Developmental_Map")
@@ -106,9 +102,7 @@ class eFPImage(Resource):
             # File is not found
             if match is None:
                 return (
-                    BARUtils.error_exit(
-                        "Failed to retrieve image. Data for the given gene may not exist."
-                    ),
+                    BARUtils.error_exit("Failed to retrieve image. Data for the given gene may not exist."),
                     500,
                 )
 
@@ -138,9 +132,7 @@ class eFPImage(Resource):
                 file.write(img_data)
             r.close()
 
-        return send_from_directory(
-            directory="../output/", path=path, mimetype="image/png"
-        )
+        return send_from_directory(directory="../output/", path=path, mimetype="image/png")
 
 
 @efp_image.route("/get_efp_dir/<species>")
@@ -186,31 +178,15 @@ class eFPXMLSVGList(Resource):
                 folder == "plant" and "plant" not in return_obj
             ):  # experiment and plant can have multiple folders
                 return_obj[folder] = {}
-                efp_path = (
-                    abs_path_inner_dir + "/efps"
-                    if folder == "experiment"
-                    else abs_path_inner_dir
-                )
+                efp_path = abs_path_inner_dir + "/efps" if folder == "experiment" else abs_path_inner_dir
                 efp_url = "/efps/" if folder == "experiment" else "/"
-                for exp_folder in next(os.walk(efp_path))[
-                    1
-                ]:  # next(os.walk)[1] returns dirnames only, no files
+                for exp_folder in next(os.walk(efp_path))[1]:  # next(os.walk)[1] returns dirnames only, no files
                     if (
                         XML_name in next(os.walk(efp_path + "/" + exp_folder))[2]
                     ):  # check if XML/SVG valid for this ePlant species
                         return_obj[folder][exp_folder] = {
-                            "XML-link": base_url
-                            + folder
-                            + efp_url
-                            + exp_folder
-                            + "/"
-                            + XML_name,
-                            "SVG_link": base_url
-                            + folder
-                            + efp_url
-                            + exp_folder
-                            + "/"
-                            + SVG_name,
+                            "XML-link": base_url + folder + efp_url + exp_folder + "/" + XML_name,
+                            "SVG_link": base_url + folder + efp_url + exp_folder + "/" + SVG_name,
                             "name": exp_folder,
                         }
 
