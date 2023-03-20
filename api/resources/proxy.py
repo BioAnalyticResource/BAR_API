@@ -30,9 +30,7 @@ class ATTEDApi4(Resource):
 
         # Now query the web service
         payload = {"gene": gene_id, "topN": top_n}
-        resp = requests.get(
-            "https://atted.jp/cgi-bin/api4.cgi", params=payload, headers=request_headers
-        )
+        resp = requests.get("https://atted.jp/cgi-bin/api4.cgi", params=payload, headers=request_headers)
 
         # I think the remote API always returns status 200, so skip status checking
         return resp.json()

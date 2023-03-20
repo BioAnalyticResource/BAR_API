@@ -12,39 +12,29 @@ class TestIntegrations(TestCase):
         :return:
         """
         # Valid data
-        response = self.app_client.get(
-            "/rnaseq_gene_expression/arabidopsis/single_cell/At1g01010"
-        )
+        response = self.app_client.get("/rnaseq_gene_expression/arabidopsis/single_cell/At1g01010")
         # Note: pytest is running from project root. So path is relative to project root
         with open("tests/data/get_arabidopsis_single_cell_gene.json") as json_file:
             expected = load(json_file)
         self.assertEqual(response.json, expected)
 
         # Invalid gene
-        response = self.app_client.get(
-            "/rnaseq_gene_expression/arabidopsis/single_cell/At1g0101x"
-        )
+        response = self.app_client.get("/rnaseq_gene_expression/arabidopsis/single_cell/At1g0101x")
         expected = {"wasSuccessful": False, "error": "Invalid gene id"}
         self.assertEqual(response.json, expected)
 
         # Invalid database
-        response = self.app_client.get(
-            "/rnaseq_gene_expression/arabidopsis/single_c;ell/At1g01010"
-        )
+        response = self.app_client.get("/rnaseq_gene_expression/arabidopsis/single_c;ell/At1g01010")
         expected = {"wasSuccessful": False, "error": "Invalid database"}
         self.assertEqual(response.json, expected)
 
         # Invalid species
-        response = self.app_client.get(
-            "/rnaseq_gene_expression/abc/single_cell/At1g01010"
-        )
+        response = self.app_client.get("/rnaseq_gene_expression/abc/single_cell/At1g01010")
         expected = {"wasSuccessful": False, "error": "Invalid species"}
         self.assertEqual(response.json, expected)
 
         # No data for a valid gene
-        response = self.app_client.get(
-            "/rnaseq_gene_expression/arabidopsis/single_cell/At1g01011"
-        )
+        response = self.app_client.get("/rnaseq_gene_expression/arabidopsis/single_cell/At1g01011")
         expected = {
             "wasSuccessful": False,
             "error": "There are no data found for the given gene",
@@ -63,9 +53,7 @@ class TestIntegrations(TestCase):
         self.assertEqual(response.json, expected)
 
         # Invalid sample id
-        response = self.app_client.get(
-            "/rnaseq_gene_expression/arabidopsis/single_cell/At1g01010/abc;xyz"
-        )
+        response = self.app_client.get("/rnaseq_gene_expression/arabidopsis/single_cell/At1g01010/abc;xyz")
         expected = {"wasSuccessful": False, "error": "Invalid sample id"}
         self.assertEqual(response.json, expected)
 
