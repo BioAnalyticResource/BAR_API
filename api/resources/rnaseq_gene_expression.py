@@ -1,11 +1,12 @@
 import re
 from flask_restx import Namespace, Resource, fields
 from flask import request
-from sqlalchemy.exc import OperationalError
-from api.models.single_cell import SingleCell
 from api.utils.bar_utils import BARUtils
 from marshmallow import Schema, ValidationError, fields as marshmallow_fields
 from markupsafe import escape
+from api import db
+from api.models.single_cell import SingleCell
+from sqlalchemy import and_
 
 rnaseq_gene_expression = Namespace(
     "RNA-Seq Gene Expression",
@@ -63,26 +64,23 @@ class RNASeqUtils:
 
         # Set model
         if database == "single_cell":
-            database = SingleCell()
+            table = SingleCell
             # Example: cluster0_WT1.ExprMean
             sample_regex = re.compile(r"^\D+\d+_WT\d+.ExprMean$", re.I)
         else:
             return {"success": False, "error": "Invalid database", "error_code": 400}
 
         # Now query the database
+        # We are querying only some columns because full indexes are made on some columns, now the whole table
         if len(sample_ids) == 0 or sample_ids is None:
-            try:
-                rows = database.query.filter_by(data_probeset_id=gene_id).all()
-            except OperationalError:
-                return {
-                    "success": False,
-                    "error": "An internal error has occurred",
-                    "error_code": 500,
-                }
+            rows = db.session.execute(
+                db.select(table.data_probeset_id, table.data_bot_id, table.data_signal).where(
+                    table.data_probeset_id == gene_id
+                )
+            ).all()
+            for row in rows:
+                data[row[1]] = row[2]
 
-            if len(rows) > 0:
-                for row in rows:
-                    data[row.data_bot_id] = row.data_signal
         else:
             # Validate all samples
             for sample_id in sample_ids:
@@ -93,22 +91,16 @@ class RNASeqUtils:
                         "error_code": 400,
                     }
 
-            try:
-                # This optimizes query of MySQL in operator.
-                rows = database.query.filter(
-                    SingleCell.data_probeset_id == gene_id,
-                    SingleCell.data_bot_id.in_(sample_ids),
-                ).all()
-            except OperationalError:
-                return {
-                    "success": False,
-                    "error": "An internal error has occurred",
-                    "error_code": 500,
-                }
-
-            if len(rows) > 0:
-                for row in rows:
-                    data[row.data_bot_id] = row.data_signal
+            rows = db.session.execute(
+                db.select(table.data_probeset_id, table.data_bot_id, table.data_signal).where(
+                    and_(
+                        table.data_probeset_id == gene_id,
+                        table.data_bot_id.in_(sample_ids),
+                    )
+                )
+            ).all()
+            for row in rows:
+                data[row[1]] = row[2]
 
         return {"success": True, "data": data}
 
@@ -167,16 +159,12 @@ class GetRNASeqGeneExpression(Resource):
             return BARUtils.error_exit(results["error"]), results["error_code"]
 
 
-@rnaseq_gene_expression.route(
-    "/<string:species>/<string:database>/<string:gene_id>/<string:sample_id>"
-)
+@rnaseq_gene_expression.route("/<string:species>/<string:database>/<string:gene_id>/<string:sample_id>")
 class GetRNASeqGeneExpressionSample(Resource):
     @rnaseq_gene_expression.param("species", _in="path", default="arabidopsis")
     @rnaseq_gene_expression.param("database", _in="path", default="single_cell")
     @rnaseq_gene_expression.param("gene_id", _in="path", default="At1g01010")
-    @rnaseq_gene_expression.param(
-        "sample_id", _in="path", default="cluster0_WT1.ExprMean"
-    )
+    @rnaseq_gene_expression.param("sample_id", _in="path", default="cluster0_WT1.ExprMean")
     def get(self, species="", database="", gene_id="", sample_id=""):
         """This end point returns RNA-Seq gene expression data"""
         # Variables

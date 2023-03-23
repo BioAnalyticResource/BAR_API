@@ -89,9 +89,7 @@ class BARUtils:
         :param gene:
         :return: True if valid
         """
-        if gene and re.search(
-            r"Adur\d{1,10}_comp\d{1,3}_\D{1,3}\d{1,3}_seq\d{1,5}", gene, re.I
-        ):
+        if gene and re.search(r"Adur\d{1,10}_comp\d{1,3}_\D{1,3}\d{1,3}_seq\d{1,5}", gene, re.I):
             return True
         else:
             return False
@@ -102,9 +100,7 @@ class BARUtils:
         :param gene:
         :return: True if valid
         """
-        if gene and re.search(
-            r"^((Glyma\d{1,3}g\d{1,6}\.?\d?)|(Glyma\.\d{1,3}g\d{1,8}))$", gene, re.I
-        ):
+        if gene and re.search(r"^((Glyma\d{1,3}g\d{1,6}\.?\d?)|(Glyma\.\d{1,3}g\d{1,8}))$", gene, re.I):
             return True
         else:
             return False
@@ -148,8 +144,6 @@ class BARUtils:
         """This function connects to redis
         :returns: redis connection
         """
-        r = redis.Redis(
-            host="localhost", port=6379, password=os.environ.get("BAR_REDIS_PASSWORD")
-        )
+        r = redis.Redis(host="localhost", port=6379, password=os.environ.get("BAR_REDIS_PASSWORD"))
 
         return r
