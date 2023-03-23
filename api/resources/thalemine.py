@@ -4,9 +4,7 @@ from markupsafe import escape
 from api import cache
 import requests
 
-thalemine = Namespace(
-    "ThaleMine", description="ThaleMine API client", path="/thalemine"
-)
+thalemine = Namespace("ThaleMine", description="ThaleMine API client", path="/thalemine")
 
 # Request header of almost all ThaleMine Requests
 request_headers = {

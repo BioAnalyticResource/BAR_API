@@ -7,7 +7,7 @@ for predicted sequences (Phyre2) that we host
 from flask_restx import Namespace, Resource
 from api.utils.bar_utils import BARUtils
 from markupsafe import escape
-from sqlalchemy.exc import OperationalError
+from api import db
 from api.models.tomato_sequence import Tomato32SequenceInfo
 
 sequence = Namespace("Sequence", description="Sequence API", path="/sequence")
@@ -31,28 +31,28 @@ class Sequence(Resource):
 
         if species == "tomato":
             if BARUtils.is_tomato_gene_valid(gene_id, True):
-                try:
-                    rows = Tomato32SequenceInfo.query.filter_by(gene_id=gene_id).all()
-                    if len(rows) == 0:
-                        return (
-                            BARUtils.error_exit(
-                                "There are no data found for the given gene"
-                            ),
-                            400,
-                        )
-                    else:
-                        return {
-                            "status": "success",
-                            "result": [
-                                {
-                                    "length": len(rows[0].full_seq) - 1,
-                                    "gene_id": rows[0].gene_id,
-                                    "sequence": rows[0].full_seq,
-                                }
-                            ],
-                        }
-                except OperationalError:
-                    return BARUtils.error_exit("An internal error has occurred"), 500
+                rows = (
+                    db.session.execute(db.select(Tomato32SequenceInfo).where(Tomato32SequenceInfo.gene_id == gene_id))
+                    .scalars()
+                    .all()
+                )
+
+                if len(rows) == 0:
+                    return (
+                        BARUtils.error_exit("There are no data found for the given gene"),
+                        400,
+                    )
+                else:
+                    return {
+                        "status": "success",
+                        "result": [
+                            {
+                                "length": len(rows[0].full_seq) - 1,
+                                "gene_id": rows[0].gene_id,
+                                "sequence": rows[0].full_seq,
+                            }
+                        ],
+                    }
             else:
                 return BARUtils.error_exit("Invalid gene id"), 400
         else:
