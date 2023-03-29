@@ -14,6 +14,9 @@ mysql -u $DB_USER -p$DB_PASS < ./config/databases/single_cell.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/embryo.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/shoot_apex.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/germination.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/silique.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/klepikova.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/dna_damage.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/eplant2.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/summarization.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/poplar_nssnp.sql
