@@ -5,7 +5,10 @@ from api.utils.bar_utils import BARUtils
 from marshmallow import Schema, ValidationError, fields as marshmallow_fields
 from markupsafe import escape
 from api import db
-from api.models.single_cell import SingleCell
+from api.models.single_cell import SampleData as SingleCell
+from api.models.embryo import SampleData as Embryo
+from api.models.shoot_apex import SampleData as ShootApex
+from api.models.germination import SampleData as Germination
 from sqlalchemy import and_
 
 rnaseq_gene_expression = Namespace(
@@ -67,6 +70,19 @@ class RNASeqUtils:
             table = SingleCell
             # Example: cluster0_WT1.ExprMean
             sample_regex = re.compile(r"^\D+\d+_WT\d+.ExprMean$", re.I)
+
+        elif database == "embryo":
+            table = Embryo
+            sample_regex = re.compile(r"^\D{1,3}_\d$|Med_CTRL$", re.I)
+
+        elif database == "shoot_apex":
+            table = ShootApex
+            sample_regex = re.compile(r"^\D{1,5}\d{0,2}$", re.I)
+
+        elif database == "germination":
+            table = Germination
+            sample_regex = re.compile(r"^\d{1,3}\D{1,4}_\d{1,3}|harvest_\d|Med_CTRL$", re.I)
+
         else:
             return {"success": False, "error": "Invalid database", "error_code": 400}
 

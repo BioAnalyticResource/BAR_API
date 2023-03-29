@@ -1,7 +1,7 @@
 from api import db
 
 
-class SingleCell(db.Model):
+class SampleData(db.Model):
     __bind_key__ = "single_cell"
     __tablename__ = "sample_data"
 
