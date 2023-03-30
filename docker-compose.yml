@@ -36,6 +36,4 @@ services:
     volumes:
       - './api:/usr/src/app/api'
       - './tests:/usr/src/app/tests'
-      - '/Users/isaiahhazelwood/Documents/UofT/Y3/BCB330/data/homologue-info-pop3.0:/usr/src/pairs:ro'
-      - '/Users/isaiahhazelwood/Documents/UofT/Y3/BCB330/data/hotspots:/usr/src/hotspots:ro'
 
