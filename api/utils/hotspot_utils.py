@@ -1,15 +1,17 @@
 from typing import List, Tuple, Dict
 
 # Files with probabilities of SNP significance based on shuffles
-P_SNP_DIR = "/Users/isaiahhazelwood/Documents/UofT/Y3/BCB330/data/hotspots/"
-ARA_STRUCT_P_SNP = P_SNP_DIR + "ara_struct_10_0.1_10000.tsv"
-POP_STRUCT_P_SNP = P_SNP_DIR + "pop_struct_10_0.1_10000.tsv"
-ARA_SEQ_P_SNP = P_SNP_DIR + "ara_seq_3_0.1_10000.tsv"
-POP_SEQ_P_SNP = P_SNP_DIR + "pop_seq_3_0.1_10000.tsv"
+# P_SNP_DIR = "/Users/isaiahhazelwood/Documents/UofT/Y3/BCB330/data/hotspots/"
+P_SNP_DIR = "/usr/src/hotspots"
+ARA_STRUCT_P_SNP = P_SNP_DIR + "/ara_struct_10_0.1_10000.tsv"
+POP_STRUCT_P_SNP = P_SNP_DIR + "/pop_struct_10_0.1_10000.tsv"
+ARA_SEQ_P_SNP = P_SNP_DIR + "/ara_seq_3_0.1_10000.tsv"
+POP_SEQ_P_SNP = P_SNP_DIR + "/pop_seq_3_0.1_10000.tsv"
 
 # File with analyzed homologue pairs
-HOMOLOGUE_DIR = "/Users/isaiahhazelwood/Documents/UofT/Y3/BCB330/data/homologue-info-pop3.0/"
-ARA_POP_HOMOLOGUE = HOMOLOGUE_DIR + "ara-pop3.0-all-valid.tsv"
+# HOMOLOGUE_DIR = "/Users/isaiahhazelwood/Documents/UofT/Y3/BCB330/data/homologue-info-pop3.0/"
+HOMOLOGUE_DIR = "/usr/src/pairs"
+ARA_POP_HOMOLOGUE = HOMOLOGUE_DIR + "/ara-pop3.0-all-valid.tsv"
 
 
 def verify_ara_pop_homologue(ara_id: str, pop_id: str = ""):
@@ -25,9 +27,11 @@ def verify_ara_pop_homologue(ara_id: str, pop_id: str = ""):
             cols = line.split('\t')
             if cols[0][4:-4] == ara_id:
                 if pop_id == "": # Found poplar match
-                    return (cols[0][4:-4], cols[1][4:-4], cols[2], cols[3])
-                elif pop_id == cols[1][4:-4]: # Poplar valid pair
-                    return (cols[0][4:-4], cols[1][4:-4], cols[2], cols[3])
+                    return (cols[0][4:-4].upper(), cols[1][4:-4].upper(), 
+                            cols[2], cols[3])
+                elif pop_id == cols[1][4:-4].upper(): # Poplar valid pair
+                    return (cols[0][4:-4].upper(), cols[1][4:-4].upper(), 
+                            cols[2], cols[3])
                 else: # Poplar invalid
                     return None
         return None # Ara not matched         
@@ -61,7 +65,7 @@ def load_p_snp_data(id: str, spe: str, shuffle: str = "struct"):
     # Load data from file
     with open(p_snps_file, 'r') as f_p_snps:
         for line in f_p_snps:
-            if line.startswith(id):
+            if line.upper().startswith(id):
                 return [float(p) for p in line.split('\t')[1].split(',')]
     return None
 
