@@ -55,6 +55,15 @@ class UtilsUnitTest(TestCase):
         result = BARUtils.is_poplar_gene_valid("abc")
         self.assertFalse(result)
 
+    def test_is_sorghum_gene_valid(self):
+        # Valid gene
+        result = BARUtils.is_sorghum_gene_valid("Sobic.001G000100")
+        self.assertTrue(result)
+
+        # Invalid gene
+        result = BARUtils.is_sorghum_gene_valid("abc")
+        self.assertFalse(result)
+
     def test_format_poplar(self):
         # Test format
         result = BARUtils.format_poplar("potri.019g123900.1")

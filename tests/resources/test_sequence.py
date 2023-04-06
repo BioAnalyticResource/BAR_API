@@ -33,3 +33,8 @@ class TestIntegrations(TestCase):
         response = self.app_client.get("/sequence/Tomato/abc")
         expected = {"wasSuccessful": False, "error": "Invalid gene id"}
         self.assertEqual(response.json, expected)
+
+        # No data
+        response = self.app_client.get("/sequence/Tomato/Solyc99g999999.1.1")
+        expected = {"wasSuccessful": False, "error": "There are no data found for the given gene"}
+        self.assertEqual(response.json, expected)
