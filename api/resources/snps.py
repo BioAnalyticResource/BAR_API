@@ -199,7 +199,7 @@ class SampleDefinitions(Resource):
                     "PI number": row.dataset_sample,
                 }
         else:
-            return BARUtils.error_exit("Invalid gene id"), 400
+            return BARUtils.error_exit("Invalid species"), 400
 
         return BARUtils.success_exit(aliases)
 

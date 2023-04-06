@@ -22,10 +22,11 @@ class eFPImageList(Resource):
         # If this is updated, update efp_utils.py and unit tests as well
         species = [
             "efp_arabidopsis",
-            "efp_cannabis",
             "efp_arachis",
-            "efp_soybean",
+            "efp_cannabis",
             "efp_maize",
+            "efp_sorghum",
+            "efp_soybean",
         ]
         return BARUtils.success_exit(species)
 
