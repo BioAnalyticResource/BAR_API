@@ -7,29 +7,21 @@ class UtilsUnitTest(TestCase):
         """Tests for eFP input data"""
 
         # eFP Arabidopsis compare mode
-        result = eFPUtils.is_efp_input_valid(
-            "efp_arabidopsis", "Root", "Compare", "At1g01010", "At1g01030"
-        )
+        result = eFPUtils.is_efp_input_valid("efp_arabidopsis", "Root", "Compare", "At1g01010", "At1g01030")
         self.assertTrue(result[0])
         self.assertIsNone(result[1])
 
-        result = eFPUtils.is_efp_input_valid(
-            "efp_arabidopsis", "Root", "Compare", "At1g01010", "Abc"
-        )
+        result = eFPUtils.is_efp_input_valid("efp_arabidopsis", "Root", "Compare", "At1g01010", "Abc")
         expected = "Gene 2 is invalid."
         self.assertFalse(result[0])
         self.assertEqual(result[1], expected)
 
         # eFP Cannabis gene1
-        result = eFPUtils.is_efp_input_valid(
-            "efp_cannabis", "Cannabis_Atlas", "Absolute", "AGQN03000001"
-        )
+        result = eFPUtils.is_efp_input_valid("efp_cannabis", "Cannabis_Atlas", "Absolute", "AGQN03000001")
         self.assertTrue(result[0])
         self.assertIsNone(result[1])
 
-        result = eFPUtils.is_efp_input_valid(
-            "efp_cannabis", "Cannabis_Atlas", "Absolute", "Abc"
-        )
+        result = eFPUtils.is_efp_input_valid("efp_cannabis", "Cannabis_Atlas", "Absolute", "Abc")
         expected = "Gene 1 is invalid."
         self.assertFalse(result[0])
         self.assertEqual(result[1], expected)
@@ -41,23 +33,17 @@ class UtilsUnitTest(TestCase):
         self.assertTrue(result[0])
         self.assertIsNone(result[1])
 
-        result = eFPUtils.is_efp_input_valid(
-            "efp_cannabis", "Cannabis_Atlas", "Compare", "AGQN03000001", "Abc"
-        )
+        result = eFPUtils.is_efp_input_valid("efp_cannabis", "Cannabis_Atlas", "Compare", "AGQN03000001", "Abc")
         expected = "Gene 2 is invalid."
         self.assertFalse(result[0])
         self.assertEqual(result[1], expected)
 
         # eFP Arachis Absolute
-        result = eFPUtils.is_efp_input_valid(
-            "efp_arachis", "Arachis_Atlas", "Absolute", "Adur10002_comp0_c0_seq1"
-        )
+        result = eFPUtils.is_efp_input_valid("efp_arachis", "Arachis_Atlas", "Absolute", "Adur10002_comp0_c0_seq1")
         self.assertTrue(result[0])
         self.assertIsNone(result[1])
 
-        result = eFPUtils.is_efp_input_valid(
-            "efp_arachis", "Arachis_Atlas", "Absolute", "Abc"
-        )
+        result = eFPUtils.is_efp_input_valid("efp_arachis", "Arachis_Atlas", "Absolute", "Abc")
         expected = "Gene 1 is invalid."
         self.assertFalse(result[0])
         self.assertEqual(result[1], expected)
@@ -81,15 +67,11 @@ class UtilsUnitTest(TestCase):
         self.assertEqual(result[1], expected)
 
         # eFP Soybean Absolute
-        result = eFPUtils.is_efp_input_valid(
-            "efp_soybean", "soybean", "Absolute", "Glyma06g47400"
-        )
+        result = eFPUtils.is_efp_input_valid("efp_soybean", "soybean", "Absolute", "Glyma06g47400")
         self.assertTrue(result[0])
         self.assertIsNone(result[1])
 
-        result = eFPUtils.is_efp_input_valid(
-            "efp_soybean", "soybean", "Absolute", "Abc"
-        )
+        result = eFPUtils.is_efp_input_valid("efp_soybean", "soybean", "Absolute", "Abc")
         expected = "Gene 1 is invalid."
         self.assertFalse(result[0])
         self.assertEqual(result[1], expected)
@@ -105,9 +87,7 @@ class UtilsUnitTest(TestCase):
         self.assertTrue(result[0])
         self.assertIsNone(result[1])
 
-        result = eFPUtils.is_efp_input_valid(
-            "efp_soybean", "soybean", "Compare", "Glyma06g47400", "Abc"
-        )
+        result = eFPUtils.is_efp_input_valid("efp_soybean", "soybean", "Compare", "Glyma06g47400", "Abc")
         expected = "Gene 2 is invalid."
         self.assertFalse(result[0])
         self.assertEqual(result[1], expected)
@@ -125,15 +105,11 @@ class UtilsUnitTest(TestCase):
         self.assertEqual(result[1], expected)
 
         # eFP Maize Absolute
-        result = eFPUtils.is_efp_input_valid(
-            "efp_maize", "maize_iplant", "Absolute", "Zm00001d046170"
-        )
+        result = eFPUtils.is_efp_input_valid("efp_maize", "maize_iplant", "Absolute", "Zm00001d046170")
         self.assertTrue(result[0])
         self.assertIsNone(result[1])
 
-        result = eFPUtils.is_efp_input_valid(
-            "efp_maize", "maize_iplant", "Absolute", "Abc"
-        )
+        result = eFPUtils.is_efp_input_valid("efp_maize", "maize_iplant", "Absolute", "Abc")
         expected = "Gene 1 is invalid."
         self.assertFalse(result[0])
         self.assertEqual(result[1], expected)
@@ -149,9 +125,33 @@ class UtilsUnitTest(TestCase):
         self.assertTrue(result[0])
         self.assertIsNone(result[1])
 
+        result = eFPUtils.is_efp_input_valid("efp_maize", "maize_iplant", "Compare", "Zm00001d046170", "Abc")
+        expected = "Gene 2 is invalid."
+        self.assertFalse(result[0])
+        self.assertEqual(result[1], expected)
+
+        # eFP Sorghum Absolute
+        result = eFPUtils.is_efp_input_valid("efp_sorghum", "Stress_Atlas", "Absolute", "Sobic.001G000100")
+        self.assertTrue(result[0])
+        self.assertIsNone(result[1])
+
+        result = eFPUtils.is_efp_input_valid("efp_sorghum", "Stress_Atlas", "Absolute", "Abc")
+        expected = "Gene 1 is invalid."
+        self.assertFalse(result[0])
+        self.assertEqual(result[1], expected)
+
+        # eFP Maize gene 2
         result = eFPUtils.is_efp_input_valid(
-            "efp_maize", "maize_iplant", "Compare", "Zm00001d046170", "Abc"
+            "efp_sorghum",
+            "Stress_Atlas",
+            "Compare",
+            "Sobic.001G000100",
+            "Sobic.001G000200",
         )
+        self.assertTrue(result[0])
+        self.assertIsNone(result[1])
+
+        result = eFPUtils.is_efp_input_valid("efp_sorghum", "Stress_Atlas", "Compare", "Sobic.001G000100", "Abc")
         expected = "Gene 2 is invalid."
         self.assertFalse(result[0])
         self.assertEqual(result[1], expected)

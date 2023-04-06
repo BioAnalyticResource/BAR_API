@@ -12,39 +12,29 @@ class TestIntegrations(TestCase):
         :return:
         """
         # Valid data
-        response = self.app_client.get(
-            "/rnaseq_gene_expression/arabidopsis/single_cell/At1g01010"
-        )
+        response = self.app_client.get("/rnaseq_gene_expression/arabidopsis/single_cell/At1g01010")
         # Note: pytest is running from project root. So path is relative to project root
         with open("tests/data/get_arabidopsis_single_cell_gene.json") as json_file:
             expected = load(json_file)
         self.assertEqual(response.json, expected)
 
         # Invalid gene
-        response = self.app_client.get(
-            "/rnaseq_gene_expression/arabidopsis/single_cell/At1g0101x"
-        )
+        response = self.app_client.get("/rnaseq_gene_expression/arabidopsis/single_cell/At1g0101x")
         expected = {"wasSuccessful": False, "error": "Invalid gene id"}
         self.assertEqual(response.json, expected)
 
         # Invalid database
-        response = self.app_client.get(
-            "/rnaseq_gene_expression/arabidopsis/single_c;ell/At1g01010"
-        )
+        response = self.app_client.get("/rnaseq_gene_expression/arabidopsis/single_c;ell/At1g01010")
         expected = {"wasSuccessful": False, "error": "Invalid database"}
         self.assertEqual(response.json, expected)
 
         # Invalid species
-        response = self.app_client.get(
-            "/rnaseq_gene_expression/abc/single_cell/At1g01010"
-        )
+        response = self.app_client.get("/rnaseq_gene_expression/abc/single_cell/At1g01010")
         expected = {"wasSuccessful": False, "error": "Invalid species"}
         self.assertEqual(response.json, expected)
 
         # No data for a valid gene
-        response = self.app_client.get(
-            "/rnaseq_gene_expression/arabidopsis/single_cell/At1g01011"
-        )
+        response = self.app_client.get("/rnaseq_gene_expression/arabidopsis/single_cell/At1g01011")
         expected = {
             "wasSuccessful": False,
             "error": "There are no data found for the given gene",
@@ -63,9 +53,7 @@ class TestIntegrations(TestCase):
         self.assertEqual(response.json, expected)
 
         # Invalid sample id
-        response = self.app_client.get(
-            "/rnaseq_gene_expression/arabidopsis/single_cell/At1g01010/abc;xyz"
-        )
+        response = self.app_client.get("/rnaseq_gene_expression/arabidopsis/single_cell/At1g01010/abc;xyz")
         expected = {"wasSuccessful": False, "error": "Invalid sample id"}
         self.assertEqual(response.json, expected)
 
@@ -148,4 +136,38 @@ class TestIntegrations(TestCase):
         }
         response = self.app_client.post("/rnaseq_gene_expression/", json=data)
         expected = {"wasSuccessful": False, "error": "Invalid sample id"}
+        self.assertEqual(response.json, expected)
+
+    def test_get_arabidopsis_data(self):
+        """
+        This function run tests on all other data. Only regex test is need here
+        :return:
+        """
+        # Valid data
+        response = self.app_client.get("/rnaseq_gene_expression/arabidopsis/embryo/At1g01010/pg_1")
+        expected = {"wasSuccessful": True, "data": {"pg_1": 0.67}}
+        self.assertEqual(response.json, expected)
+
+        response = self.app_client.get("/rnaseq_gene_expression/arabidopsis/shoot_apex/At1g01010/ufo")
+        expected = {"wasSuccessful": True, "data": {"UFO": 1.61714}}
+        self.assertEqual(response.json, expected)
+
+        response = self.app_client.get("/rnaseq_gene_expression/arabidopsis/germination/At1g01010/0h_1")
+        expected = {"wasSuccessful": True, "data": {"0h_1": 2.79788}}
+        self.assertEqual(response.json, expected)
+
+        response = self.app_client.get(
+            "/rnaseq_gene_expression/arabidopsis/silique/At1g01010/12_dap-1_ATCACG_L006_R1_001"
+        )
+        expected = {"wasSuccessful": True, "data": {"12_dap-1_ATCACG_L006_R1_001": 2.62347}}
+        self.assertEqual(response.json, expected)
+
+        response = self.app_client.get("/rnaseq_gene_expression/arabidopsis/klepikova/At1g01010/SRR3581336")
+        expected = {"wasSuccessful": True, "data": {"SRR3581336": 1.80585}}
+        self.assertEqual(response.json, expected)
+
+        response = self.app_client.get(
+            "/rnaseq_gene_expression/arabidopsis/dna_damage/At1g01010/col-0_rep1_12hr_minus_Y"
+        )
+        expected = {"wasSuccessful": True, "data": {"col-0_rep1_12hr_minus_Y": 59}}
         self.assertEqual(response.json, expected)

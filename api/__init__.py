@@ -5,7 +5,6 @@ from flask_cors import CORS
 from flask_caching import Cache
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from sqlalchemy import MetaData
 import os
 
 
@@ -23,35 +22,20 @@ def create_app():
     elif os.environ.get("BAR"):
         # The BAR
         bar_app.config.from_pyfile(os.environ.get("BAR_API_PATH"), silent=True)
-    else:
-        # The localhost
-        bar_app.config.from_pyfile(
-            os.path.expanduser("~") + "/.config/BAR_API.cfg", silent=True
-        )
 
-        # Load environment variables
+        # Load environment variables on the BAR
         if bar_app.config.get("PHENIX"):
             os.environ["PHENIX"] = bar_app.config.get("PHENIX")
         if bar_app.config.get("PHENIX_VERSION"):
             os.environ["PHENIX_VERSION"] = bar_app.config.get("PHENIX_VERSION")
         if bar_app.config.get("PATH"):
-            os.environ["PATH"] = (
-                bar_app.config.get("PATH") + ":/usr/local/phenix-1.18.2-3874/build/bin"
-            )
+            os.environ["PATH"] = bar_app.config.get("PATH") + ":/usr/local/phenix-1.18.2-3874/build/bin"
+    else:
+        # The localhost
+        bar_app.config.from_pyfile(os.path.expanduser("~") + "/.config/BAR_API.cfg", silent=True)
 
     # Initialize the databases
-    annotations_lookup_db.init_app(bar_app)
-    eplant2_db.init_app(bar_app)
-    eplant_poplar_db.init_app(bar_app)
-    eplant_soybean_db.init_app(bar_app)
-    eplant_rice_db.init_app(bar_app)
-    eplant_tomato_db.init_app(bar_app)
-    poplar_nssnp_db.init_app(bar_app)
-    soybean_nssnp_db.init_app(bar_app)
-    tomato_nssnp_db.init_app(bar_app)
-    tomato_seq_db.init_app(bar_app)
-    single_cell_db.init_app(bar_app)
-    rice_interactions_db.init_app(bar_app)
+    db.init_app(bar_app)
 
     # Initialize the cache
     cache.init_app(bar_app)
@@ -69,7 +53,6 @@ def create_app():
     # Now add routes
     from api.resources.gene_information import gene_information
     from api.resources.rnaseq_gene_expression import rnaseq_gene_expression
-
     from api.resources.proxy import bar_proxy
     from api.resources.thalemine import thalemine
     from api.resources.snps import snps
@@ -94,20 +77,7 @@ def create_app():
 
 
 # Initialize database system
-# This is needed because multiple databases have the same database name
-# Metadata cannot have multiple tables with the same name
-annotations_lookup_db = SQLAlchemy(metadata=MetaData())
-eplant2_db = SQLAlchemy(metadata=MetaData())
-eplant_poplar_db = SQLAlchemy(metadata=MetaData())
-eplant_rice_db = SQLAlchemy(metadata=MetaData())
-eplant_soybean_db = SQLAlchemy(metadata=MetaData())
-eplant_tomato_db = SQLAlchemy(metadata=MetaData())
-poplar_nssnp_db = SQLAlchemy(metadata=MetaData())
-tomato_nssnp_db = SQLAlchemy(metadata=MetaData())
-soybean_nssnp_db = SQLAlchemy(metadata=MetaData())
-tomato_seq_db = SQLAlchemy(metadata=MetaData())
-single_cell_db = SQLAlchemy(metadata=MetaData())
-rice_interactions_db = SQLAlchemy(metadata=MetaData())
+db = SQLAlchemy()
 
 # Initialize Redis
 cache = Cache(

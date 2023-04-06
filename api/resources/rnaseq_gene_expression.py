@@ -1,11 +1,18 @@
 import re
 from flask_restx import Namespace, Resource, fields
 from flask import request
-from sqlalchemy.exc import OperationalError
-from api.models.single_cell import SingleCell
 from api.utils.bar_utils import BARUtils
 from marshmallow import Schema, ValidationError, fields as marshmallow_fields
 from markupsafe import escape
+from api import db
+from api.models.single_cell import SampleData as SingleCell
+from api.models.embryo import SampleData as Embryo
+from api.models.shoot_apex import SampleData as ShootApex
+from api.models.germination import SampleData as Germination
+from api.models.silique import SampleData as Silique
+from api.models.klepikova import SampleData as Klepikova
+from api.models.dna_damage import SampleData as DNADamage
+from sqlalchemy import and_
 
 rnaseq_gene_expression = Namespace(
     "RNA-Seq Gene Expression",
@@ -61,28 +68,52 @@ class RNASeqUtils:
         else:
             return {"success": False, "error": "Invalid species", "error_code": 400}
 
-        # Set model
+        # Set model: Arabidopsis
         if database == "single_cell":
-            database = SingleCell()
+            table = SingleCell
             # Example: cluster0_WT1.ExprMean
             sample_regex = re.compile(r"^\D+\d+_WT\d+.ExprMean$", re.I)
+
+        elif database == "embryo":
+            table = Embryo
+            sample_regex = re.compile(r"^\D{1,3}_\d$|Med_CTRL$", re.I)
+
+        elif database == "shoot_apex":
+            table = ShootApex
+            sample_regex = re.compile(r"^\D{1,5}\d{0,2}$", re.I)
+
+        elif database == "germination":
+            table = Germination
+            sample_regex = re.compile(r"^\d{1,3}\D{1,4}_\d{1,3}|harvest_\d|Med_CTRL$", re.I)
+
+        elif database == "silique":
+            table = Silique
+            # Insane regex! Needs work
+            sample_regex = re.compile(r"^\d{1,3}_dap.{1,58}_R1_001|Med_CTRL$", re.I)
+
+        elif database == "klepikova":
+            table = Klepikova
+            sample_regex = re.compile(r"^SRR\d{1,9}|Med_CTRL$", re.I)
+
+        elif database == "dna_damage":
+            table = DNADamage
+            # Another insane regex!
+            sample_regex = re.compile(r"^\D{1,3}.{1,30}_plus_Y|\D{1,3}.{1,30}_minus_Y|Med_CTRL$", re.I)
+
         else:
             return {"success": False, "error": "Invalid database", "error_code": 400}
 
         # Now query the database
+        # We are querying only some columns because full indexes are made on some columns, now the whole table
         if len(sample_ids) == 0 or sample_ids is None:
-            try:
-                rows = database.query.filter_by(data_probeset_id=gene_id).all()
-            except OperationalError:
-                return {
-                    "success": False,
-                    "error": "An internal error has occurred",
-                    "error_code": 500,
-                }
+            rows = db.session.execute(
+                db.select(table.data_probeset_id, table.data_bot_id, table.data_signal).where(
+                    table.data_probeset_id == gene_id
+                )
+            ).all()
+            for row in rows:
+                data[row[1]] = row[2]
 
-            if len(rows) > 0:
-                for row in rows:
-                    data[row.data_bot_id] = row.data_signal
         else:
             # Validate all samples
             for sample_id in sample_ids:
@@ -93,22 +124,16 @@ class RNASeqUtils:
                         "error_code": 400,
                     }
 
-            try:
-                # This optimizes query of MySQL in operator.
-                rows = database.query.filter(
-                    SingleCell.data_probeset_id == gene_id,
-                    SingleCell.data_bot_id.in_(sample_ids),
-                ).all()
-            except OperationalError:
-                return {
-                    "success": False,
-                    "error": "An internal error has occurred",
-                    "error_code": 500,
-                }
-
-            if len(rows) > 0:
-                for row in rows:
-                    data[row.data_bot_id] = row.data_signal
+            rows = db.session.execute(
+                db.select(table.data_probeset_id, table.data_bot_id, table.data_signal).where(
+                    and_(
+                        table.data_probeset_id == gene_id,
+                        table.data_bot_id.in_(sample_ids),
+                    )
+                )
+            ).all()
+            for row in rows:
+                data[row[1]] = row[2]
 
         return {"success": True, "data": data}
 
@@ -167,16 +192,12 @@ class GetRNASeqGeneExpression(Resource):
             return BARUtils.error_exit(results["error"]), results["error_code"]
 
 
-@rnaseq_gene_expression.route(
-    "/<string:species>/<string:database>/<string:gene_id>/<string:sample_id>"
-)
+@rnaseq_gene_expression.route("/<string:species>/<string:database>/<string:gene_id>/<string:sample_id>")
 class GetRNASeqGeneExpressionSample(Resource):
     @rnaseq_gene_expression.param("species", _in="path", default="arabidopsis")
     @rnaseq_gene_expression.param("database", _in="path", default="single_cell")
     @rnaseq_gene_expression.param("gene_id", _in="path", default="At1g01010")
-    @rnaseq_gene_expression.param(
-        "sample_id", _in="path", default="cluster0_WT1.ExprMean"
-    )
+    @rnaseq_gene_expression.param("sample_id", _in="path", default="cluster0_WT1.ExprMean")
     def get(self, species="", database="", gene_id="", sample_id=""):
         """This end point returns RNA-Seq gene expression data"""
         # Variables

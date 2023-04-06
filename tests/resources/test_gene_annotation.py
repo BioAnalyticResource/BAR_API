@@ -38,7 +38,7 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
-    def test_post_anntns(self):
+    def test_post_gene_annotation(self):
         """
         This function test retrieving gene annotations for various species' genes via POST.
         """
@@ -66,7 +66,7 @@ class TestIntegrations(TestCase):
 
         # Invalid species
         response = self.app_client.post(
-            "/interactions/",
+            "/gene_annotation/",
             json={"species": "poplar", "genes": ["LOC_Os01g01080", "LOC_Os01g73310"]},
         )
         data = json.loads(response.get_data(as_text=True))
@@ -74,16 +74,14 @@ class TestIntegrations(TestCase):
         self.assertEqual(data, expected)
 
         # Invalid gene ID
-        response = self.app_client.post(
-            "/interactions/", json={"species": "rice", "genes": ["abc", "xyz"]}
-        )
+        response = self.app_client.post("/interactions/", json={"species": "rice", "genes": ["abc", "xyz"]})
         data = json.loads(response.get_data(as_text=True))
         expected = {"wasSuccessful": False, "error": "Invalid gene id"}
         self.assertEqual(data, expected)
 
         # No data for valid gene IDs
         response = self.app_client.post(
-            "/interactions/",
+            "/gene_annotation/",
             json={"species": "rice", "genes": ["LOC_Os01g01085", "LOC_Os01g52565"]},
         )
         data = json.loads(response.get_data(as_text=True))
