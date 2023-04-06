@@ -15,10 +15,11 @@ class TestIntegrations(TestCase):
             "wasSuccessful": True,
             "data": [
                 "efp_arabidopsis",
-                "efp_cannabis",
                 "efp_arachis",
-                "efp_soybean",
+                "efp_cannabis",
                 "efp_maize",
+                "efp_sorghum",
+                "efp_soybean",
             ],
         }
         self.assertEqual(response.json, expected)
