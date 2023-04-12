@@ -367,10 +367,15 @@ class Hotspots(Resource):
     @snps.param("pval", _in="path", default="0.95")
     @snps.param("araid", _in="path", default="AT2G31240.1")
     @snps.param("popid", _in="path", default="Potri.005G222900.3")
-    # @cache.cached() # What does this do?
+    # @cache.cached()
 
     def get(self, pval="", araid="", popid=""):
-        # Parse pval to float
+        """This endpoint identifies locations of structure hotspots at the 
+        given p-value in the given homologous pair of proteins. 
+        One ID may be "unknown" and will be autofilled to the homologous pair 
+        of the other ID.
+        """
+        # Parse pval to float. Raise error if invalid p-value.
         try:
             pval = float(pval)
         except:
@@ -378,8 +383,17 @@ class Hotspots(Resource):
         if pval <= 0 or pval >= 1:
             return BARUtils.error_exit("pval must be between 0 and 1"), 400
 
-        # Verify ID pair
-        araid, popid = araid.upper(), popid.upper()
+        # Prepare IDs: Set to uppercase if ID, or None if "unknown"
+        if araid == "unknown":
+            araid = None
+        else:
+            araid = araid.upper()
+        if popid == "unknown":
+            popid = None
+        else:
+            popid = popid.upper()
+
+        # Verify pair provided, or find matching ID. Raise error if invalid.
         valid_pair = hotspot_utils.verify_ara_pop_homologue(araid, popid)
         if valid_pair is None:
             return BARUtils.error_exit("Invalid ID pair provided"), 400
@@ -404,19 +418,26 @@ class Hotspots(Resource):
         # Find hotspot positions and return
         ara_both_sig_idx = hotspot_utils.get_sig_index(ara_both_sig)
         pop_both_sig_idx = hotspot_utils.get_sig_index(pop_both_sig)
-        hotspot_locations = {"ara_hotspots": ara_both_sig_idx, 
-                             "pop_hotspots": pop_both_sig_idx}
-        return BARUtils.success_exit(hotspot_locations)
+        output = {"ara_id": araid, 
+                  "pop_id": popid,
+                  "ara_hotspots": ara_both_sig_idx, 
+                  "pop_hotspots": pop_both_sig_idx}
+        return BARUtils.success_exit(output)
 
 
 @snps.route("/seq_hotspot/<string:pval>/<string:araid>/<string:popid>")
 class Hotspots(Resource):
     @snps.param("pval", _in="path", default="0.95")
-    @snps.param("araid", _in="path", default="AT2G31240.1")
-    @snps.param("popid", _in="path", default="Potri.005G222900.3")
-    # @cache.cached() # What does this do?
+    @snps.param("araid", _in="path", default="AT1G56500.1")
+    @snps.param("popid", _in="path", default="Potri.013G007800.2")
+    # @cache.cached()
 
     def get(self, pval="", araid="", popid=""):
+        """This endpoint identifies locations of sequence hotspots at the 
+        given p-value in the given homologous pair of proteins. 
+        One ID may be "unknown" and will be autofilled to the homologous pair 
+        of the other ID.
+        """
         # Parse pval to float
         try:
             pval = float(pval)
@@ -425,8 +446,17 @@ class Hotspots(Resource):
         if pval <= 0 or pval >= 1:
             return BARUtils.error_exit("pval must be between 0 and 1"), 400
 
-        # Verify ID pair
-        araid, popid = araid.upper(), popid.upper()
+        # Prepare IDs: Set to uppercase if ID, or None if "unknown"
+        if araid == "unknown":
+            araid = None
+        else:
+            araid = araid.upper()
+        if popid == "unknown":
+            popid = None
+        else:
+            popid = popid.upper()
+
+        # Verify pair provided, or find matching ID. Raise error if invalid.
         valid_pair = hotspot_utils.verify_ara_pop_homologue(araid, popid)
         if valid_pair is None:
             return BARUtils.error_exit("Invalid ID pair provided"), 400
@@ -451,7 +481,9 @@ class Hotspots(Resource):
         # Find hotspot positions and return
         ara_both_sig_idx = hotspot_utils.get_sig_index(ara_both_sig)
         pop_both_sig_idx = hotspot_utils.get_sig_index(pop_both_sig)
-        hotspot_locations = {"ara_hotspots": ara_both_sig_idx, 
-                             "pop_hotspots": pop_both_sig_idx}
-        return BARUtils.success_exit(hotspot_locations)
+        output = {"ara_id": araid, 
+                  "pop_id": popid,
+                  "ara_hotspots": ara_both_sig_idx, 
+                  "pop_hotspots": pop_both_sig_idx}
+        return BARUtils.success_exit(output)
 

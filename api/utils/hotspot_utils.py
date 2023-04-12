@@ -14,35 +14,50 @@ HOMOLOGUE_DIR = "/usr/src/pairs"
 ARA_POP_HOMOLOGUE = HOMOLOGUE_DIR + "/ara-pop3.0-all-valid.tsv"
 
 
-def verify_ara_pop_homologue(ara_id: str, pop_id: str = ""):
+def verify_ara_pop_homologue(ara_id, pop_id):
+    """If both Arabidopsis and Poplar IDs are given, verifies they are a 
+    homologous pair. If only only one is given and the other is None
+    find the matching homologous ID. Returns the IDs and their sequences
+
+    :param ara_id: str of TAIR10 gene ID, or None
+    :param pop_id: str of Pop v3.0 gene ID, or None
+    :returns: Tuple of IDs and sequences, or None if invalid IDs
+    :rtype: Tuple[str, str, str, str] or None
+
     """
-    If only ara_id is provided, find the matching poplar pair.
-    If ara_id and pop_id are provided, ensure they are a homologue pair.
-    Returns a valid pair and their sequences as a tuple 
-        (araid, popid, araseq, popseq), or None if not a valid pair.
-    """
+    if ara_id is None and pop_id is None: # Both invalid inputs
+        return None
     with open(ARA_POP_HOMOLOGUE, 'r') as f_ara_pop_homologue:
         for line in f_ara_pop_homologue:
             # Columns: araid, popid, araseq, popseq, rmsd
             cols = line.split('\t')
-            if cols[0][4:-4] == ara_id:
-                if pop_id == "": # Found poplar match
-                    return (cols[0][4:-4].upper(), cols[1][4:-4].upper(), 
-                            cols[2], cols[3])
-                elif pop_id == cols[1][4:-4].upper(): # Poplar valid pair
-                    return (cols[0][4:-4].upper(), cols[1][4:-4].upper(), 
-                            cols[2], cols[3])
-                else: # Poplar invalid
-                    return None
-        return None # Ara not matched         
+            if (cols[0][4:-4].upper() == ara_id and 
+                cols[1][4:-4].upper() == pop_id): # Both ID match
+                return (cols[0][4:-4].upper(), cols[1][4:-4].upper(), 
+                        cols[2], cols[3])
+            if (cols[0][4:-4].upper() == ara_id and 
+                pop_id is None): # Ara ID match, fill Pop
+                return (cols[0][4:-4].upper(), cols[1][4:-4].upper(), 
+                        cols[2], cols[3])
+            if (cols[1][4:-4].upper() == pop_id and 
+                ara_id is None): # Pop ID match, fill Ara
+                return (cols[0][4:-4].upper(), cols[1][4:-4].upper(), 
+                        cols[2], cols[3])
+        return None # No match        
 
 
-def load_p_snp_data(id: str, spe: str, shuffle: str = "struct"):
-    """
-    Load the probability of SNP significance at each resude for the given protein.
-    spe is either "ara" or "pop".
-    shuffle is either struct or seq, for shuffle approach.
-    If invalid id, return None.
+def load_p_snp_data(id, spe, shuffle = "struct"):
+    """Load the probability of SNP significance at each residue of the given 
+    protein from the cache file.
+
+    :param id: str of TAIR10 or Pop v3.0 gene ID
+    :param spe: Either "ara" or "pop" based on id species
+    :param shuffle: Either "struct" or "seq" for significance method. 
+        Defaults to "struct"
+    :returns: List of significance scores at residue positions, 
+        or None if invalid ID.
+    :rtype: List[float] or None
+
     """
     # Select appropriate file
     if spe == "ara":
@@ -70,69 +85,101 @@ def load_p_snp_data(id: str, spe: str, shuffle: str = "struct"):
     return None
 
 
-def mark_significant(null_probs: List[float], p: float) -> List[bool]:
-    """
-    Mark residues with p-significant SNPs.
+def mark_significant(null_probs, p):
+    """Mark residues with p-significant SNPs.
+
+    :param null_probs: List of significance scores at residue positions.
+    :param p: p-value for significance
+    :returns: Boolean list of residues significant at given p-value.
+    :rtype: List[bool]
+
     """
     return [(prob >= p) for prob in null_probs]
 
 
-def match_residues(aln: Tuple[str, str]) -> Dict[int, int]:
-    """
-    For each index in the first protein which aligns with a residue in the 
-    second protein (not a gap), provide the corresponding index.
+def match_residues(aln):
+    """For each index in the first protein which aligns with a residue in the 
+    second protein (not a gap), provide the aligned index in the second protein.
+
+    :param aln: Tuple of Arabidopsis and Poplar protein sequences
+    :returns: Dict from index in first protein to index in second protein
+    :rtype: Dict[int, int]
     """
     matchings = {}
-    curr_prot1 = 1
-    curr_prot2 = 1
-    for i in range(len(aln[0])):
+    curr_prot1 = 1 # Current index in first protein
+    curr_prot2 = 1 # Current index in second protein
+    # Iterate over all positions in the proteins
+    for i in range(len(aln[0])): 
+        # If both not gaps, match the indices
         if (aln[0][i] != '-' and aln[1][i] != '-'):
             matchings[curr_prot1] = curr_prot2 
+        # If the position in the first protein is not a gap, increment index
         if aln[0][i] != '-':
             curr_prot1 += 1
+        # If the position in the second protein is not a gap, increment index
         if aln[1][i] != '-':
             curr_prot2 += 1
     return matchings
 
 
-def significant_in_both(sig1: List[bool], sig2: List[bool], 
-                        aln_matching: Dict[int, int]) -> \
-                            Tuple[List[bool], List[bool]]:
-    """
-    For each aligned pair of residues, mark it as significant if both residues
-    are individually marked as significant. 
-    Returns a significance list for both proteins.
+def significant_in_both(sig1, sig2, aln_matching):
+    """Mark a residue as significant in both if it aligns with a residue 
+    in the other protein and those residues are both marked significant.
+    
+    :param sig1: Boolean list of significant residues in protein 1.
+    :param sig2: Boolean list of significant residues in protein 2.
+    :param aln_matching: Dictionary of aligned indices from protein 1 to 2.
+    :returns: Two Boolean lists of significant residues in both proteins
+    :rtype: List[bool], List[bool]
     """
     # Create significance array for overlap, initialize to false
     both_sig1 = [False] * len(sig1)
     both_sig2 = [False] * len(sig2)
-    for i in aln_matching: # Only consider aligned residues
+    # For each aligned index in protein 1
+    for i in aln_matching: 
+        # If that reside and the counterpart in protein 2 are both significant,
+        # mark those residues as significant in both.
+        # Dictionary stores 1-indexed positions, list is 0-indexed
         if sig1[i - 1] and sig2[aln_matching[i] - 1]:
             both_sig1[i - 1] = True
             both_sig2[aln_matching[i] - 1] = True
     return (both_sig1, both_sig2)
 
 
-def get_sig_index(sig: List[bool]) -> List[int]:
-    """
-    Return the 1-based indexes marked as significant (true in input list).
+def get_sig_index(sig):
+    """Return the 1-based indexes marked as significant (true in input list).
+
+    :param sig: Boolean list of significant residues.
+    :returns: List of 1-indexed positions marked significant.
+    :rtype: List[int]
     """
     return [(i + 1) for i in range(len(sig)) if sig[i]]
 
 
 # Find hotspot clusters
-def cluster_components(hotspots: List[int], 
-                       neighbours: Dict[int, Tuple[int]]) -> List[List[int]]:
-    """
-    Determine clusters of hotspots residues, using DFS to find connected 
-    components (in the neighbourhood graph) as a cluster. 
+def cluster_components(hotspots, neighbours):
+    """Determine clusters of hotspots residues. Clusters are connected 
+    components in the neighbourhood graph, found using DFS.
+
+    BFS algorithm: Initialize a frontier of positions to explore.
+    Add the starting residue to the frontier. While the frontier is not empty, 
+    remove the last item from the frontier and add its significant non-explored
+    residues to the frontier.
+
+    :param hotspots: List of hotspot indices
+    :param neighbours: Adjacency list of neighbourhood graph, mapping each index
+        to a tuple of neighbouring indices
+    :returns: List of clusters, each a list of indices
+    :rtype: List[List[int]]
     """
     clusters = []
-    # Track explored residues, and only explore hotspot residues
-    # explored and residue_fronter is 0-indexed
-    # neighbors and clusters is 1-indexed.
+    # Track explored residues. Set non-hotspot residues to explored, so the 
+    # algorithm will not visit them.
+
     explored = [not hotspot for hotspot in hotspots]
     residue_frontier = []
+    # explored and residue_fronter is 0-indexed
+    # neighbors and clusters is 1-indexed.
     for i in range(len(hotspots)): # O-indexed i
         if not explored[i]:
             residue_frontier.append(i) # Expand: add to frontier, set explored
