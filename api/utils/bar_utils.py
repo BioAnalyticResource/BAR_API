@@ -121,6 +121,17 @@ class BARUtils:
             return False
 
     @staticmethod
+    def is_sorghum_gene_valid(gene):
+        """This function verifies if Arabidopsis gene is valid
+        :param gene:
+        :return:
+        """
+        if re.search(r"^(Sobic.\d{0,5}G\d{0,10}|Sobic.K\d{0,10})$", gene, re.I):
+            return True
+        else:
+            return False
+
+    @staticmethod
     def is_integer(data):
         """Check if the input is at max ten figure number.
         :param data: int number
