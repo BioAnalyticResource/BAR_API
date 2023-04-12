@@ -107,6 +107,32 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
+    def test_get_sample_definitions(self):
+        """
+        Test cases for sample definition
+        """
+        # Tomato
+        response = self.app_client.get("/snps/tomato/samples")
+        expected = {"wasSuccessful": True, "data": {"001": {"alias": "Moneymaker", "species": "Solanum lycopersicum"}}}
+        self.assertEqual(response.json, expected)
+
+        # Soybean
+        response = self.app_client.get("/snps/soybean/samples")
+        expected = {
+            "wasSuccessful": True,
+            "data": {
+                "Gm_H002": {"dataset": "Torkamaneh_Laroche_2019", "PI number": "X5302-1-52-3-2-B"},
+                "Gm_H003": {"dataset": "Torkamaneh_Laroche_2019", "PI number": "OACInwood"},
+                "Gm_H004": {"dataset": "Torkamaneh_Laroche_2019", "PI number": "OACDrayton"},
+            },
+        }
+        self.assertEqual(response.json, expected)
+
+        # Invalid
+        response = self.app_client.get("/snps/abc/samples")
+        expected = {"wasSuccessful": False, "error": "Invalid species"}
+        self.assertEqual(response.json, expected)
+
     @pytest.mark.pymolneeded
     def test_pymol_snps(self):
         """
