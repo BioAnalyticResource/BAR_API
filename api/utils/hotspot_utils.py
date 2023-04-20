@@ -15,7 +15,7 @@ ARA_POP_HOMOLOGUE = HOMOLOGUE_DIR + "/ara-pop3.0-all-valid.tsv"
 
 
 def verify_ara_pop_homologue(ara_id, pop_id):
-    """If both Arabidopsis and Poplar IDs are given, verifies they are a 
+    """If both Arabidopsis and Poplar IDs are given, verifies they are a
     homologous pair. If only only one is given and the other is None
     find the matching homologous ID. Returns the IDs and their sequences
 
@@ -25,36 +25,30 @@ def verify_ara_pop_homologue(ara_id, pop_id):
     :rtype: Tuple[str, str, str, str] or None
 
     """
-    if ara_id is None and pop_id is None: # Both invalid inputs
+    if ara_id is None and pop_id is None:  # Both invalid inputs
         return None
-    with open(ARA_POP_HOMOLOGUE, 'r') as f_ara_pop_homologue:
+    with open(ARA_POP_HOMOLOGUE, "r") as f_ara_pop_homologue:
         for line in f_ara_pop_homologue:
             # Columns: araid, popid, araseq, popseq, rmsd
-            cols = line.split('\t')
-            if (cols[0][4:-4].upper() == ara_id and 
-                cols[1][4:-4].upper() == pop_id): # Both ID match
-                return (cols[0][4:-4].upper(), cols[1][4:-4].upper(), 
-                        cols[2], cols[3])
-            if (cols[0][4:-4].upper() == ara_id and 
-                pop_id is None): # Ara ID match, fill Pop
-                return (cols[0][4:-4].upper(), cols[1][4:-4].upper(), 
-                        cols[2], cols[3])
-            if (cols[1][4:-4].upper() == pop_id and 
-                ara_id is None): # Pop ID match, fill Ara
-                return (cols[0][4:-4].upper(), cols[1][4:-4].upper(), 
-                        cols[2], cols[3])
-        return None # No match        
+            cols = line.split("\t")
+            if cols[0][4:-4].upper() == ara_id and cols[1][4:-4].upper() == pop_id:  # Both ID match
+                return (cols[0][4:-4].upper(), cols[1][4:-4].upper(), cols[2], cols[3])
+            if cols[0][4:-4].upper() == ara_id and pop_id is None:  # Ara ID match, fill Pop
+                return (cols[0][4:-4].upper(), cols[1][4:-4].upper(), cols[2], cols[3])
+            if cols[1][4:-4].upper() == pop_id and ara_id is None:  # Pop ID match, fill Ara
+                return (cols[0][4:-4].upper(), cols[1][4:-4].upper(), cols[2], cols[3])
+        return None  # No match
 
 
-def load_p_snp_data(id, spe, shuffle = "struct"):
-    """Load the probability of SNP significance at each residue of the given 
+def load_p_snp_data(id, spe, shuffle="struct"):
+    """Load the probability of SNP significance at each residue of the given
     protein from the cache file.
 
     :param id: str of TAIR10 or Pop v3.0 gene ID
     :param spe: Either "ara" or "pop" based on id species
-    :param shuffle: Either "struct" or "seq" for significance method. 
+    :param shuffle: Either "struct" or "seq" for significance method.
         Defaults to "struct"
-    :returns: List of significance scores at residue positions, 
+    :returns: List of significance scores at residue positions,
         or None if invalid ID.
     :rtype: List[float] or None
 
@@ -74,14 +68,14 @@ def load_p_snp_data(id, spe, shuffle = "struct"):
             p_snps_file = POP_SEQ_P_SNP
         else:
             return None
-    else: 
+    else:
         return None
 
     # Load data from file
-    with open(p_snps_file, 'r') as f_p_snps:
+    with open(p_snps_file, "r") as f_p_snps:
         for line in f_p_snps:
             if line.upper().startswith(id):
-                return [float(p) for p in line.split('\t')[1].split(',')]
+                return [float(p) for p in line.split("\t")[1].split(",")]
     return None
 
 
@@ -98,7 +92,7 @@ def mark_significant(null_probs, p):
 
 
 def match_residues(aln):
-    """For each index in the first protein which aligns with a residue in the 
+    """For each index in the first protein which aligns with a residue in the
     second protein (not a gap), provide the aligned index in the second protein.
 
     :param aln: Tuple of Arabidopsis and Poplar protein sequences
@@ -106,26 +100,26 @@ def match_residues(aln):
     :rtype: Dict[int, int]
     """
     matchings = {}
-    curr_prot1 = 1 # Current index in first protein
-    curr_prot2 = 1 # Current index in second protein
+    curr_prot1 = 1  # Current index in first protein
+    curr_prot2 = 1  # Current index in second protein
     # Iterate over all positions in the proteins
-    for i in range(len(aln[0])): 
+    for i in range(len(aln[0])):
         # If both not gaps, match the indices
-        if (aln[0][i] != '-' and aln[1][i] != '-'):
-            matchings[curr_prot1] = curr_prot2 
+        if aln[0][i] != "-" and aln[1][i] != "-":
+            matchings[curr_prot1] = curr_prot2
         # If the position in the first protein is not a gap, increment index
-        if aln[0][i] != '-':
+        if aln[0][i] != "-":
             curr_prot1 += 1
         # If the position in the second protein is not a gap, increment index
-        if aln[1][i] != '-':
+        if aln[1][i] != "-":
             curr_prot2 += 1
     return matchings
 
 
 def significant_in_both(sig1, sig2, aln_matching):
-    """Mark a residue as significant in both if it aligns with a residue 
+    """Mark a residue as significant in both if it aligns with a residue
     in the other protein and those residues are both marked significant.
-    
+
     :param sig1: Boolean list of significant residues in protein 1.
     :param sig2: Boolean list of significant residues in protein 2.
     :param aln_matching: Dictionary of aligned indices from protein 1 to 2.
@@ -136,7 +130,7 @@ def significant_in_both(sig1, sig2, aln_matching):
     both_sig1 = [False] * len(sig1)
     both_sig2 = [False] * len(sig2)
     # For each aligned index in protein 1
-    for i in aln_matching: 
+    for i in aln_matching:
         # If that reside and the counterpart in protein 2 are both significant,
         # mark those residues as significant in both.
         # Dictionary stores 1-indexed positions, list is 0-indexed
@@ -158,11 +152,11 @@ def get_sig_index(sig):
 
 # Find hotspot clusters
 def cluster_components(hotspots, neighbours):
-    """Determine clusters of hotspots residues. Clusters are connected 
+    """Determine clusters of hotspots residues. Clusters are connected
     components in the neighbourhood graph, found using DFS.
 
     BFS algorithm: Initialize a frontier of positions to explore.
-    Add the starting residue to the frontier. While the frontier is not empty, 
+    Add the starting residue to the frontier. While the frontier is not empty,
     remove the last item from the frontier and add its significant non-explored
     residues to the frontier.
 
@@ -173,25 +167,24 @@ def cluster_components(hotspots, neighbours):
     :rtype: List[List[int]]
     """
     clusters = []
-    # Track explored residues. Set non-hotspot residues to explored, so the 
+    # Track explored residues. Set non-hotspot residues to explored, so the
     # algorithm will not visit them.
 
     explored = [not hotspot for hotspot in hotspots]
     residue_frontier = []
     # explored and residue_fronter is 0-indexed
     # neighbors and clusters is 1-indexed.
-    for i in range(len(hotspots)): # O-indexed i
+    for i in range(len(hotspots)):  # O-indexed i
         if not explored[i]:
-            residue_frontier.append(i) # Expand: add to frontier, set explored
+            residue_frontier.append(i)  # Expand: add to frontier, set explored
             explored[i] = True
             curr_cluster = []
             while len(residue_frontier) > 0:
                 curr_res = residue_frontier.pop()
-                curr_cluster.append(curr_res + 1) # Add to cluster
-                for neighbour in neighbours[i + 1]: # Push neighbours
+                curr_cluster.append(curr_res + 1)  # Add to cluster
+                for neighbour in neighbours[i + 1]:  # Push neighbours
                     if not explored[neighbour - 1]:
                         residue_frontier.append(neighbour - 1)
                         explored[neighbour - 1] = True
-            clusters.append(curr_cluster) # Save component on DFS finish
+            clusters.append(curr_cluster)  # Save component on DFS finish
     return clusters
-
