@@ -370,9 +370,9 @@ class Hotspots(Resource):
     # @cache.cached()
 
     def get(self, pval="", araid="", popid=""):
-        """This endpoint identifies locations of structure hotspots at the 
-        given p-value in the given homologous pair of proteins. 
-        One ID may be "unknown" and will be autofilled to the homologous pair 
+        """This endpoint identifies locations of structure hotspots at the
+        given p-value in the given homologous pair of proteins.
+        One ID may be "unknown" and will be autofilled to the homologous pair
         of the other ID.
         """
         # Parse pval to float. Raise error if invalid p-value.
@@ -398,7 +398,7 @@ class Hotspots(Resource):
         if valid_pair is None:
             return BARUtils.error_exit("Invalid ID pair provided"), 400
         araid, popid, araseq, popseq = valid_pair
-        
+
         # Load probabilities of SNP signficance
         ara_p_snp = hotspot_utils.load_p_snp_data(araid, "ara", "struct")
         if ara_p_snp is None:
@@ -406,22 +406,17 @@ class Hotspots(Resource):
         pop_p_snp = hotspot_utils.load_p_snp_data(popid, "pop", "struct")
         if pop_p_snp is None:
             return BARUtils.error_exit(f"No SNP significance data for {popid}"), 400
-        
+
         # Mark signficant locations, match using alignment
         ara_alone_sig = hotspot_utils.mark_significant(ara_p_snp, pval)
         pop_alone_sig = hotspot_utils.mark_significant(pop_p_snp, pval)
         pair_aln = hotspot_utils.match_residues((araseq, popseq))
-        ara_both_sig, pop_both_sig = \
-            hotspot_utils.significant_in_both(ara_alone_sig, pop_alone_sig,
-                                              pair_aln)
-        
+        ara_both_sig, pop_both_sig = hotspot_utils.significant_in_both(ara_alone_sig, pop_alone_sig, pair_aln)
+
         # Find hotspot positions and return
         ara_both_sig_idx = hotspot_utils.get_sig_index(ara_both_sig)
         pop_both_sig_idx = hotspot_utils.get_sig_index(pop_both_sig)
-        output = {"ara_id": araid, 
-                  "pop_id": popid,
-                  "ara_hotspots": ara_both_sig_idx, 
-                  "pop_hotspots": pop_both_sig_idx}
+        output = {"ara_id": araid, "pop_id": popid, "ara_hotspots": ara_both_sig_idx, "pop_hotspots": pop_both_sig_idx}
         return BARUtils.success_exit(output)
 
 
@@ -433,9 +428,9 @@ class Hotspots(Resource):
     # @cache.cached()
 
     def get(self, pval="", araid="", popid=""):
-        """This endpoint identifies locations of sequence hotspots at the 
-        given p-value in the given homologous pair of proteins. 
-        One ID may be "unknown" and will be autofilled to the homologous pair 
+        """This endpoint identifies locations of sequence hotspots at the
+        given p-value in the given homologous pair of proteins.
+        One ID may be "unknown" and will be autofilled to the homologous pair
         of the other ID.
         """
         # Parse pval to float
@@ -461,7 +456,7 @@ class Hotspots(Resource):
         if valid_pair is None:
             return BARUtils.error_exit("Invalid ID pair provided"), 400
         araid, popid, araseq, popseq = valid_pair
-        
+
         # Load probabilities of SNP signficance
         ara_p_snp = hotspot_utils.load_p_snp_data(araid, "ara", "seq")
         if ara_p_snp is None:
@@ -469,21 +464,15 @@ class Hotspots(Resource):
         pop_p_snp = hotspot_utils.load_p_snp_data(popid, "pop", "seq")
         if pop_p_snp is None:
             return BARUtils.error_exit(f"No SNP significance data for {popid}"), 400
-        
+
         # Mark signficant locations, match using alignment
         ara_alone_sig = hotspot_utils.mark_significant(ara_p_snp, pval)
         pop_alone_sig = hotspot_utils.mark_significant(pop_p_snp, pval)
         pair_aln = hotspot_utils.match_residues((araseq, popseq))
-        ara_both_sig, pop_both_sig = \
-            hotspot_utils.significant_in_both(ara_alone_sig, pop_alone_sig,
-                                              pair_aln)
-        
+        ara_both_sig, pop_both_sig = hotspot_utils.significant_in_both(ara_alone_sig, pop_alone_sig, pair_aln)
+
         # Find hotspot positions and return
         ara_both_sig_idx = hotspot_utils.get_sig_index(ara_both_sig)
         pop_both_sig_idx = hotspot_utils.get_sig_index(pop_both_sig)
-        output = {"ara_id": araid, 
-                  "pop_id": popid,
-                  "ara_hotspots": ara_both_sig_idx, 
-                  "pop_hotspots": pop_both_sig_idx}
+        output = {"ara_id": araid, "pop_id": popid, "ara_hotspots": ara_both_sig_idx, "pop_hotspots": pop_both_sig_idx}
         return BARUtils.success_exit(output)
-
