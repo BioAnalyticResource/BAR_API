@@ -363,22 +363,20 @@ class Pymol(Resource):
 
 
 @snps.route("/struct_hotspot/<string:pval>/<string:araid>/<string:popid>")
-class Hotspots(Resource):
+class StructHotspots(Resource):
     @snps.param("pval", _in="path", default="0.95")
     @snps.param("araid", _in="path", default="AT2G31240.1")
     @snps.param("popid", _in="path", default="Potri.005G222900.3")
-    # @cache.cached()
-
     def get(self, pval="", araid="", popid=""):
         """This endpoint identifies locations of structure hotspots at the
         given p-value in the given homologous pair of proteins.
         One ID may be "unknown" and will be autofilled to the homologous pair
         of the other ID.
         """
-        # Parse pval to float. Raise error if invalid p-value.
+        # Parse pval to float
         try:
             pval = float(pval)
-        except:
+        except ValueError:
             return BARUtils.error_exit("pval must be a float"), 400
         if pval <= 0 or pval >= 1:
             return BARUtils.error_exit("pval must be between 0 and 1"), 400
@@ -421,12 +419,10 @@ class Hotspots(Resource):
 
 
 @snps.route("/seq_hotspot/<string:pval>/<string:araid>/<string:popid>")
-class Hotspots(Resource):
+class SeqHotspots(Resource):
     @snps.param("pval", _in="path", default="0.95")
     @snps.param("araid", _in="path", default="AT1G56500.1")
     @snps.param("popid", _in="path", default="Potri.013G007800.2")
-    # @cache.cached()
-
     def get(self, pval="", araid="", popid=""):
         """This endpoint identifies locations of sequence hotspots at the
         given p-value in the given homologous pair of proteins.
@@ -436,7 +432,7 @@ class Hotspots(Resource):
         # Parse pval to float
         try:
             pval = float(pval)
-        except:
+        except ValueError:
             return BARUtils.error_exit("pval must be a float"), 400
         if pval <= 0 or pval >= 1:
             return BARUtils.error_exit("pval must be between 0 and 1"), 400
