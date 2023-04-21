@@ -1,5 +1,3 @@
-from typing import List, Tuple, Dict
-
 # Files with probabilities of SNP significance based on shuffles
 # P_SNP_DIR = "/Users/isaiahhazelwood/Documents/UofT/Y3/BCB330/data/hotspots/"
 P_SNP_DIR = "/usr/src/hotspots"
