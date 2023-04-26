@@ -1,13 +1,13 @@
 class hotspotUtils:
     # Files with probabilities of SNP significance based on shuffles
-    P_SNP_DIR = "/usr/src/hotspots"
+    P_SNP_DIR = "/home/ihazelwood/BCB330-hotspot-data"
     ARA_STRUCT_P_SNP = P_SNP_DIR + "/ara_struct_10_0.1_10000.tsv"
     POP_STRUCT_P_SNP = P_SNP_DIR + "/pop_struct_10_0.1_10000.tsv"
     ARA_SEQ_P_SNP = P_SNP_DIR + "/ara_seq_3_0.1_10000.tsv"
     POP_SEQ_P_SNP = P_SNP_DIR + "/pop_seq_3_0.1_10000.tsv"
 
     # File with analyzed homologue pairs
-    HOMOLOGUE_DIR = "/usr/src/pairs"
+    HOMOLOGUE_DIR = "/home/ihazelwood/BCB330-Homologues"
     ARA_POP_HOMOLOGUE = HOMOLOGUE_DIR + "/ara-pop3.0-all-valid.tsv"
 
     @staticmethod
