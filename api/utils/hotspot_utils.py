@@ -1,4 +1,4 @@
-class hotspotUtils:
+class HotspotUtils:
     # Files with probabilities of SNP significance based on shuffles
     P_SNP_DIR = "/home/ihazelwood/BCB330-hotspot-data"
     ARA_STRUCT_P_SNP = P_SNP_DIR + "/ara_struct_10_0.1_10000.tsv"
@@ -24,7 +24,7 @@ class hotspotUtils:
         """
         if ara_id is None and pop_id is None:  # Both invalid inputs
             return None
-        with open(hotspotUtils.ARA_POP_HOMOLOGUE, "r") as f_ara_pop_homologue:
+        with open(HotspotUtils.ARA_POP_HOMOLOGUE, "r") as f_ara_pop_homologue:
             for line in f_ara_pop_homologue:
                 # Columns: araid, popid, araseq, popseq, rmsd
                 cols = line.split("\t")
@@ -53,16 +53,16 @@ class hotspotUtils:
         # Select appropriate file
         if spe == "ara":
             if shuffle == "struct":
-                p_snps_file = hotspotUtils.ARA_STRUCT_P_SNP
+                p_snps_file = HotspotUtils.ARA_STRUCT_P_SNP
             elif shuffle == "seq":
-                p_snps_file = hotspotUtils.ARA_SEQ_P_SNP
+                p_snps_file = HotspotUtils.ARA_SEQ_P_SNP
             else:
                 return None
         elif spe == "pop":
             if shuffle == "struct":
-                p_snps_file = hotspotUtils.POP_STRUCT_P_SNP
+                p_snps_file = HotspotUtils.POP_STRUCT_P_SNP
             elif shuffle == "seq":
-                p_snps_file = hotspotUtils.POP_SEQ_P_SNP
+                p_snps_file = HotspotUtils.POP_SEQ_P_SNP
             else:
                 return None
         else:
