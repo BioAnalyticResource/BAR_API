@@ -29,11 +29,11 @@ class HotspotUtils:
                 # Columns: araid, popid, araseq, popseq, rmsd
                 cols = line.split("\t")
                 if cols[0][4:-4].upper() == ara_id and cols[1][4:-4].upper() == pop_id:  # Both ID match
-                    return (cols[0][4:-4].upper(), cols[1][4:-4].upper(), cols[2], cols[3])
+                    return cols[0][4:-4].upper(), cols[1][4:-4].upper(), cols[2], cols[3]
                 if cols[0][4:-4].upper() == ara_id and pop_id is None:  # Ara ID match, fill Pop
-                    return (cols[0][4:-4].upper(), cols[1][4:-4].upper(), cols[2], cols[3])
+                    return cols[0][4:-4].upper(), cols[1][4:-4].upper(), cols[2], cols[3]
                 if cols[1][4:-4].upper() == pop_id and ara_id is None:  # Pop ID match, fill Ara
-                    return (cols[0][4:-4].upper(), cols[1][4:-4].upper(), cols[2], cols[3])
+                    return cols[0][4:-4].upper(), cols[1][4:-4].upper(), cols[2], cols[3]
             return None  # No match
 
     @staticmethod
@@ -96,21 +96,21 @@ class HotspotUtils:
         :returns: Dict from index in first protein to index in second protein
         :rtype: Dict[int, int]
         """
-        matchings = {}
+        matching = {}
         curr_prot1 = 1  # Current index in first protein
         curr_prot2 = 1  # Current index in second protein
         # Iterate over all positions in the proteins
         for i in range(len(aln[0])):
             # If both not gaps, match the indices
             if aln[0][i] != "-" and aln[1][i] != "-":
-                matchings[curr_prot1] = curr_prot2
+                matching[curr_prot1] = curr_prot2
             # If the position in the first protein is not a gap, increment index
             if aln[0][i] != "-":
                 curr_prot1 += 1
             # If the position in the second protein is not a gap, increment index
             if aln[1][i] != "-":
                 curr_prot2 += 1
-        return matchings
+        return matching
 
     @staticmethod
     def significant_in_both(sig1, sig2, aln_matching):
@@ -134,7 +134,7 @@ class HotspotUtils:
             if sig1[i - 1] and sig2[aln_matching[i] - 1]:
                 both_sig1[i - 1] = True
                 both_sig2[aln_matching[i] - 1] = True
-        return (both_sig1, both_sig2)
+        return both_sig1, both_sig2
 
     @staticmethod
     def get_sig_index(sig):
