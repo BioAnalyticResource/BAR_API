@@ -5,13 +5,16 @@ from api.utils.bar_utils import BARUtils
 from marshmallow import Schema, ValidationError, fields as marshmallow_fields
 from markupsafe import escape
 from api import db
-from api.models.single_cell import SampleData as SingleCell
-from api.models.embryo import SampleData as Embryo
-from api.models.shoot_apex import SampleData as ShootApex
-from api.models.germination import SampleData as Germination
-from api.models.silique import SampleData as Silique
-from api.models.klepikova import SampleData as Klepikova
+from api.models.arachis import SampleData as Arachis
+from api.models.cannabis import SampleData as Cannabis
 from api.models.dna_damage import SampleData as DNADamage
+from api.models.embryo import SampleData as Embryo
+from api.models.germination import SampleData as Germination
+from api.models.kalanchoe import SampleData as Kalanchoe
+from api.models.klepikova import SampleData as Klepikova
+from api.models.shoot_apex import SampleData as ShootApex
+from api.models.silique import SampleData as Silique
+from api.models.single_cell import SampleData as SingleCell
 from sqlalchemy import and_
 
 rnaseq_gene_expression = Namespace(
@@ -62,43 +65,69 @@ class RNASeqUtils:
         data = {}
 
         # Set species and check gene ID format
+        species = species.lower()
         if species == "arabidopsis":
             if not BARUtils.is_arabidopsis_gene_valid(gene_id):
+                return {"success": False, "error": "Invalid gene id", "error_code": 400}
+        elif species == "arachis":
+            if not BARUtils.is_arachis_gene_valid(gene_id):
+                return {"success": False, "error": "Invalid gene id", "error_code": 400}
+        elif species == "cannabis":
+            if not BARUtils.is_cannabis_gene_valid(gene_id):
+                return {"success": False, "error": "Invalid gene id", "error_code": 400}
+        elif species == "kalanchoe":
+            if not BARUtils.is_kalanchoe_gene_valid(gene_id):
                 return {"success": False, "error": "Invalid gene id", "error_code": 400}
         else:
             return {"success": False, "error": "Invalid species", "error_code": 400}
 
-        # Set model: Arabidopsis
-        if database == "single_cell":
-            table = SingleCell
-            # Example: cluster0_WT1.ExprMean
-            sample_regex = re.compile(r"^\D+\d+_WT\d+.ExprMean$", re.I)
+        # Set database
+        database = database.lower()
+        if database == "arachis":
+            table = Arachis
+            # Example: Pattee_8_Seed
+            sample_regex = re.compile(r"^[\D\d_]{1,30}$", re.I)
+
+        elif database == "cannabis":
+            table = Cannabis
+            # Example: PK-PFLW
+            sample_regex = re.compile(r"^PK-\D{1,4}|MED_CTRL$", re.I)
+
+        elif database == "dna_damage":
+            table = DNADamage
+            # Another insane regex!
+            sample_regex = re.compile(r"^\D{1,3}.{1,30}_plus_Y|\D{1,3}.{1,30}_minus_Y|Med_CTRL$", re.I)
 
         elif database == "embryo":
             table = Embryo
             sample_regex = re.compile(r"^\D{1,3}_\d$|Med_CTRL$", re.I)
 
-        elif database == "shoot_apex":
-            table = ShootApex
-            sample_regex = re.compile(r"^\D{1,5}\d{0,2}$", re.I)
-
         elif database == "germination":
             table = Germination
             sample_regex = re.compile(r"^\d{1,3}\D{1,4}_\d{1,3}|harvest_\d|Med_CTRL$", re.I)
+
+        elif database == "kalanchoe":
+            table = Kalanchoe
+            # Example: FRL_Dusk_rep3
+            sample_regex = re.compile(r"^\D{1,4}_\D{1,5}_rep\d|MED_CTRL$", re.I)
+
+        elif database == "klepikova":
+            table = Klepikova
+            sample_regex = re.compile(r"^SRR\d{1,9}|Med_CTRL$", re.I)
+
+        elif database == "shoot_apex":
+            table = ShootApex
+            sample_regex = re.compile(r"^\D{1,5}\d{0,2}$", re.I)
 
         elif database == "silique":
             table = Silique
             # Insane regex! Needs work
             sample_regex = re.compile(r"^\d{1,3}_dap.{1,58}_R1_001|Med_CTRL$", re.I)
 
-        elif database == "klepikova":
-            table = Klepikova
-            sample_regex = re.compile(r"^SRR\d{1,9}|Med_CTRL$", re.I)
-
-        elif database == "dna_damage":
-            table = DNADamage
-            # Another insane regex!
-            sample_regex = re.compile(r"^\D{1,3}.{1,30}_plus_Y|\D{1,3}.{1,30}_minus_Y|Med_CTRL$", re.I)
+        elif database == "single_cell":
+            table = SingleCell
+            # Example: cluster0_WT1.ExprMean
+            sample_regex = re.compile(r"^\D+\d+_WT\d+.ExprMean$", re.I)
 
         else:
             return {"success": False, "error": "Invalid database", "error_code": 400}

@@ -132,6 +132,17 @@ class BARUtils:
             return False
 
     @staticmethod
+    def is_kalanchoe_gene_valid(gene):
+        """This function verifies if Kalanchoe gene is valid
+        :param gene:
+        :return:
+        """
+        if re.search(r"^Kaladp\d{1,10}s\d{1,10}$", gene, re.I):
+            return True
+        else:
+            return False
+
+    @staticmethod
     def is_integer(data):
         """Check if the input is at max ten figure number.
         :param data: int number
