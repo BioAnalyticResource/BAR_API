@@ -24,10 +24,13 @@ mysql -u $DB_USER -p$DB_PASS < ./config/databases/kalanchoe.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/klepikova.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/poplar_nssnp.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/rice_interactions.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/selaginella.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/shoot_apex.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/silique.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/single_cell.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/soybean_nssnp.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/strawberry.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/striga.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/summarization.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/tomato_nssnp.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/tomato_sequence.sql

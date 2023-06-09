@@ -143,6 +143,39 @@ class BARUtils:
             return False
 
     @staticmethod
+    def is_selaginella_gene_valid(gene):
+        """This function verifies if selaginella gene (Smo402070) is valid
+        :param gene:
+        :return:
+        """
+        if re.search(r"^Smo\d{1,8}$", gene, re.I):
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def is_strawberry_gene_valid(gene):
+        """This function verifies if strawberry gene (FvH4_1g00010) is valid
+        :param gene:
+        :return:
+        """
+        if re.search(r"^FvH4_\d{1,3}g\d{1,8}$", gene, re.I):
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def is_striga_gene_valid(gene):
+        """This function verifies if striga gene (StHeBC3_9993.10) is valid
+        :param gene:
+        :return:
+        """
+        if re.search(r"^StHeBC3_\d{1,6}\.\d{1,5}$", gene, re.I):
+            return True
+        else:
+            return False
+
+    @staticmethod
     def is_integer(data):
         """Check if the input is at max ten figure number.
         :param data: int number
