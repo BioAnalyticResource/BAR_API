@@ -22,6 +22,7 @@ mysql -u $DB_USER -p$DB_PASS < ./config/databases/eplant_tomato.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/germination.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/kalanchoe.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/klepikova.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/phelipanche.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/poplar_nssnp.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/rice_interactions.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/selaginella.sql
@@ -34,6 +35,8 @@ mysql -u $DB_USER -p$DB_PASS < ./config/databases/striga.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/summarization.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/tomato_nssnp.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/tomato_sequence.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/triphysaria.sql
+
 
 echo "Data are now loaded. Preparing API config"
 echo "Please manually edit config file!"
