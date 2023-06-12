@@ -143,6 +143,17 @@ class BARUtils:
             return False
 
     @staticmethod
+    def is_phelipanche_gene_valid(gene):
+        """This function verifies if phelipanche gene (OrAeBC5_9992.10) is valid
+        :param gene:
+        :return:
+        """
+        if re.search(r"^OrAeBC5_\d{1,6}\.\d{1,3}$", gene, re.I):
+            return True
+        else:
+            return False
+
+    @staticmethod
     def is_selaginella_gene_valid(gene):
         """This function verifies if selaginella gene (Smo402070) is valid
         :param gene:
@@ -171,6 +182,17 @@ class BARUtils:
         :return:
         """
         if re.search(r"^StHeBC3_\d{1,6}\.\d{1,5}$", gene, re.I):
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def is_triphysaria_gene_valid(gene):
+        """This function verifies if triphysaria gene (TrVeBC3_9999.18) is valid
+        :param gene:
+        :return:
+        """
+        if re.search(r"^TrVeBC3_\d{1,6}\.\d{1,3}$", gene, re.I):
             return True
         else:
             return False

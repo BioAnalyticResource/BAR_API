@@ -12,12 +12,14 @@ from api.models.embryo import SampleData as Embryo
 from api.models.germination import SampleData as Germination
 from api.models.kalanchoe import SampleData as Kalanchoe
 from api.models.klepikova import SampleData as Klepikova
+from api.models.phelipanche import SampleData as Phelipanche
 from api.models.selaginella import SampleData as Selaginella
 from api.models.shoot_apex import SampleData as ShootApex
 from api.models.silique import SampleData as Silique
 from api.models.single_cell import SampleData as SingleCell
 from api.models.strawberry import SampleData as Strawberry
 from api.models.striga import SampleData as Striga
+from api.models.triphysaria import SampleData as Triphysaria
 from sqlalchemy import and_
 
 rnaseq_gene_expression = Namespace(
@@ -90,6 +92,12 @@ class RNASeqUtils:
         elif species == "striga":
             if not BARUtils.is_striga_gene_valid(gene_id):
                 return {"success": False, "error": "Invalid gene id", "error_code": 400}
+        elif species == "triphysaria":
+            if not BARUtils.is_triphysaria_gene_valid(gene_id):
+                return {"success": False, "error": "Invalid gene id", "error_code": 400}
+        elif species == "phelipanche":
+            if not BARUtils.is_phelipanche_gene_valid(gene_id):
+                return {"success": False, "error": "Invalid gene id", "error_code": 400}
         else:
             return {"success": False, "error": "Invalid species", "error_code": 400}
 
@@ -127,6 +135,11 @@ class RNASeqUtils:
             table = Klepikova
             sample_regex = re.compile(r"^SRR\d{1,9}|Med_CTRL$", re.I)
 
+        elif database == "phelipanche":
+            table = Phelipanche
+            # Example: Pre-Emergence_from_Soil_Shoots
+            sample_regex = re.compile(r"^[a-z_-]{1,35}|MED_CTRL$", re.I)
+
         elif database == "selaginella":
             table = Selaginella
             # Insane regex!
@@ -155,6 +168,11 @@ class RNASeqUtils:
             table = Striga
             # Example: Reproductive_Structures
             sample_regex = re.compile(r"^\D{1,35}|MED_CTRL$", re.I)
+
+        elif database == "triphysaria":
+            table = Triphysaria
+            # Example: Roots_in_Late_Post_Attachment
+            sample_regex = re.compile(r"^[a-z_]{1,35}|MED_CTRL$", re.I)
 
         else:
             return {"success": False, "error": "Invalid database", "error_code": 400}
