@@ -89,7 +89,18 @@ class BARUtils:
         :param gene:
         :return: True if valid
         """
-        if gene and re.search(r"Adur\d{1,10}_comp\d{1,3}_\D{1,3}\d{1,3}_seq\d{1,5}", gene, re.I):
+        if gene and re.search(r"^Adur\d{1,10}_comp\d{1,3}_\D{1,3}\d{1,3}_seq\d{1,5}$", gene, re.I):
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def is_brassica_rapa_gene_valid(gene):
+        """This function verifies if Brassica rapa gene is valid: BraA01g000010
+        :param gene:
+        :return: True if valid
+        """
+        if gene and re.search(r"^BraA.{1,4}g\d{1,9}$", gene, re.I):
             return True
         else:
             return False
@@ -149,6 +160,17 @@ class BARUtils:
         :return:
         """
         if re.search(r"^OrAeBC5_\d{1,6}\.\d{1,3}$", gene, re.I):
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def is_physcomitrella_gene_valid(gene):
+        """This function verifies if physcomitrella gene (Pp1s9_70V6.1) is valid
+        :param gene:
+        :return:
+        """
+        if re.search(r"^Pp1s\d{1,8}_\d{1,8}V6\.\d{1,3}$", gene, re.I):
             return True
         else:
             return False
