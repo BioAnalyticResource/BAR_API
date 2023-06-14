@@ -7,12 +7,14 @@ from markupsafe import escape
 from api import db
 from api.models.arachis import SampleData as Arachis
 from api.models.cannabis import SampleData as Cannabis
+from api.models.brassica_rapa import SampleData as BrassicaRapa
 from api.models.dna_damage import SampleData as DNADamage
 from api.models.embryo import SampleData as Embryo
 from api.models.germination import SampleData as Germination
 from api.models.kalanchoe import SampleData as Kalanchoe
 from api.models.klepikova import SampleData as Klepikova
 from api.models.phelipanche import SampleData as Phelipanche
+from api.models.physcomitrella_db import SampleData as Physcomitrella
 from api.models.selaginella import SampleData as Selaginella
 from api.models.shoot_apex import SampleData as ShootApex
 from api.models.silique import SampleData as Silique
@@ -77,6 +79,9 @@ class RNASeqUtils:
         elif species == "arachis":
             if not BARUtils.is_arachis_gene_valid(gene_id):
                 return {"success": False, "error": "Invalid gene id", "error_code": 400}
+        elif species == "brassica_rapa":
+            if not BARUtils.is_brassica_rapa_gene_valid(gene_id):
+                return {"success": False, "error": "Invalid gene id", "error_code": 400}
         elif species == "cannabis":
             if not BARUtils.is_cannabis_gene_valid(gene_id):
                 return {"success": False, "error": "Invalid gene id", "error_code": 400}
@@ -98,6 +103,9 @@ class RNASeqUtils:
         elif species == "phelipanche":
             if not BARUtils.is_phelipanche_gene_valid(gene_id):
                 return {"success": False, "error": "Invalid gene id", "error_code": 400}
+        elif species == "physcomitrella":
+            if not BARUtils.is_physcomitrella_gene_valid(gene_id):
+                return {"success": False, "error": "Invalid gene id", "error_code": 400}
         else:
             return {"success": False, "error": "Invalid species", "error_code": 400}
 
@@ -106,12 +114,17 @@ class RNASeqUtils:
         if database == "arachis":
             table = Arachis
             # Example: Pattee_8_Seed
-            sample_regex = re.compile(r"^[\D\d_]{1,30}$", re.I)
+            sample_regex = re.compile(r"^[\D\d_]{1,30}|MED_CTRL$", re.I)
 
         elif database == "cannabis":
             table = Cannabis
             # Example: PK-PFLW
             sample_regex = re.compile(r"^PK-\D{1,4}|MED_CTRL$", re.I)
+
+        elif database == "brassica_rapa":
+            table = BrassicaRapa
+            # Example: E1
+            sample_regex = re.compile(r"^\D{1,2}\d{0,2}|MED_CTRL$", re.I)
 
         elif database == "dna_damage":
             table = DNADamage
@@ -140,6 +153,11 @@ class RNASeqUtils:
             # Example: Pre-Emergence_from_Soil_Shoots
             sample_regex = re.compile(r"^[a-z_-]{1,35}|MED_CTRL$", re.I)
 
+        elif database == "physcomitrella_db":
+            table = Physcomitrella
+            # Example: Sporophyte_S1
+            sample_regex = re.compile(r"^[a-z_123]{1,15|MED_CTRL}$", re.I)
+
         elif database == "selaginella":
             table = Selaginella
             # Insane regex!
@@ -147,7 +165,7 @@ class RNASeqUtils:
 
         elif database == "shoot_apex":
             table = ShootApex
-            sample_regex = re.compile(r"^\D{1,5}\d{0,2}$", re.I)
+            sample_regex = re.compile(r"^\D{1,5}\d{0,2}|MED_CTRL$", re.I)
 
         elif database == "silique":
             table = Silique
@@ -157,7 +175,7 @@ class RNASeqUtils:
         elif database == "single_cell":
             table = SingleCell
             # Example: cluster0_WT1.ExprMean
-            sample_regex = re.compile(r"^\D+\d+_WT\d+.ExprMean$", re.I)
+            sample_regex = re.compile(r"^\D+\d+_WT\d+.ExprMean|MED_CTRL$", re.I)
 
         elif database == "strawberry":
             table = Strawberry

@@ -11,6 +11,7 @@ echo "Welcome to the BAR API. Running init!"
 
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/annotations_lookup.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/arachis.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/brassica_rapa.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/cannabis.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/dna_damage.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/embryo.sql
@@ -23,6 +24,7 @@ mysql -u $DB_USER -p$DB_PASS < ./config/databases/germination.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/kalanchoe.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/klepikova.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/phelipanche.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/physcomitrella_db.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/poplar_nssnp.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/rice_interactions.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/selaginella.sql
