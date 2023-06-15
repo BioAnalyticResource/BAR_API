@@ -28,6 +28,78 @@ class UtilsUnitTest(TestCase):
         result = BARUtils.is_arabidopsis_gene_valid("At1g01010.11")
         self.assertFalse(result)
 
+    def test_is_brassica_rapa_gene_valid(self):
+        # Valid gene
+        result = BARUtils.is_brassica_rapa_gene_valid("BraA01g000010")
+        self.assertTrue(result)
+
+        # Invalid gene
+        result = BARUtils.is_brassica_rapa_gene_valid("abc")
+        self.assertFalse(result)
+
+    def test_is_kalanchoe_gene_valid(self):
+        # Valid gene
+        result = BARUtils.is_kalanchoe_gene_valid("Kaladp0001s0001")
+        self.assertTrue(result)
+
+        # Invalid gene
+        result = BARUtils.is_kalanchoe_gene_valid("abc")
+        self.assertFalse(result)
+
+    def test_is_phelipanche_gene_valid(self):
+        # Valid gene
+        result = BARUtils.is_phelipanche_gene_valid("OrAeBC5_9992.10")
+        self.assertTrue(result)
+
+        # Invalid gene
+        result = BARUtils.is_phelipanche_gene_valid("abc")
+        self.assertFalse(result)
+
+    def test_is_physcomitrella_gene_valid(self):
+        # Valid gene
+        result = BARUtils.is_physcomitrella_gene_valid("Pp1s9_70V6.1")
+        self.assertTrue(result)
+
+        # Invalid gene
+        result = BARUtils.is_physcomitrella_gene_valid("abc")
+        self.assertFalse(result)
+
+    def test_is_selaginella_gene_valid(self):
+        # Valid gene
+        result = BARUtils.is_selaginella_gene_valid("Smo402070")
+        self.assertTrue(result)
+
+        # Invalid gene
+        result = BARUtils.is_selaginella_gene_valid("abc")
+        self.assertFalse(result)
+
+    def test_is_strawberry_gene_valid(self):
+        # Valid gene
+        result = BARUtils.is_strawberry_gene_valid("FvH4_1g00010")
+        self.assertTrue(result)
+
+        # Invalid gene
+        result = BARUtils.is_strawberry_gene_valid("abc")
+        self.assertFalse(result)
+
+    def test_is_striga_gene_valid(self):
+        # Valid gene
+        result = BARUtils.is_striga_gene_valid("StHeBC3_9993.10")
+        self.assertTrue(result)
+
+        # Invalid gene
+        result = BARUtils.is_striga_gene_valid("abc")
+        self.assertFalse(result)
+
+    def test_is_triphysaria_gene_valid(self):
+        # Valid gene
+        result = BARUtils.is_triphysaria_gene_valid("TrVeBC3_9999.18")
+        self.assertTrue(result)
+
+        # Invalid gene
+        result = BARUtils.is_triphysaria_gene_valid("abc")
+        self.assertFalse(result)
+
     def test_is_tomato_gene_valid(self):
         # For some reason, coverage is saying that we need this test
         result = BARUtils.is_tomato_gene_valid("Solyc04g014530")

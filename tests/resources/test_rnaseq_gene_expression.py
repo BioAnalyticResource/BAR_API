@@ -171,3 +171,119 @@ class TestIntegrations(TestCase):
         )
         expected = {"wasSuccessful": True, "data": {"col-0_rep1_12hr_minus_Y": 59}}
         self.assertEqual(response.json, expected)
+
+    def test_get_rna_expression_data(self):
+        # Most branches are already tested at this point.
+        # We just need to test a valid example and an invalid gene
+
+        # Arachis
+        # Valid data
+        response = self.app_client.get("/rnaseq_gene_expression/arachis/arachis/Adur10000_comp0_c0_seq1/Seedling_Leaf")
+        expected = {"wasSuccessful": True, "data": {"Seedling_Leaf": 6.46}}
+        self.assertEqual(response.json, expected)
+
+        # Invalid gene id
+        response = self.app_client.get("/rnaseq_gene_expression/arachis/arachis/abc/Seedling_Leaf")
+        expected = {"wasSuccessful": False, "error": "Invalid gene id"}
+        self.assertEqual(response.json, expected)
+
+        # Brassica rapa
+        # Valid data
+        response = self.app_client.get("/rnaseq_gene_expression/brassica_rapa/brassica_rapa/BraA01g000010/UO")
+        expected = {"wasSuccessful": True, "data": {"UO": 7.93926}}
+        self.assertEqual(response.json, expected)
+
+        # Invalid gene id
+        response = self.app_client.get("/rnaseq_gene_expression/brassica_rapa/abc/UO")
+        expected = {"wasSuccessful": False, "error": "Invalid gene id"}
+        self.assertEqual(response.json, expected)
+
+        # Cannabis
+        # Valid data
+        response = self.app_client.get("/rnaseq_gene_expression/cannabis/cannabis/AGQN03009284/PK-RT")
+        expected = {"wasSuccessful": True, "data": {"PK-RT": 0}}
+        self.assertEqual(response.json, expected)
+
+        # Invalid gene id
+        response = self.app_client.get("/rnaseq_gene_expression/cannabis/cannabis/abc/PK-RT")
+        expected = {"wasSuccessful": False, "error": "Invalid gene id"}
+        self.assertEqual(response.json, expected)
+
+        # Kalanchoe
+        # Valid data
+        response = self.app_client.get("/rnaseq_gene_expression/kalanchoe/kalanchoe/Kaladp0001s0001/WL_Dawn_rep1")
+        expected = {"wasSuccessful": True, "data": {"WL_Dawn_rep1": 6.2003}}
+        self.assertEqual(response.json, expected)
+
+        # Invalid gene id
+        response = self.app_client.get("/rnaseq_gene_expression/kalanchoe/kalanchoe/abc/WL_Dawn_rep1")
+        expected = {"wasSuccessful": False, "error": "Invalid gene id"}
+        self.assertEqual(response.json, expected)
+
+        # Selaginella
+        # Valid data
+        response = self.app_client.get("/rnaseq_gene_expression/selaginella/selaginella/Smo402070/Aerial-parts_37C_1h1")
+        expected = {"wasSuccessful": True, "data": {"Aerial-parts_37C_1h1": 6.03305}}
+        self.assertEqual(response.json, expected)
+
+        # Invalid gene id
+        response = self.app_client.get("/rnaseq_gene_expression/selaginella/selaginella/abc/Aerial-parts_37C_1h1")
+        expected = {"wasSuccessful": False, "error": "Invalid gene id"}
+        self.assertEqual(response.json, expected)
+
+        # Strawberry
+        # Valid data
+        response = self.app_client.get("/rnaseq_gene_expression/strawberry/strawberry/FvH4_1g00010/Cortex_1_A")
+        expected = {"wasSuccessful": True, "data": {"Cortex_1_A": 23.6302}}
+        self.assertEqual(response.json, expected)
+
+        # Invalid gene id
+        response = self.app_client.get("/rnaseq_gene_expression/strawberry/strawberry/abc/Cortex_1_A")
+        expected = {"wasSuccessful": False, "error": "Invalid gene id"}
+        self.assertEqual(response.json, expected)
+
+        # Striga
+        # Valid data
+        response = self.app_client.get("/rnaseq_gene_expression/striga/striga/StHeBC3_1.1/Seed_Germination")
+        expected = {"wasSuccessful": True, "data": {"Seed_Germination": 240.31}}
+        self.assertEqual(response.json, expected)
+
+        # Invalid gene id
+        response = self.app_client.get("/rnaseq_gene_expression/striga/striga/abc/Seed_Germination")
+        expected = {"wasSuccessful": False, "error": "Invalid gene id"}
+        self.assertEqual(response.json, expected)
+
+        # Triphysaria
+        # Valid data
+        response = self.app_client.get("/rnaseq_gene_expression/triphysaria/triphysaria/TrVeBC3_1.1/Seed_Germination")
+        expected = {"wasSuccessful": True, "data": {"Seed_Germination": 20.96}}
+        self.assertEqual(response.json, expected)
+
+        # Invalid gene id
+        response = self.app_client.get("/rnaseq_gene_expression/triphysaria/triphysaria/abc/Seed_Germination")
+        expected = {"wasSuccessful": False, "error": "Invalid gene id"}
+        self.assertEqual(response.json, expected)
+
+        # Phelipanche
+        # Valid data
+        response = self.app_client.get("/rnaseq_gene_expression/phelipanche/phelipanche/OrAeBC5_1.1/Seed_Germination")
+        expected = {"wasSuccessful": True, "data": {"Seed_Germination": 7.91}}
+        self.assertEqual(response.json, expected)
+
+        # Invalid gene id
+        response = self.app_client.get("/rnaseq_gene_expression/phelipanche/phelipanche/abc/Seed_Germination")
+        expected = {"wasSuccessful": False, "error": "Invalid gene id"}
+        self.assertEqual(response.json, expected)
+
+        # Physcomitrella
+        # Valid data
+        response = self.app_client.get(
+            "/rnaseq_gene_expression/physcomitrella/physcomitrella_db/Pp1s10008_1V6.1/Spores"
+        )
+        expected = {"wasSuccessful": True, "data": {"Spores": 23.2}}
+        self.assertEqual(response.json, expected)
+
+        # Invalid gene id
+        response = self.app_client.get("/rnaseq_gene_expression/physcomitrella/physcomitrella_db/abc/Spores")
+        expected = {"wasSuccessful": False, "error": "Invalid gene id"}
+        self.assertEqual(response.json, expected)
