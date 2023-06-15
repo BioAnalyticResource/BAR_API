@@ -156,7 +156,7 @@ class RNASeqUtils:
         elif database == "physcomitrella_db":
             table = Physcomitrella
             # Example: Sporophyte_S1
-            sample_regex = re.compile(r"^[a-z_123]{1,15|MED_CTRL}$", re.I)
+            sample_regex = re.compile(r"^[a-z_123]{1,15}|MED_CTRL$", re.I)
 
         elif database == "selaginella":
             table = Selaginella
