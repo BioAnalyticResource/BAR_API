@@ -89,7 +89,18 @@ class BARUtils:
         :param gene:
         :return: True if valid
         """
-        if gene and re.search(r"Adur\d{1,10}_comp\d{1,3}_\D{1,3}\d{1,3}_seq\d{1,5}", gene, re.I):
+        if gene and re.search(r"^Adur\d{1,10}_comp\d{1,3}_\D{1,3}\d{1,3}_seq\d{1,5}$", gene, re.I):
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def is_brassica_rapa_gene_valid(gene):
+        """This function verifies if Brassica rapa gene is valid: BraA01g000010
+        :param gene:
+        :return: True if valid
+        """
+        if gene and re.search(r"^BraA.{1,4}g\d{1,9}$", gene, re.I):
             return True
         else:
             return False
@@ -127,6 +138,83 @@ class BARUtils:
         :return:
         """
         if re.search(r"^(Sobic.\d{0,5}G\d{0,10}|Sobic.K\d{0,10})$", gene, re.I):
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def is_kalanchoe_gene_valid(gene):
+        """This function verifies if Kalanchoe gene is valid
+        :param gene:
+        :return:
+        """
+        if re.search(r"^Kaladp\d{1,10}s\d{1,10}$", gene, re.I):
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def is_phelipanche_gene_valid(gene):
+        """This function verifies if phelipanche gene (OrAeBC5_9992.10) is valid
+        :param gene:
+        :return:
+        """
+        if re.search(r"^OrAeBC5_\d{1,6}\.\d{1,3}$", gene, re.I):
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def is_physcomitrella_gene_valid(gene):
+        """This function verifies if physcomitrella gene (Pp1s9_70V6.1) is valid
+        :param gene:
+        :return:
+        """
+        if re.search(r"^Pp1s\d{1,8}_\d{1,8}V6\.\d{1,3}$", gene, re.I):
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def is_selaginella_gene_valid(gene):
+        """This function verifies if selaginella gene (Smo402070) is valid
+        :param gene:
+        :return:
+        """
+        if re.search(r"^Smo\d{1,8}$", gene, re.I):
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def is_strawberry_gene_valid(gene):
+        """This function verifies if strawberry gene (FvH4_1g00010) is valid
+        :param gene:
+        :return:
+        """
+        if re.search(r"^FvH4_\d{1,3}g\d{1,8}$", gene, re.I):
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def is_striga_gene_valid(gene):
+        """This function verifies if striga gene (StHeBC3_9993.10) is valid
+        :param gene:
+        :return:
+        """
+        if re.search(r"^StHeBC3_\d{1,6}\.\d{1,5}$", gene, re.I):
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def is_triphysaria_gene_valid(gene):
+        """This function verifies if triphysaria gene (TrVeBC3_9999.18) is valid
+        :param gene:
+        :return:
+        """
+        if re.search(r"^TrVeBC3_\d{1,6}\.\d{1,3}$", gene, re.I):
             return True
         else:
             return False
