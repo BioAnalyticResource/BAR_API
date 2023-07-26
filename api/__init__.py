@@ -84,6 +84,7 @@ cache = Cache(
     config={
         "CACHE_TYPE": "flask_caching.backends.redis",
         "CACHE_KEY_PREFIX": "BAR_API_",
+        "CACHE_REDIS_HOST": os.environ.get("BAR_REDIS_HOST") or "localhost",
         "CACHE_REDIS_PASSWORD": os.environ.get("BAR_REDIS_PASSWORD"),
     }
 )
