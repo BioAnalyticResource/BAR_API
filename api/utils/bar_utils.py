@@ -243,6 +243,11 @@ class BARUtils:
         """This function connects to redis
         :returns: redis connection
         """
-        r = redis.Redis(host="localhost", port=6379, password=os.environ.get("BAR_REDIS_PASSWORD"))
+        if os.environ.get("BAR"):
+            r = redis.Redis(
+                host=os.environ.get("BAR_REDIS_HOST"), port=6379, password=os.environ.get("BAR_REDIS_PASSWORD")
+            )
+        else:
+            r = redis.Redis(host="localhost")
 
         return r

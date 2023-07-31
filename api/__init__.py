@@ -80,14 +80,23 @@ def create_app():
 db = SQLAlchemy()
 
 # Initialize Redis
-cache = Cache(
-    config={
-        "CACHE_TYPE": "RedisCache",
-        "CACHE_KEY_PREFIX": "BAR_API_",
-        "CACHE_REDIS_HOST": os.environ.get("BAR_REDIS_HOST") or "localhost",
-        "CACHE_REDIS_PASSWORD": os.environ.get("BAR_REDIS_PASSWORD"),
-    }
-)
+if os.environ.get("BAR"):
+    cache = Cache(
+        config={
+            "CACHE_TYPE": "RedisCache",
+            "CACHE_KEY_PREFIX": "BAR_API_",
+            "CACHE_REDIS_HOST": os.environ.get("BAR_REDIS_HOST"),
+            "CACHE_REDIS_PASSWORD": os.environ.get("BAR_REDIS_PASSWORD"),
+        }
+    )
+else:
+    cache = Cache(
+        config={
+            "CACHE_TYPE": "RedisCache",
+            "CACHE_KEY_PREFIX": "BAR_API_",
+            "CACHE_REDIS_HOST": "localhost",
+        }
+    )
 
 # Initialize Limiter
 limiter = Limiter(key_func=get_remote_address)
