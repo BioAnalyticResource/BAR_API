@@ -8,7 +8,6 @@ from api import db
 from api.models.fastpheno import Sites, Trees, Band, Height
 from api.utils.bar_utils import BARUtils
 from markupsafe import escape
-import sys
 
 
 fastpheno = Namespace("FastPheno", description="FastPheno API service", path="/fastpheno")
@@ -29,7 +28,7 @@ class FastPheno(Resource):
         rows = db.session.execute(
             db.select(Sites, Trees, Height, Band)
             .select_from(Sites)
-            .join(Trees, Trees.sites_pk == Sites.sites_pk) # don't need to use 2nd arg, for clarity... I set ORM rel
+            .join(Trees, Trees.sites_pk == Sites.sites_pk)  # don't need to use 2nd arg, for clarity... I set ORM rel
             .join(Height, Height.trees_pk == Trees.trees_pk)
             .join(Band, Band.trees_pk == Trees.trees_pk)
             .where(
