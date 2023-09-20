@@ -25,7 +25,7 @@ class TestIntegrations(TestCase):
                     "band_value": 0.025796278,
                     "tree_height_proxy": 3.478942871,
                     "ground_height_proxy": 49.10671997,
-                    "band_month": "feb"
+                    "band_month": "feb",
                 },
                 {
                     "site_name": "Pintendre",
@@ -38,9 +38,9 @@ class TestIntegrations(TestCase):
                     "band_value": 0.183586478,
                     "tree_height_proxy": 2.383630037,
                     "ground_height_proxy": 48.12341242131163,
-                    "band_month": "feb"
-                }
-            ]
+                    "band_month": "feb",
+                },
+            ],
         }
         self.assertEqual(response.json, expected)
 
@@ -67,7 +67,7 @@ class TestIntegrations(TestCase):
                     "latitutde": 5178557,
                     "genotype_id": "C",
                     "tree_given_id": "11",
-                    "external_link": "example"
+                    "external_link": "example",
                 },
                 {
                     "site_name": "Pintendre",
@@ -76,7 +76,7 @@ class TestIntegrations(TestCase):
                     "latitutde": 5178486,
                     "genotype_id": "C",
                     "tree_given_id": "11",
-                    "external_link": "example2"
+                    "external_link": "example2",
                 },
                 {
                     "site_name": "Pintendre",
@@ -85,9 +85,9 @@ class TestIntegrations(TestCase):
                     "latitutde": 5278486,
                     "genotype_id": "C",
                     "tree_given_id": "B",
-                    "external_link": "example3"
-                }
-            ]
+                    "external_link": "example3",
+                },
+            ],
         }
         self.assertEqual(response.json, expected)
 
