@@ -31,22 +31,20 @@ class FastPheno(Resource):
             .join(Trees, Trees.sites_pk == Sites.sites_pk)  # don't need to use 2nd arg, for clarity... I set ORM rel
             .join(Height, Height.trees_pk == Trees.trees_pk)
             .join(Band, Band.trees_pk == Trees.trees_pk)
-            .where(
-                Sites.site_name == site, Band.month == month, Height.month == month, Band.band == band
-            )
+            .where(Sites.site_name == site, Band.month == month, Height.month == month, Band.band == band)
         ).all()
         res = [
             {
-                "site_name" : s.site_name,
-                "tree_id" : t.trees_pk,
+                "site_name": s.site_name,
+                "tree_id": t.trees_pk,
                 "longitude": t.longitude,
                 "latitutde": t.latitude,
                 "genotype_id": t.genotype_id,
                 "tree_given_id": t.tree_given_id,
                 "external_link": t.external_link,
-                "band_value" : float(b.value),
-                "tree_height_proxy" : float(h.tree_height_proxy),
-                "ground_height_proxy" : float(h.ground_height_proxy),
+                "band_value": float(b.value),
+                "tree_height_proxy": float(h.tree_height_proxy),
+                "ground_height_proxy": float(h.ground_height_proxy),
                 "band_month": b.month.name,
             }
             for s, t, h, b in rows
@@ -72,14 +70,12 @@ class FastPhenoTrees(Resource):
             db.select(Sites, Trees)
             .select_from(Sites)
             .join(Trees, Trees.sites_pk == Sites.sites_pk)
-            .where(
-                Trees.genotype_id == genotype_id
-            )
+            .where(Trees.genotype_id == genotype_id)
         ).all()
         res = [
             {
-                "site_name" : s.site_name,
-                "tree_id" : t.trees_pk,
+                "site_name": s.site_name,
+                "tree_id": t.trees_pk,
                 "longitude": t.longitude,
                 "latitutde": t.latitude,
                 "genotype_id": t.genotype_id,

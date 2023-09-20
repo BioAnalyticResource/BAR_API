@@ -20,6 +20,7 @@ mysql -u $DB_USER -p$DB_PASS < ./config/databases/eplant_poplar.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/eplant_rice.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/eplant_soybean.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/eplant_tomato.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/fastpheno.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/germination.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/kalanchoe.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/klepikova.sql
@@ -38,7 +39,6 @@ mysql -u $DB_USER -p$DB_PASS < ./config/databases/summarization.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/tomato_nssnp.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/tomato_sequence.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/triphysaria.sql
-mysql -u $DB_USER -p$DB_PASS < ./config/databases/fastpheno.sql
 
 
 echo "Data are now loaded. Preparing API config"
