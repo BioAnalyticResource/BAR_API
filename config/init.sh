@@ -38,6 +38,7 @@ mysql -u $DB_USER -p$DB_PASS < ./config/databases/summarization.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/tomato_nssnp.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/tomato_sequence.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/triphysaria.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/fastpheno.sql
 
 
 echo "Data are now loaded. Preparing API config"
