@@ -10,7 +10,7 @@ click==8.1.7
 coverage==7.3.2
 Deprecated==1.2.14
 flake8==6.1.0
-Flask==3.0.0
+Flask==2.3.3
 Flask-Caching==2.1.0
 Flask-Cors==4.0.0
 Flask-Limiter==3.5.0
@@ -54,5 +54,5 @@ six==1.16.0
 SQLAlchemy==2.0.21
 typing_extensions==4.8.0
 urllib3==2.0.6
-Werkzeug==3.0.0
+Werkzeug==2.3.7
 wrapt==1.15.0
