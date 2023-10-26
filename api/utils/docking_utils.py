@@ -12,17 +12,18 @@ import random
 import sys
 from datetime import date
 
+HEX_BIN_PATH = '/home/diennguyen/hex/bin/hex'
 
-def hex_docking(rec_lig,rec_lig2,receptor, ligand, date,docking_pdb_path):
+def hex_docking(rec_lig,rec_lig2,receptor, ligand, docking_pdb_path):
 
 # Function to call Hex, including hard coded settings
 
-
-	code = """ open_receptor  """ + docking_pdb_path + """results/receptor_to_dock/""" + receptor + """.pdb
-open_ligand  """ + docking_pdb_path +"""results/ligand_to_dock/""" + ligand + """.pdb
+# max_docking_solutions set at 5 for testing
+	code = """ open_receptor  """ + docking_pdb_path + """/results/receptor_to_dock/""" + receptor + """.pdb
+open_ligand  """ + docking_pdb_path +"""/results/ligand_to_dock/""" + ligand + """.pdb
 docking_correlation 1
 docking_score_threshold 0
-max_docking_solutions 50
+max_docking_solutions 5
 docking_receptor_stepsize 5.50
 docking_ligand_stepsize 5.50
 docking_alpha_stepsize 2.80
@@ -30,24 +31,24 @@ docking_main_scan 16
 receptor_origin C-825:VAL-O
 commit_edits
 activate_docking
-save_range 1 100 """ + docking_pdb_path + """results/%s_folder_%s/%s/result %s pdb""" % (rec_lig, date, rec_lig2, rec_lig)
-	subprocess.Popen('/home/yyu/hex/bin/hex', stdin=subprocess.PIPE, stderr=subprocess.STDOUT).communicate(bytes(code.encode('utf-8')))
+save_range 1 100 """ + docking_pdb_path + """/results/%s/%s/result %s pdb""" % (rec_lig, rec_lig2, rec_lig)
+	subprocess.Popen(HEX_BIN_PATH, stdin=subprocess.PIPE, stderr=subprocess.STDOUT).communicate(bytes(code.encode('utf-8')))
 
 
 
 
-def best_result(file_name, monomer, rec_lig, receptor, ligand):
+def best_result(file_name, monomer, rec_lig, receptor, ligand, docking_pdb_path):
 
 	# Function to generate the "best docking results", being the result with the best score and with the residue with the best contact frequency
 
-	file_name_dir = str('/home/vlau/BAR_API_HEX_Jan_23/docking_test_pdbs/results/'+ receptor + '_' + ligand + '_folder_'  + str(date.today()) + '/' + receptor + '_' + monomer + '_' + ligand + '/result/') #directory for the docking results
+	file_name_dir = str(docking_pdb_path + '/results/'+ receptor + '_' + ligand + '/' + receptor + '_' + monomer + '_' + ligand + '/result/') #directory for the docking results
 	file_name_path = str(file_name_dir + file_name[:-20] + '.pdb') #directory for the result, identifies as the best result
 	des1 = file_name_dir + 'best_docking_results_for_'+ file_name[:-24] + '.pdb' #destination directory for the best_docking_result file
 	shutil.copyfile(file_name_path,des1)
 
 	#Same thing done with the ligand file only
-	ori2='/home/vlau/BAR_API_HEX_Jan_23/docking_test_pdbs/results/'+ receptor + '_' + ligand + '_folder_' + str(date.today()) + '/' + receptor + '_' + monomer + '_' + ligand + '/ligand_reserved_pdb/' + file_name
-	des2='/home/vlau/BAR_API_HEX_Jan_23/docking_test_pdbs/results/'+ receptor + '_' + ligand + '_folder_' + str(date.today()) + '/' + receptor + '_' + monomer + '_' + ligand + '/ligand_reserved_pdb/best_docking_results.pdb'
+	ori2 = docking_pdb_path + '/results/'+ receptor + '_' + ligand + '/' + receptor + '_' + monomer + '_' + ligand + '/ligand_reserved_pdb/' + file_name
+	des2 = docking_pdb_path + '/results/'+ receptor + '_' + ligand + '/' + receptor + '_' + monomer + '_' + ligand + '/ligand_reserved_pdb/best_docking_results.pdb'
 	shutil.copyfile(ori2,des2)
 
 
@@ -122,7 +123,7 @@ def separate_monomers(monomer, file_dir, file_name, dir_final, monomers_list):
 	# Open the .pdb file to separate
 	with open (file_dir + '/' + file_name + '.pdb', 'r+') as r:
 		lines = r.readlines()
-		ends = [0]
+		ends = [0] # ends contains all line numbers of "TER"
 
 		# Searches the .pdb files for the lines that indicate the end of a chain
 		for l in lines:
@@ -155,10 +156,10 @@ def ligand_reserved(monomer, rec_lig, receptor, ligand,docking_pdb_path):
 
 	# Function to separate the ligand coordinates of every solution, it's useful to simply the calculation of the contact frequencies
 
-	dir_path = str(docking_pdb_path + '/results/'+ rec_lig + '_folder_' + str(date.today()) + '/' + receptor + '_' + monomer + '_' + ligand + '/result') #results directory
+	dir_path = str(docking_pdb_path + '/results/'+ rec_lig + '/' + receptor + '_' + monomer + '_' + ligand + '/result') #results directory
 	print('Isolating ' + rec_lig + '_' + monomer)
 
-	os.makedirs(docking_pdb_path + '/results/'+ rec_lig + '_folder_' + str(date.today()) + '/' + receptor + '_' + monomer + '_' + ligand + '/ligand_reserved_pdb') #ligand_reserved directory
+	os.makedirs(docking_pdb_path + '/results/'+ rec_lig + '/' + receptor + '_' + monomer + '_' + ligand + '/ligand_reserved_pdb') #ligand_reserved directory
 	file_list = os.listdir(dir_path)
 	result_list = []
 
@@ -168,7 +169,7 @@ def ligand_reserved(monomer, rec_lig, receptor, ligand,docking_pdb_path):
 			result_list.append(i)
 	for r in result_list:
 		file_path = str(dir_path + '/' + r)
-		ligand_reserved_file_path = str(docking_pdb_path + '/results/'+ rec_lig + '_folder_' + str(date.today()) + '/' + receptor + '_' + monomer + '_' + ligand + '/ligand_reserved_pdb/' + r[:-4] + '_ligand_reserved.pdb')
+		ligand_reserved_file_path = str(docking_pdb_path + '/results/'+ rec_lig + '/' + receptor + '_' + monomer + '_' + ligand + '/ligand_reserved_pdb/' + r[:-4] + '_ligand_reserved.pdb')
 		with open(file_path, 'r') as file:
 			lines = [line for line in file.readlines()]
 			# Everything below the line 'REMARK    Docked ligand coordinates...' is data of the ligand
@@ -180,12 +181,12 @@ def ligand_reserved(monomer, rec_lig, receptor, ligand,docking_pdb_path):
 
 
 
-def result_dict_generator(threshold, monomer, rec_lig, receptor, ligand):
+def result_dict_generator(threshold, monomer, rec_lig, receptor, ligand, docking_pdb_path):
 
 	# Function to calculate the contact frequencies of every amino acid
 
-	result_dir_path = str('/home/vlau/BAR_API_HEX_Jan_23/docking_test_pdbs/results/'+ rec_lig + '_folder_'+ str(date.today()) + '/' + receptor + '_' + monomer + '_' + ligand + '/ligand_reserved_pdb/') #directory for the results files, the ligand only ones we created with the ligand_reserved function!
-	receptor_file_path = str('/home/vlau/BAR_API_HEX_Jan_23/docking_test_pdbs/results/receptor_to_dock/monomers/'+ receptor + '_' + monomer + '.pdb') #directory for the receptor protein pdb file
+	result_dir_path = str(docking_pdb_path + '/results/'+ rec_lig + '/' + receptor + '_' + monomer + '_' + ligand + '/ligand_reserved_pdb/') #directory for the results files, the ligand only ones we created with the ligand_reserved function!
+	receptor_file_path = str(docking_pdb_path + '/results/receptor_to_dock/monomers/'+ receptor + '_' + monomer + '.pdb') #directory for the receptor protein pdb file
 
 	# Store every receptor's atom coordinates information as a nested dictionary called 'reference'
 	with open(receptor_file_path, 'r') as file:
@@ -293,13 +294,13 @@ def result_dict_generator(threshold, monomer, rec_lig, receptor, ligand):
 
 	# Use the result file from /result/, change the name to best docking result, and convert it into chain Z
 	try:
-		best_result(best_result_name, monomer, rec_lig, receptor, ligand)
+		best_result(best_result_name, monomer, rec_lig, receptor, ligand, docking_pdb_path)
 	# sometimes the simulations results are not good enough to satisfy both requirements,
 	# it's common especially when one monomer is never close to the ligand.
 	# Not including this line would stop an otherwise useful simulation
 	except FileNotFoundError:
 		f_file = receptor + '_' + ligand + '0001_' + monomer + '_ligand_reserved.pdb'
-		best_result(f_file, monomer, rec_lig, receptor, ligand)
+		best_result(f_file, monomer, rec_lig, receptor, ligand, docking_pdb_path)
 
 	print(ac)
 
@@ -322,14 +323,14 @@ def color_surfaces(monomer, receptor, ligand, rec_lig, docking_pdb_path):
 
 	if receptor + '_' + monomer not in result_dict.keys():
 		result_dict[receptor + '_' + monomer] = {}
-	if os.path.isfile(docking_pdb_path + '/results/' + rec_lig + '_folder_' + str(date.today()) + '/' + folder_name + '/ligand_reserved_pdb/res_dict.json') == False:
-		result_dict[receptor+ '_' + monomer][ligand] = result_dict_generator(5, monomer, rec_lig, receptor, ligand)
+	if os.path.isfile(docking_pdb_path + '/results/' + rec_lig + '/' + folder_name + '/ligand_reserved_pdb/res_dict.json') == False:
+		result_dict[receptor+ '_' + monomer][ligand] = result_dict_generator(5, monomer, rec_lig, receptor, ligand, docking_pdb_path)
 	else:
 		result_dict[receptor+ '_' + monomer][ligand] = eval(
-			open(docking_pdb_path + '/results/' + rec_lig + '_folder_' + str(date.today()) + '/' + folder_name + '/ligand_reserved_pdb/res_dict.json', 'r').read())
+			open(docking_pdb_path + '/results/' + rec_lig + '/' + folder_name + '/ligand_reserved_pdb/res_dict.json', 'r').read())
 		print('res_dict.json previously exists and has read')
 
-	resultjson_path = docking_pdb_path + '/results/' + rec_lig + '_folder_' + str(date.today()) + '/' + folder_name + '/results.json'
+	resultjson_path = docking_pdb_path + '/results/' + rec_lig + '/' + folder_name + '/results.json'
 
 	# Initialize results.json
 	ini = {}
@@ -354,14 +355,12 @@ def pipeline(rec_lig, is_monomer, receptor, ligand, monomers_list, docking_pdb_p
 
 	print('Current pair:' + rec_lig)
 
-	today_dir = docking_pdb_path + '/results/' + rec_lig + '_folder_' + str(date.today()) + '/'
-
-	datetoday = str(date.today())
+	today_dir = docking_pdb_path + '/results/' + rec_lig + '/'
 
 	results_dir = today_dir + rec_lig + '/result/'
 	os.makedirs(results_dir)
 
-	hex_docking(rec_lig, rec_lig, receptor, ligand, datetoday,docking_pdb_path) # CALL HEX
+	hex_docking(rec_lig, rec_lig, receptor, ligand,docking_pdb_path) # CALL HEX
 
 	results_list = os.listdir(results_dir)
 	first_file_name = str(receptor + '_' + ligand + '0001.pdb')
@@ -389,11 +388,14 @@ class Protein_Docking:
 		receptor_folder_list = os.listdir(receptor_folder)
 		ligand_folder = os.listdir(docking_pdb_path + '/results/ligand_to_dock')
 
+		receptor_file_found = False
 		for rec in receptor_folder_list:
+			sys.stdout.write(rec)
 			# There could be hidden files in the receptor or ligand directory so only consider pdb files
-			if rec[0] != '.' and len(rec.split('.')) == 2 and rec.split('.')[1] == 'pdb':
+			if rec[0] != '.' and len(rec.split('.')) == 2 and rec.split('.')[1] == 'pdb'\
+				and rec[:-4].lower() == receptor.lower():
+				receptor_file_found = True
 				receptor = rec[:-4]
-
 				# To check if the receptor is a monomer or not, the script will search the .pdb file
 				# for the line that indicated the presence of multiple chains,
 				with open(receptor_folder + '/' + rec, 'r+') as f:
@@ -409,89 +411,104 @@ class Protein_Docking:
 								monomers_list = x.split(': ')[-1].split(', ')
 								# The COMPND line ends with ';' therefore it needs to be removed from the last label
 								monomers_list[-1] = monomers_list[-1][0]
+				break
 
+		ligand_file_found = False
 		for lig in ligand_folder:
-			if lig[0] != '.' and len(lig.split('.')) == 2 and lig.split('.')[1] == 'pdb':
+			sys.stdout.write(lig)
+			if lig[0] != '.' and len(lig.split('.')) == 2 and lig.split('.')[1] == 'pdb'\
+				and lig[:4].lower() == ligand.lower():
+				ligand_file_found = True
 			#DO NOT USE PDB FOR LIGAND FILES, it is possible but it can lead to errors due to the missing hydrogens
 				ligand = lig[:-4]
+				break
+
+		
+		##TODO: Add block to raise error if receptor or ligand files are not found
 
 		rec_lig = receptor + '_' + ligand
 
+		#check if results folder already exists
+		results_path = docking_pdb_path + '/results/' + rec_lig
+		if not os.path.exists(results_path):
 		# To save the terminal output later (very important)
-		stdoutOrigin=sys.stdout
-		sys.stdout = open(docking_pdb_path + 'results/Terminal_recordings/' + receptor + '_' + ligand + '_' + str(date.today()) + '.txt' , "w")
+			stdoutOrigin=sys.stdout
+			sys.stdout = open(docking_pdb_path + '/results/Terminal_recordings/' + rec_lig + '_' + str(date.today()) + '.txt' , "w")
 
-		# Call to the pipeline with different parameters whether the receptor is a monomer or a complex
-		if is_monomer == False:
-			dir_final = docking_pdb_path + '/results/receptor_to_dock/monomers'
+			# Call to the pipeline with different parameters whether the receptor is a monomer or a complex
+			if is_monomer == False:
+				dir_final = docking_pdb_path + '/results/receptor_to_dock/monomers'
+				for monomer in monomers_list:
+					print('separating monomer: ' + monomer)
+					separate_monomers(monomer, receptor_folder, receptor, dir_final, monomers_list) # To separate the monomers in the multimer file
+
+				pipeline(rec_lig, is_monomer, receptor, ligand, monomers_list,docking_pdb_path)
+			else:
+				dir_final = docking_pdb_path + '/results/receptor_to_dock/monomers'
+				monomers_list = ['monomer']
+				separate_monomers('monomer', receptor_folder, receptor, dir_final, monomers_list) # To analyze the data from hex you still need to separate it.
+																								# It allows to use the same functions in both cases
+				pipeline(rec_lig, is_monomer, receptor, ligand, monomers_list,docking_pdb_path)
+
+			#To put together the json files with all the data from all monomers
+			new_json = docking_pdb_path + '/results/'+ rec_lig + '/' + '/final.json'
+			final_json = {}
+			min_values = []
+			max_values = []
+			abs_max = None
+			abs_min = None
+
 			for monomer in monomers_list:
-				print('separating monomer: ' + monomer)
-				separate_monomers(monomer, receptor_folder, receptor, dir_final, monomers_list) # To separate the monomers in the multimer file
+				monomer_json = docking_pdb_path + '/results/' + rec_lig + '/' + str(receptor + '_' + monomer + '_' + ligand) +'/results.json'
+				with open(monomer_json, 'r') as file:
+					monomer_dict = json.load(file)
 
-			pipeline(rec_lig, is_monomer, receptor, ligand, monomers_list,docking_pdb_path)
+					monomer_key = list(monomer_dict.keys())[0]
+					ligand_key = list(monomer_dict[monomer_key].keys())[0]
+
+					inside_dict = monomer_dict[monomer_key][ligand_key]
+
+				# To eliminate empty dictionaries that might cause division errors below  normalized_mon_dicitonary calculations
+					if  inside_dict == {}:
+						continue
+					else:
+						mini = min(inside_dict.values())
+						maxi = max(inside_dict.values())
+
+					min_values.append(mini)
+					max_values.append(maxi)
+
+					abs_max = max(max_values)
+					abs_min = min(min_values)
+
+					print("This is the maximum value: ",abs_max, file=sys.stderr)
+					print("This is the minimum value: ",abs_min, file=sys.stderr)
+
+			#Now looping through every monomer, and calculating every residue energy to be normalized by using absolute minimum and maximum.
+			for monomer in monomers_list:
+				monomer_json = docking_pdb_path + '/results/' +rec_lig + '/' + str(receptor + '_' + monomer + '_' + ligand) +'/results.json'
+				with open(monomer_json, 'r') as file:
+					monomer_dict = json.load(file)
+
+					monomer_key = list(monomer_dict.keys())[0]
+					ligand_key = list(monomer_dict[monomer_key].keys())[0]
+
+					inside_dict = monomer_dict[monomer_key][ligand_key]
+
+					# It is here to prevent substraction of equal values or values that doesn't make any sense in terms of accuracy
+
+					if abs_min == abs_max :
+						normalized_mon_dict = {monomer_key:{ligand_key:{k:1 for k,v in inside_dict.items()}}}
+						final_json.update(normalized_mon_dict)
+					else:
+						normalized_mon_dict = {monomer_key:{ligand_key:{k:(v-abs_min)/(abs_max - abs_min) for k,v in inside_dict.items()}}}
+						final_json.update(normalized_mon_dict)
+			#Opening and writing new_json file that was directed to be final.json and was updated with normalization dictionary values
+
+			with open(new_json,'w') as file:
+				file.write(json.dumps(final_json))
+			print('Final json is finished')
+			print(new_json, file=sys.stderr)
+			sys.stdout.close()
 		else:
-			dir_final = docking_pdb_path + '/results/receptor_to_dock/monomers'
-			monomers_list = ['monomer']
-			separate_monomers('monomer', receptor_folder, receptor, dir_final, monomers_list) # To analyze the data from hex you still need to separate it.
-																							# It allows to use the same functions in both cases
-			pipeline(rec_lig, is_monomer, receptor, ligand, monomers_list,docking_pdb_path)
-
-		#To put together the json files with all the data from all monomers
-		new_json = docking_pdb_path + '/results/'+ rec_lig + '_folder_'  + str(date.today()) + '/' + '/final.json'
-		final_json = {}
-		min_values = []
-		max_values = []
-		abs_max = None
-		abs_min = None
-
-		for monomer in monomers_list:
-			monomer_json = docking_pdb_path + '/results/' +rec_lig + '_folder_' + str(date.today()) + '/' + str(receptor + '_' + monomer + '_' + ligand) +'/results.json'
-			with open(monomer_json, 'r') as file:
-				monomer_dict = json.load(file)
-
-				monomer_key = list(monomer_dict.keys())[0]
-				ligand_key = list(monomer_dict[monomer_key].keys())[0]
-
-				inside_dict = monomer_dict[monomer_key][ligand_key]
-
-			# To eliminate empty dictionaries that might cause division errors below  normalized_mon_dicitonary calculations
-				if  inside_dict == {}:
-					continue
-				else:
-					mini = min(inside_dict.values())
-					maxi = max(inside_dict.values())
-
-				min_values.append(mini)
-				max_values.append(maxi)
-
-				abs_max = max(max_values)
-				abs_min = min(min_values)
-
-				print("This is the maximum value: ",abs_max, file=sys.stderr)
-				print("This is the minimum value: ",abs_min, file=sys.stderr)
-
-		#Now looping through every monomer, and calculating every residue energy to be normalized by using absolute minimum and maximum.
-		for monomer in monomers_list:
-			monomer_json = docking_pdb_path + '/results/' +rec_lig + '_folder_' + str(date.today()) + '/' + str(receptor + '_' + monomer + '_' + ligand) +'/results.json'
-			with open(monomer_json, 'r') as file:
-				monomer_dict = json.load(file)
-
-				monomer_key = list(monomer_dict.keys())[0]
-				ligand_key = list(monomer_dict[monomer_key].keys())[0]
-
-				inside_dict = monomer_dict[monomer_key][ligand_key]
-
-				# It is here to prevent substraction of equal values or values that doesn't make any sense in terms of accuracy
-
-				if abs_min == abs_max :
-					normalized_mon_dict = {monomer_key:{ligand_key:{k:1 for k,v in inside_dict.items()}}}
-					final_json.update(normalized_mon_dict)
-				else:
-					normalized_mon_dict = {monomer_key:{ligand_key:{k:(v-abs_min)/(abs_max - abs_min) for k,v in inside_dict.items()}}}
-					final_json.update(normalized_mon_dict)
-		#Opening and writing new_json file that was directed to be final.json and was updated with normalization dictionary values
-
-		with open(new_json,'w') as file:
-			file.write(json.dumps(final_json))
-		print('Final json is finished')
-		print(new_json, file=sys.stderr)
+			print("Docking has already been done on this protein-ligand.")
