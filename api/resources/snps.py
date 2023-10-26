@@ -26,6 +26,7 @@ from api.utils.pymol_script import PymolCmds
 from api.utils.hotspot_utils import HotspotUtils
 import sys
 from api import db, cache, limiter
+from api.utils.docking_utils import Protein_Docking
 
 
 snps = Namespace("SNPs", description="Information about SNPs", path="/snps")
@@ -45,6 +46,54 @@ parser.add_argument(
     help="[Optional]\n For multimers, enter chain ID only (i.e. A)\n For monomers, remain 'None' as default.",
     default="None",
 )
+
+@snps.route("/docking/<receptor>/<ligand>")
+class Docking(Resource):
+    @snps.param("receptor", _in="path", default="bri1")
+    @snps.param("ligand", _in="path", default="brass")
+    def get(self, receptor, ligand):
+        # receptor= escape(receptor)
+        # ligand = escape(ligand)
+
+        #arabidopsis_pdb_path = "/var/www/html/eplant_legacy/java/Phyre2-Models/Phyre2_"
+        #poplar_pdb_path = "/var/www/html/eplant_poplar/pdb/"
+        #tomato_pdb_path = "/var/www/html/eplant_tomato/pdbc/"
+        #docking_pdb_link = "//bar.utoronto.ca/docking-pdbs/"
+        #docking_pdb_path = "/var/www/html/docking-pdbs/"
+        #arabidopsis_pdb_path = "/home/metyumelkonyan/BCB330/results/receptor_to_dock"
+        #poplar_pdb_path = "/home/metyumelkonyan/BCB330/results/receptor_to_dock"
+        #tomato_pdb_path = "/home/metyumelkonyan/BCB330/results/receptor_to_dock"
+        docking_pdb_link = "//bar.utoronto.ca/docking-pdbs/"
+        docking_pdb_path = "/home/diennguyen/BAR_API/docking_test_pdbs"
+
+        #Receptors can be adjusted please adjust the file format on the directories as well (sdf vs pdb)
+        # receptor = "3riz"
+        # ligand = "TDR"
+        # receptor = "5gij_ATOM"
+        # ligand = "TDIF"
+
+        # if BARUtils.is_arabidopsis_gene_valid(receptor_pdb):
+        #     receptor_pdb_path = arabidopsis_pdb_path + \
+        #                         receptor_pdb.upper() + ".pdb"
+        # elif BARUtils.is_poplar_gene_valid(receptor_pdb):
+        #     receptor_pdb_path = (
+        #             poplar_pdb_path + BARUtils.format_poplar(
+        #         receptor_pdb) + ".pdb"
+        #     )
+        # elif BARUtils.is_tomato_gene_valid(receptor_pdb, True):
+        #     receptor_pdb_path = tomato_pdb_path + receptor_pdb.capitalize() + ".pdb"
+        # else:
+        #     return BARUtils.error_exit("Invalid receptor pdb gene id"), 400
+
+        #ligand_sdf_path = "/home/yyu/public_html/library" + ligand + ".pdb"
+
+        docking_file_name = receptor.upper() + "-" + ligand.upper() + \
+                "-docking0001.pdb "
+        response = requests.get("https:" + docking_pdb_link + docking_file_name)
+
+        # Importing start function to initiate docking_utils  file
+
+        Protein_Docking.start(receptor,ligand,docking_pdb_path)
 
 
 @snps.route("/phenix/<fixed_pdb>/<moving_pdb>")
