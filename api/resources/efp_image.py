@@ -136,6 +136,36 @@ class eFPImage(Resource):
         return send_from_directory(directory="../output/", path=path, mimetype="image/png")
 
 
+@efp_image.route("/get_efp_data_source/<species>")
+class eFPDataSource(Resource):
+    @efp_image.param("species", _in="path", default="sorghum")
+    def get(self, species=""):
+        """
+        Returns Data sources using eFP Directory
+        Supported species: Sorghum
+        """
+
+        species = species.lower()
+        results = []
+
+        # This will only work on the BAR
+        if os.environ.get("BAR"):
+            if species == "sorghum":
+                efp_base_path = "/var/www/html/efp_sorghum/data"
+            else:
+                return BARUtils.error_exit("Invalid species.")
+
+            data_files = os.listdir(efp_base_path)
+
+            for file in data_files:
+                if file.endswith(".xml") and file != "efp_info.xml":
+                    results.append(file.rstrip(".xml"))
+
+            return BARUtils.success_exit(results)
+        else:
+            return BARUtils.error_exit("Only available on the BAR.")
+
+
 @efp_image.route("/get_efp_dir/<species>")
 class eFPXMLSVGList(Resource):
     @efp_image.param("species", _in="path", default="arabidopsis")
