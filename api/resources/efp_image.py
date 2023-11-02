@@ -160,7 +160,7 @@ class eFPDataSource(Resource):
 
             for file in data_files:
                 if file.endswith(".xml") and file != "efp_info.xml":
-                    results.append(file.rstrip(".xml"))
+                    results.append(file.replace(".xml", ""))
 
             return BARUtils.success_exit(results)
         else:
