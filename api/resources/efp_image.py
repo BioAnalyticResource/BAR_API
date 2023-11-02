@@ -145,13 +145,14 @@ class eFPDataSource(Resource):
         Supported species: Sorghum
         """
 
+        species = escape(species)
         species = species.lower()
         results = []
 
         # This will only work on the BAR
         if os.environ.get("BAR"):
-            if species == "sorghum":
-                efp_base_path = "/var/www/html/efp_sorghum/data"
+            if species in ["arabidopsis", "arachis", "cannabis", "maize", "sorghum", "soybean"]:
+                efp_base_path = "/var/www/html/efp_" + species + "/data"
             else:
                 return BARUtils.error_exit("Invalid species.")
 
@@ -175,6 +176,7 @@ class eFPXMLSVGList(Resource):
         Supported species: Arabidopsis, Poplar
         """
 
+        species = escape(species)
         species = species.lower()
 
         if species == "arabidopsis":
@@ -189,6 +191,8 @@ class eFPXMLSVGList(Resource):
             XML_name = "Populus_trichocarpa.xml"
             SVG_name = "Populus_trichocarpa.svg"
             base_url = "//bar.utoronto.ca/eplant_poplar/data/"
+        else:
+            return BARUtils.error_exit("Invalid species.")
 
         efp_folders = os.listdir(efp_base_path)
 
