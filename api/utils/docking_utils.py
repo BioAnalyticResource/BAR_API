@@ -16,6 +16,9 @@ HEX_BIN_PATH = '/home/diennguyen/hex/bin/hex'
 
 def hex_docking(rec_lig,rec_lig2,receptor, ligand, docking_pdb_path):
 
+	hex_output = open(docking_pdb_path + "/results/" + rec_lig + 
+				   "/{}_hex_output.txt".format(rec_lig), "w")
+
 # Function to call Hex, including hard coded settings
 
 # max_docking_solutions set at 5 for testing
@@ -23,7 +26,7 @@ def hex_docking(rec_lig,rec_lig2,receptor, ligand, docking_pdb_path):
 open_ligand  """ + docking_pdb_path +"""/results/ligand_to_dock/""" + ligand + """.pdb
 docking_correlation 1
 docking_score_threshold 0
-max_docking_solutions 5
+max_docking_solutions 25
 docking_receptor_stepsize 5.50
 docking_ligand_stepsize 5.50
 docking_alpha_stepsize 2.80
@@ -32,7 +35,8 @@ receptor_origin C-825:VAL-O
 commit_edits
 activate_docking
 save_range 1 100 """ + docking_pdb_path + """/results/%s/%s/result %s pdb""" % (rec_lig, rec_lig2, rec_lig)
-	subprocess.Popen(HEX_BIN_PATH, stdin=subprocess.PIPE, stderr=subprocess.STDOUT).communicate(bytes(code.encode('utf-8')))
+	subprocess.Popen(HEX_BIN_PATH, stdin=subprocess.PIPE, stderr=subprocess.STDOUT, stdout=hex_output).communicate(bytes(code.encode('utf-8')))
+	hex_output.close()
 
 
 
@@ -310,8 +314,34 @@ def result_dict_generator(threshold, monomer, rec_lig, receptor, ligand, docking
 	return ac
 
 
-
-
+def parse_hex_output(rec_lig, docking_pdb_path):
+	hex_output = open(docking_pdb_path + "/results/" + rec_lig + 
+				   "/{}_hex_output.txt".format(rec_lig), "r")
+	lines = hex_output.readlines()
+	result_start = 0
+	result_end = 0
+	for i in range(len(lines)):
+		splitted_line = lines[i].split(" ")
+		if len(splitted_line) > 8 and splitted_line[0] == "Clst":
+			result_start = i + 2
+		if len(splitted_line) > 2 and splitted_line[1] == "save_range":
+			result_end = i - 2
+	clustering_lines = lines[result_start:result_end]
+	clusters = {}
+	for line in clustering_lines:
+		cleaned_line = line.strip().split(" ")
+		res = []
+		for ch in cleaned_line:
+			if ch != "":
+				res.append(ch)
+		clst = int(res[0])
+		sln = int(res[1])
+		if clst not in clusters:
+			clusters[clst] = [sln]
+		else:
+			clusters[clst].append(sln)
+	return(clusters)
+		
 
 def color_surfaces(monomer, receptor, ligand, rec_lig, docking_pdb_path):
 
@@ -390,7 +420,6 @@ class Protein_Docking:
 
 		receptor_file_found = False
 		for rec in receptor_folder_list:
-			sys.stdout.write(rec)
 			# There could be hidden files in the receptor or ligand directory so only consider pdb files
 			if rec[0] != '.' and len(rec.split('.')) == 2 and rec.split('.')[1] == 'pdb'\
 				and rec[:-4].lower() == receptor.lower():
