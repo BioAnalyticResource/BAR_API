@@ -24,6 +24,14 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
+    def test_get_efp_data_source(self):
+        """This function tests eFP data source error return
+        :return:
+        """
+        response = self.app_client.get("/efp_image/get_efp_data_source/soybean")
+        expected = {"wasSuccessful": False, "error": "Only available on the BAR."}
+        self.assertEqual(response.json, expected)
+
     def test_get_efp_image(self):
         """This function test eFP image endpoint get request
         :return:
