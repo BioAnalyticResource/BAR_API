@@ -35,7 +35,6 @@ mysql -u $DB_USER -p$DB_PASS < ./config/databases/single_cell.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/soybean_nssnp.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/strawberry.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/striga.sql
-mysql -u $DB_USER -p$DB_PASS < ./config/databases/summarization.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/tomato_nssnp.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/tomato_sequence.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/triphysaria.sql
