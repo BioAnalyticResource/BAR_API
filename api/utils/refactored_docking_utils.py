@@ -3,13 +3,13 @@ from typing import List
 import os
 import re
 import subprocess
-import pickle
 import math
 import sys
 import json
 import datetime
 
 HEX_BIN_PATH = '/home/diennguyen/hex/bin/hex'
+
 
 class Receptor(ABC):
     """An abstract class that represents a receptor
@@ -22,6 +22,7 @@ class Receptor(ABC):
     def __init__(self, name: str, file_path: str):
         self.name = name
         self.file_path = file_path
+
 
 class MonomerReceptor(Receptor):
     """ A class that represents a receptor that is a monomer, meaning it consists
@@ -54,6 +55,11 @@ class ComplexReceptor(Receptor):
         self.line_numbers = self.separate_monomers()
 
     def separate_monomers(self):
+        """Returns a list of lists, where each sublist contains the line
+        numbers of the start and end of a monomer.
+        For example, receptor X has 3 chains in this order: A, B, C.
+        The method will return [[1, 6], [7, 9], [10, 15]].
+        """
         line_numbers = []
         file = open(self.file_path, "r")
         line = file.readline()
@@ -70,20 +76,21 @@ class ComplexReceptor(Receptor):
                 prev = curr_line
             curr_line += 1
             line = file.readline()
-        
+
         return line_numbers
 
 
 class Ligand:
     """A class that represents a ligand.
-    
+
     --- Attributes ---
-    name (str): the name of the receptor 
+    name (str): the name of the receptor
     file_path (str): the relative path to the receptors pdb file
     """
     def __init__(self, name: str, file_path: str):
         self.name = name
         self.file_path = file_path
+
 
 class Docking(ABC):
     """An abstract class that represents the docking between a receptor and a
@@ -105,6 +112,8 @@ class Docking(ABC):
         self.ligand_reserved_list = []
 
     def hex_docking(self):
+        """Run hex docking using the command line.
+        """
         hex_output_file = open(self.results_path + 'hex_output.txt', "w")
 
     # Function to call Hex, including hard coded settings
@@ -124,10 +133,9 @@ class Docking(ABC):
                 activate_docking
                 save_range 1 100 """ \
         + self.results_path + """ %s pdb""" % (self.receptor.name + '_' + self.ligand.name)
-        print(hex_command)
-        subprocess.Popen(HEX_BIN_PATH, 
+        subprocess.Popen(HEX_BIN_PATH,
                          stdin=subprocess.PIPE,
-                         stderr=subprocess.STDOUT, 
+                         stderr=subprocess.STDOUT,
                          stdout=hex_output_file).communicate(bytes(hex_command.encode('utf-8')))
         hex_output_file.close()
         ct = datetime.datetime.now()
@@ -141,9 +149,6 @@ class Docking(ABC):
         For example, [1500, 1499, 1500] means that there are three solutions. In the first
         solution, the "Docked Ligand" section begins at line 1500. In the second solution,
         it begins at line 1499, and so on ...
-
-        # TODO: Check if having the same chain name (e.g. C) in BOTH ligand
-        # and receptor will be a problem for execution.
         """
         line_numbers = []
         for filename in os.listdir(self.results_path):
@@ -155,8 +160,13 @@ class Docking(ABC):
                         line_numbers.append(i)
                         break
         self.ligand_reserved_list = line_numbers
-    
+
     def parse_hex_output(self):
+        """Returns a dictionary where the key is the cluster number and the
+        value is a list of solution numbers. One of the keys is "num_soln",
+        where its value is the total number of solutions.
+        For example: {num_soln : 5, 1 : [2, 4], 2 : [1, 3, 5]}
+        """
         hex_output = open(self.results_path + 'hex_output.txt', "r")
         lines = hex_output.readlines()
         # line number where the clustering starts and ends
@@ -184,23 +194,27 @@ class Docking(ABC):
                 clusters[clst] = [sln]
             else:
                 clusters[clst].append(sln)
-        return(clusters)
-            
+        return clusters
 
     def result_dict_generator(self, monomer_number, threshold):
+        """Return a dictionary where each key is a residue and each value is
+        the energy. The distance between each residue in the monomer and each
+        atom in the ligand is calculated, and only residues with distances
+        below the threshold are included.
+        """
         receptor_file = open(self.receptor.file_path, "r")
 
-        if monomer_number != -1: # if -1, go to monomer logic
+        if monomer_number != -1:  # if -1, go to monomer logic
             # get the start and end line numbers of the monomer in the receptor pdb
             monomer_start = self.receptor.line_numbers[monomer_number][0]
             monomer_end = self.receptor.line_numbers[monomer_number][1]
 
             # get the lines for that receptor only
             receptor_file_lines = receptor_file.readlines()[monomer_start:monomer_end]
-        else: # Monomer logic
+        else:  # Monomer logic
             receptor_file_lines = receptor_file.readlines()
 
-        # Store every receptor's atom coordinates information as a nested 
+        # Store every receptor's atom coordinates information as a nested
         # dictionary called 'reference'
         reference = {}
         for line in receptor_file_lines:
@@ -214,7 +228,6 @@ class Docking(ABC):
 
         # here, the structure of the reference dict is is {residue: {atom_num :(x, y, z)}},
 
-
         # The energy for each reference element will be stored in dictionary 'ac'
         ac = {}
         result_list = []
@@ -222,15 +235,12 @@ class Docking(ABC):
             if filename[-3:] == 'pdb':
                 result_list.append(filename)
 
-        lowest_en = None # to keep track of lowest energy
-        lowest_en_file = None # the file with the lowest energy
-        lowest_residue_list = None # list of residues of file with lowest energy
+        lowest_en = None  # to keep track of lowest energy
         all_residue_list = []
 
         cluster_dict = self.parse_hex_output()
 
         for i in range(len(result_list)):
-            print('current file: ' + result_list[i])
             energy = ''
 
             # get the ligand_reserved section of the result file
@@ -252,26 +262,25 @@ class Docking(ABC):
 
                     # record values if lowest energy
                     if lowest_en is None or energy < lowest_en:
-                        lowest_en_file = result_list[i]
                         lowest_en = energy
                 elif line[:4] == 'ATOM':
-                        # coordinates of one atom
-                        coordinates = tuple(map(float, filter(None, line.split()[6:9])))
-                        coor.append(coordinates)
+                    # coordinates of one atom
+                    coordinates = tuple(map(float, filter(None, line.split()[6:9])))
+                    coor.append(coordinates)
             # each atom's coordinates is now stored in the list coordinates
 
             residue_set = set()
-            for res in reference.keys(): # for each amino acid in the receptor file:
+            for res in reference.keys():  # for each amino acid in the receptor file:
                 distances = []
-                
-                for atom in coor: # for each atom of the ligand
-                    for aa in reference[res].keys(): # for each atom of that amino acid
-						# check if the distance between atoms of the ligands
-						# and of the amino acid are lower than chosen threshold (5)
+
+                for atom in coor:  # for each atom of the ligand
+                    for aa in reference[res].keys():  # for each atom of that amino acid
+                        # check if the distance between atoms of the ligands
+                        # and of the amino acid are lower than chosen threshold (5)
                         distance = math.sqrt(sum([(reference[res][aa][0] - atom[0]) ** 2,
                                                   (reference[res][aa][1] - atom[1]) ** 2,
                                                   (reference[res][aa][2] - atom[2]) ** 2]))
-                        
+
                         distances.append(distance)
 
                 # if at least one of the distances is lower than the threshold, otherwise skip
@@ -285,7 +294,7 @@ class Docking(ABC):
                     else:
                         ac[res] = energy
 
-					# Store the resi number into set 
+                # Store the resi number into set
                 residue_set.add(res)
 
             all_residue_list.append(residue_set)
@@ -300,9 +309,14 @@ class Docking(ABC):
     def crte_receptor_dict(self):
         pass
 
+    @abstractmethod
+    def normalize_results(self, threshold):
+        pass
+
+
 class MonomerDocking(Docking):
     """A class the represents a docking between a monomer receptor and a monomer.
-    
+
     --- Attributes ---
     receptor (MonomerReceptor): a Receptor object that represents a monomer receptor
     ligand (Ligand): a Ligand object that represents a ligand
@@ -318,14 +332,21 @@ class MonomerDocking(Docking):
         pass
 
     def crte_receptor_dict(self, threshold):
+        """"Return a dictionary that contains the residue-energy
+        dictionary of the monomer. This is not necessary, but maintains
+        consistency between monomer and complex receptor dictionaries.
+        """
         receptor_res = {}
         res_dict = self.result_dict_generator(-1, threshold)
         ligand_res = {}
         ligand_res[self.ligand.name] = res_dict
         receptor_res[self.receptor.name] = ligand_res
         return receptor_res
-    
+
     def normalize_results(self, threshold):
+        """Return normalized residue-energy dictionaries for the
+        receptor.
+        """
         results_dict = self.crte_receptor_dict(threshold)
         receptor_key = list(results_dict.keys())[0]
         ligand_key = list(results_dict[receptor_key].keys())[0]
@@ -334,15 +355,12 @@ class MonomerDocking(Docking):
         abs_max = None
         abs_min = None
 
-        # To eliminate empty dictionaries that might cause division errors below 
+        # To eliminate empty dictionaries that might cause division errors below
         # normalized_mon_dicitonary calculations
-        if  inside_dict != {}:
+        if inside_dict != {}:
             abs_min = min(inside_dict.values())
             abs_max = max(inside_dict.values())
 
-            print("This is the maximum value: ",abs_max, file=sys.stderr)
-            print("This is the minimum value: ",abs_min, file=sys.stderr)
-        
         all_normalized_results = {}
 
         normalized_mon_dict = {}
@@ -363,7 +381,7 @@ class MonomerDocking(Docking):
 
 class ComplexDocking(Docking):
     """A class that represents a docking between a complex receptor and a ligand.
-    
+
         --- Attributes ---
     receptor (ComplexReceptor): a Receptor object that represents a monomer receptor
     ligand (Ligand): a Ligand object that represents a ligand
@@ -382,15 +400,13 @@ class ComplexDocking(Docking):
     def separate_results(self):
         """For each solution, record the start and end line number (0-based) of
         each chain. Then, populate self.split_results with the final list.
-        
+
         Each sublist represents one solution file. Each tuple in the sublist
         contains the start and end of one chain. The order of the tuples in
         the sublist is the same as the order of the monomers in the receptor's
-        monomers_list."""
-
+        monomers_list.
+        """
         results_files = os.listdir(self.results_path)
-        
-        all_chains = []
 
         # for each solution
         for file in results_files:
@@ -406,7 +422,7 @@ class ComplexDocking(Docking):
             while line != '':
                 # the start of the first chain
                 if line.split()[0] == "ATOM" and line.split()[1] == "1":
-                # if line.startswith('ATOM      1  '):
+                    # if line.startswith('ATOM      1  '):
                     prev = curr_line - 1
 
                 # the end of a chain
@@ -432,7 +448,7 @@ class ComplexDocking(Docking):
             ligand_res[self.ligand.name] = res_dict
             all_monomers.append({self.receptor.name + '_' + self.receptor.monomers_list[i] : ligand_res})
         return all_monomers
-    
+
     def normalize_results(self, threshold):
         min_values = []
         max_values = []
@@ -446,24 +462,24 @@ class ComplexDocking(Docking):
 
             inside_dict = monomer_dict[monomer_key][ligand_key]
 
-            # To eliminate empty dictionaries that might cause division errors below 
+            # To eliminate empty dictionaries that might cause division errors below
             # normalized_mon_dicitonary calculations
-            if  inside_dict == {}:
+            if inside_dict == {}:
                 continue
             else:
                 mini = min(inside_dict.values())
                 maxi = max(inside_dict.values())
-                
+
                 min_values.append(mini)
                 max_values.append(maxi)
-                
+
                 abs_max = max(max_values)
                 abs_min = min(min_values)
 
-                print("This is the maximum value: ",abs_max, file=sys.stderr)
-                print("This is the minimum value: ",abs_min, file=sys.stderr)
-        
-        # Now looping through every monomer, and calculating every residue energy to be 
+                print("This is the maximum value: ", abs_max, file=sys.stderr)
+                print("This is the minimum value: ", abs_min, file=sys.stderr)
+
+        # Now looping through every monomer, and calculating every residue energy to be
         # normalized by using absolute minimum and maximum.
         all_normalized_results = {}
         for i in range(len(all_monomers_dict)):
@@ -488,54 +504,60 @@ class ComplexDocking(Docking):
             all_normalized_results.update(normalized_mon_dict)
         return all_normalized_results
 
+
 class Docker:
     """A class that represents the controller to create docking pairs and carry
-    out the docking"""
+    out the docking.
+    """
 
     @staticmethod
     def start(receptor: str, ligand: str, docking_pdb_path: str):
-        
+        """Start the docking process and analyze results. Return the
+        normalized residue-energyy dictionary.
+        """
         # create docking object
         ct = datetime.datetime.now()
         print("Starting the docking process at {}".format(ct))
         docking = Docker.create_docking(receptor, ligand, docking_pdb_path)
         if docking is None:
-            results_path = docking_pdb_path + 'results/' + receptor + '_' + ligand + '_testing/'
+            results_path = docking_pdb_path + 'results/' + receptor + '_' + ligand + '/'
             with open(results_path + "final.json") as json_file:
                 final_json = json.load(json_file)
             return final_json
-        
+
         docking.hex_docking()
         if isinstance(docking, ComplexDocking):
             docking.separate_results()
         docking.crte_ligand_reserved_attr()
         normalized_results = docking.normalize_results(5)
         new_json = docking.results_path + "final.json"
-        with open(new_json,'w') as file:
+        with open(new_json, 'w') as file:
             file.write(json.dumps(normalized_results))
         ct = datetime.datetime.now()
         print("current time:-", ct)
         return normalized_results
 
-    
     def create_receptor(receptor_name: str, receptor_file_path: str):
+        """Return a new receptor with the name receptor_name, by parsing
+        the file at recepter_file_path.
+        """
         with open(receptor_file_path) as f:
             is_monomer = True
             for line in f.readlines():
-                if re.match(r'COMPND   \d CHAIN: \w, \w*', line) != None:
+                if re.match(r'COMPND   \d CHAIN: \w, \w*', line) is not None:
                     is_monomer = False
-					#if the receptor would be a monomer the regex would be 
+                    # if the receptor would be a monomer the regex would be
                     # r'COMPND   \d CHAIN: \w;'
 
-					# To make a list of the monomers' labels
+                    # To make a list of the monomers' labels
                     print(receptor_name + ' identified as a protein complex')
                     if line[11:16] == 'CHAIN':
                         monomers_list = line.split(': ')[-1].split(', ')
-					# The COMPND line ends with ';' therefore it needs to be 
-                    # removed from the last label
+                        # The COMPND line ends with ';' therefore it needs to be
+                        # removed from the last label
                         monomers_list[-1] = monomers_list[-1][0]
-                        new_receptor = ComplexReceptor(receptor_name, 
-                                                       receptor_file_path, 
+                        new_receptor = ComplexReceptor(receptor_name,
+                                                       receptor_file_path,
                                                        monomers_list)
                         return new_receptor
                     print("Unknown pdb structure, need further investigation")
@@ -544,25 +566,27 @@ class Docker:
                 new_receptor = MonomerReceptor(receptor_name,
                                                receptor_file_path)
                 return new_receptor
-    
+
     def create_docking(receptor_name: str, ligand_name: str, docking_pdb_path: str):
-        
+        """Return a docking pair, which contains a Receptor and a Ligand, as
+        specified by receptor_name and ligand_name, respectively.
+        """
         # check that the docking combination has not been run before
-        results_path = docking_pdb_path + 'results/' + receptor_name + '_' + ligand_name + '_testing/'
+        results_path = docking_pdb_path + 'results/' + receptor_name + '_' + ligand_name + '/'
         if os.path.exists(results_path):
             print("The docking between {0} and {1} has already been done.".format(receptor_name, ligand_name))
             return None
-        
+
         os.makedirs(results_path)
-        
+
         # find receptor file and create receptor object
-        receptor_folder =  docking_pdb_path + 'results/receptor_to_dock'
+        receptor_folder = docking_pdb_path + 'results/receptor_to_dock'
         receptor_file_found = False
 
         for receptor_file in os.listdir(receptor_folder):
             if receptor_file[0] != '.' and len(receptor_file.split('.')) == 2 and \
-            receptor_file.split('.')[1] == 'pdb' and \
-            receptor_file[:-4].lower() == receptor_name.lower():
+                receptor_file.split('.')[1] == 'pdb' and \
+                    receptor_file[:-4].lower() == receptor_name.lower():
                 receptor_file_found = True
                 receptor_file_path = receptor_folder + '/' + receptor_file
                 receptor = Docker.create_receptor(receptor_name, receptor_file_path)
@@ -573,8 +597,8 @@ class Docker:
 
         for ligand_file in os.listdir(ligand_folder):
             if ligand_file[0] != '.' and len(ligand_file.split('.')) == 2 and \
-            ligand_file.split('.')[1] == 'pdb' and \
-            ligand_file[:-4].lower() == ligand_name.lower():
+                ligand_file.split('.')[1] == 'pdb' and \
+                    ligand_file[:-4].lower() == ligand_name.lower():
                 ligand_file_found = True
                 ligand_file_path = ligand_folder + '/' + ligand_file
                 ligand = Ligand(ligand_name, ligand_file_path)
@@ -584,52 +608,15 @@ class Docker:
             return
         elif not ligand_file_found:
             print("Ligand file not found")
-            return 
-        
+            return
+
         # receptor and ligand objects are created and ready for docking
         if isinstance(receptor, MonomerReceptor):
             docking = MonomerDocking(receptor, ligand, results_path)
         else:
             docking = ComplexDocking(receptor, ligand, results_path)
         return docking
-            
+
+
 if __name__ == "__main__":
-    # receptor = Docker.create_receptor("5gij_ATOM", "/home/diennguyen/BAR_API/docking_test_pdbs/results/receptor_to_dock/5gij_ATOM.pdb")
-    # print(receptor.name)
-    # print(receptor.file_path)
-    # receptor2 = Docker.create_receptor("8g2j", "/home/diennguyen/BAR_API/docking_test_pdbs/results/receptor_to_dock/8g2j.pdb")
-    # print(receptor2.line_numbers)
-    # print(receptor2.name)
-    # print(receptor2.file_path)
-    # print(receptor2.monomers_list)
-    # Load the instance from the file
-    # with open('/home/diennguyen/BAR_API/docking_test_pdbs/results/docking_test.pkl', 'rb') as file:
-    #     docking = pickle.load(file)
-    # with open('/home/diennguyen/BAR_API/docking_test_pdbs/results/5gij_TDIF_docking_test.pkl', 'rb') as file:
-    #     docking = pickle.load(file)
-        
-    # docking.ligand_reserved_list = docking.ligand_reserved()
-
-    # docking = Docker.create_docking("8g2j", "UPG", "/home/diennguyen/BAR_API/docking_test_pdbs/")
-    # print(docking.results_path)
-    # print(docking.receptor.file_path)
-    # docking.hex_docking()
-    # docking.ligand_reserved()
-    # docking.separate_results()
-    # print(docking.split_results)
-    # # Save instance to file
-    # with open('/home/diennguyen/BAR_API/docking_test_pdbs/results/docking_test.pkl', 'wb') as file:
-    #     pickle.dump(docking, file)
-
-    # docking = Docker.create_docking("5gij_ATOM", "TDIF", "/home/diennguyen/BAR_API/docking_test_pdbs/")
-    # docking.hex_docking()
-    # with open('/home/diennguyen/BAR_API/docking_test_pdbs/results/5gij_TDIF_docking_test.pkl', 'wb') as file:
-    #     pickle.dump(docking, file)
-
-    # print(docking.receptor.monomers_list)
-    # print(docking.receptor.line_numbers)
-    # docking.ligand_reserved()
-    # print(docking.ligand_reserved_list)
-    # print(docking.normalize_results(5))
     print(Docker.start("8g2j", "UPG", "/home/diennguyen/BAR_API/docking_test_pdbs/"))
-    # print(Docker.start("5gij_ATOM", "TDIF", "/home/diennguyen/BAR_API/docking_test_pdbs/"))
