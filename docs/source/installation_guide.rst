@@ -28,7 +28,7 @@ Run on your own computer without Docker
 2. Install `Redis`_
 3. Install `Python`_ or `Pypy`_. Note: Python 2 is not supported.
 4. Install `Git`_
-5. (Optional) On Debian based systems, you may also need to install ``libmysqlclient-dev`` and ``python3-dev``. On FreeBSD, you may need to install ``py38-sqlite3``. We will update this step as we come across more OS dependencies.
+5. (Optional) On Debian based systems, you may also need to install ``libmysqlclient-dev`` and ``python3-dev``. On FreeBSD, you may need to install ``py38-sqlite3``. We will update this step as we come across more OS dependencies. You may also need to install ``default-libmysqlclient-dev`` and ``build-essential``.
 6. Clone this repository and change directory to ``BAR_API``
 7. Set up a virtual environment
 
