@@ -8,7 +8,7 @@ import sys
 import json
 import datetime
 
-HEX_BIN_PATH = '/home/diennguyen/hex/bin/hex'
+HEX_BIN_PATH = '/usr/local/bin/hex/bin/hex'
 
 
 class Receptor(ABC):
@@ -520,10 +520,15 @@ class Docker:
         print("Starting the docking process at {}".format(ct))
         docking = Docker.create_docking(receptor, ligand, docking_pdb_path)
         if docking is None:
-            results_path = docking_pdb_path + 'results/' + receptor + '_' + ligand + '/'
+            receptor = receptor.split('.')[0]
+            results_path = docking_pdb_path + receptor + '_' + ligand + '/'
             with open(results_path + "final.json") as json_file:
                 final_json = json.load(json_file)
             return final_json
+        elif docking == "Receptor file not found":
+            return "Receptor file not found"
+        elif docking == "Ligand file not found":
+            return "Ligand file not found"
 
         docking.hex_docking()
         if isinstance(docking, ComplexDocking):
@@ -572,43 +577,52 @@ class Docker:
         specified by receptor_name and ligand_name, respectively.
         """
         # check that the docking combination has not been run before
-        results_path = docking_pdb_path + 'results/' + receptor_name + '_' + ligand_name + '/'
-        if os.path.exists(results_path):
-            print("The docking between {0} and {1} has already been done.".format(receptor_name, ligand_name))
+        # results_path = docking_pdb_path + 'RESULTS/' + receptor_name + '_' + ligand_name + '/'
+        if '.' in receptor_name:
+            receptor_name = receptor_name[:receptor_name.index('.')]
+        results_path = docking_pdb_path + receptor_name + '_' + ligand_name + '/'
+        print(results_path)
+        if os.path.exists(results_path): #or \
+            #os.path.exists(docking_pdb_path + receptor_name + '.1_' + ligand_name + '/'):
+            print("The docking between {0} and {1} has already been done.".format(receptor_name, 
+                                                                                  ligand_name))
             return None
+
 
         os.makedirs(results_path)
 
         # find receptor file and create receptor object
-        receptor_folder = docking_pdb_path + 'results/receptor_to_dock'
+        receptor_folder = '/DATA/AF2-pdbs/Arabidopsis/AF2_Ath_PDBs_FAs_renamed/'
+        # receptor_folder = '/var/www/html/eplant/AF2_Ath_PDBs'
         receptor_file_found = False
 
         for receptor_file in os.listdir(receptor_folder):
-            if receptor_file[0] != '.' and len(receptor_file.split('.')) == 2 and \
-                receptor_file.split('.')[1] == 'pdb' and \
-                    receptor_file[:-4].lower() == receptor_name.lower():
+            # if receptor_file[0] != '.' and len(receptor_file.split('.')) == 2 and \
+            #     receptor_file[-4:] == 'pdb' and \
+            #         receptor_file[:-4].lower() == receptor_name.lower():
+            if receptor_file[0] != '.' and receptor_file[-4:] == '.pdb' and \
+                    (receptor_name in receptor_file):
                 receptor_file_found = True
-                receptor_file_path = receptor_folder + '/' + receptor_file
+                receptor_file_path = receptor_folder + receptor_file
                 receptor = Docker.create_receptor(receptor_name, receptor_file_path)
 
         # find ligand file and create ligand object
-        ligand_folder = docking_pdb_path + 'results/ligand_to_dock'
+        # ligand_folder = docking_pdb_path + 'HEX_SELECTED_LIGANDS/'
+        ligand_folder = '/DATA/HEX_API/HEX_SELECTED_LIGANDS/'
         ligand_file_found = False
 
         for ligand_file in os.listdir(ligand_folder):
             if ligand_file[0] != '.' and len(ligand_file.split('.')) == 2 and \
-                ligand_file.split('.')[1] == 'pdb' and \
+                ligand_file.split('.')[1] == 'sdf' and \
                     ligand_file[:-4].lower() == ligand_name.lower():
                 ligand_file_found = True
                 ligand_file_path = ligand_folder + '/' + ligand_file
                 ligand = Ligand(ligand_name, ligand_file_path)
 
         if not receptor_file_found:
-            print("Receptor file not found")
-            return
+            return "Receptor file not found"
         elif not ligand_file_found:
-            print("Ligand file not found")
-            return
+            return "Ligand file not found"
 
         # receptor and ligand objects are created and ready for docking
         if isinstance(receptor, MonomerReceptor):
@@ -619,4 +633,6 @@ class Docker:
 
 
 if __name__ == "__main__":
-    print(Docker.start("8g2j", "UPG", "/home/diennguyen/BAR_API/docking_test_pdbs/"))
+    # print(Docker.start("8g2j", "UPG", "/DATA/HEX_API/"))
+    print(Docker.start("AT1G66340", "6325_Ethylene", "/DATA/HEX_API/RESULTS/"))
+    
