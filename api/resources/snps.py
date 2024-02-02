@@ -26,7 +26,7 @@ from api.utils.pymol_script import PymolCmds
 from api.utils.hotspot_utils import HotspotUtils
 import sys
 from api import db, cache, limiter
-from api.utils.refactored_docking_utils import Docker
+from api.utils.docking_utils import Docker
 
 
 snps = Namespace("SNPs", description="Information about SNPs", path="/snps")
