@@ -582,12 +582,10 @@ class Docker:
             receptor_name = receptor_name[:receptor_name.index('.')]
         results_path = docking_pdb_path + receptor_name + '_' + ligand_name + '/'
         print(results_path)
-        if os.path.exists(results_path): #or \
-            #os.path.exists(docking_pdb_path + receptor_name + '.1_' + ligand_name + '/'):
-            print("The docking between {0} and {1} has already been done.".format(receptor_name, 
+        if os.path.exists(results_path):
+            print("The docking between {0} and {1} has already been done.".format(receptor_name,
                                                                                   ligand_name))
             return None
-
 
         os.makedirs(results_path)
 
@@ -632,7 +630,74 @@ class Docker:
         return docking
 
 
-if __name__ == "__main__":
-    # print(Docker.start("8g2j", "UPG", "/DATA/HEX_API/"))
-    print(Docker.start("AT1G66340", "6325_Ethylene", "/DATA/HEX_API/RESULTS/"))
-    
+class SDFMapping:
+    """
+    A class for mapping SDF names to their file names in the BAR.
+    """
+
+    def get_substance_name(self, filename: str, folder_path: str):
+        """Parse and return the names of a substance from a .sdf file. It
+        requires the line "> <PUBCHEM_SUBSTANCE_SYNONYM>" to be present
+        in the file.
+        """
+        file = open(folder_path + filename, "r")
+        line = file.readline().strip()
+        if line == "":
+            return None
+        while line != "> <PUBCHEM_SUBSTANCE_SYNONYM>" and line != "$$$$":
+            line = file.readline().strip()
+        # right now, line == "> <PUBCHEM_SUBSTANCE_SYNONYM>" or line is empty
+        if line == "$$$$":
+            return None
+        line = file.readline().strip()
+        names = []
+        while line != "":
+            if len(line) > 0 and line[0] == ">":
+                break
+            names.append(line)
+            line = file.readline().strip()
+        return names
+
+    @staticmethod
+    def create_mapping_filtered(folder_path: str, results_path: str):
+        """Create a json file that maps the name of the ligand to the
+        file name, for example: {"bld": "115196_bld.sdf"}.
+
+        It only works for sdf files that are formatted like the
+        example shown above.
+
+        folder_path: where the sdf files are stored
+        results_path: where the json file should be created
+        """
+        mapped_sdf = {}
+        sdf_files = os.listdir(folder_path)
+        for file in sdf_files:
+            if file[0] != "." and file[-4:] == ".sdf":
+                name = file[file.index("_") + 1:-4]
+                mapped_sdf[name] = file
+        json_file = results_path + "sdf_mapping_filtered.json"
+        with open(json_file, 'w') as file:
+            file.write(json.dumps(mapped_sdf))
+        return mapped_sdf
+
+    def create_mapping_unfiltered(self, folder_path: str, results_path: str):
+        """Create a json file that maps the names of the ligand to the
+        file name, for example: {"122234": "Corn sugar gum,Xanthan gum"}.
+
+        It only works for sdf files that contain this line:
+        "> <PUBCHEM_SUBSTANCE_SYNONYM>".
+
+        folder_path: where the sdf files are stored
+        results_path: where the json file should be created
+        """
+        mapped_sdf = {}
+        sdf_files = os.listdir(folder_path)
+        for file in sdf_files:
+            if file[0] != "." and file[-4:] == ".sdf":
+                names = self.get_substance_name(file, folder_path)
+                sdf_number = file.split(".")[0]
+                mapped_sdf[sdf_number] = ",".join(names)
+        json_file = results_path + "sdf_mapping_unfiltered.json"
+        with open(json_file, 'w') as file:
+            file.write(json.dumps(mapped_sdf))
+        return mapped_sdf
