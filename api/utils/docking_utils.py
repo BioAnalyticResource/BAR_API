@@ -367,7 +367,8 @@ class MonomerDocking(Docking):
         normalized_mon_dict[receptor_key] = {}
         normalized_mon_dict[receptor_key][ligand_key] = {}
 
-        # prevent substraction of equal values or values that doesn't make any sense in terms of accuracy
+        # prevent substraction of equal values or values that doesn't make any sense
+        # in terms of accuracy
         if abs_min == abs_max:
             for k, v in inside_dict.items():
                 normalized_mon_dict[receptor_key][ligand_key][k] = 1
@@ -493,7 +494,8 @@ class ComplexDocking(Docking):
             normalized_mon_dict[monomer_key] = {}
             normalized_mon_dict[monomer_key][ligand_key] = {}
 
-            # prevent substraction of equal values or values that doesn't make any sense in terms of accuracy
+            # prevent substraction of equal values or values that doesn't make any sense
+            # in terms of accuracy
             if abs_min == abs_max:
                 for k, v in inside_dict.items():
                     normalized_mon_dict[monomer_key][ligand_key][k] = 1
@@ -529,6 +531,11 @@ class Docker:
             return "Receptor file not found"
         elif docking == "Ligand file not found":
             return "Ligand file not found"
+
+        results_path = docking_pdb_path + receptor + '_' + ligand + '/'
+
+        # create folder to store docking results
+        os.makedirs(results_path)
 
         docking.hex_docking()
         if isinstance(docking, ComplexDocking):
@@ -587,17 +594,11 @@ class Docker:
                                                                                   ligand_name))
             return None
 
-        os.makedirs(results_path)
-
         # find receptor file and create receptor object
         receptor_folder = '/DATA/AF2-pdbs/Arabidopsis/AF2_Ath_PDBs_FAs_renamed/'
-        # receptor_folder = '/var/www/html/eplant/AF2_Ath_PDBs'
         receptor_file_found = False
 
         for receptor_file in os.listdir(receptor_folder):
-            # if receptor_file[0] != '.' and len(receptor_file.split('.')) == 2 and \
-            #     receptor_file[-4:] == 'pdb' and \
-            #         receptor_file[:-4].lower() == receptor_name.lower():
             if receptor_file[0] != '.' and receptor_file[-4:] == '.pdb' and \
                     (receptor_name in receptor_file):
                 receptor_file_found = True
@@ -605,7 +606,6 @@ class Docker:
                 receptor = Docker.create_receptor(receptor_name, receptor_file_path)
 
         # find ligand file and create ligand object
-        # ligand_folder = docking_pdb_path + 'HEX_SELECTED_LIGANDS/'
         ligand_folder = '/DATA/HEX_API/HEX_SELECTED_LIGANDS/'
         ligand_file_found = False
 
