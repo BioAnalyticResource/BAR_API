@@ -221,10 +221,16 @@ class Docking(ABC):
             splitted_line = line.split()
             if line[0:4] == 'ATOM':
                 coord = map(float, filter(None, splitted_line[6:9]))
-                if int(splitted_line[5]) in reference:
-                    reference[int(splitted_line[5])][int(splitted_line[1])] = tuple(coord)
+
+                # check if chain name and residue are in the same column, e.g. A1000
+                if re.search(r'\d', splitted_line[4]) is None:
+                    residue = splitted_line[5]
                 else:
-                    reference[int(splitted_line[5])] = {int(splitted_line[1]) : tuple(coord)}
+                    residue = splitted_line[4][1:]
+                if int(residue) in reference:
+                    reference[int(residue)][int(splitted_line[1])] = tuple(coord)
+                else:
+                    reference[int(residue)] = {int(splitted_line[1]) : tuple(coord)}
 
         # here, the structure of the reference dict is is {residue: {atom_num :(x, y, z)}},
 
