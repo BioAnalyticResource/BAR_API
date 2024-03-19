@@ -220,13 +220,22 @@ class Docking(ABC):
         for line in receptor_file_lines:
             splitted_line = line.split()
             if line[0:4] == 'ATOM':
-                coord = map(float, filter(None, splitted_line[6:9]))
 
                 # check if chain name and residue are in the same column, e.g. A1000
                 if re.search(r'\d', splitted_line[4]) is None:
                     residue = splitted_line[5]
                 else:
                     residue = splitted_line[4][1:]
+
+                # Get the coordinates by regex matching, since they are not
+                # always separated by a space
+                pattern = r"[-+]?\d+\.\d+"
+                stripped_coords = line[28:54].strip()
+                # Find all matches in the input string
+                matches = re.findall(pattern, stripped_coords)
+                # Convert the matches to floats
+                coord = [float(match) for match in matches]
+
                 if int(residue) in reference:
                     reference[int(residue)][int(splitted_line[1])] = tuple(coord)
                 else:
@@ -358,14 +367,14 @@ class MonomerDocking(Docking):
         ligand_key = list(results_dict[receptor_key].keys())[0]
 
         inside_dict = results_dict[receptor_key][ligand_key]
-        abs_max = None
-        abs_min = None
+        max_energy = None
+        min_energy = None
 
         # To eliminate empty dictionaries that might cause division errors below
         # normalized_mon_dicitonary calculations
         if inside_dict != {}:
-            abs_min = min(inside_dict.values())
-            abs_max = max(inside_dict.values())
+            min_energy = min(inside_dict.values())
+            max_energy = max(inside_dict.values())
 
         all_normalized_results = {}
 
@@ -375,12 +384,12 @@ class MonomerDocking(Docking):
 
         # prevent substraction of equal values or values that doesn't make any sense
         # in terms of accuracy
-        if abs_min == abs_max:
+        if min_energy == max_energy:
             for k, v in inside_dict.items():
                 normalized_mon_dict[receptor_key][ligand_key][k] = 1
         else:
             for k, v in inside_dict.items():
-                normalized_value = (v - abs_min) / (abs_max - abs_min)
+                normalized_value = (v - min_energy) / (max_energy - min_energy)
                 normalized_mon_dict[receptor_key][ligand_key][k] = normalized_value
         all_normalized_results.update(normalized_mon_dict)
         return all_normalized_results
@@ -527,9 +536,10 @@ class Docker:
         ct = datetime.datetime.now()
         print("Starting the docking process at {}".format(ct))
         docking = Docker.create_docking(receptor, ligand, docking_pdb_path)
-        if docking is None:
-            receptor = receptor.split('.')[0]
-            results_path = docking_pdb_path + receptor + '_' + ligand + '/'
+        if isinstance(docking, list):
+            # receptor = receptor.split('.')[0]
+            # results_path = docking_pdb_path + receptor + '_' + ligand + '/'
+            results_path = docking[1]
             with open(results_path + "final.json") as json_file:
                 final_json = json.load(json_file)
             return final_json
@@ -538,7 +548,7 @@ class Docker:
         elif docking == "Ligand file not found":
             return "Ligand file not found"
 
-        results_path = docking_pdb_path + receptor + '_' + ligand + '/'
+        results_path = docking_pdb_path + docking.receptor.name + '_' + ligand + '/'
 
         # create folder to store docking results
         os.makedirs(results_path)
@@ -548,12 +558,16 @@ class Docker:
             docking.separate_results()
         docking.crte_ligand_reserved_attr()
         normalized_results = docking.normalize_results(5)
+        final_json = {}
+        final_json["energies_json"] = normalized_results
+        final_json["path"] = '//bar.utoronto.ca/HEX_RESULTS/' + docking.receptor.name + '_' + ligand + '/'
+        final_json["best_HEX_result_path"] = final_json["path"] + docking.receptor.name + '_' + ligand + '0001.pdb'
+        final_json["date"] = datetime.datetime.now().date().strftime("%Y-%m-%d")
         new_json = docking.results_path + "final.json"
         with open(new_json, 'w') as file:
-            file.write(json.dumps(normalized_results))
-        ct = datetime.datetime.now()
-        print("current time:-", ct)
-        return normalized_results
+            file.write(json.dumps(final_json))
+        print("current time:-", datetime.datetime.now())
+        return final_json
 
     def create_receptor(receptor_name: str, receptor_file_path: str):
         """Return a new receptor with the name receptor_name, by parsing
@@ -589,27 +603,42 @@ class Docker:
         """Return a docking pair, which contains a Receptor and a Ligand, as
         specified by receptor_name and ligand_name, respectively.
         """
+        # find receptor file and create receptor object
+        receptor_folder = "/DATA/AF2-pdbs/Arabidopsis/AF2_Ath_PDBs_FAs_renamed/"
+
         # check that the docking combination has not been run before
         # results_path = docking_pdb_path + 'RESULTS/' + receptor_name + '_' + ligand_name + '/'
         if '.' in receptor_name:
             receptor_name = receptor_name[:receptor_name.index('.')]
+        command = ['ls ' + 'AF2_' + receptor_name + '*.pdb']
+        completed_process = subprocess.run(command,
+                                       shell = True, 
+                                       cwd = receptor_folder,
+                                       stdout = subprocess.PIPE, 
+                                       stderr = subprocess.PIPE, 
+                                       text = True)
+        if completed_process.returncode != 0:
+            print("Receptor file not found")
+            # return "Receptor file not found"
+        receptor_file = completed_process.stdout[:-1]
+        
+        receptor_file_path = receptor_folder + receptor_file
+        receptor_name = receptor_file[4:(receptor_file.index('.') + 2)]
+        
         results_path = docking_pdb_path + receptor_name + '_' + ligand_name + '/'
         print(results_path)
+
         if os.path.exists(results_path):
             print("The docking between {0} and {1} has already been done.".format(receptor_name,
                                                                                   ligand_name))
-            return None
+            return [None, results_path]
+        receptor = Docker.create_receptor(receptor_name, receptor_file_path)
 
-        # find receptor file and create receptor object
-        receptor_folder = '/DATA/AF2-pdbs/Arabidopsis/AF2_Ath_PDBs_FAs_renamed/'
-        receptor_file_found = False
-
-        for receptor_file in os.listdir(receptor_folder):
-            if receptor_file[0] != '.' and receptor_file[-4:] == '.pdb' and \
-                    (receptor_name in receptor_file):
-                receptor_file_found = True
-                receptor_file_path = receptor_folder + receptor_file
-                receptor = Docker.create_receptor(receptor_name, receptor_file_path)
+        # for receptor_file in os.listdir(receptor_folder):
+        #     if receptor_file[0] != '.' and receptor_file[-4:] == '.pdb' and \
+        #             (receptor_name in receptor_file):
+        #         receptor_file_path = receptor_folder + receptor_file
+        #         receptor = Docker.create_receptor(receptor_name, receptor_file_path)
 
         # find ligand file and create ligand object
         ligand_folder = '/DATA/HEX_API/HEX_SELECTED_LIGANDS/'
@@ -622,10 +651,8 @@ class Docker:
                 ligand_file_found = True
                 ligand_file_path = ligand_folder + '/' + ligand_file
                 ligand = Ligand(ligand_name, ligand_file_path)
-
-        if not receptor_file_found:
-            return "Receptor file not found"
-        elif not ligand_file_found:
+            
+        if not ligand_file_found:
             return "Ligand file not found"
 
         # receptor and ligand objects are created and ready for docking
@@ -675,12 +702,13 @@ class SDFMapping:
         folder_path: where the sdf files are stored
         results_path: where the json file should be created
         """
-        mapped_sdf = {}
+        mapped_sdf = []
         sdf_files = os.listdir(folder_path)
         for file in sdf_files:
             if file[0] != "." and file[-4:] == ".sdf":
                 name = file[file.index("_") + 1:-4]
-                mapped_sdf[name] = file
+                mapped_sdf.append({'value': file, 'text': name})
+                # mapped_sdf[name] = file
         json_file = results_path + "sdf_mapping_filtered.json"
         with open(json_file, 'w') as file:
             file.write(json.dumps(mapped_sdf))
@@ -707,3 +735,6 @@ class SDFMapping:
         with open(json_file, 'w') as file:
             file.write(json.dumps(mapped_sdf))
         return mapped_sdf
+
+# if __name__ == "__main__":
+#     Docker.start("AT3G22150", "801_Auxin", "/DATA/HEX_API/RESULTS/")
