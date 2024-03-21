@@ -613,19 +613,19 @@ class Docker:
             receptor_name = receptor_name[:receptor_name.index('.')]
         command = ['ls ' + 'AF2_' + receptor_name + '*.pdb']
         completed_process = subprocess.run(command,
-                                       shell = True, 
-                                       cwd = receptor_folder,
-                                       stdout = subprocess.PIPE, 
-                                       stderr = subprocess.PIPE, 
-                                       text = True)
+                                           shell=True,
+                                           cwd=receptor_folder,
+                                           stdout=subprocess.PIPE,
+                                           stderr=subprocess.PIPE,
+                                           text=True)
         if completed_process.returncode != 0:
             print("Receptor file not found")
             # return "Receptor file not found"
         receptor_file = completed_process.stdout[:-1]
-        
+
         receptor_file_path = receptor_folder + receptor_file
         receptor_name = receptor_file[4:(receptor_file.index('.') + 2)]
-        
+
         results_path = docking_pdb_path + receptor_name + '_' + ligand_name + '/'
         print(results_path)
 
@@ -634,12 +634,6 @@ class Docker:
                                                                                   ligand_name))
             return [None, results_path]
         receptor = Docker.create_receptor(receptor_name, receptor_file_path)
-
-        # for receptor_file in os.listdir(receptor_folder):
-        #     if receptor_file[0] != '.' and receptor_file[-4:] == '.pdb' and \
-        #             (receptor_name in receptor_file):
-        #         receptor_file_path = receptor_folder + receptor_file
-        #         receptor = Docker.create_receptor(receptor_name, receptor_file_path)
 
         # find ligand file and create ligand object
         ligand_folder = '/DATA/HEX_API/HEX_SELECTED_LIGANDS/'
@@ -652,7 +646,7 @@ class Docker:
                 ligand_file_found = True
                 ligand_file_path = ligand_folder + '/' + ligand_file
                 ligand = Ligand(ligand_name, ligand_file_path)
-            
+
         if not ligand_file_found:
             return "Ligand file not found"
 
@@ -736,6 +730,3 @@ class SDFMapping:
         with open(json_file, 'w') as file:
             file.write(json.dumps(mapped_sdf))
         return mapped_sdf
-
-# if __name__ == "__main__":
-#     Docker.start("AT3G22150", "801_Auxin", "/DATA/HEX_API/RESULTS/")
