@@ -534,6 +534,7 @@ class Docker:
         """
         # create docking object
         ct = datetime.datetime.now()
+        ct_string = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print("Starting the docking process at {}".format(ct))
         docking = Docker.create_docking(receptor, ligand, docking_pdb_path)
         if isinstance(docking, list):
@@ -562,7 +563,7 @@ class Docker:
         final_json["energies_json"] = normalized_results
         final_json["path"] = '//bar.utoronto.ca/HEX_RESULTS/' + docking.receptor.name + '_' + ligand + '/'
         final_json["best_HEX_result_path"] = final_json["path"] + docking.receptor.name + '_' + ligand + '0001.pdb'
-        final_json["date"] = datetime.datetime.now().date().strftime("%Y-%m-%d")
+        final_json["date"] = ct_string
         new_json = docking.results_path + "final.json"
         with open(new_json, 'w') as file:
             file.write(json.dumps(final_json))
