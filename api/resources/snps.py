@@ -50,35 +50,23 @@ parser.add_argument(
 
 @snps.route("/docking/<receptor>/<ligand>")
 class Docking(Resource):
-    decorators = [limiter.limit("2/minute")]    
+    decorators = [limiter.limit("2/minute")]
 
     @snps.param("receptor", _in="path", default="bri1")
     @snps.param("ligand", _in="path", default="brass")
     def get(self, receptor, ligand):
         receptor = escape(receptor)
         ligand = escape(ligand)
-
-        # TODO: Clean comments left by metyu before commit
-    
-        docking_pdb_link = "//bar.utoronto.ca/docking-pdbs/"
         docking_pdb_path = "/DATA/HEX_API/RESULTS/"
-
-        # TODO: Then add regex check to receptors/ligands (For Arabidopsis genes, simply reuse 
-        # is_arabidopsis_gene_valid; but you will need make regex check for your SDFs)
-        #Receptors can be adjusted please adjust the file format on the directories as well (sdf vs pdb)
 
         if not BARUtils.is_arabidopsis_gene_valid(receptor):
             return BARUtils.error_exit("Invalid arapbidopsis pdb gene id"), 400
-        
+
         matched = re.search("[a-z]", ligand)
         if matched is None:
             return BARUtils.error_exit("Invalid ligand name"), 400
 
-        docking_file_name = receptor.upper() + "-" + ligand.upper() + \
-                "-docking0001.pdb "
-        response = requests.get("https:" + docking_pdb_link + docking_file_name)
-
-        # Importing start function to initiate docking_utils  file
+        # start function to initiate docking_utils file
 
         final_json = Docker.start(receptor, ligand, docking_pdb_path)
         return BARUtils.success_exit(final_json)
