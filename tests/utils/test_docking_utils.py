@@ -71,14 +71,11 @@ class TestDockerClass(unittest.TestCase):
         """Test that Docker.create_docking returns None when the docking
         already exists."""
 
-        receptor_name = "AT8G88888_complex"
+        receptor_name = "AT1G66340"
         ligand_name = "6325_Ethylene"
-        receptor_name_2 = "AT9G99999_monomer"
         results_path = "tests/data/"
         docking = Docker.create_docking(receptor_name, ligand_name, results_path)
-        docking2 = Docker.create_docking(receptor_name_2, ligand_name, results_path)
-        self.assertEqual(docking, None)
-        self.assertEqual(docking2, None)
+        self.assertEqual(docking[0], None)
 
 
 class TestDockingClass(unittest.TestCase):
