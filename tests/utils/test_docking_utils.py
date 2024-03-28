@@ -1,4 +1,5 @@
 import unittest
+import pytest
 from api.utils.docking_utils import Receptor, ComplexReceptor, MonomerReceptor
 from api.utils.docking_utils import Ligand
 from api.utils.docking_utils import Docker
@@ -67,6 +68,7 @@ class TestDockerClass(unittest.TestCase):
         self.assertEqual(receptor.monomers_list, ["A", "B"])
         self.assertEqual(receptor.line_numbers, [[48, 180], [181, 195]])
 
+    @pytest.mark.integration
     def test_docking_exists(self):
         """Test that Docker.create_docking returns None when the docking
         already exists."""
