@@ -4,7 +4,9 @@ from api.utils.docking_utils import Receptor, ComplexReceptor, MonomerReceptor
 from api.utils.docking_utils import Ligand
 from api.utils.docking_utils import Docker
 from api.utils.docking_utils import MonomerDocking, ComplexDocking
+import os
 
+IN_CI = os.getenv("CI") == "true"
 
 class TestReceptorClasses(unittest.TestCase):
 
@@ -68,7 +70,7 @@ class TestDockerClass(unittest.TestCase):
         self.assertEqual(receptor.monomers_list, ["A", "B"])
         self.assertEqual(receptor.line_numbers, [[48, 180], [181, 195]])
 
-    @pytest.mark.integration
+    @pytest.mark.skipif(IN_CI, reason = "Doesn't work in Github CI")
     def test_docking_exists(self):
         """Test that Docker.create_docking returns None when the docking
         already exists."""
