@@ -69,7 +69,12 @@ class Docking(Resource):
         # start function to initiate docking_utils file
 
         final_json = Docker.start(receptor, ligand, docking_pdb_path)
-        return BARUtils.success_exit(final_json)
+        if final_json == "Receptor file not found":
+            return BARUtils.error_exit("There are no data found for the given gene"), 400
+        elif final_json == "Ligand file not found":
+            return BARUtils.error_exit("There are no data found for the given ligand"), 400
+        else:
+            return BARUtils.success_exit(final_json)
 
 
 @snps.route("/phenix/<fixed_pdb>/<moving_pdb>")

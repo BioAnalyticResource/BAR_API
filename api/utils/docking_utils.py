@@ -618,9 +618,9 @@ class Docker:
                                            stdout=subprocess.PIPE,
                                            stderr=subprocess.PIPE,
                                            text=True)
+        print("return code" + str(completed_process.returncode))
         if completed_process.returncode != 0:
-            print("Receptor file not found")
-            # return "Receptor file not found"
+            return "Receptor file not found"
         receptor_file = completed_process.stdout[:-1]
 
         receptor_file_path = receptor_folder + receptor_file
