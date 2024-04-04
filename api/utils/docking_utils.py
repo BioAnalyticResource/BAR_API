@@ -703,7 +703,6 @@ class SDFMapping:
             if file[0] != "." and file[-4:] == ".sdf":
                 name = file[file.index("_") + 1:-4]
                 mapped_sdf.append({'value': file, 'text': name})
-                # mapped_sdf[name] = file
         json_file = results_path + "sdf_mapping_filtered.json"
         with open(json_file, 'w') as file:
             file.write(json.dumps(mapped_sdf))
@@ -719,13 +718,13 @@ class SDFMapping:
         folder_path: where the sdf files are stored
         results_path: where the json file should be created
         """
-        mapped_sdf = {}
+        mapped_sdf = []
         sdf_files = os.listdir(folder_path)
         for file in sdf_files:
             if file[0] != "." and file[-4:] == ".sdf":
                 names = self.get_substance_name(file, folder_path)
-                sdf_number = file.split(".")[0]
-                mapped_sdf[sdf_number] = ",".join(names)
+                all_names = ",".join(names)
+                mapped_sdf.append({'value': file, 'text': all_names})
         json_file = results_path + "sdf_mapping_unfiltered.json"
         with open(json_file, 'w') as file:
             file.write(json.dumps(mapped_sdf))
