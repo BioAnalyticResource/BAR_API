@@ -3,10 +3,15 @@ import pytest
 from api.utils.docking_utils import Receptor, ComplexReceptor, MonomerReceptor
 from api.utils.docking_utils import Ligand
 from api.utils.docking_utils import Docker
-from api.utils.docking_utils import MonomerDocking, ComplexDocking
+from api.utils.docking_utils import Docking, MonomerDocking, ComplexDocking
+from api.utils.docking_utils import SDFMapping
 import os
 
-NOT_IN_BAR = not os.environ.get("BAR") == "true"
+
+if os.environ.get("BAR") == "None":
+    NOT_IN_BAR = True
+else:
+    NOT_IN_BAR = False
 
 
 class TestReceptorClasses(unittest.TestCase):
@@ -72,6 +77,35 @@ class TestDockerClass(unittest.TestCase):
         self.assertEqual(receptor.line_numbers, [[48, 180], [181, 195]])
 
     @pytest.mark.skipif(NOT_IN_BAR, reason="Only works on BAR")
+    def test_create_valid_docking(self):
+        """Test that the Docking instance is correct."""
+
+        receptor = "AT4G36360"
+        ligand = "443454_Gibberellin_A24"
+        docking = Docker.create_docking(receptor, ligand, "tests/data/")
+
+        self.assertIsInstance(docking, Docking)
+
+    @pytest.mark.skipif(NOT_IN_BAR, reason="Only works on BAR")
+    def test_create_docking_invalid_receptor(self):
+        """Test that invalid receptor returns an error message."""
+
+        receptor = "AT9G99999"
+        ligand = "443454_Gibberellin_A24"
+        docking = Docker.create_docking(receptor, ligand, "tests/data/")
+
+        self.assertEqual(docking, "Receptor file not found")
+
+    @pytest.mark.skipif(NOT_IN_BAR, reason="Only works on BAR")
+    def test_create_docking_invalid_ligand(self):
+        """Test that invalid ligand returns an error message"""
+        receptor = "AT4G36360"
+        ligand = "ABCD"
+        docking = Docker.create_docking(receptor, ligand, "tests/data/")
+
+        self.assertEqual(docking, "Ligand file not found")
+
+    @pytest.mark.skipif(NOT_IN_BAR, reason="Only works on BAR")
     def test_docking_exists(self):
         """Test that Docker.create_docking returns None when the docking
         already exists."""
@@ -127,6 +161,29 @@ class TestDockingClass(unittest.TestCase):
         self.assertIsNot(len(normalized_results), 0)
         self.assertIn('AT9G99999_monomer', normalized_results)
         self.assertIn('6325_Ethylene', normalized_results['AT9G99999_monomer'])
+
+
+class TestSDFMappingClass(unittest.TestCase):
+
+    def test_create_mapping_filtered(self):
+        """Test that the correct mapping is returned"""
+
+        mapping_results = SDFMapping.create_mapping_filtered("tests/data/sample_ligands/filtered/", "tests/data/")
+        correct_mapping = [{"value": "443453_Gibberellin_A15.sdf", "text": "Gibberellin_A15"}, {"value": "5984_D-(-)-Fructose.sdf", "text": "D-(-)-Fructose"}, {"value": "801_Auxin.sdf", "text": "Auxin"}, {"value": "73672_isoxaben.sdf", "text": "isoxaben"}]
+        self.assertEqual(mapping_results, correct_mapping)
+        self.assertTrue(os.path.exists("tests/data/sdf_mapping_filtered.json"))
+        if os.path.exists("tests/data/sdf_mapping_filtered.json"):
+            os.remove("tests/data/sdf_mapping_filtered.json")
+
+    def test_create_mapping_unfiltered(self):
+        """Test that the correct mapping is returned"""
+        mapping = SDFMapping()
+        mapping_results = mapping.create_mapping_unfiltered("tests/data/sample_ligands/unfiltered/", "tests/data/")
+        correct_mapping = [{"value": "135355153.sdf", "text": "F II (sugar fraction),LK41100000,NIOSH/LK4110000"}, {"value": "134970870.sdf", "text": "10597-68-9,149014-33-5,196419-06-4,3812-57-5,57-48-7,69-67-0,AI3-23514,Advantose FS 95,CCRIS 3335,D-(-)-Fructose,D-(-)-Levulose,D-Fructose,EINECS 200-333-3,Fructose,Fructose solution,Fructose, D-,Fructose, pure,Fruit sugar,Furucton,Hi-Fructo 970,Krystar 300,Levulose,Nevulose,Sugar, fruit,UNII-6YSS42VSEV,arabino-Hexulose"}, {"value": "103061392.sdf", "text": "C18210,Chorionic somatomammotropin hormone,PL,Placental lactogen"}, {"value": "135191341.sdf", "text": "73684-80-7,L-Leucinamide, 5-oxo-L-prolyl-L-seryl-,Pyr-ser-leu-NH2,Pyro-gln-ser-leu-amide,Pyroglutamine-serine-leucinamide,Pyroglutaminyl-seryl-leucinamide,Pyroglutamylserylleucinamide,Thyrotropin releasing hormone-AN,Trh-AN"}]
+        self.assertEqual(mapping_results, correct_mapping)
+        self.assertTrue(os.path.exists("tests/data/sdf_mapping_unfiltered.json"))
+        if os.path.exists("tests/data/sdf_mapping_unfiltered.json"):
+            os.remove("tests/data/sdf_mapping_unfiltered.json")
 
 
 if __name__ == '__main__':
