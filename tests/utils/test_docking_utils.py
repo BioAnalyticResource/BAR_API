@@ -8,10 +8,7 @@ from api.utils.docking_utils import SDFMapping
 import os
 
 
-if os.environ.get("BAR") == "None":
-    NOT_IN_BAR = True
-else:
-    NOT_IN_BAR = False
+NOT_IN_BAR = not os.environ.get("BAR") == "true"
 
 
 class TestReceptorClasses(unittest.TestCase):
