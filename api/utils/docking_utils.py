@@ -533,9 +533,7 @@ class Docker:
         normalized residue-energyy dictionary.
         """
         # create docking object
-        ct = datetime.datetime.now()
         ct_string = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        print("Starting the docking process at {}".format(ct))
         docking = Docker.create_docking(receptor, ligand, docking_pdb_path)
         if isinstance(docking, list):
             # receptor = receptor.split('.')[0]
@@ -618,7 +616,6 @@ class Docker:
                                            stdout=subprocess.PIPE,
                                            stderr=subprocess.PIPE,
                                            text=True)
-        print("return code" + str(completed_process.returncode))
         if completed_process.returncode != 0:
             return "Receptor file not found"
         receptor_file = completed_process.stdout[:-1]
@@ -627,7 +624,6 @@ class Docker:
         receptor_name = receptor_file[4:(receptor_file.index('.') + 2)]
 
         results_path = docking_pdb_path + receptor_name + '_' + ligand_name + '/'
-        print(results_path)
 
         if os.path.exists(results_path):
             print("The docking between {0} and {1} has already been done.".format(receptor_name,
