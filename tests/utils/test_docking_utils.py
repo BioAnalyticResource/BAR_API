@@ -162,6 +162,7 @@ class TestDockingClass(unittest.TestCase):
 
 class TestSDFMappingClass(unittest.TestCase):
 
+    @pytest.mark.skipif(NOT_IN_BAR, reason="Only works on BAR")
     def test_create_mapping_filtered(self):
         """Test that the correct mapping is returned"""
 
@@ -172,6 +173,7 @@ class TestSDFMappingClass(unittest.TestCase):
         if os.path.exists("tests/data/sdf_mapping_filtered.json"):
             os.remove("tests/data/sdf_mapping_filtered.json")
 
+    @pytest.mark.skipif(NOT_IN_BAR, reason="Only works on BAR")
     def test_create_mapping_unfiltered(self):
         """Test that the correct mapping is returned"""
         mapping = SDFMapping()
