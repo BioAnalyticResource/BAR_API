@@ -27,9 +27,9 @@ class TestReceptorClasses(unittest.TestCase):
         """
 
         monomers_list = ["A", "B"]
-        complex_receptor = ComplexReceptor("test_complex_receptor",
-                                           "tests/data/AF2_AT8G88888_complex.pdb",
-                                           monomers_list)
+        complex_receptor = ComplexReceptor(
+            "test_complex_receptor", "tests/data/AF2_AT8G88888_complex.pdb", monomers_list
+        )
         self.assertEqual(complex_receptor.name, "test_complex_receptor")
         self.assertEqual(complex_receptor.file_path, "tests/data/AF2_AT8G88888_complex.pdb")
         self.assertEqual(complex_receptor.monomers_list, monomers_list)
@@ -134,10 +134,10 @@ class TestDockingClass(unittest.TestCase):
 
         self.assertIsInstance(normalized_results, dict)
         self.assertIsNot(len(normalized_results), 0)
-        self.assertIn('AT8G88888_complex_A', normalized_results)
-        self.assertIn('AT8G88888_complex_B', normalized_results)
-        self.assertIn('6325_Ethylene', normalized_results['AT8G88888_complex_A'])
-        self.assertIn('6325_Ethylene', normalized_results['AT8G88888_complex_B'])
+        self.assertIn("AT8G88888_complex_A", normalized_results)
+        self.assertIn("AT8G88888_complex_B", normalized_results)
+        self.assertIn("6325_Ethylene", normalized_results["AT8G88888_complex_A"])
+        self.assertIn("6325_Ethylene", normalized_results["AT8G88888_complex_B"])
 
     def test_docking_monomer_results(self):
         """Test that correct dictionary is created in normalized_results for
@@ -156,8 +156,8 @@ class TestDockingClass(unittest.TestCase):
 
         self.assertIsInstance(normalized_results, dict)
         self.assertIsNot(len(normalized_results), 0)
-        self.assertIn('AT9G99999_monomer', normalized_results)
-        self.assertIn('6325_Ethylene', normalized_results['AT9G99999_monomer'])
+        self.assertIn("AT9G99999_monomer", normalized_results)
+        self.assertIn("6325_Ethylene", normalized_results["AT9G99999_monomer"])
 
 
 class TestSDFMappingClass(unittest.TestCase):
@@ -167,7 +167,12 @@ class TestSDFMappingClass(unittest.TestCase):
         """Test that the correct mapping is returned"""
 
         mapping_results = SDFMapping.create_mapping_filtered("tests/data/sample_ligands/filtered/", "tests/data/")
-        correct_mapping = [{"value": "443453_Gibberellin_A15.sdf", "text": "Gibberellin_A15"}, {"value": "5984_D-(-)-Fructose.sdf", "text": "D-(-)-Fructose"}, {"value": "801_Auxin.sdf", "text": "Auxin"}, {"value": "73672_isoxaben.sdf", "text": "isoxaben"}]
+        correct_mapping = [
+            {"value": "443453_Gibberellin_A15.sdf", "text": "Gibberellin_A15"},
+            {"value": "5984_D-(-)-Fructose.sdf", "text": "D-(-)-Fructose"},
+            {"value": "801_Auxin.sdf", "text": "Auxin"},
+            {"value": "73672_isoxaben.sdf", "text": "isoxaben"},
+        ]
         self.assertEqual(mapping_results, correct_mapping)
         self.assertTrue(os.path.exists("tests/data/sdf_mapping_filtered.json"))
         if os.path.exists("tests/data/sdf_mapping_filtered.json"):
@@ -178,12 +183,23 @@ class TestSDFMappingClass(unittest.TestCase):
         """Test that the correct mapping is returned"""
         mapping = SDFMapping()
         mapping_results = mapping.create_mapping_unfiltered("tests/data/sample_ligands/unfiltered/", "tests/data/")
-        correct_mapping = [{"value": "135355153.sdf", "text": "F II (sugar fraction),LK41100000,NIOSH/LK4110000"}, {"value": "134970870.sdf", "text": "10597-68-9,149014-33-5,196419-06-4,3812-57-5,57-48-7,69-67-0,AI3-23514,Advantose FS 95,CCRIS 3335,D-(-)-Fructose,D-(-)-Levulose,D-Fructose,EINECS 200-333-3,Fructose,Fructose solution,Fructose, D-,Fructose, pure,Fruit sugar,Furucton,Hi-Fructo 970,Krystar 300,Levulose,Nevulose,Sugar, fruit,UNII-6YSS42VSEV,arabino-Hexulose"}, {"value": "103061392.sdf", "text": "C18210,Chorionic somatomammotropin hormone,PL,Placental lactogen"}, {"value": "135191341.sdf", "text": "73684-80-7,L-Leucinamide, 5-oxo-L-prolyl-L-seryl-,Pyr-ser-leu-NH2,Pyro-gln-ser-leu-amide,Pyroglutamine-serine-leucinamide,Pyroglutaminyl-seryl-leucinamide,Pyroglutamylserylleucinamide,Thyrotropin releasing hormone-AN,Trh-AN"}]
+        correct_mapping = [
+            {"value": "135355153.sdf", "text": "F II (sugar fraction),LK41100000,NIOSH/LK4110000"},
+            {
+                "value": "134970870.sdf",
+                "text": "10597-68-9,149014-33-5,196419-06-4,3812-57-5,57-48-7,69-67-0,AI3-23514,Advantose FS 95,CCRIS 3335,D-(-)-Fructose,D-(-)-Levulose,D-Fructose,EINECS 200-333-3,Fructose,Fructose solution,Fructose, D-,Fructose, pure,Fruit sugar,Furucton,Hi-Fructo 970,Krystar 300,Levulose,Nevulose,Sugar, fruit,UNII-6YSS42VSEV,arabino-Hexulose",
+            },
+            {"value": "103061392.sdf", "text": "C18210,Chorionic somatomammotropin hormone,PL,Placental lactogen"},
+            {
+                "value": "135191341.sdf",
+                "text": "73684-80-7,L-Leucinamide, 5-oxo-L-prolyl-L-seryl-,Pyr-ser-leu-NH2,Pyro-gln-ser-leu-amide,Pyroglutamine-serine-leucinamide,Pyroglutaminyl-seryl-leucinamide,Pyroglutamylserylleucinamide,Thyrotropin releasing hormone-AN,Trh-AN",
+            },
+        ]
         self.assertEqual(mapping_results, correct_mapping)
         self.assertTrue(os.path.exists("tests/data/sdf_mapping_unfiltered.json"))
         if os.path.exists("tests/data/sdf_mapping_unfiltered.json"):
             os.remove("tests/data/sdf_mapping_unfiltered.json")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

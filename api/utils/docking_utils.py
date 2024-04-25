@@ -8,7 +8,7 @@ import sys
 import json
 import datetime
 
-HEX_BIN_PATH = '/usr/local/bin/hex/bin/hex'
+HEX_BIN_PATH = "/usr/local/bin/hex/bin/hex"
 
 
 class Receptor(ABC):
@@ -18,6 +18,7 @@ class Receptor(ABC):
     name (str): the name of the receptor
     file_path (str): the relative path to the receptors pdb file
     """
+
     @abstractmethod
     def __init__(self, name: str, file_path: str):
         self.name = name
@@ -25,13 +26,14 @@ class Receptor(ABC):
 
 
 class MonomerReceptor(Receptor):
-    """ A class that represents a receptor that is a monomer, meaning it consists
+    """A class that represents a receptor that is a monomer, meaning it consists
     of only one chain.
 
     --- Attributes ---
     name (str): the name of the receptor
     file_path (str): the relative path to the receptors pdb file
     """
+
     name: str
     file_path: str
 
@@ -40,7 +42,7 @@ class MonomerReceptor(Receptor):
 
 
 class ComplexReceptor(Receptor):
-    """ A class that represents a receptor that is a complex, meaning it consists
+    """A class that represents a receptor that is a complex, meaning it consists
     of more than one chain.
 
     --- Attributes ---
@@ -49,6 +51,7 @@ class ComplexReceptor(Receptor):
     monomer_list (List[str]): the list of monomers that make up the complex
     line_numbers (List[List[int]]): the list of line numbers that separate the monomers, e.g. [[100,200],[300,500]]
     """
+
     def __init__(self, name: str, file_path: str, monomers_list: List[str]):
         super().__init__(name, file_path)
         self.monomers_list = monomers_list
@@ -65,12 +68,12 @@ class ComplexReceptor(Receptor):
         line = file.readline()
         prev = None
         curr_line = 0
-        while line != '':
+        while line != "":
             # the first line of the first monomer
             if line[:12] == "ATOM      1 ":
                 prev = curr_line - 1
             # the last line of a monomer
-            elif line[:3] == 'TER':
+            elif line[:3] == "TER":
                 # line_numbers.append(curr_line)
                 line_numbers.append([prev + 1, curr_line])
                 prev = curr_line
@@ -87,6 +90,7 @@ class Ligand:
     name (str): the name of the receptor
     file_path (str): the relative path to the receptors pdb file
     """
+
     def __init__(self, name: str, file_path: str):
         self.name = name
         self.file_path = file_path
@@ -112,15 +116,19 @@ class Docking(ABC):
         self.ligand_reserved_list = []
 
     def hex_docking(self):
-        """Run hex docking using the command line.
-        """
-        hex_output_file = open(self.results_path + 'hex_output.txt', "w")
+        """Run hex docking using the command line."""
+        hex_output_file = open(self.results_path + "hex_output.txt", "w")
 
-    # Function to call Hex, including hard coded settings
+        # Function to call Hex, including hard coded settings
 
-    # max_docking_solutions set at 5 for testing
-        hex_command = """ open_receptor  """ + self.receptor.file_path + """
-                open_ligand  """ + self.ligand.file_path + """
+        # max_docking_solutions set at 5 for testing
+        hex_command = (
+            """ open_receptor  """
+            + self.receptor.file_path
+            + """
+                open_ligand  """
+            + self.ligand.file_path
+            + """
                 docking_correlation 1
                 docking_score_threshold 0
                 max_docking_solutions 25
@@ -131,12 +139,13 @@ class Docking(ABC):
                 receptor_origin C-825:VAL-O
                 commit_edits
                 activate_docking
-                save_range 1 100 """ \
-        + self.results_path + """ %s pdb""" % (self.receptor.name + '_' + self.ligand.name)
-        subprocess.Popen(HEX_BIN_PATH,
-                         stdin=subprocess.PIPE,
-                         stderr=subprocess.STDOUT,
-                         stdout=hex_output_file).communicate(bytes(hex_command.encode('utf-8')))
+                save_range 1 100 """
+            + self.results_path
+            + """ %s pdb""" % (self.receptor.name + "_" + self.ligand.name)
+        )
+        subprocess.Popen(
+            HEX_BIN_PATH, stdin=subprocess.PIPE, stderr=subprocess.STDOUT, stdout=hex_output_file
+        ).communicate(bytes(hex_command.encode("utf-8")))
         hex_output_file.close()
         ct = datetime.datetime.now()
         print("current time:-", ct)
@@ -152,7 +161,7 @@ class Docking(ABC):
         """
         line_numbers = []
         for filename in os.listdir(self.results_path):
-            if filename[-3:] == 'pdb':
+            if filename[-3:] == "pdb":
                 file = open(self.results_path + filename, "r")
                 lines = file.readlines()
                 for i in range(len(lines)):
@@ -167,7 +176,7 @@ class Docking(ABC):
         where its value is the total number of solutions.
         For example: {num_soln : 5, 1 : [2, 4], 2 : [1, 3, 5]}
         """
-        hex_output = open(self.results_path + 'hex_output.txt', "r")
+        hex_output = open(self.results_path + "hex_output.txt", "r")
         lines = hex_output.readlines()
         # line number where the clustering starts and ends
         result_start = 0
@@ -219,10 +228,10 @@ class Docking(ABC):
         reference = {}
         for line in receptor_file_lines:
             splitted_line = line.split()
-            if line[0:4] == 'ATOM':
+            if line[0:4] == "ATOM":
 
                 # check if chain name and residue are in the same column, e.g. A1000
-                if re.search(r'\d', splitted_line[4]) is None:
+                if re.search(r"\d", splitted_line[4]) is None:
                     residue = splitted_line[5]
                 else:
                     residue = splitted_line[4][1:]
@@ -239,7 +248,7 @@ class Docking(ABC):
                 if int(residue) in reference:
                     reference[int(residue)][int(splitted_line[1])] = tuple(coord)
                 else:
-                    reference[int(residue)] = {int(splitted_line[1]) : tuple(coord)}
+                    reference[int(residue)] = {int(splitted_line[1]): tuple(coord)}
 
         # here, the structure of the reference dict is is {residue: {atom_num :(x, y, z)}},
 
@@ -247,7 +256,7 @@ class Docking(ABC):
         ac = {}
         result_list = []
         for filename in os.listdir(self.results_path):
-            if filename[-3:] == 'pdb':
+            if filename[-3:] == "pdb":
                 result_list.append(filename)
 
         lowest_en = None  # to keep track of lowest energy
@@ -256,10 +265,10 @@ class Docking(ABC):
         cluster_dict = self.parse_hex_output()
 
         for i in range(len(result_list)):
-            energy = ''
+            energy = ""
 
             # get the ligand_reserved section of the result file
-            file = open(self.results_path + result_list[i], 'r')
+            file = open(self.results_path + result_list[i], "r")
             ligand_reserved_start = self.ligand_reserved_list[i]
             ligand_reserved_section = file.readlines()[ligand_reserved_start:]
 
@@ -267,18 +276,18 @@ class Docking(ABC):
             residue_set = set()
             coor = []
             for line in ligand_reserved_section:
-                if 'REMARK' in line.split(' ') and 'Energy' in line.split(' '):
+                if "REMARK" in line.split(" ") and "Energy" in line.split(" "):
                     cluster_size = len(cluster_dict[i + 1])
-                    total_solutions = cluster_dict['num_soln']
+                    total_solutions = cluster_dict["num_soln"]
 
                     # energy is weighed according to the number of solutions
                     # in that cluster
-                    energy = ((float(line.split(' ')[6][:-1]))/total_solutions) * cluster_size
+                    energy = ((float(line.split(" ")[6][:-1])) / total_solutions) * cluster_size
 
                     # record values if lowest energy
                     if lowest_en is None or energy < lowest_en:
                         lowest_en = energy
-                elif line[:4] == 'ATOM':
+                elif line[:4] == "ATOM":
                     # coordinates of one atom
                     coordinates = tuple(map(float, filter(None, line.split()[6:9])))
                     coor.append(coordinates)
@@ -292,9 +301,15 @@ class Docking(ABC):
                     for aa in reference[res].keys():  # for each atom of that amino acid
                         # check if the distance between atoms of the ligands
                         # and of the amino acid are lower than chosen threshold (5)
-                        distance = math.sqrt(sum([(reference[res][aa][0] - atom[0]) ** 2,
-                                                  (reference[res][aa][1] - atom[1]) ** 2,
-                                                  (reference[res][aa][2] - atom[2]) ** 2]))
+                        distance = math.sqrt(
+                            sum(
+                                [
+                                    (reference[res][aa][0] - atom[0]) ** 2,
+                                    (reference[res][aa][1] - atom[1]) ** 2,
+                                    (reference[res][aa][2] - atom[2]) ** 2,
+                                ]
+                            )
+                        )
 
                         distances.append(distance)
 
@@ -347,7 +362,7 @@ class MonomerDocking(Docking):
         pass
 
     def crte_receptor_dict(self, threshold):
-        """"Return a dictionary that contains the residue-energy
+        """ "Return a dictionary that contains the residue-energy
         dictionary of the monomer. This is not necessary, but maintains
         consistency between monomer and complex receptor dictionaries.
         """
@@ -435,14 +450,14 @@ class ComplexDocking(Docking):
             line = result_file.readline()
             curr_line = 0
             prev = None
-            while line != '':
+            while line != "":
                 # the start of the first chain
                 if line.split()[0] == "ATOM" and line.split()[1] == "1":
                     # if line.startswith('ATOM      1  '):
                     prev = curr_line - 1
 
                 # the end of a chain
-                elif line[0:3] == 'TER':
+                elif line[0:3] == "TER":
                     line_numbers.append([prev + 1, curr_line])
                     prev = curr_line
 
@@ -462,7 +477,7 @@ class ComplexDocking(Docking):
             ligand_res = {}
             res_dict = self.result_dict_generator(i, threshold)
             ligand_res[self.ligand.name] = res_dict
-            all_monomers.append({self.receptor.name + '_' + self.receptor.monomers_list[i] : ligand_res})
+            all_monomers.append({self.receptor.name + "_" + self.receptor.monomers_list[i]: ligand_res})
         return all_monomers
 
     def normalize_results(self, threshold):
@@ -547,7 +562,7 @@ class Docker:
         elif docking == "Ligand file not found":
             return "Ligand file not found"
 
-        results_path = docking_pdb_path + docking.receptor.name + '_' + ligand + '/'
+        results_path = docking_pdb_path + docking.receptor.name + "_" + ligand + "/"
 
         # create folder to store docking results
         os.makedirs(results_path)
@@ -559,11 +574,11 @@ class Docker:
         normalized_results = docking.normalize_results(5)
         final_json = {}
         final_json["energies_json"] = normalized_results
-        final_json["path"] = '//bar.utoronto.ca/HEX_RESULTS/' + docking.receptor.name + '_' + ligand + '/'
-        final_json["best_HEX_result_path"] = final_json["path"] + docking.receptor.name + '_' + ligand + '0001.pdb'
+        final_json["path"] = "//bar.utoronto.ca/HEX_RESULTS/" + docking.receptor.name + "_" + ligand + "/"
+        final_json["best_HEX_result_path"] = final_json["path"] + docking.receptor.name + "_" + ligand + "0001.pdb"
         final_json["date"] = ct_string
         new_json = docking.results_path + "final.json"
-        with open(new_json, 'w') as file:
+        with open(new_json, "w") as file:
             file.write(json.dumps(final_json))
         print("current time:-", datetime.datetime.now())
         return final_json
@@ -575,27 +590,24 @@ class Docker:
         with open(receptor_file_path) as f:
             is_monomer = True
             for line in f.readlines():
-                if re.match(r'COMPND   \d CHAIN: \w, \w*', line) is not None:
+                if re.match(r"COMPND   \d CHAIN: \w, \w*", line) is not None:
                     is_monomer = False
                     # if the receptor would be a monomer the regex would be
                     # r'COMPND   \d CHAIN: \w;'
 
                     # To make a list of the monomers' labels
-                    print(receptor_name + ' identified as a protein complex')
-                    if line[11:16] == 'CHAIN':
-                        monomers_list = line.split(': ')[-1].split(', ')
+                    print(receptor_name + " identified as a protein complex")
+                    if line[11:16] == "CHAIN":
+                        monomers_list = line.split(": ")[-1].split(", ")
                         # The COMPND line ends with ';' therefore it needs to be
                         # removed from the last label
                         monomers_list[-1] = monomers_list[-1][0]
-                        new_receptor = ComplexReceptor(receptor_name,
-                                                       receptor_file_path,
-                                                       monomers_list)
+                        new_receptor = ComplexReceptor(receptor_name, receptor_file_path, monomers_list)
                         return new_receptor
                     print("Unknown pdb structure, need further investigation")
 
             if is_monomer:
-                new_receptor = MonomerReceptor(receptor_name,
-                                               receptor_file_path)
+                new_receptor = MonomerReceptor(receptor_name, receptor_file_path)
                 return new_receptor
 
     def create_docking(receptor_name: str, ligand_name: str, docking_pdb_path: str):
@@ -607,40 +619,39 @@ class Docker:
 
         # check that the docking combination has not been run before
         # results_path = docking_pdb_path + 'RESULTS/' + receptor_name + '_' + ligand_name + '/'
-        if '.' in receptor_name:
-            receptor_name = receptor_name[:receptor_name.index('.')]
-        command = ['ls ' + 'AF2_' + receptor_name + '*.pdb']
-        completed_process = subprocess.run(command,
-                                           shell=True,
-                                           cwd=receptor_folder,
-                                           stdout=subprocess.PIPE,
-                                           stderr=subprocess.PIPE,
-                                           text=True)
+        if "." in receptor_name:
+            receptor_name = receptor_name[: receptor_name.index(".")]
+        command = ["ls " + "AF2_" + receptor_name + "*.pdb"]
+        completed_process = subprocess.run(
+            command, shell=True, cwd=receptor_folder, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+        )
         if completed_process.returncode != 0:
             return "Receptor file not found"
         receptor_file = completed_process.stdout[:-1]
 
         receptor_file_path = receptor_folder + receptor_file
-        receptor_name = receptor_file[4:(receptor_file.index('.') + 2)]
+        receptor_name = receptor_file[4 : (receptor_file.index(".") + 2)]
 
-        results_path = docking_pdb_path + receptor_name + '_' + ligand_name + '/'
+        results_path = docking_pdb_path + receptor_name + "_" + ligand_name + "/"
 
         if os.path.exists(results_path):
-            print("The docking between {0} and {1} has already been done.".format(receptor_name,
-                                                                                  ligand_name))
+            print("The docking between {0} and {1} has already been done.".format(receptor_name, ligand_name))
             return [None, results_path]
         receptor = Docker.create_receptor(receptor_name, receptor_file_path)
 
         # find ligand file and create ligand object
-        ligand_folder = '/DATA/HEX_API/HEX_SELECTED_LIGANDS/'
+        ligand_folder = "/DATA/HEX_API/HEX_SELECTED_LIGANDS/"
         ligand_file_found = False
 
         for ligand_file in os.listdir(ligand_folder):
-            if ligand_file[0] != '.' and len(ligand_file.split('.')) == 2 and \
-                ligand_file.split('.')[1] == 'sdf' and \
-                    ligand_file[:-4].lower() == ligand_name.lower():
+            if (
+                ligand_file[0] != "."
+                and len(ligand_file.split(".")) == 2
+                and ligand_file.split(".")[1] == "sdf"
+                and ligand_file[:-4].lower() == ligand_name.lower()
+            ):
                 ligand_file_found = True
-                ligand_file_path = ligand_folder + '/' + ligand_file
+                ligand_file_path = ligand_folder + "/" + ligand_file
                 ligand = Ligand(ligand_name, ligand_file_path)
 
         if not ligand_file_found:
@@ -697,10 +708,10 @@ class SDFMapping:
         sdf_files = os.listdir(folder_path)
         for file in sdf_files:
             if file[0] != "." and file[-4:] == ".sdf":
-                name = file[file.index("_") + 1:-4]
-                mapped_sdf.append({'value': file, 'text': name})
+                name = file[file.index("_") + 1 : -4]
+                mapped_sdf.append({"value": file, "text": name})
         json_file = results_path + "sdf_mapping_filtered.json"
-        with open(json_file, 'w') as file:
+        with open(json_file, "w") as file:
             file.write(json.dumps(mapped_sdf))
         return mapped_sdf
 
@@ -720,8 +731,8 @@ class SDFMapping:
             if file[0] != "." and file[-4:] == ".sdf":
                 names = self.get_substance_name(file, folder_path)
                 all_names = ",".join(names)
-                mapped_sdf.append({'value': file, 'text': all_names})
+                mapped_sdf.append({"value": file, "text": all_names})
         json_file = results_path + "sdf_mapping_unfiltered.json"
-        with open(json_file, 'w') as file:
+        with open(json_file, "w") as file:
             file.write(json.dumps(mapped_sdf))
         return mapped_sdf
