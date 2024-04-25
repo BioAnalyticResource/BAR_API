@@ -26,6 +26,7 @@ from api.utils.pymol_script import PymolCmds
 from api.utils.hotspot_utils import HotspotUtils
 import sys
 from api import db, cache, limiter
+from api.utils.docking_utils import Docker
 
 
 snps = Namespace("SNPs", description="Information about SNPs", path="/snps")
@@ -45,6 +46,35 @@ parser.add_argument(
     help="[Optional]\n For multimers, enter chain ID only (i.e. A)\n For monomers, remain 'None' as default.",
     default="None",
 )
+
+
+@snps.route("/docking/<receptor>/<ligand>")
+class Docking(Resource):
+    decorators = [limiter.limit("2/minute")]
+
+    @snps.param("receptor", _in="path", default="bri1")
+    @snps.param("ligand", _in="path", default="brass")
+    def get(self, receptor, ligand):
+        receptor = escape(receptor)
+        ligand = escape(ligand)
+        docking_pdb_path = "/DATA/HEX_API/RESULTS/"
+
+        if not BARUtils.is_arabidopsis_gene_valid(receptor):
+            return BARUtils.error_exit("Invalid arapbidopsis pdb gene id"), 400
+
+        matched = re.search("[a-z]", ligand)
+        if matched is None:
+            return BARUtils.error_exit("Invalid ligand name"), 400
+
+        # start function to initiate docking_utils file
+
+        final_json = Docker.start(receptor, ligand, docking_pdb_path)
+        if final_json == "Receptor file not found":
+            return BARUtils.error_exit("There are no data found for the given gene"), 400
+        elif final_json == "Ligand file not found":
+            return BARUtils.error_exit("There are no data found for the given ligand"), 400
+        else:
+            return BARUtils.success_exit(final_json)
 
 
 @snps.route("/phenix/<fixed_pdb>/<moving_pdb>")
