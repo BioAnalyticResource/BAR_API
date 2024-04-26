@@ -148,6 +148,8 @@ class Docking(ABC):
         ).communicate(bytes(hex_command.encode("utf-8")))
         hex_output_file.close()
         ct = datetime.datetime.now()
+        print("current time:-", ct)
+        print("Hex docking completed")
 
     def crte_ligand_reserved_attr(self):
         """This function populates the Docking instance's ligand_reserved_list attribute
