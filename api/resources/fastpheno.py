@@ -3,6 +3,7 @@ Date: Aug 2023
 Author: Vince L
 Fastpheno endpoint for retrieving tree data
 """
+
 from flask_restx import Namespace, Resource
 from api import db
 from api.models.fastpheno import Sites, Trees, Band, Height

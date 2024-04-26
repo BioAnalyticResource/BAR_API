@@ -4,6 +4,7 @@ Author: Vince L
 Sequence endpoint that returns the amino acid sequence of a given protein, with additional options
 for predicted sequences (Phyre2) that we host
 """
+
 from flask_restx import Namespace, Resource
 from api.utils.bar_utils import BARUtils
 from markupsafe import escape
