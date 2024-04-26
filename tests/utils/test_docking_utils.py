@@ -199,7 +199,3 @@ class TestSDFMappingClass(unittest.TestCase):
         self.assertTrue(os.path.exists("tests/data/sdf_mapping_unfiltered.json"))
         if os.path.exists("tests/data/sdf_mapping_unfiltered.json"):
             os.remove("tests/data/sdf_mapping_unfiltered.json")
-
-
-if __name__ == "__main__":
-    unittest.main()
