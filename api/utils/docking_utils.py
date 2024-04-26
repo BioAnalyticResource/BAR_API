@@ -148,8 +148,6 @@ class Docking(ABC):
         ).communicate(bytes(hex_command.encode("utf-8")))
         hex_output_file.close()
         ct = datetime.datetime.now()
-        print("current time:-", ct)
-        print("Hex docking completed")
 
     def crte_ligand_reserved_attr(self):
         """This function populates the Docking instance's ligand_reserved_list attribute
@@ -160,14 +158,17 @@ class Docking(ABC):
         it begins at line 1499, and so on ...
         """
         line_numbers = []
+
         for filename in os.listdir(self.results_path):
             if filename[-3:] == "pdb":
                 file = open(self.results_path + filename, "r")
                 lines = file.readlines()
+
                 for i in range(len(lines)):
                     if "Docked ligand coordinates..." in lines[i]:
                         line_numbers.append(i)
                         break
+
         self.ligand_reserved_list = line_numbers
 
     def parse_hex_output(self):
@@ -181,28 +182,35 @@ class Docking(ABC):
         # line number where the clustering starts and ends
         result_start = 0
         result_end = 0
+
         for i in range(len(lines)):
             splitted_line = lines[i].split(" ")
             if len(splitted_line) > 8 and splitted_line[0] == "Clst":
                 result_start = i + 2
             if len(splitted_line) > 2 and "save_range" in splitted_line:
                 result_end = i - 2
+
         clustering_lines = lines[result_start:result_end]
         clusters = {}
         clusters["num_soln"] = len(clustering_lines)
+
         for line in clustering_lines:
             cleaned_line = line.strip().split(" ")
             res = []
+
             # only keep non-blank items in line
             for ch in cleaned_line:
                 if ch != "":
                     res.append(ch)
+
             clst = int(res[0])
             sln = int(res[1])
+
             if clst not in clusters:
                 clusters[clst] = [sln]
             else:
                 clusters[clst].append(sln)
+
         return clusters
 
     def result_dict_generator(self, monomer_number, threshold):
@@ -228,8 +236,8 @@ class Docking(ABC):
         reference = {}
         for line in receptor_file_lines:
             splitted_line = line.split()
-            if line[0:4] == "ATOM":
 
+            if line[0:4] == "ATOM":
                 # check if chain name and residue are in the same column, e.g. A1000
                 if re.search(r"\d", splitted_line[4]) is None:
                     residue = splitted_line[5]
@@ -255,6 +263,7 @@ class Docking(ABC):
         # The energy for each reference element will be stored in dictionary 'ac'
         ac = {}
         result_list = []
+
         for filename in os.listdir(self.results_path):
             if filename[-3:] == "pdb":
                 result_list.append(filename)
