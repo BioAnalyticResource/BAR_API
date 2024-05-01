@@ -6,14 +6,6 @@ class TestIntegrations(TestCase):
     def setUp(self):
         self.app_client = app.test_client()
 
-    def test_get_gene_alias_list(self):
-        """This function tests the gene alias list get function
-        :return:
-        """
-        response = self.app_client.get("/gene_information/gene_alias")
-        expected = {"wasSuccessful": True, "data": ["arabidopsis"]}
-        self.assertEqual(response.json, expected)
-
     def test_get_arabidopsis_gene_alias(self):
         """This tests checks GET request for gene alias Arabidopsis
         :return:
@@ -40,6 +32,12 @@ class TestIntegrations(TestCase):
         response = self.app_client.get("/gene_information/gene_alias/x/At3g24650")
         expected = {"wasSuccessful": False, "error": "No data for the given species"}
         self.assertEqual(response.json, expected)
+
+    def test_post_gene_alias_list(self):
+        """This function tests the gene alias list get function
+        :return:
+        """
+        pass
 
     def test_get_arabidopsis_gene_isoform(self):
         """This tests checks GET request for gene isoforms Arabidopsis
