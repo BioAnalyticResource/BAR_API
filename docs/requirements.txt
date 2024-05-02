@@ -4,7 +4,7 @@ beautifulsoup4==4.12.3
 certifi==2024.2.2
 charset-normalizer==3.3.2
 docutils==0.21.2
-furo==2024.1.29
+furo==2024.4.27
 idna==3.7
 imagesize==1.4.1
 Jinja2==3.1.3

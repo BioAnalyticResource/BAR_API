@@ -9,13 +9,9 @@ POST request because POST request do not have URL length limit. Currently, the f
 
 1. Arabidopsis
 
-**GET /gene_information/gene_alias/{species}/{gene_id}**
+**POST /gene_information/gene_aliases/**
 
-This end point provides gene alias given a gene ID
-
-**POST /gene_information/gene_alias/**
-
-This end point provides gene alias given a gene ID
+This end point provides gene aliases given a list of gene IDs for a species.
 
 **GET /gene_information/gene_isoforms/{species}/{gene_id}**
 

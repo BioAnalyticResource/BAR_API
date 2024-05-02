@@ -6,38 +6,42 @@ class TestIntegrations(TestCase):
     def setUp(self):
         self.app_client = app.test_client()
 
-    def test_get_arabidopsis_gene_alias(self):
-        """This tests checks GET request for gene alias Arabidopsis
+    def test_post_gene_aliases(self):
+        """This test POST request to /gene_information/gene_aliases/
         :return:
         """
-        # Valid data
-        response = self.app_client.get("/gene_information/gene_alias/arabidopsis/At3g24650")
-        expected = {"wasSuccessful": True, "data": ["ABI3", "AtABI3", "SIS10"]}
-        self.assertEqual(response.json, expected)
-
-        # Data not found, but gene is valid
-        response = self.app_client.get("/gene_information/gene_alias/arabidopsis/At3g24651")
+        data = {"species": "arabidopsis", "genes": ["AT1G01010", "AT1G01020"]}
         expected = {
-            "wasSuccessful": False,
-            "error": "There are no data found for the given gene",
+            "wasSuccessful": True,
+            "data": [
+                {"gene": "At1g01010", "aliases": ["ANAC001", "At1g01010", "At1g01010"]},
+                {"gene": "At1g01020", "aliases": ["ARV1"]},
+            ],
         }
+        response = self.app_client.post("/gene_information/gene_aliases", json=data)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json, expected)
 
-        # Invalid Gene
-        response = self.app_client.get("/gene_information/gene_alias/arabidopsis/At3g2465x")
+        # Invalid gene
+        data = {"species": "abc", "genes": ["AT1G01010", "AT1G01020"]}
+        expected = {"wasSuccessful": False, "error": "Invalid species"}
+        response = self.app_client.post("/gene_information/gene_aliases", json=data)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json, expected)
+
+        # Invalid gene
+        data = {"species": "arabidopsis", "genes": ["abc", "AT1G01020"]}
         expected = {"wasSuccessful": False, "error": "Invalid gene id"}
+        response = self.app_client.post("/gene_information/gene_aliases", json=data)
+        self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json, expected)
 
-        # Invalid Species
-        response = self.app_client.get("/gene_information/gene_alias/x/At3g24650")
-        expected = {"wasSuccessful": False, "error": "No data for the given species"}
+        # No data
+        data = {"species": "arabidopsis", "genes": ["AT1G01011", "AT1G01021"]}
+        expected = {"wasSuccessful": False, "error": "No data for the given species/genes"}
+        response = self.app_client.post("/gene_information/gene_aliases", json=data)
+        self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json, expected)
-
-    def test_post_gene_alias_list(self):
-        """This function tests the gene alias list get function
-        :return:
-        """
-        pass
 
     def test_get_arabidopsis_gene_isoform(self):
         """This tests checks GET request for gene isoforms Arabidopsis
