@@ -28,7 +28,7 @@ jsonschema-specifications==2023.12.1
 limits==3.11.0
 markdown-it-py==3.0.0
 MarkupSafe==2.1.5
-marshmallow==3.21.1
+marshmallow==3.21.2
 mccabe==0.7.0
 mdurl==0.1.2
 mypy-extensions==1.0.0
@@ -46,7 +46,7 @@ pytest==8.2.0
 python-dateutil==2.9.0.post0
 pytz==2024.1
 redis==5.0.4
-referencing==0.35.0
+referencing==0.35.1
 requests==2.31.0
 rich==13.7.1
 rpds-py==0.18.0

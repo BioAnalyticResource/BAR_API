@@ -8,7 +8,7 @@ from api.models.eplant_tomato import Isoforms as EPlantTomatoIsoforms
 from api.models.eplant_soybean import Isoforms as EPlantSoybeanIsoforms
 from api.utils.bar_utils import BARUtils
 from marshmallow import Schema, ValidationError, fields as marshmallow_fields
-from api import cache, db
+from api import db
 
 
 gene_information = Namespace("Gene Information", description="Information about Genes", path="/gene_information")
@@ -33,40 +33,11 @@ class GeneInformationSchema(Schema):
     genes = marshmallow_fields.List(cls_or_instance=marshmallow_fields.String)
 
 
-@gene_information.route("/gene_alias/<string:species>/<string:gene_id>")
+@gene_information.route("/gene_aliases")
 class GeneAliases(Resource):
-    @gene_information.param("species", _in="path", default="arabidopsis")
-    @gene_information.param("gene_id", _in="path", default="At3g24650")
-    @cache.cached()
-    def get(self, species="", gene_id=""):
-        """This end point provides gene alias given a gene ID."""
-        aliases = []
-
-        # Escape input
-        species = escape(species)
-        gene_id = escape(gene_id)
-
-        if species == "arabidopsis":
-            if BARUtils.is_arabidopsis_gene_valid(gene_id):
-                rows = db.session.execute(db.select(AgiAlias).where(AgiAlias.agi == gene_id)).scalars().all()
-                [aliases.append(row.alias) for row in rows]
-            else:
-                return BARUtils.error_exit("Invalid gene id"), 400
-        else:
-            return BARUtils.error_exit("No data for the given species")
-
-        # Return results if there are data
-        if len(aliases) > 0:
-            return BARUtils.success_exit(aliases)
-        else:
-            return BARUtils.error_exit("There are no data found for the given gene")
-
-
-@gene_information.route("/gene_alias")
-class PostGeneAliases(Resource):
     @gene_information.expect(gene_information_request_fields)
     def post(self):
-        """This end point retrived gene aliases for a large dataset"""
+        """This end point retrieves gene aliases for a large dataset"""
         json_data = request.get_json()
         data = {}
 
