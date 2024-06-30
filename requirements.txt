@@ -53,6 +53,6 @@ rpds-py==0.18.0
 six==1.16.0
 SQLAlchemy==2.0.29
 typing_extensions==4.11.0
-urllib3==2.2.1
+urllib3==2.2.2
 Werkzeug==3.0.2
 wrapt==1.16.0
