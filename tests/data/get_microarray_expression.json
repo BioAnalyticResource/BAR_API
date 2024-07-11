@@ -1,0 +1,30 @@
+{
+  "wasSuccessful": true,
+  "data": {
+    "111": {
+      "source": "http://www.arabidopsis.org/servlets/TairObject?type=bio_sample_collection&id=1008803961",
+      "id": "Bay-0 (CS6608) from Bayreuth, Germany<br>Longitude/Latitude/Elevation: E11/N50 at ~300m",
+      "samples": [
+        "ATGE_111_A",
+        "ATGE_111_B",
+        "ATGE_111_C"
+      ],
+      "ctrlSamples": [
+        "ATGE_113_A",
+        "ATGE_113_C",
+        "ATGE_113_D"
+      ],
+      "position": {
+        "lat": "49.950999",
+        "lng": "11.572323"
+      },
+      "probeset": "261585_at",
+      "values": {
+        "ATGE_111_A": 6.9,
+        "ATGE_111_B": 6.55,
+        "ATGE_111_C": 10
+      },
+      "code": "111"
+    }
+  }
+}
