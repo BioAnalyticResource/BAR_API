@@ -1,0 +1,36 @@
+103061392
+  -OEChem-02242004582D
+
+  0  0  0     0  0  0  0  0  0999 V2000
+M  END
+> <PUBCHEM_SUBSTANCE_ID>
+103061392
+
+> <PUBCHEM_SUBSTANCE_VERSION>
+1
+
+> <PUBCHEM_EXT_DATASOURCE_NAME>
+KEGG
+
+> <PUBCHEM_EXT_DATASOURCE_REGID>
+C18210
+
+> <PUBCHEM_SUBSTANCE_COMMENT>
+polypeptide placental hormone
+
+> <PUBCHEM_SUBSTANCE_SYNONYM>
+C18210
+Chorionic somatomammotropin hormone
+PL
+Placental lactogen
+
+> <PUBCHEM_XREF_EXT_ID>
+C18210
+
+> <PUBCHEM_EXT_DATASOURCE_URL>
+http://www.genome.jp/kegg/
+
+> <PUBCHEM_EXT_SUBSTANCE_URL>
+http://www.genome.jp/dbget-bin/www_bget?cpd+C18210
+
+$$$$

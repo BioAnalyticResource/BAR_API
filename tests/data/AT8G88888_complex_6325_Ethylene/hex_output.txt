@@ -1,0 +1,238 @@
+Hex 8.0.0 starting at Mon Feb 19 14:03:40 2024 on host bar.
+
+Hostname:        bar
+Main memory:     128813 Mb
+CPUs online:     32
+GPUs online:     0
+Compute threads: 24
+
+Sizeof(short):   2
+Sizeof(int):     4
+Sizeof(long):    8
+Sizeof(long int):8
+Sizeof(float):   4
+Sizeof(double):  8
+Sizeof(octa):    8
+Sizeof(int *):   8
+Sizeof(long *):  8
+Sizeof(void *):  8
+
+Default path:    /home/dnguyen/BAR_API_forked/BAR_API
+PATH:            /home/dnguyen/hex/exe:/home/dnguyen/hex/bin:/home/dnguyen/BAR_API_forked/BAR_API/venv/bin:/home/dnguyen/.vscode-server/bin/8b3775030ed1a69b13e4f4c628c612102e30a681/bin/remote-cli:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/ho
+Hex program:     /home/dnguyen/hex/exe/hex8.0.0-nogui.x64
+HEX_ROOT:        /home/dnguyen/hex
+HEX_STRIDE:      stride.x64
+HEX_PDB:         NULL
+HEX_DATA:        NULL
+HEX_MACROS:      NULL
+HEX_COLOURS:     NULL
+HEX_STARTUP:     NULL
+HEX_FONTFILE:    NULL
+HEX_PIPE:        NULL
+HEX_CACHE:       /home/dnguyen/hex_cache
+HEX_LOG:         NULL
+HEX_CPUS:        NULL
+HEX_GPUS:        NULL
+HEX_FIRST_GPU:   NULL
+HEX_GTO_SCALE:   NULL
+HEX_ETO_SCALE:   NULL
+
+CUDA enabled:    No
+
+
+
+Running HEX_STARTUP file: /home/dnguyen/hex/data/startup_v5.mac
+Disc Cache enabled. Using directory: /home/dnguyen/hex_cache
+
+
+Reading commands from stdin ...
+>>  open_receptor  tests/data/AF2_AT8G88888_complex.pdb
+Assuming tests/data/AF2_AT8G88888_complex.pdb is a PDB file...
+
+Opened PDB file: tests/data/AF2_AT8G88888_complex.pdb, ID = AF2_AT8G88888_complex
+*Warning* Can't add all hydrogens to incomplete residue: B 16:LEU
+*Warning* Can't add all hydrogens to incomplete residue: B 17:ASP
+Loaded PDB file: tests/data/AF2_AT8G88888_complex.pdb, (20 residues, 176 atoms, 1 models)
+*Warning* Fractional charge (-0.46) for terminal residue: B 16:LEU
+   LEU:CB   Radius = 1.70, Charge = 0.02
+   LEU:O    Radius = 1.50, Charge = -0.50
+   LEU:CG   Radius = 1.50, Charge = 0.05
+   LEU:CD1  Radius = 1.90, Charge = -0.01
+   LEU:CD2  Radius = 1.90, Charge = -0.01
+*Warning* Fractional charge (-2.27) for terminal residue: B 17:ASP
+   ASP:N    Radius = 1.40, Charge = -0.52
+   ASP:CA   Radius = 1.50, Charge = 0.25
+   ASP:C    Radius = 1.40, Charge = 0.14
+   ASP:CB   Radius = 1.70, Charge = -0.21
+   ASP:O    Radius = 1.50, Charge = -0.57
+   ASP:CG   Radius = 1.40, Charge = 0.62
+   ASP:OD1  Radius = 1.50, Charge = -0.71
+   ASP:OD2  Radius = 1.50, Charge = -0.71
+   ASP:OXT  Radius = 1.50, Charge = -0.57
+Counted 1 +ve and 2 -ve formal charged residues: Net formal charge: -1
+>AF2_AT8G88888_complex A
+MFRFLDWIFTVATTSL
+>AF2_AT8G88888_complex B
+LD
+>>                 open_ligand  tests/data/6325_Ethylene.sdf
+Assuming tests/data/6325_Ethylene.sdf is an SDF file...
+
+Opened SDF file: tests/data/6325_Ethylene.sdf, ID = 6325_Ethylene
+>>                 docking_correlation 1
+Docking with shape+electrostatics.
+>>                 docking_score_threshold 0
+>>                 max_docking_solutions 25
+>>                 docking_receptor_stepsize 5.50
+Receptor step size: 5.50 deg. B=32, M=64, T=1692.
+>>                 docking_ligand_stepsize 5.50
+Ligand step size: 5.50 deg. B=32, M=64, T=1692.
+>>                 docking_alpha_stepsize 2.80
+Twist step size: 2.80 deg. B=64, M=128.
+>>                 docking_main_scan 16
+>>                 receptor_origin C-825:VAL-O
+*Warning* No Match: C-825:VAL-O -> C-825:VAL-O (Chain-ResidueID:ResidueName-AtomName)
+>>                 commit_edits
+>>                 activate_docking
+
+Contouring surface for molecule AF2_AT8G88888_complex.
+Polar probe = 1.40A, Apolar probe = 1.40A
+Gaussian sampling over 146 atoms done in 0.03 seconds.
+Contoured 37680 triangles (18842 vertices) in 0.03 seconds.
+Surface traversal done in 0.01 seconds - Found 1 surface segments.
+Primary surface:   Area = 1893.33, Volume = 5111.39.
+Culled 0 small segments in 0.01 seconds.
+Total contouring time: 0.05 seconds.
+
+
+Contouring surface for molecule 6325_Ethylene.
+Polar probe = 1.40A, Apolar probe = 1.40A
+Gaussian sampling over 2 atoms done in 0.00 seconds.
+Contoured 3240 triangles (1622 vertices) in 0.00 seconds.
+Surface traversal done in 0.00 seconds - Found 1 surface segments.
+Primary surface:   Area = 164.05, Volume = 195.88.
+Culled 0 small segments in 0.00 seconds.
+Total contouring time: 0.00 seconds.
+
+Sampling surface and interior volumes for molecule AF2_AT8G88888_complex.
+Generated 14716 exterior and 5201 interior skin grid cells.
+Exterior skin volume = 3178.66; interior skin volume = 1123.42.
+Volume sampling done in 0.04 seconds.
+Sampling surface and interior volumes for molecule 6325_Ethylene.
+Generated 966 exterior and 123 interior skin grid cells.
+Exterior skin volume = 208.66; interior skin volume = 26.57.
+Volume sampling done in 0.00 seconds.
+
+Calculating potential to N = 25 (5525 coefficients) using 24 Tasks ...
+Grid: 74x74x74 = 405224 cells (20323 non-zero) of 0.60 Angstroms.
+Done integration over 20323 cells in 0.06s (335995/s).
+
+Calculating electrostatics for molecule AF2_AT8G88888_complex.
+Charge density for molecule AF2_AT8G88888_complex to N = 25:  172 atoms done in 0.00 seconds.
+Potential for molecule AF2_AT8G88888_complex to N = 25 done in 0.01 seconds.
+Calculating electrostatics for molecule 6325_Ethylene.
+Charge density for molecule 6325_Ethylene to N = 25:  0 atoms done in 0.00 seconds.
+Potential for molecule 6325_Ethylene to N = 25 done in 0.01 seconds.
+
+------------------------------------------------------------------------------
+Docking will output a maximum of 25 solutions per pair...
+
+------------------------------------------------------------------------------
+Docking 1 pair of starting orientations...
+
+Docking receptor: AF2_AT8G88888_complex and ligand: 6325_Ethylene...
+
+Receptor AF2_AT8G88888_complex: Tag = AF2_AT8G88888_complex
+Ligand   6325_Ethylene: Tag = 6325_Ethylene
+
+Setting up shape + electrostatics correlation.
+
+Starting SPF search.
+Setting docking_score threshold = 0.0
+Setting 30 distance samples from 0.00 to 23.20, with steps of 0.80.
+
+
+Total 6D space: Iterate[30,1692,1] x FFT[128,32,64] = 13306429440.
+Initial rotational increments (N=16) Receptor: 1692 (39Mb), Ligand: 1692 (39Mb)
+Applying 1692+1692 coefficient rotations on 24 CPUs for N=16.
+Done 3384 rotations in a total of 0.07s (48465/s).
+
+Starting 3D FFT search using 24 CPUs and 0 GPUs with N=16, Nalpha=128/128.
+Estart = 68.70.
+Done 13306429440 orientations in 23.85s (558001702/s).
+Found 51655052/13306429440 within score threshold = 0.0 NOT including start guess.
+
+Time spent culling 42*1600000 solutions = 8.56s.
+Starting guess not found in top 1255052 solutions.
+Emin = -67.49, Emax = -0.00
+
+Re-sampling top 40000 orientations -> top 28050 retained.
+Surviving rotational steps (N=25) Receptor: 48 (9Mb), Ligand: 1441 (243Mb)
+Applying 48+1441 coefficient rotations on 24 CPUs for N=25.
+Done 1489 rotations in a total of 0.12s (12658/s).
+
+Starting 1D FFT refinement using 24 CPUs and 0 GPUs with N=25, Nalpha=128/128.
+Estart = 59.64.
+Done 3590400 orientations in 0.24s (14979911/s).
+Found 70715/3590400 within score threshold = 0.0 NOT including start guess.
+
+
+Solution buffer reached 70715/200000 = 35.4% occupancy with no culling.
+Starting guess not found in top 70715 solutions.
+Emin = -70.56, Emax = -7.51
+
+Docking correlation summary by RMS deviation and steric clashes
+-------------------------------------------------------------------------
+  Soln   Etotal    Eshape    Eforce    Eair              RMS        Bumps
+  ----  --------- --------- --------- ---------   ----------------  -----
+
+
+Docked structures AF2_AT8G88888_complex:6325_Ethylene in a total of 0 min, 25 sec.
+
+
+------------------------------------------------------------------------------
+Saving top 25 orientations.
+
+Docking done in a total of 0 min, 25 sec.
+
+
+------------------------------------------------------------------------------
+
+No AIRs enabled or defined. Skipping restraint checks.
+Clustering found 1 clusters from 25 docking solutions in 0.00 seconds.
+
+---- ---- ------- ------- ------- ------- ------- --- -----
+Clst Soln  Models  Etotal  Eshape  Eforce  Eair   Bmp  RMS
+---- ---- ------- ------- ------- ------- ------- --- -----
+   1    1 001:001   -70.6   -70.6     0.0     0.0  -1  -1.00   
+   1    2 001:001   -70.4   -70.4     0.0     0.0  -1  -1.00   
+   1    3 001:001   -70.4   -70.4     0.0     0.0  -1  -1.00   
+   1    4 001:001   -70.4   -70.4     0.0     0.0  -1  -1.00   
+   1    5 001:001   -70.4   -70.4     0.0     0.0  -1  -1.00   
+   1    6 001:001   -70.3   -70.3     0.0     0.0  -1  -1.00   
+   1    7 001:001   -70.2   -70.2     0.0     0.0  -1  -1.00   
+   1    8 001:001   -70.2   -70.2     0.0     0.0  -1  -1.00   
+   1    9 001:001   -70.1   -70.1     0.0     0.0  -1  -1.00   
+   1   10 001:001   -70.1   -70.1     0.0     0.0  -1  -1.00   
+   1   11 001:001   -70.1   -70.1     0.0     0.0  -1  -1.00   
+   1   12 001:001   -70.1   -70.1     0.0     0.0  -1  -1.00   
+   1   13 001:001   -70.0   -70.0     0.0     0.0  -1  -1.00   
+   1   14 001:001   -70.0   -70.0     0.0     0.0  -1  -1.00   
+   1   15 001:001   -70.0   -70.0     0.0     0.0  -1  -1.00   
+   1   16 001:001   -70.0   -70.0     0.0     0.0  -1  -1.00   
+   1   17 001:001   -70.0   -70.0     0.0     0.0  -1  -1.00   
+   1   18 001:001   -70.0   -70.0     0.0     0.0  -1  -1.00   
+   1   19 001:001   -70.0   -70.0     0.0     0.0  -1  -1.00   
+   1   20 001:001   -70.0   -70.0     0.0     0.0  -1  -1.00   
+   1   21 001:001   -69.9   -69.9     0.0     0.0  -1  -1.00   
+   1   22 001:001   -69.9   -69.9     0.0     0.0  -1  -1.00   
+   1   23 001:001   -69.9   -69.9     0.0     0.0  -1  -1.00   
+   1   24 001:001   -69.9   -69.9     0.0     0.0  -1  -1.00   
+   1   25 001:001   -69.9   -69.9     0.0     0.0  -1  -1.00   
+------------------------------------------------------------
+   1    1 001:001   -70.6   -70.6     0.0     0.0  -1  -1.00   
+>>                 save_range 1 100 tests/data/AT8G88888_complex_6325_Ethylene/ AT8G88888_complex_6325_Ethylene pdb
+Saving orientation 1 (solution 1) to tests/data/AT8G88888_complex_6325_Ethylene/AT8G88888_complex_6325_Ethylene0001.pdb
+
+Max application memory used: 384.62 MB virtual + 0.00 KB shared.
+
+Hex stopping: Mon Feb 19 14:04:05 2024
