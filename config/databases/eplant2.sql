@@ -48,6 +48,43 @@ INSERT INTO `isoforms` VALUES ('AT1G01010','AT1G01010.1'),('AT1G01020','AT1G0102
 UNLOCK TABLES;
 
 --
+-- Table structure for table `publications`
+--
+
+CREATE TABLE `publications` (
+  `gene` varchar(12) CHARACTER SET latin1 NOT NULL,
+  `author` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `year` varchar(6) CHARACTER SET latin1 NOT NULL,
+  `journal` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `title` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `pubmed` varchar(16) CHARACTER SET latin1 NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Dumping data for table `publications`
+--
+
+LOCK TABLES `publications` WRITE;
+/*!40000 ALTER TABLE `publications` DISABLE KEYS */;
+INSERT INTO `publications` VALUES
+('AT1G01010', 'Arabidopsis Interactome Mapping Consortium', '2011', 'Science', 'Evidence for network evolution in an Arabidopsis interactome map.', '21798944'),
+('AT1G01010', 'Gaudinier A', '2018', 'Nature', 'Transcriptional regulation of nitrogen-associated metabolism and growth.', '30356219'),
+('AT1G01010', 'Riechmann JL', '2000', 'Science', 'Arabidopsis transcription factors: genome-wide comparative analysis among eukaryotes.', '11118137'),
+('AT1G01010', 'Theologis A', '2000', 'Nature', 'Sequence and analysis of chromosome 1 of the plant Arabidopsis thaliana.', '11130712'),
+('AT1G01010', 'Trigg SA', '2017', 'Nat. Methods', 'CrY2H-seq: a massively multiplexed assay for deep-coverage interactome mapping.', '28650476'),
+('AT1G01020', 'Forés O', '2006', 'Biochim. Biophys. Acta', 'Arabidopsis thaliana expresses two functional isoforms of Arvp, a protein involved in the regulation of cellular lipid homeostasis.', '16725371'),
+('AT1G01020', 'Theologis A', '2000', 'Nature', 'Sequence and analysis of chromosome 1 of the plant Arabidopsis thaliana.', '11130712'),
+('AT4G10090', 'Gaudet P', '2011', 'Brief. Bioinformatics', 'Phylogenetic-based propagation of functional annotations within the Gene Ontology consortium.', '21873635'),
+('AT4G10090', 'Leitner J', '2015', 'Cell Rep', 'Meta-regulation of Arabidopsis auxin responses depends on tRNA maturation.', '25892242'),
+('AT4G10090', 'Mayer K', '1999', 'Nature', 'Sequence and analysis of chromosome 4 of the plant Arabidopsis thaliana.', '10617198'),
+('AT4G10090', 'Nelissen H', '2010', 'Proc. Natl. Acad. Sci. U.S.A.', 'Plant Elongator regulates auxin-related genes during RNA polymerase II transcription elongation.', '20080602'),
+('AT4G10090', 'Zhou X', '2009', 'Plant J.', 'Elongator mediates ABA responses, oxidative stress resistance and anthocyanin biosynthesis in Arabidopsis.', '19500300');
+/*!40000 ALTER TABLE `publications` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `agi_annotation`
 --
 

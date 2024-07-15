@@ -37,3 +37,15 @@ class GeneRIFs(db.Model):
     gene: db.Mapped[str] = db.mapped_column(db.String(11), nullable=False, primary_key=True)
     pubmed: db.Mapped[str] = db.mapped_column(db.String(11), nullable=False, primary_key=True)
     RIF: db.Mapped[str] = db.mapped_column(TEXT(), nullable=False, primary_key=True)
+
+
+class Publications(db.Model):
+    __bind_key__ = "eplant2"
+    __tablename__ = "publications"
+
+    gene: db.Mapped[str] = db.mapped_column(db.String(12), nullable=False, primary_key=True)
+    author: db.Mapped[str] = db.mapped_column(db.String(64), nullable=False, primary_key=True)
+    year: db.Mapped[str] = db.mapped_column(db.String(6), nullable=False, primary_key=True)
+    journal: db.Mapped[str] = db.mapped_column(db.String(64), nullable=False, primary_key=True)
+    title: db.Mapped[str] = db.mapped_column(TEXT(), nullable=False, primary_key=True)
+    pubmed: db.Mapped[str] = db.mapped_column(db.String(16), nullable=False, primary_key=True)

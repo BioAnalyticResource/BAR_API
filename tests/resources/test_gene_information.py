@@ -43,6 +43,151 @@ class TestIntegrations(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json, expected)
 
+    def test_get_arabidopsis_gene_publications(self):
+        """This tests checks GET request for gene publications Arabidopsis
+        :return:
+        """
+        # Valid data
+        response = self.app_client.get("/gene_information/gene_publications/AT1G01020")
+        expected = {
+            "wasSuccessful": True,
+            "data": [
+                {
+                    "gene_id": "AT1G01020",
+                    "author": "Forés O",
+                    "year": "2006",
+                    "journal": "Biochim. Biophys. Acta",
+                    "title": "Arabidopsis thaliana expresses two functional isoforms of Arvp, a protein involved in the regulation of cellular lipid homeostasis.",
+                    "pubmed": "16725371"
+                },
+                {
+                    "gene_id": "AT1G01020",
+                    "author": "Theologis A",
+                    "year": "2000",
+                    "journal": "Nature",
+                    "title": "Sequence and analysis of chromosome 1 of the plant Arabidopsis thaliana.",
+                    "pubmed": "11130712"
+                }
+            ]
+        }
+        self.assertEqual(response.json, expected)
+
+        response = self.app_client.get("/gene_information/gene_publications/AT1G01020.")
+        expected = {
+            "wasSuccessful": True,
+            "data": [
+                {
+                    "gene_id": "AT1G01020",
+                    "author": "Forés O",
+                    "year": "2006",
+                    "journal": "Biochim. Biophys. Acta",
+                    "title": "Arabidopsis thaliana expresses two functional isoforms of Arvp, a protein involved in the regulation of cellular lipid homeostasis.",
+                    "pubmed": "16725371"
+                },
+                {
+                    "gene_id": "AT1G01020",
+                    "author": "Theologis A",
+                    "year": "2000",
+                    "journal": "Nature",
+                    "title": "Sequence and analysis of chromosome 1 of the plant Arabidopsis thaliana.",
+                    "pubmed": "11130712"
+                }
+            ]
+        }
+        self.assertEqual(response.json, expected)
+
+        response = self.app_client.get("/gene_information/gene_publications/AT1G01020.0")
+        expected = {
+            "wasSuccessful": True,
+            "data": [
+                {
+                    "gene_id": "AT1G01020",
+                    "author": "Forés O",
+                    "year": "2006",
+                    "journal": "Biochim. Biophys. Acta",
+                    "title": "Arabidopsis thaliana expresses two functional isoforms of Arvp, a protein involved in the regulation of cellular lipid homeostasis.",
+                    "pubmed": "16725371"
+                },
+                {
+                    "gene_id": "AT1G01020",
+                    "author": "Theologis A",
+                    "year": "2000",
+                    "journal": "Nature",
+                    "title": "Sequence and analysis of chromosome 1 of the plant Arabidopsis thaliana.",
+                    "pubmed": "11130712"
+                }
+            ]
+        }
+        self.assertEqual(response.json, expected)
+
+        response = self.app_client.get("/gene_information/gene_publications/AT1G01020.1")
+        expected = {
+            "wasSuccessful": True,
+            "data": [
+                {
+                    "gene_id": "AT1G01020",
+                    "author": "Forés O",
+                    "year": "2006",
+                    "journal": "Biochim. Biophys. Acta",
+                    "title": "Arabidopsis thaliana expresses two functional isoforms of Arvp, a protein involved in the regulation of cellular lipid homeostasis.",
+                    "pubmed": "16725371"
+                },
+                {
+                    "gene_id": "AT1G01020",
+                    "author": "Theologis A",
+                    "year": "2000",
+                    "journal": "Nature",
+                    "title": "Sequence and analysis of chromosome 1 of the plant Arabidopsis thaliana.",
+                    "pubmed": "11130712"
+                }
+            ]
+        }
+        self.assertEqual(response.json, expected)
+
+        response = self.app_client.get("/gene_information/gene_publications/AT1G01020.12345")
+        expected = {
+            "wasSuccessful": True,
+            "data": [
+                {
+                    "gene_id": "AT1G01020",
+                    "author": "Forés O",
+                    "year": "2006",
+                    "journal": "Biochim. Biophys. Acta",
+                    "title": "Arabidopsis thaliana expresses two functional isoforms of Arvp, a protein involved in the regulation of cellular lipid homeostasis.",
+                    "pubmed": "16725371"
+                },
+                {
+                    "gene_id": "AT1G01020",
+                    "author": "Theologis A",
+                    "year": "2000",
+                    "journal": "Nature",
+                    "title": "Sequence and analysis of chromosome 1 of the plant Arabidopsis thaliana.",
+                    "pubmed": "11130712"
+                }
+            ]
+        }
+        self.assertEqual(response.json, expected)
+
+        # Data not found, but gene is valid
+        response = self.app_client.get("/gene_information/gene_publications/AT1G01035")
+        expected = {
+            "wasSuccessful": False,
+            "error": "There are no data found for the given gene",
+        }
+        self.assertEqual(response.json, expected)
+
+        response = self.app_client.get("/gene_information/gene_publications/AT1G010400")
+        expected = {
+            "wasSuccessful": False,
+            "error": "There are no data found for the given gene",
+        }
+        self.assertEqual(response.json, expected)
+
+        # Invalid Gene
+        response = self.app_client.get("/gene_information/gene_publications/001G01030")
+        expected = {"wasSuccessful": False, "error": "Invalid gene id"}
+        self.assertEqual(response.json, expected)
+
     def test_get_arabidopsis_gene_isoform(self):
         """This tests checks GET request for gene isoforms Arabidopsis
         :return:
