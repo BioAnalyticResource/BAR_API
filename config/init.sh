@@ -10,6 +10,7 @@ DB_PASS="root"
 echo "Welcome to the BAR API. Running init!"
 
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/annotations_lookup.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/arabidopsis_ecotypes.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/arachis.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/brassica_rapa.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/cannabis.sql
