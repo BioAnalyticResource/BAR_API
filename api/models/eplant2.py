@@ -49,3 +49,29 @@ class Publications(db.Model):
     journal: db.Mapped[str] = db.mapped_column(db.String(64), nullable=False, primary_key=True)
     title: db.Mapped[str] = db.mapped_column(TEXT(), nullable=False, primary_key=True)
     pubmed: db.Mapped[str] = db.mapped_column(db.String(16), nullable=False, primary_key=True)
+
+
+class TAIR10_GFF3(db.Model):
+    __bind_key__ = "eplant2"
+    __tablename__ = "tair10_gff3"
+
+    SeqID: db.Mapped[str] = db.mapped_column(db.String(20), nullable=False, primary_key=True)
+    Source: db.Mapped[str] = db.mapped_column(db.String(10), nullable=False, primary_key=True)
+    Type: db.Mapped[str] = db.mapped_column(db.String(30), nullable=False, primary_key=True)
+    Start: db.Mapped[int] = db.mapped_column(db.Integer, nullable=False, primary_key=True)
+    End: db.Mapped[int] = db.mapped_column(db.Integer, nullable=False, primary_key=True)
+    Score: db.Mapped[float] = db.mapped_column(db.Float, nullable=True, primary_key=True)
+    Strand: db.Mapped[str] = db.mapped_column(db.String(1), nullable=True, primary_key=True)
+    Phase: db.Mapped[str] = db.mapped_column(db.String(1), nullable=True, primary_key=True)
+    Id: db.Mapped[str] = db.mapped_column(db.String(20), nullable=True, primary_key=True)
+    geneId: db.Mapped[str] = db.mapped_column(db.String(20), nullable=True, primary_key=True)
+    Parent: db.Mapped[str] = db.mapped_column(db.String(40), nullable=True, primary_key=True)
+    Attributes: db.Mapped[str] = db.mapped_column(db.String(256), nullable=True, primary_key=True)
+
+
+class AgiAlias(db.Model):
+    __bind_key__ = "eplant2"
+    __tablename__ = "agi_alias"
+
+    agi: db.Mapped[str] = db.mapped_column(db.String(30), nullable=False, primary_key=True)
+    alias: db.Mapped[str] = db.mapped_column(db.String(30), nullable=False, primary_key=True)

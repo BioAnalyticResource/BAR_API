@@ -193,6 +193,103 @@ class TestIntegrations(TestCase):
         expected = {"wasSuccessful": False, "error": "No data for the given species"}
         self.assertEqual(response.json, expected)
 
+    def test_get_arabidopsis_gene_by_location(self):
+        """This tests checks GET request for genes of Arabidopsis at a given location
+        :return:
+        """
+        # Valid data
+        response = self.app_client.get("/gene_information/genes_by_position/arabidopsis/Chr1/3000/9000")
+        expected = {
+            "wasSuccessful": True,
+            "data": [
+                {
+                    "id": "AT1G01010",
+                    "start": 3631,
+                    "end": 5899,
+                    "strand": "+",
+                    "aliases": ["ANAC001", "NAC001", "NTL10"],
+                    "annotation": "NAC domain containing protein 1"
+                },
+                {
+                    "id": "AT1G01020",
+                    "start": 5928,
+                    "end": 8737,
+                    "strand": "-",
+                    "aliases": ["ARV1"],
+                    "annotation": "Arv1-like protein"
+                }
+            ]
+        }
+        self.assertEqual(response.json, expected)
+
+        response = self.app_client.get("/gene_information/genes_by_position/arabidopsis/Chr1/5800/6000")
+        expected = {
+            "wasSuccessful": True,
+            "data": [
+                {
+                    "id": "AT1G01010",
+                    "start": 3631,
+                    "end": 5899,
+                    "strand": "+",
+                    "aliases": ["ANAC001", "NAC001", "NTL10"],
+                    "annotation": "NAC domain containing protein 1"
+                },
+                {
+                    "id": "AT1G01020",
+                    "start": 5928,
+                    "end": 8737,
+                    "strand": "-",
+                    "aliases": ["ARV1"],
+                    "annotation": "Arv1-like protein"
+                }
+            ]
+        }
+        self.assertEqual(response.json, expected)
+
+        response = self.app_client.get("/gene_information/genes_by_position/arabidopsis/Chr1/12000/14000")
+        expected = {
+            "wasSuccessful": True,
+            "data": [
+                {
+                    "id": "AT1G01030",
+                    "start": 11649,
+                    "end": 13714,
+                    "strand": "-",
+                    "aliases": ["NGA3"],
+                    "annotation": "AP2/B3-like transcriptional factor family protein"
+                }
+            ]
+        }
+        self.assertEqual(response.json, expected)
+
+        # Data not found, but gene is valid
+        response = self.app_client.get("/gene_information/genes_by_position/arabidopsis/Chr1/0/200")
+        expected = {"wasSuccessful": True, "data": []}
+        self.assertEqual(response.json, expected)
+
+        response = self.app_client.get("/gene_information/genes_by_position/arabidopsis/Chr1/1000000/2000000")
+        expected = {"wasSuccessful": True, "data": []}
+        self.assertEqual(response.json, expected)
+
+        response = self.app_client.get("/gene_information/genes_by_position/arabidopsis/Chr5/3000/6000")
+        expected = {"wasSuccessful": True, "data": []}
+        self.assertEqual(response.json, expected)
+
+        # Invalid start/end parameter
+        response = self.app_client.get("/gene_information/genes_by_position/arabidopsis/Chr1/3000/2000")
+        expected = {"wasSuccessful": False, "error": "Start location should be smaller than the end location"}
+        self.assertEqual(response.json, expected)
+
+        # Invalid chromosome
+        response = self.app_client.get("/gene_information/genes_by_position/arabidopsis/Chr10/3000/6000")
+        expected = {"wasSuccessful": False, "error": "Invalid chromosome"}
+        self.assertEqual(response.json, expected)
+
+        # Invalid species
+        response = self.app_client.get("/gene_information/genes_by_position/poplar/Chr1/3000/6000")
+        expected = {"wasSuccessful": False, "error": "No data for the given species"}
+        self.assertEqual(response.json, expected)
+
     def test_get_arabidopsis_gene_isoform(self):
         """This tests checks GET request for gene isoforms Arabidopsis
         :return:
