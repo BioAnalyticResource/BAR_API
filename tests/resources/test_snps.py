@@ -7,6 +7,7 @@ class TestIntegrations(TestCase):
     def setUp(self):
         self.app_client = app.test_client()
 
+    @pytest.mark.skip(reason="Changed data infrastructure of holding PDB files, links no longer work")
     def test_get_phenix(self):
         """This function test Phenix.
         I don't have a good way to test this end point. So we assume the pdb file exits on the BAR for now.
