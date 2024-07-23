@@ -87,29 +87,37 @@ class GeneAliases(Resource):
             return BARUtils.error_exit("No data for the given species/genes"), 400
 
 
-@gene_information.route("/gene_publications/<string:gene_id>")
+@gene_information.route("/gene_publications/<string:species>/<string:gene_id>")
 class GenePublications(Resource):
-    # @gene_information.param("species", _in="path", default="arabidopsis")
+    @gene_information.param("species", _in="path", default="arabidopsis")
     @gene_information.param("gene_id", _in="path", default="AT1G01010")
-    def get(self, gene_id=""):
+    def get(self, species="", gene_id=""):
         """This end point provides publications given a gene ID."""
         publications = []
 
         # Escape input
+        species = escape(species)
         gene_id = escape(gene_id)
 
-        # truncate
+        # truncate gene ID
         for i in range(len(gene_id)):
             if gene_id[i] == ".":
                 gene_id = gene_id[0:i]
                 break
 
-        if BARUtils.is_arabidopsis_gene_valid(gene_id):
-            rows = db.session.execute(db.select(EPlant2Publications).where(EPlant2Publications.gene == gene_id)).scalars().all()
-            for row in rows:
-                publications.append({"gene_id": row.gene, "author": row.author, "year": row.year, "journal": row.journal, "title": row.title, "pubmed": row.pubmed})
+        # Set the database and check if genes are valid
+        if species == "arabidopsis":
+            database = EPlant2Publications
+
+            if not BARUtils.is_arabidopsis_gene_valid(gene_id):
+                return BARUtils.error_exit("Invalid gene id"), 400
         else:
-            return BARUtils.error_exit("Invalid gene id"), 400
+            return BARUtils.error_exit("No data for the given species")
+
+        # Get data
+        rows = db.session.execute(db.select(database).where(database.gene == gene_id)).scalars().all()
+        for row in rows:
+            publications.append({"gene_id": row.gene, "author": row.author, "year": row.year, "journal": row.journal, "title": row.title, "pubmed": row.pubmed})
 
         # Return results if there are data
         if len(publications) > 0:
