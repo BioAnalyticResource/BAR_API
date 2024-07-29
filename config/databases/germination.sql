@@ -16,6 +16,14 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Current Database: `germination`
+--
+
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `germination` /*!40100 DEFAULT CHARACTER SET latin1 */ /*!80016 DEFAULT ENCRYPTION='N' */;
+
+USE `germination`;
+
+--
 -- Table structure for table `proj_info`
 --
 
@@ -175,4 +183,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-07-29 11:17:56
+-- Dump completed on 2024-07-29 11:30:25
