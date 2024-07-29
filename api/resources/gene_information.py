@@ -117,7 +117,16 @@ class GenePublications(Resource):
         # Get data
         rows = db.session.execute(db.select(database).where(database.gene == gene_id)).scalars().all()
         for row in rows:
-            publications.append({"gene_id": row.gene, "author": row.author, "year": row.year, "journal": row.journal, "title": row.title, "pubmed": row.pubmed})
+            publications.append(
+                {
+                    "gene_id": row.gene,
+                    "author": row.author,
+                    "year": row.year,
+                    "journal": row.journal,
+                    "title": row.title,
+                    "pubmed": row.pubmed,
+                }
+            )
 
         # Return results if there are data
         if len(publications) > 0:

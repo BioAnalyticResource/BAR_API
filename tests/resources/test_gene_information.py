@@ -58,7 +58,7 @@ class TestIntegrations(TestCase):
                     "year": "2006",
                     "journal": "Biochim. Biophys. Acta",
                     "title": "Arabidopsis thaliana expresses two functional isoforms of Arvp, a protein involved in the regulation of cellular lipid homeostasis.",
-                    "pubmed": "16725371"
+                    "pubmed": "16725371",
                 },
                 {
                     "gene_id": "AT1G01020",
@@ -66,9 +66,9 @@ class TestIntegrations(TestCase):
                     "year": "2000",
                     "journal": "Nature",
                     "title": "Sequence and analysis of chromosome 1 of the plant Arabidopsis thaliana.",
-                    "pubmed": "11130712"
-                }
-            ]
+                    "pubmed": "11130712",
+                },
+            ],
         }
         self.assertEqual(response.json, expected)
 
@@ -82,7 +82,7 @@ class TestIntegrations(TestCase):
                     "year": "2006",
                     "journal": "Biochim. Biophys. Acta",
                     "title": "Arabidopsis thaliana expresses two functional isoforms of Arvp, a protein involved in the regulation of cellular lipid homeostasis.",
-                    "pubmed": "16725371"
+                    "pubmed": "16725371",
                 },
                 {
                     "gene_id": "AT1G01020",
@@ -90,9 +90,9 @@ class TestIntegrations(TestCase):
                     "year": "2000",
                     "journal": "Nature",
                     "title": "Sequence and analysis of chromosome 1 of the plant Arabidopsis thaliana.",
-                    "pubmed": "11130712"
-                }
-            ]
+                    "pubmed": "11130712",
+                },
+            ],
         }
         self.assertEqual(response.json, expected)
 
@@ -106,7 +106,7 @@ class TestIntegrations(TestCase):
                     "year": "2006",
                     "journal": "Biochim. Biophys. Acta",
                     "title": "Arabidopsis thaliana expresses two functional isoforms of Arvp, a protein involved in the regulation of cellular lipid homeostasis.",
-                    "pubmed": "16725371"
+                    "pubmed": "16725371",
                 },
                 {
                     "gene_id": "AT1G01020",
@@ -114,9 +114,9 @@ class TestIntegrations(TestCase):
                     "year": "2000",
                     "journal": "Nature",
                     "title": "Sequence and analysis of chromosome 1 of the plant Arabidopsis thaliana.",
-                    "pubmed": "11130712"
-                }
-            ]
+                    "pubmed": "11130712",
+                },
+            ],
         }
         self.assertEqual(response.json, expected)
 
@@ -130,7 +130,7 @@ class TestIntegrations(TestCase):
                     "year": "2006",
                     "journal": "Biochim. Biophys. Acta",
                     "title": "Arabidopsis thaliana expresses two functional isoforms of Arvp, a protein involved in the regulation of cellular lipid homeostasis.",
-                    "pubmed": "16725371"
+                    "pubmed": "16725371",
                 },
                 {
                     "gene_id": "AT1G01020",
@@ -138,9 +138,9 @@ class TestIntegrations(TestCase):
                     "year": "2000",
                     "journal": "Nature",
                     "title": "Sequence and analysis of chromosome 1 of the plant Arabidopsis thaliana.",
-                    "pubmed": "11130712"
-                }
-            ]
+                    "pubmed": "11130712",
+                },
+            ],
         }
         self.assertEqual(response.json, expected)
 
@@ -154,7 +154,7 @@ class TestIntegrations(TestCase):
                     "year": "2006",
                     "journal": "Biochim. Biophys. Acta",
                     "title": "Arabidopsis thaliana expresses two functional isoforms of Arvp, a protein involved in the regulation of cellular lipid homeostasis.",
-                    "pubmed": "16725371"
+                    "pubmed": "16725371",
                 },
                 {
                     "gene_id": "AT1G01020",
@@ -162,9 +162,9 @@ class TestIntegrations(TestCase):
                     "year": "2000",
                     "journal": "Nature",
                     "title": "Sequence and analysis of chromosome 1 of the plant Arabidopsis thaliana.",
-                    "pubmed": "11130712"
-                }
-            ]
+                    "pubmed": "11130712",
+                },
+            ],
         }
         self.assertEqual(response.json, expected)
 

@@ -1,13 +1,13 @@
--- MariaDB dump 10.17  Distrib 10.4.12-MariaDB, for OpenBSD (amd64)
+-- MySQL dump 10.13  Distrib 8.4.2, for Linux (x86_64)
 --
 -- Host: localhost    Database: single_cell
 -- ------------------------------------------------------
--- Server version	10.4.12-MariaDB
+-- Server version	8.4.2
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+/*!50503 SET NAMES utf8mb4 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -16,25 +16,17 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Current Database: `single_cell`
---
-
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `single_cell` /*!40100 DEFAULT CHARACTER SET latin1 */;
-
-USE `single_cell`;
-
---
 -- Table structure for table `sample_data`
 --
 
 DROP TABLE IF EXISTS `sample_data`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `sample_data` (
   `proj_id` varchar(5) NOT NULL,
-  `sample_id` int(10) unsigned NOT NULL DEFAULT 0,
+  `sample_id` int unsigned NOT NULL DEFAULT '0',
   `data_probeset_id` varchar(24) NOT NULL,
-  `data_signal` float DEFAULT 0,
+  `data_signal` float DEFAULT '0',
   `data_bot_id` varchar(32) NOT NULL,
   KEY `data_probeset_id` (`data_probeset_id`,`data_bot_id`,`data_signal`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -59,4 +51,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-06-26 16:00:15
+-- Dump completed on 2024-07-29 11:17:56
