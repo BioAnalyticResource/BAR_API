@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.23, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 8.4.2, for Linux (x86_64)
 --
 -- Host: localhost    Database: eplant_rice
 -- ------------------------------------------------------
--- Server version	8.0.23-3
+-- Server version	8.4.2
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -40,11 +40,10 @@ CREATE TABLE `gene_annotation` (
 --
 -- Dumping data for table `gene_annotation`
 --
--- WHERE:  1 limit 5
 
 LOCK TABLES `gene_annotation` WRITE;
 /*!40000 ALTER TABLE `gene_annotation` DISABLE KEYS */;
-INSERT INTO `gene_annotation` VALUES ('LOC_Os01g01010','protein TBC domain containing protein, expressed'),('LOC_Os01g01030','protein monocopper oxidase, putative, expressed'),('LOC_Os01g01050', 'protein R3H domain containing protein, expressed');
+INSERT INTO `gene_annotation` VALUES ('LOC_Os01g01010','protein TBC domain containing protein, expressed'),('LOC_Os01g01030','protein monocopper oxidase, putative, expressed'),('LOC_Os01g01050','protein R3H domain containing protein, expressed');
 /*!40000 ALTER TABLE `gene_annotation` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -57,4 +56,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-06-26 19:08:20
+-- Dump completed on 2024-07-29 11:30:25

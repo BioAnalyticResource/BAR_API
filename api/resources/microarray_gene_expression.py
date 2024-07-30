@@ -28,7 +28,13 @@ class GetWorldeFPExpression(Resource):
                 return BARUtils.error_exit("Invalid gene id")
         else:
             return BARUtils.error_exit("Invalid species")
-        subquery = db.select(AtAgiLookup.probeset).where(AtAgiLookup.agi == gene_id).order_by(AtAgiLookup.date.desc()).limit(1).subquery()
+        subquery = (
+            db.select(AtAgiLookup.probeset)
+            .where(AtAgiLookup.agi == gene_id)
+            .order_by(AtAgiLookup.date.desc())
+            .limit(1)
+            .subquery()
+        )
 
         sq_query = db.session.query(subquery)
         if sq_query.count() > 0:
@@ -37,7 +43,9 @@ class GetWorldeFPExpression(Resource):
             return BARUtils.error_exit("There are no data found for the given gene")
 
         rows = db.session.execute(
-            db.select(EcotypesSampleData.data_probeset_id, EcotypesSampleData.data_signal, EcotypesSampleData.data_bot_id).where(EcotypesSampleData.data_probeset_id == sq_result)
+            db.select(
+                EcotypesSampleData.data_probeset_id, EcotypesSampleData.data_signal, EcotypesSampleData.data_bot_id
+            ).where(EcotypesSampleData.data_probeset_id == sq_result)
         ).all()
         final_json = {}
 
@@ -46,7 +54,7 @@ class GetWorldeFPExpression(Resource):
                 if row[2][5:8] not in final_json:
                     final_json[row[2][5:8]] = WorldeFPUtils.wrap_json(row[2][5:8], row[2], row[1], row[0])
                 elif row[2][5:8] in final_json:
-                    final_json[row[2][5:8]]['values'].update({row[2] : row[1]})
+                    final_json[row[2][5:8]]["values"].update({row[2]: row[1]})
             return BARUtils.success_exit(final_json)
         else:
             return BARUtils.error_exit("There are no data found for the given gene")
