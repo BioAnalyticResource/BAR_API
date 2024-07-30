@@ -3,6 +3,7 @@ from flask import request
 from markupsafe import escape
 from api.models.annotations_lookup import AgiAlias
 from api.models.eplant2 import Isoforms as EPlant2Isoforms
+from api.models.eplant2 import Publications as EPlant2Publications
 from api.models.eplant_poplar import Isoforms as EPlantPoplarIsoforms
 from api.models.eplant_tomato import Isoforms as EPlantTomatoIsoforms
 from api.models.eplant_soybean import Isoforms as EPlantSoybeanIsoforms
@@ -84,6 +85,54 @@ class GeneAliases(Resource):
 
         else:
             return BARUtils.error_exit("No data for the given species/genes"), 400
+
+
+@gene_information.route("/gene_publications/<string:species>/<string:gene_id>")
+class GenePublications(Resource):
+    @gene_information.param("species", _in="path", default="arabidopsis")
+    @gene_information.param("gene_id", _in="path", default="AT1G01010")
+    def get(self, species="", gene_id=""):
+        """This end point provides publications given a gene ID."""
+        publications = []
+
+        # Escape input
+        species = escape(species)
+        gene_id = escape(gene_id)
+
+        # truncate gene ID
+        for i in range(len(gene_id)):
+            if gene_id[i] == ".":
+                gene_id = gene_id[0:i]
+                break
+
+        # Set the database and check if genes are valid
+        if species == "arabidopsis":
+            database = EPlant2Publications
+
+            if not BARUtils.is_arabidopsis_gene_valid(gene_id):
+                return BARUtils.error_exit("Invalid gene id"), 400
+        else:
+            return BARUtils.error_exit("No data for the given species")
+
+        # Get data
+        rows = db.session.execute(db.select(database).where(database.gene == gene_id)).scalars().all()
+        for row in rows:
+            publications.append(
+                {
+                    "gene_id": row.gene,
+                    "author": row.author,
+                    "year": row.year,
+                    "journal": row.journal,
+                    "title": row.title,
+                    "pubmed": row.pubmed,
+                }
+            )
+
+        # Return results if there are data
+        if len(publications) > 0:
+            return BARUtils.success_exit(publications)
+        else:
+            return BARUtils.error_exit("There are no data found for the given gene")
 
 
 @gene_information.route("/gene_isoforms/<string:species>/<string:gene_id>")
