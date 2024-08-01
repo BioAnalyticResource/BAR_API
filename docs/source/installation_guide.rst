@@ -11,13 +11,13 @@ Run on your own computer with Docker
 
 .. code-block:: bash
 
-   docker-compose build
+   docker compose build
 
 6. Run docker containers (-d is detached)
 
 .. code-block:: bash
 
-   docker-compose up -d
+   docker compose up -d
 
 7. Load ``http://localhost:5000/`` in a web browser. Enjoy :)
 
