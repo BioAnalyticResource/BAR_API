@@ -16,12 +16,12 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Current Database: `llama3_summaries`
+-- Current Database: `llama3`
 --
 
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `llama3_summaries` /*!40100 DEFAULT CHARACTER SET latin1 */ /*!80016 DEFAULT ENCRYPTION='N' */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `llama3` /*!40100 DEFAULT CHARACTER SET latin1 */ /*!80016 DEFAULT ENCRYPTION='N' */;
 
-USE `llama3_summaries`;
+USE `llama3`;
 
 --
 -- Table structure for table `summaries`
