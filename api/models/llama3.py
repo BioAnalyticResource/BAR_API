@@ -1,8 +1,8 @@
 from api import db
 
 
-class Llama3(db.Model):
-    __bind_key__ = "llama3_summaries"
+class Summaries(db.Model):
+    __bind_key__ = "llama3"
     __tablename__ = "summaries"
 
     gene_id: db.Mapped[str] = db.mapped_column(db.String(13), nullable=False, primary_key=True)

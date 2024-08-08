@@ -8,7 +8,7 @@ from flask_restx import Namespace, Resource
 from markupsafe import escape
 from api.utils.bar_utils import BARUtils
 from api import db
-from api.models.llama3 import Llama3
+from api.models.llama3 import Summaries
 
 
 llama3 = Namespace("LLaMA", description="Endpoint for retreiving LLaMA3 results", path="/LLaMA")
@@ -27,7 +27,7 @@ class Llama(Resource):
 
         if BARUtils.is_arabidopsis_gene_valid(gene_id):
             rows = (
-                db.session.execute(db.select(Llama3).where(Llama3.gene_id == gene_id))
+                db.session.execute(db.select(Summaries).where(Summaries.gene_id == gene_id))
                 .first()
             )
 
