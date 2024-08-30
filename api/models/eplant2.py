@@ -51,7 +51,7 @@ class Publications(db.Model):
     pubmed: db.Mapped[str] = db.mapped_column(db.String(16), nullable=False, primary_key=True)
 
 
-class TAIR10_GFF3(db.Model):
+class TAIR10GFF3(db.Model):
     __bind_key__ = "eplant2"
     __tablename__ = "tair10_gff3"
 

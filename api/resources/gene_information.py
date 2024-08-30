@@ -4,7 +4,7 @@ from markupsafe import escape
 from api.models.annotations_lookup import AgiAlias
 from api.models.eplant2 import Isoforms as EPlant2Isoforms
 from api.models.eplant2 import Publications as EPlant2Publications
-from api.models.eplant2 import TAIR10_GFF3 as EPlant2TAIR10_GFF3
+from api.models.eplant2 import TAIR10GFF3 as EPlant2TAIR10_GFF3
 from api.models.eplant2 import AgiAlias as EPlant2AgiAlias
 from api.models.eplant2 import AgiAnnotation as EPlant2AgiAnnotation
 from api.models.eplant_poplar import Isoforms as EPlantPoplarIsoforms
@@ -156,6 +156,10 @@ class GeneTAIR10_GFF3(Resource):
         if startParam >= endParam:
             return BARUtils.error_exit("Start location should be smaller than the end location")
 
+        # Check if both parameters are valid figures
+        if not BARUtils.is_integer(startParam) or not BARUtils.is_integer(endParam):
+            return BARUtils.error_exit("At lease one parameter is not valid")
+
         # Escape input
         species = escape(species)
         chromosome = escape(chromosome)
@@ -186,7 +190,7 @@ class GeneTAIR10_GFF3(Resource):
                 else:
                     return BARUtils.error_exit("Invalid chromosome"), 400
             else:
-                return BARUtils.error_exit("No data for the given species")
+                return BARUtils.error_exit("No data for the given species"), 400
 
             # Construct the query
             atnumg = "AT" + chromosomeId + "G"
@@ -255,7 +259,7 @@ class GeneQueryGene(Resource):
         try:
             # Species check
             if species != "Arabidopsis_thaliana":
-                return BARUtils.error_exit("No data for the given species")
+                return BARUtils.error_exit("No data for the given species"), 400
 
             # Term check
             for one_term in terms:
