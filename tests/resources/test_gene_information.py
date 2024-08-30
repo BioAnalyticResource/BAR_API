@@ -370,27 +370,22 @@ class TestIntegrations(TestCase):
         expected = {"wasSuccessful": True, "data": {}}
         self.assertEqual(response.json, expected)
 
-        response = self.app_client.get('/gene_information/gene_query/Arabidopsis_thaliana?terms=At1g01040.3&terms=At1g01040')
+        response = self.app_client.get('/gene_information/gene_query/Arabidopsis_thaliana?terms=At1g01010.3&terms=At1g01010')
         expected = {
             "wasSuccessful": True,
             "data": {
-                "AT1G01040": {
-                    "id": "AT1G01040",
+                "AT1G01010": {
+                    "id": "AT1G01010",
                     "chromosome": "Chr1",
-                    "start": 23146,
-                    "end": 31227,
+                    "start": 3631,
+                    "end": 5899,
                     "strand": "+",
                     "aliases": [
-                        "ASU1",
-                        "ATDCL1",
-                        "CAF",
-                        "DCL1",
-                        "EMB60",
-                        "EMB76",
-                        "SIN1",
-                        "SUS1"
+                        "ANAC001",
+                        "NAC001",
+                        "NTL10"
                     ],
-                    "annotation": "dicer-like 1"
+                    "annotation": "NAC domain containing protein 1"
                 }
             }
         }
