@@ -63,6 +63,7 @@ def create_app():
     from api.resources.gene_localizations import loc
     from api.resources.efp_image import efp_image
     from api.resources.fastpheno import fastpheno
+    from api.resources.llama3 import llama3
 
     bar_api.add_namespace(gene_information)
     bar_api.add_namespace(rnaseq_gene_expression)
@@ -76,6 +77,7 @@ def create_app():
     bar_api.add_namespace(loc)
     bar_api.add_namespace(efp_image)
     bar_api.add_namespace(fastpheno)
+    bar_api.add_namespace(llama3)
     bar_api.init_app(bar_app)
     return bar_app
 
