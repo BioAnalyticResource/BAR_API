@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.23, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 8.4.2, for Linux (x86_64)
 --
 -- Host: localhost    Database: tomato_nssnp
 -- ------------------------------------------------------
--- Server version	8.0.23
+-- Server version	8.4.2
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -24,6 +24,32 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/ `tomato_nssnp` /*!40100 DEFAULT CHARACT
 USE `tomato_nssnp`;
 
 --
+-- Table structure for table `lines_lookup`
+--
+
+DROP TABLE IF EXISTS `lines_lookup`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `lines_lookup` (
+  `lines_id` varchar(45) NOT NULL,
+  `species` varchar(35) DEFAULT NULL,
+  `alias` varchar(35) DEFAULT NULL,
+  PRIMARY KEY (`lines_id`),
+  CONSTRAINT `lines_id` FOREIGN KEY (`lines_id`) REFERENCES `snps_reference` (`sample_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `lines_lookup`
+--
+
+LOCK TABLES `lines_lookup` WRITE;
+/*!40000 ALTER TABLE `lines_lookup` DISABLE KEYS */;
+INSERT INTO `lines_lookup` VALUES ('001','Solanum lycopersicum','Moneymaker');
+/*!40000 ALTER TABLE `lines_lookup` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `protein_reference`
 --
 
@@ -36,7 +62,7 @@ CREATE TABLE `protein_reference` (
   `gene_name` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`protein_reference_id`),
   UNIQUE KEY `gene_identifier_UNIQUE` (`gene_identifier`)
-) ENGINE=InnoDB AUTO_INCREMENT=55981 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=55981 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -65,8 +91,8 @@ CREATE TABLE `snps_reference` (
   `sample_id` varchar(45) NOT NULL,
   PRIMARY KEY (`snps_reference_id`),
   UNIQUE KEY `preventdupe` (`chromosome`,`chromosomal_loci`,`ref_allele`,`alt_allele`,`sample_id`),
-  INDEX `index2` (`sample_id` ASC)
-) ENGINE=InnoDB AUTO_INCREMENT=25980390 DEFAULT CHARSET=utf8;
+  KEY `index2` (`sample_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=25980390 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -102,7 +128,7 @@ CREATE TABLE `snps_to_protein` (
   KEY `protein_fk_idx` (`protein_reference_id`),
   CONSTRAINT `protein_fk` FOREIGN KEY (`protein_reference_id`) REFERENCES `protein_reference` (`protein_reference_id`),
   CONSTRAINT `snp_fk` FOREIGN KEY (`snps_reference_id`) REFERENCES `snps_reference` (`snps_reference_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -116,33 +142,6 @@ INSERT INTO `snps_to_protein` VALUES (1,1,154,'T','G',52,'Trp','Gly','transcript
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
--- 
--- Table structure for table `lines_lookup`
---
-DROP TABLE IF EXISTS `lines_lookup` ;
-
-CREATE TABLE IF NOT EXISTS `lines_lookup` (
-  `lines_id` varchar(45) NOT NULL,
-  `species` varchar(35) NULL,
-  `alias` varchar(35) NULL,
-  PRIMARY KEY (`lines_id`),
-  CONSTRAINT `lines_id`
-    FOREIGN KEY (`lines_id`)
-    REFERENCES `snps_reference` (`sample_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
--- 
--- Dunping data for table `lines_lookup`
---
-
-LOCK TABLES `lines_lookup` WRITE;
-/*!40000 ALTER TABLE `lines_lookup` DISABLE KEYS */;
-INSERT INTO `lines_lookup` VALUES ('001','Solanum lycopersicum','Moneymaker');
-/*!40000 ALTER TABLE `lines_lookup` ENABLE KEYS */;
-UNLOCK TABLES;
-
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
@@ -151,4 +150,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump copied from poplar_nssnp
+-- Dump completed on 2024-07-29 11:30:26

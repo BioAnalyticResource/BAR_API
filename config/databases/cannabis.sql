@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.33, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 8.4.2, for Linux (x86_64)
 --
 -- Host: localhost    Database: cannabis
 -- ------------------------------------------------------
--- Server version	8.0.33
+-- Server version	8.4.2
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -43,7 +43,6 @@ CREATE TABLE `sample_data` (
 --
 -- Dumping data for table `sample_data`
 --
--- WHERE:  data_probeset_id='AGQN03009284' and sample_id=1
 
 LOCK TABLES `sample_data` WRITE;
 /*!40000 ALTER TABLE `sample_data` DISABLE KEYS */;
@@ -60,4 +59,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-06-07 14:37:50
+-- Dump completed on 2024-07-29 11:30:25
