@@ -1,5 +1,6 @@
 from api import app
 from unittest import TestCase
+import json
 
 
 class TestIntegrations(TestCase):
@@ -291,11 +292,19 @@ class TestIntegrations(TestCase):
         self.assertEqual(response.json, expected)
 
     def test_query_genes(self):
-        """This tests checks GET request for genes of Arabidopsis given its term
+        """This tests checks POST request for genes of Arabidopsis given its terms
         :return:
         """
         # Valid data
-        response = self.app_client.get('/gene_information/gene_query/Arabidopsis_thaliana?terms=At1g01030')
+        response = self.app_client.post(
+              "/gene_information/gene_query",
+              json={
+                    "species": "Arabidopsis_thaliana",
+                    "terms": [
+                        "AT1G01030"
+                    ]
+                })
+        data = json.loads(response.get_data(as_text=True))
         expected = {
             "wasSuccessful": True,
             "data": {
@@ -312,9 +321,18 @@ class TestIntegrations(TestCase):
                 }
             }
         }
-        self.assertEqual(response.json, expected)
+        self.assertEqual(data, expected)
 
-        response = self.app_client.get('/gene_information/gene_query/Arabidopsis_thaliana?terms=AT1G01010&terms=AT1G01020')
+        response = self.app_client.post(
+              "/gene_information/gene_query",
+              json={
+                    "species": "Arabidopsis_thaliana",
+                    "terms": [
+                        "AT1G01010",
+                        "AT1G01020"
+                    ]
+                })
+        data = json.loads(response.get_data(as_text=True))
         expected = {
             "wasSuccessful": True,
             "data": {
@@ -344,9 +362,18 @@ class TestIntegrations(TestCase):
                 }
             }
         }
-        self.assertEqual(response.json, expected)
+        self.assertEqual(data, expected)
 
-        response = self.app_client.get('/gene_information/gene_query/Arabidopsis_thaliana?terms=AT1G01020&terms=AT1G01020')
+        response = self.app_client.post(
+              "/gene_information/gene_query",
+              json={
+                    "species": "Arabidopsis_thaliana",
+                    "terms": [
+                        "AT1G01020",
+                        "AT1G01020"
+                    ]
+                })
+        data = json.loads(response.get_data(as_text=True))
         expected = {
             "wasSuccessful": True,
             "data": {
@@ -363,14 +390,153 @@ class TestIntegrations(TestCase):
                 }
             }
         }
-        self.assertEqual(response.json, expected)
+        self.assertEqual(data, expected)
 
         # Terms contain those cannot find data
-        response = self.app_client.get('/gene_information/gene_query/Arabidopsis_thaliana?terms=At1g01040.3')
+        response = self.app_client.post(
+              "/gene_information/gene_query",
+              json={
+                    "species": "Arabidopsis_thaliana",
+                    "terms": [
+                        "AT1G01040.3"
+                    ]
+                })
+        data = json.loads(response.get_data(as_text=True))
         expected = {"wasSuccessful": True, "data": {}}
+        self.assertEqual(data, expected)
+
+        response = self.app_client.post(
+              "/gene_information/gene_query",
+              json={
+                    "species": "Arabidopsis_thaliana",
+                    "terms": [
+                        "AT1G01010.3",
+                        "AT1G01010"
+                    ]
+                })
+        data = json.loads(response.get_data(as_text=True))
+        expected = {
+            "wasSuccessful": True,
+            "data": {
+                "AT1G01010": {
+                    "id": "AT1G01010",
+                    "chromosome": "Chr1",
+                    "start": 3631,
+                    "end": 5899,
+                    "strand": "+",
+                    "aliases": [
+                        "ANAC001",
+                        "NAC001",
+                        "NTL10"
+                    ],
+                    "annotation": "NAC domain containing protein 1"
+                }
+            }
+        }
+        self.assertEqual(data, expected)
+
+        response = self.app_client.post(
+              "/gene_information/gene_query",
+              json={
+                    "species": "Arabidopsis_thaliana",
+                    "terms": [
+                        "AT1G01030",
+                        "AT1G01035"
+                    ]
+                })
+        data = json.loads(response.get_data(as_text=True))
+        expected = {
+            "wasSuccessful": True,
+            "data": {
+                "AT1G01030": {
+                    "id": "AT1G01030",
+                    "chromosome": "Chr1",
+                    "start": 11649,
+                    "end": 13714,
+                    "strand": "-",
+                    "aliases": [
+                        "NGA3"
+                    ],
+                    "annotation": "AP2/B3-like transcriptional factor family protein"
+                }
+            }
+        }
+        self.assertEqual(data, expected)
+
+        # Invalid gene
+        response = self.app_client.post(
+              "/gene_information/gene_query",
+              json={
+                    "species": "Arabidopsis_thaliana",
+                    "terms": [
+                        "001G01030"
+                    ]
+                })
+        data = json.loads(response.get_data(as_text=True))
+        expected = {
+            "wasSuccessful": False,
+            "error": "Input list contains invalid term"
+        }
+        self.assertEqual(data, expected)
+
+        response = self.app_client.post(
+              "/gene_information/gene_query",
+              json={
+                    "species": "Arabidopsis_thaliana",
+                    "terms": [
+                        "001G01010",
+                        "At1g01010"
+                    ]
+                })
+        data = json.loads(response.get_data(as_text=True))
+        expected = {
+            "wasSuccessful": False,
+            "error": "Input list contains invalid term"
+        }
+        self.assertEqual(data, expected)
+
+        # Invalid species
+        response = self.app_client.post(
+              "/gene_information/gene_query",
+              json={
+                    "species": "xxx",
+                    "terms": [
+                        "At1g01010",
+                        "At1g01020"
+                    ]
+                })
+        data = json.loads(response.get_data(as_text=True))
+        expected = {
+            "wasSuccessful": False,
+            "error": "No data for the given species"
+        }
+        self.assertEqual(data, expected)
+
+    def test_query_single_gene(self):
+        """This tests checks GET request for genes of Arabidopsis given a single term
+        :return:
+        """
+        # Valid data
+        response = self.app_client.get('/gene_information/single_gene_query/Arabidopsis_thaliana/At1g01030')
+        expected = {
+            "wasSuccessful": True,
+            "data": {
+                "AT1G01030": {
+                    "id": "AT1G01030",
+                    "chromosome": "Chr1",
+                    "start": 11649,
+                    "end": 13714,
+                    "strand": "-",
+                    "aliases": [
+                        "NGA3"
+                    ],
+                    "annotation": "AP2/B3-like transcriptional factor family protein"
+                }
+            }
+        }
         self.assertEqual(response.json, expected)
 
-        response = self.app_client.get('/gene_information/gene_query/Arabidopsis_thaliana?terms=At1g01010.3&terms=At1g01010')
+        response = self.app_client.get('/gene_information/single_gene_query/Arabidopsis_thaliana/AT1G01010')
         expected = {
             "wasSuccessful": True,
             "data": {
@@ -391,42 +557,25 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
-        response = self.app_client.get('/gene_information/gene_query/Arabidopsis_thaliana?terms=At1g01030&terms=At1g01035')
-        expected = {
-            "wasSuccessful": True,
-            "data": {
-                "AT1G01030": {
-                    "id": "AT1G01030",
-                    "chromosome": "Chr1",
-                    "start": 11649,
-                    "end": 13714,
-                    "strand": "-",
-                    "aliases": [
-                        "NGA3"
-                    ],
-                    "annotation": "AP2/B3-like transcriptional factor family protein"
-                }
-            }
-        }
+        # Term cannot find data
+        response = self.app_client.get('/gene_information/single_gene_query/Arabidopsis_thaliana/At1g01040.3')
+        expected = {"wasSuccessful": True, "data": {}}
+        self.assertEqual(response.json, expected)
+
+        response = self.app_client.get('/gene_information/single_gene_query/Arabidopsis_thaliana/At1g01035')
+        expected = {"wasSuccessful": True, "data": {}}
         self.assertEqual(response.json, expected)
 
         # Invalid gene
-        response = self.app_client.get("/gene_information/gene_query/Arabidopsis_thaliana?terms=001G01030")
+        response = self.app_client.get("/gene_information/single_gene_query/Arabidopsis_thaliana/001G01030")
         expected = {
             "wasSuccessful": False,
-            "error": "Input list contains invalid term"
-        }
-        self.assertEqual(response.json, expected)
-
-        response = self.app_client.get("/gene_information/gene_query/Arabidopsis_thaliana?terms=001G01010&terms=At1g01010")
-        expected = {
-            "wasSuccessful": False,
-            "error": "Input list contains invalid term"
+            "error": "Input term invalid"
         }
         self.assertEqual(response.json, expected)
 
         # Invalid species
-        response = self.app_client.get("/gene_information/gene_query/xxx?terms=At1g01010&terms=At1g01020")
+        response = self.app_client.get("/gene_information/single_gene_query/xxx/At1g01020")
         expected = {
             "wasSuccessful": False,
             "error": "No data for the given species"
