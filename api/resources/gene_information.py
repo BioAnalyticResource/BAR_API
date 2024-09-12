@@ -40,6 +40,18 @@ gene_information_request_fields = gene_information.model(
     },
 )
 
+query_genes_request_fields = gene_information.model(
+    "GeneInformation",
+    {
+        "species": fields.String(required=True, example="Arabidopsis_thaliana"),
+        "terms": fields.List(
+            required=True,
+            example=["AT1G01010", "AT1G01020"],
+            cls_or_instance=fields.String,
+        ),
+    },
+)
+
 
 # Validation is done in a different way to keep things simple
 class GeneInformationSchema(Schema):
@@ -253,17 +265,18 @@ class GeneTAIR10_GFF3(Resource):
             return BARUtils.error_exit(str(e)), 400
 
 
-@gene_information.route("/gene_query/<string:species>")
+@gene_information.route("/gene_query")
 class GeneQueryGene(Resource):
-    @gene_information.param("species", _in="path", default="Arabidopsis_thaliana")
-    @gene_information.expect(parser)
-    def get(self, species=""):
-        """This end point provides gene information given term."""
+    @gene_information.expect(query_genes_request_fields)
+    def post(self):
+        """This end point provides gene information for multiple genes given multiple terms."""
 
         # Escape input
-        species = escape(species)
-        terms = request.args.getlist("terms")
-        terms = [escape(term).upper() for term in terms]
+        data = request.get_json()
+        species = data["species"]
+        terms = data["terms"]
+        for one_term in terms:
+            one_term.upper()
 
         try:
             # Species check
@@ -339,6 +352,87 @@ class GeneQueryGene(Resource):
                         genes_info[row[0].upper()]['annotation'] = temp[1]
                     else:
                         genes_info[row[0].upper()]['annotation'] = temp[0]
+
+            return BARUtils.success_exit(genes_info)
+
+        except Exception as e:
+            return BARUtils.error_exit(str(e)), 400
+
+
+@gene_information.route("/single_gene_query/<string:species>/<string:term>")
+class SingleGeneQueryGene(Resource):
+    @gene_information.param("species", _in="path", default="Arabidopsis_thaliana")
+    @gene_information.param("term", _in="path", default="AT1G01010")
+    def get(self, species="", term=""):
+        """This end point provides gene information for a single gene given one term."""
+
+        # Escape input
+        species = escape(species)
+        term = escape(term).upper()
+
+        try:
+            # Species check
+            if species != "Arabidopsis_thaliana":
+                return BARUtils.error_exit("No data for the given species"), 400
+
+            # Term check
+            if not BARUtils.is_arabidopsis_gene_valid(term):
+                return BARUtils.error_exit("Input term invalid"), 400
+
+            database = EPlant2AgiAlias
+            query = db.select(database.agi).where(database.agi == term).limit(1)
+            result = db.session.execute(query).fetchone()
+
+            if not result:
+                database = EPlant2TAIR10_GFF3
+                query = db.select(database.geneId).where(
+                    (
+                        (database.Type == 'gene') |
+                        (database.Type == 'transposable_element_gene')
+                    ),
+                    database.geneId == term
+                ).limit(1)
+                result = db.session.execute(query).fetchone()
+
+            genes_info = {}
+            if result:
+                # Find information for the term
+                database = EPlant2TAIR10_GFF3
+                query = db.select(database.geneId, database.Start, database.End, database.Strand).where(
+                    ((database.Type == "gene") | (database.Type == "transposable_element_gene")),
+                    database.Source == "TAIR10",
+                    database.geneId == term
+                )
+                result = db.session.execute(query).fetchone()
+
+                gene = {}
+                gene['id'] = result[0]
+                gene['chromosome'] = 'Chr' + gene['id'][2:3]
+                gene['start'] = result[1]
+                gene['end'] = result[2]
+                gene['strand'] = result[3]
+                gene['aliases'] = []
+                gene['annotation'] = None
+                genes_info[result[0]] = gene
+
+                # Get aliases
+                database = EPlant2AgiAlias
+                query = db.select(database.agi, database.alias).where(database.agi == term)
+                result = db.session.execute(query).all()
+                for row in result:
+                    if row[1] not in gene['aliases']:
+                        gene['aliases'].append(row[1])
+
+                # Get annotations
+                database = EPlant2AgiAnnotation
+                query = db.select(database.agi, database.annotation).where(database.agi == term)
+                result = db.session.execute(query).all()
+                for row in result:
+                    temp = row[1].split('__')
+                    if len(temp) > 1:
+                        gene['annotation'] = temp[1]
+                    else:
+                        gene['annotation'] = temp[0]
 
             return BARUtils.success_exit(genes_info)
 
