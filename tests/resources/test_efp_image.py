@@ -18,6 +18,7 @@ class TestIntegrations(TestCase):
                 "efp_arachis",
                 "efp_cannabis",
                 "efp_maize",
+                "efp_rice",
                 "efp_sorghum",
                 "efp_soybean",
             ],
