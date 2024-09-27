@@ -157,12 +157,14 @@ class GenePublications(Resource):
             return BARUtils.error_exit("There are no data found for the given gene")
 
 
-@gene_information.route("/genes_by_position/<string:species>/<string:chromosome>/<string:startParam>/<string:endParam>")
+@gene_information.route(
+    "/genes_by_position/<string:species>/<string:chromosome>/<string:start_param>/<string:end_param>"
+)
 class GeneTair10Gff3(Resource):
     @gene_information.param("species", _in="path", default="arabidopsis")
     @gene_information.param("chromosome", _in="path", default="1")
-    @gene_information.param("startParam", _in="path", default=3000)
-    @gene_information.param("endParam", _in="path", default=6000)
+    @gene_information.param("start_param", _in="path", default=3000)
+    @gene_information.param("end_param", _in="path", default=6000)
     def get(self, species="", chromosome="", start_param="", end_param=""):
         """This end point provides genes given position."""
 
