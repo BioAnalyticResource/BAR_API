@@ -31,10 +31,25 @@ itrns_post_ex = itrns.model(
     },
 )
 
+post_int_data = itrns.model(
+    "MFinderData",
+    {
+        "data": fields.List(
+            required=True,
+            example=[["AT5G67420", "AT1G12110"], ["AT5G67420", "AT1G08090"]],
+            cls_or_instance=fields.List(fields.String),
+        ),
+    },
+)
+
 
 class GeneIntrnsSchema(Schema):
     species = marshmallow_fields.String(required=True)
     genes = marshmallow_fields.List(cls_or_instance=marshmallow_fields.String)
+
+
+class MFinderDataSchema(Schema):
+    data = marshmallow_fields.List(marshmallow_fields.List(marshmallow_fields.String()))
 
 
 @itrns.route("/<species>/<query_gene>")

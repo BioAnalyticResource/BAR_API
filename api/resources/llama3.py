@@ -26,22 +26,21 @@ class Llama(Resource):
         gene_id = escape(gene_id.upper())
 
         if BARUtils.is_arabidopsis_gene_valid(gene_id):
-            rows = (
-                db.session.execute(db.select(Summaries).where(Summaries.gene_id == gene_id))
-                .first()
-            )
+            rows = db.session.execute(db.select(Summaries).where(Summaries.gene_id == gene_id)).first()
 
-            if len(rows) == 0:
+            if rows and len(rows) > 0:
+                res = {
+                    "summary": rows[0].summary,
+                    "gene_id": rows[0].gene_id,
+                    "bert_score": rows[0].bert_score,
+                }
+
+                return BARUtils.success_exit(res)
+            else:
                 return (
                     BARUtils.error_exit("There are no data found for the given gene"),
                     400,
                 )
-            else:
-                res = {
-                            "summary": rows[0].summary,
-                            "gene_id": rows[0].gene_id,
-                            "bert_score": rows[0].bert_score,
-                    }
-                return BARUtils.success_exit(res)
+
         else:
             return BARUtils.error_exit("Invalid gene id"), 400
