@@ -51,6 +51,188 @@ INSERT INTO `TAIR10_functional_descriptions` VALUES ('AT3G27990.1','antisense_lo
 UNLOCK TABLES;
 
 --
+-- Table structure for table `tair10_gff3`
+--
+
+CREATE TABLE `tair10_gff3` (
+  `SeqID` varchar(20) NOT NULL,
+  `Source` varchar(10) NOT NULL,
+  `Type` varchar(30) NOT NULL,
+  `Start` int NOT NULL,
+  `End` int NOT NULL,
+  `Score` float DEFAULT NULL,
+  `Strand` char(1) DEFAULT NULL,
+  `Phase` char(1) DEFAULT NULL,
+  `Id` varchar(20) DEFAULT NULL,
+  `geneId` varchar(20) DEFAULT NULL,
+  `Parent` varchar(40) DEFAULT NULL,
+  `Attributes` varchar(256) DEFAULT NULL,
+  KEY `geneId_idx` (`geneId`),
+  KEY `Start_idx` (`Start`),
+  KEY `End_idx` (`End`),
+  KEY `type_geneId` (`Type`,`geneId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Dumping data for table `tair10_gff3`
+--
+
+LOCK TABLES `tair10_gff3` WRITE;
+/*!40000 ALTER TABLE `tair10_gff3` DISABLE KEYS */;
+INSERT INTO `tair10_gff3` VALUES
+('1', 'TAIR10', 'five_prime_UTR', 3631, 3759, NULL, '+', NULL, NULL, 'AT1G01010.1', 'AT1G01010.1', ''),
+('1', 'TAIR10', 'CDS', 3760, 3913, NULL, '+', '0', NULL, 'AT1G01010.1', 'AT1G01010.1,AT1G01010.1-Protein', ''),
+('1', 'TAIR10', 'exon', 3631, 3913, NULL, '+', NULL, NULL, 'AT1G01010.1', 'AT1G01010.1', ''),
+('1', 'TAIR10', 'CDS', 3996, 4276, NULL, '+', '2', NULL, 'AT1G01010.1', 'AT1G01010.1,AT1G01010.1-Protein', ''),
+('1', 'TAIR10', 'exon', 3996, 4276, NULL, '+', NULL, NULL, 'AT1G01010.1', 'AT1G01010.1', ''),
+('1', 'TAIR10', 'CDS', 4486, 4605, NULL, '+', '0', NULL, 'AT1G01010.1', 'AT1G01010.1,AT1G01010.1-Protein', ''),
+('1', 'TAIR10', 'exon', 4486, 4605, NULL, '+', NULL, NULL, 'AT1G01010.1', 'AT1G01010.1', ''),
+('1', 'TAIR10', 'CDS', 4706, 5095, NULL, '+', '0', NULL, 'AT1G01010.1', 'AT1G01010.1,AT1G01010.1-Protein', ''),
+('1', 'TAIR10', 'exon', 4706, 5095, NULL, '+', NULL, NULL, 'AT1G01010.1', 'AT1G01010.1', ''),
+('1', 'TAIR10', 'CDS', 5174, 5326, NULL, '+', '0', NULL, 'AT1G01010.1', 'AT1G01010.1,AT1G01010.1-Protein', ''),
+('1', 'TAIR10', 'exon', 5174, 5326, NULL, '+', NULL, NULL, 'AT1G01010.1', 'AT1G01010.1', ''),
+('1', 'TAIR10', 'CDS', 5439, 5630, NULL, '+', '0', NULL, 'AT1G01010.1', 'AT1G01010.1,AT1G01010.1-Protein', ''),
+('1', 'TAIR10', 'protein', 3760, 5630, NULL, '+', NULL, 'AT1G01010.1-Protein', 'AT1G01010.1', NULL, 'Derives_from=AT1G01010.1'),
+('1', 'TAIR10', 'exon', 5439, 5899, NULL, '+', NULL, NULL, 'AT1G01010.1', 'AT1G01010.1', ''),
+('1', 'TAIR10', 'three_prime_UTR', 5631, 5899, NULL, '+', NULL, NULL, 'AT1G01010.1', 'AT1G01010.1', ''),
+('1', 'TAIR10', 'mRNA', 3631, 5899, NULL, '+', NULL, 'AT1G01010.1', 'AT1G01010.1', 'AT1G01010', 'Name=AT1G01010.1;Index=1'),
+('1', 'TAIR10', 'gene', 3631, 5899, NULL, '+', NULL, 'AT1G01010', 'AT1G01010', NULL, 'Note=protein_coding_gene;Name=AT1G01010'),
+('1', 'TAIR10', 'exon', 5928, 6263, NULL, '-', NULL, NULL, 'AT1G01020.1', 'AT1G01020.1', ''),
+('1', 'TAIR10', 'three_prime_UTR', 5928, 6263, NULL, '-', NULL, NULL, 'AT1G01020.1', 'AT1G01020.1', ''),
+('1', 'TAIR10', 'three_prime_UTR', 6437, 6914, NULL, '-', NULL, NULL, 'AT1G01020.1', 'AT1G01020.1', ''),
+('1', 'TAIR10', 'CDS', 6915, 7069, NULL, '-', '2', NULL, 'AT1G01020.1', 'AT1G01020.1,AT1G01020.1-Protein', ''),
+('1', 'TAIR10', 'exon', 6790, 7069, NULL, '-', NULL, NULL, 'AT1G01020.2', 'AT1G01020.2', ''),
+('1', 'TAIR10', 'three_prime_UTR', 6790, 7069, NULL, '-', NULL, NULL, 'AT1G01020.2', 'AT1G01020.2', ''),
+('1', 'TAIR10', 'exon', 6437, 7069, NULL, '-', NULL, NULL, 'AT1G01020.1', 'AT1G01020.1', ''),
+('1', 'TAIR10', 'exon', 7157, 7232, NULL, '-', NULL, NULL, 'AT1G01020.1', 'AT1G01020.1', ''),
+('1', 'TAIR10', 'CDS', 7157, 7232, NULL, '-', '0', NULL, 'AT1G01020.1', 'AT1G01020.1,AT1G01020.1-Protein', ''),
+('1', 'TAIR10', 'three_prime_UTR', 7157, 7314, NULL, '-', NULL, NULL, 'AT1G01020.2', 'AT1G01020.2', ''),
+('1', 'TAIR10', 'exon', 7384, 7450, NULL, '-', NULL, NULL, 'AT1G01020.1', 'AT1G01020.1', ''),
+('1', 'TAIR10', 'CDS', 7384, 7450, NULL, '-', '1', NULL, 'AT1G01020.1', 'AT1G01020.1,AT1G01020.1-Protein', ''),
+('1', 'TAIR10', 'exon', 7157, 7450, NULL, '-', NULL, NULL, 'AT1G01020.2', 'AT1G01020.2', ''),
+('1', 'TAIR10', 'three_prime_UTR', 7157, 7314, NULL, '-', NULL, NULL, 'AT1G01020.2', 'AT1G01020.2', ''),
+('1', 'TAIR10', 'exon', 7384, 7450, NULL, '-', NULL, NULL, 'AT1G01020.1', 'AT1G01020.1', ''),
+('1', 'TAIR10', 'CDS', 7384, 7450, NULL, '-', '1', NULL, 'AT1G01020.1', 'AT1G01020.1,AT1G01020.1-Protein', ''),
+('1', 'TAIR10', 'exon', 7157, 7450, NULL, '-', NULL, NULL, 'AT1G01020.2', 'AT1G01020.2', ''),
+('1', 'TAIR10', 'CDS', 7315, 7450, NULL, '-', '1', NULL, 'AT1G01020.2', 'AT1G01020.2,AT1G01020.2-Protein', ''),
+('1', 'TAIR10', 'exon', 7564, 7649, NULL, '-', NULL, NULL, 'AT1G01020.2', 'AT1G01020.2', ''),
+('1', 'TAIR10', 'CDS', 7564, 7649, NULL, '-', '0', NULL, 'AT1G01020.2', 'AT1G01020.2,AT1G01020.2-Protein', ''),
+('1', 'TAIR10', 'exon', 7564, 7649, NULL, '-', NULL, NULL, 'AT1G01020.1', 'AT1G01020.1', ''),
+('1', 'TAIR10', 'CDS', 7564, 7649, NULL, '-', '0', NULL, 'AT1G01020.1', 'AT1G01020.1,AT1G01020.1-Protein', ''),
+('1', 'TAIR10', 'exon', 7762, 7835, NULL, '-', NULL, NULL, 'AT1G01020.2', 'AT1G01020.2', ''),
+('1', 'TAIR10', 'CDS', 7762, 7835, NULL, '-', '2', NULL, 'AT1G01020.2', 'AT1G01020.2,AT1G01020.2-Protein', ''),
+('1', 'TAIR10', 'exon', 7762, 7835, NULL, '-', NULL, NULL, 'AT1G01020.1', 'AT1G01020.1', ''),
+('1', 'TAIR10', 'CDS', 7762, 7835, NULL, '-', '2', NULL, 'AT1G01020.1', 'AT1G01020.1,AT1G01020.1-Protein', ''),
+('1', 'TAIR10', 'exon', 7942, 7987, NULL, '-', NULL, NULL, 'AT1G01020.2', 'AT1G01020.2', ''),
+('1', 'TAIR10', 'CDS', 7942, 7987, NULL, '-', '0', NULL, 'AT1G01020.2', 'AT1G01020.2,AT1G01020.2-Protein', ''),
+('1', 'TAIR10', 'exon', 7942, 7987, NULL, '-', NULL, NULL, 'AT1G01020.1', 'AT1G01020.1', ''),
+('1', 'TAIR10', 'CDS', 7942, 7987, NULL, '-', '0', NULL, 'AT1G01020.1', 'AT1G01020.1,AT1G01020.1-Protein', ''),
+('1', 'TAIR10', 'exon', 8236, 8325, NULL, '-', NULL, NULL, 'AT1G01020.2', 'AT1G01020.2', ''),
+('1', 'TAIR10', 'CDS', 8236, 8325, NULL, '-', '0', NULL, 'AT1G01020.2', 'AT1G01020.2,AT1G01020.2-Protein', ''),
+('1', 'TAIR10', 'exon', 8236, 8325, NULL, '-', NULL, NULL, 'AT1G01020.1', 'AT1G01020.1', ''),
+('1', 'TAIR10', 'CDS', 8236, 8325, NULL, '-', '0', NULL, 'AT1G01020.1', 'AT1G01020.1,AT1G01020.1-Protein', ''),
+('1', 'TAIR10', 'exon', 8417, 8464, NULL, '-', NULL, NULL, 'AT1G01020.2', 'AT1G01020.2', ''),
+('1', 'TAIR10', 'CDS', 8417, 8464, NULL, '-', '0', NULL, 'AT1G01020.2', 'AT1G01020.2,AT1G01020.2-Protein', ''),
+('1', 'TAIR10', 'exon', 8417, 8464, NULL, '-', NULL, NULL, 'AT1G01020.1', 'AT1G01020.1', ''),
+('1', 'TAIR10', 'CDS', 8417, 8464, NULL, '-', '0', NULL, 'AT1G01020.1', 'AT1G01020.1,AT1G01020.1-Protein', ''),
+('1', 'TAIR10', 'CDS', 8571, 8666, NULL, '-', '0', NULL, 'AT1G01020.2', 'AT1G01020.2,AT1G01020.2-Protein', ''),
+('1', 'TAIR10', 'CDS', 8571, 8666, NULL, '-', '0', NULL, 'AT1G01020.1', 'AT1G01020.1,AT1G01020.1-Protein', ''),
+('1', 'TAIR10', 'protein', 7315, 8666, NULL, '-', NULL, 'AT1G01020.2-Protein', 'AT1G01020.2', NULL, 'Derives_from=AT1G01020.2'),
+('1', 'TAIR10', 'protein', 6915, 8666, NULL, '-', NULL, 'AT1G01020.1-Protein', 'AT1G01020.1', NULL, 'Derives_from=AT1G01020.1'),
+('1', 'TAIR10', 'five_prime_UTR', 8667, 8737, NULL, '-', NULL, NULL, 'AT1G01020.2', 'AT1G01020.2', ''),
+('1', 'TAIR10', 'five_prime_UTR', 8667, 8737, NULL, '-', NULL, NULL, 'AT1G01020.1', 'AT1G01020.1', ''),
+('1', 'TAIR10', 'exon', 8571, 8737, NULL, '-', NULL, NULL, 'AT1G01020.2', 'AT1G01020.2', ''),
+('1', 'TAIR10', 'exon', 8571, 8737, NULL, '-', NULL, NULL, 'AT1G01020.1', 'AT1G01020.1', ''),
+('1', 'TAIR10', 'mRNA', 6790, 8737, NULL, '-', NULL, 'AT1G01020.2', 'AT1G01020.2', 'AT1G01020', 'Name=AT1G01020.2;Index=1'),
+('1', 'TAIR10', 'mRNA', 5928, 8737, NULL, '-', NULL, 'AT1G01020.1', 'AT1G01020.1', 'AT1G01020', 'Name=AT1G01020.1;Index=1'),
+('1', 'TAIR10', 'gene', 5928, 8737, NULL, '-', NULL, 'AT1G01020', 'AT1G01020', NULL, 'Note=protein_coding_gene;Name=AT1G01020'),
+('1', 'TAIR10', 'three_prime_UTR', 11649, 11863, NULL, '-', NULL, NULL, 'AT1G01030.1', 'AT1G01030.1', ''),
+('1', 'TAIR10', 'CDS', 11864, 12940, NULL, '-', '0', NULL, 'AT1G01030.1', 'AT1G01030.1,AT1G01030.1-Protein', ''),
+('1', 'TAIR10', 'protein', 11864, 12940, NULL, '-', NULL, 'AT1G01030.1-Protein', 'AT1G01030.1', NULL, 'Derives_from=AT1G01030.1'),
+('1', 'TAIR10', 'five_prime_UTR', 12941, 13173, NULL, '-', NULL, NULL, 'AT1G01030.1', 'AT1G01030.1', ''),
+('1', 'TAIR10', 'exon', 11649, 13173, NULL, '-', NULL, NULL, 'AT1G01030.1', 'AT1G01030.1', ''),
+('1', 'TAIR10', 'exon', 13335, 13714, NULL, '-', NULL, NULL, 'AT1G01030.1', 'AT1G01030.1', ''),
+('1', 'TAIR10', 'five_prime_UTR', 13335, 13714, NULL, '-', NULL, NULL, 'AT1G01030.1', 'AT1G01030.1', ''),
+('1', 'TAIR10', 'mRNA', 11649, 13714, NULL, '-', NULL, 'AT1G01030.1', 'AT1G01030.1', 'AT1G01030', 'Name=AT1G01030.1;Index=1'),
+('1', 'TAIR10', 'gene', 11649, 13714, NULL, '-', NULL, 'AT1G01030', 'AT1G01030', NULL, 'Note=protein_coding_gene;Name=AT1G01030');
+/*!40000 ALTER TABLE `tair10_gff3` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `agi_alias`
+--
+
+CREATE TABLE `agi_alias` (
+  `agi` varchar(30) NOT NULL,
+  `alias` varchar(30) NOT NULL,
+  PRIMARY KEY (`agi`, `alias`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `agi_alias`
+--
+
+LOCK TABLES `agi_alias` WRITE;
+/*!40000 ALTER TABLE `agi_alias` DISABLE KEYS */;
+INSERT INTO `agi_alias` VALUES
+('AT1G01010', 'ANAC001'),
+('AT1G01010', 'NAC001'),
+('AT1G01010', 'NTL10'),
+('AT1G01020', 'ARV1'),
+('AT1G01030', 'NGA3'),
+('AT1G01040', 'ASU1'),
+('AT1G01040', 'ATDCL1'),
+('AT1G01040', 'CAF'),
+('AT1G01040', 'DCL1'),
+('AT1G01040', 'EMB60'),
+('AT1G01040', 'EMB76'),
+('AT1G01040', 'SIN1'),
+('AT1G01040', 'SUS1'),
+('AT1G01046', 'MIR838A'),
+('AT1G01050', 'AtPPa1'),
+('AT1G01050', 'PPa1'),
+('AT1G01060', 'LHY'),
+('AT1G01060', 'LHY1'),
+('AT1G01070', 'UMAMIT28'),
+('AT1G01080', 'CP28B'),
+('AT1G01090', 'PDH-E1 ALPHA'),
+('AT1G01100', 'RPP1.1'),
+('AT1G01100', 'RPP1A'),
+('AT1G01110', 'IQD18'),
+('AT1G01120', 'KCS1'),
+('AT1G01140', 'CIPK9'),
+('AT1G01140', 'PKS6'),
+('AT1G01140', 'SnRK3.12'),
+('AT1G01160', 'GIF2'),
+('AT1G01183', 'MIR165'),
+('AT1G01183', 'MIR165A'),
+('AT1G01184', 'miPEP165a'),
+('AT1G01190', 'CYP78A8'),
+('AT1G01200', 'ATRAB-A3'),
+('AT1G01200', 'ATRABA3'),
+('AT1G01200', 'RABA3'),
+('AT1G01220', 'AtFKGP'),
+('AT1G01220', 'FKGP'),
+('AT1G01230', 'AtORM1'),
+('AT1G01230', 'ORM1'),
+('AT1G01260', 'bHLH013'),
+('AT1G01260', 'bHLH13'),
+('AT1G01260', 'JAM2'),
+('AT1G01280', 'CYP703'),
+('AT1G01280', 'CYP703A2'),
+('AT1G01290', 'CNX3'),
+('AT1G01320', 'FLL2'),
+('AT1G01320', 'REC1'),
+('AT1G01335', 'AREP1'),
+('AT1G01340', 'ACBK1'),
+('AT1G01340', 'ATCNGC10');
+/*!40000 ALTER TABLE `agi_alias` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `agi_annotation`
 --
 
