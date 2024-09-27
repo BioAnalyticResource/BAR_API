@@ -41,8 +41,7 @@ post_int_data = itrns.model(
     {
         "data": fields.List(
             required=True,
-            example=[["AT5G67420", "AT1G12110"],
-                     ["AT5G67420", "AT1G08090"]],
+            example=[["AT5G67420", "AT1G12110"], ["AT5G67420", "AT1G08090"]],
             cls_or_instance=fields.List(fields.String),
         ),
     },
@@ -55,9 +54,7 @@ class GeneIntrnsSchema(Schema):
 
 
 class MFinderDataSchema(Schema):
-    data = marshmallow_fields.List(
-        marshmallow_fields.List(marshmallow_fields.String())
-    )
+    data = marshmallow_fields.List(marshmallow_fields.List(marshmallow_fields.String()))
 
 
 @itrns.route("/<species>/<query_gene>")
@@ -181,10 +178,10 @@ class MFinder(Resource):
         except ValidationError as err:
             return BARUtils.error_exit(err.messages), 400
 
-        filtered_valid_arr = self.input_validation(data['data'])
+        filtered_valid_arr = self.input_validation(data["data"])
         if isinstance(filtered_valid_arr, str):
             return BARUtils.error_exit(filtered_valid_arr), 400
-        settings = self.settings_validation(data.get('options', {}))
+        settings = self.settings_validation(data.get("options", {}))
         ret_json = self.create_files_and_mfinder(filtered_valid_arr, settings)
         return jsonify(self.beautify_results(ret_json))
 
@@ -236,29 +233,29 @@ class MFinder(Resource):
         opts = opts or {}
         self.injection_check(opts)
         settings_obj = opts.copy()
-        if 'nd' not in opts:
-            settings_obj['nd'] = False
-        elif not isinstance(opts['nd'], bool):
+        if "nd" not in opts:
+            settings_obj["nd"] = False
+        elif not isinstance(opts["nd"], bool):
             return "incorrect nd setting - is it boolean?", 400
 
-        if 'r' not in opts:
-            settings_obj['r'] = 50
-        elif not isinstance(opts['r'], int) or opts['r'] > 150:
+        if "r" not in opts:
+            settings_obj["r"] = 50
+        elif not isinstance(opts["r"], int) or opts["r"] > 150:
             return "incorrect r setting - is it a number under 151?", 400
 
-        if 's' not in opts:
-            settings_obj['s'] = 3
-        elif not isinstance(opts['s'], int) or opts['s'] < 2 or opts['s'] > 4:
+        if "s" not in opts:
+            settings_obj["s"] = 3
+        elif not isinstance(opts["s"], int) or opts["s"] < 2 or opts["s"] > 4:
             return "incorrect s setting - is it a number between 2 and 4?", 400
 
-        if 'u' not in opts:
-            settings_obj['u'] = 4
-        elif not isinstance(opts['u'], int) or opts['u'] > 999:
+        if "u" not in opts:
+            settings_obj["u"] = 4
+        elif not isinstance(opts["u"], int) or opts["u"] > 999:
             return "incorrect u setting - is it a number or below 1000?", 400
 
-        if 'z' not in opts:
-            settings_obj['z'] = 2
-        elif not isinstance(opts['z'], int) or opts['z'] > 99:
+        if "z" not in opts:
+            settings_obj["z"] = 2
+        elif not isinstance(opts["z"], int) or opts["z"] > 99:
             return "incorrect z setting - is it a number or below 100?", 400
 
         return settings_obj
@@ -276,7 +273,7 @@ class MFinder(Resource):
     def create_files_and_mfinder(self, input, opts_obj):
 
         # give read/write permissions to user but nada to anybody else
-        tmpfile = tempfile.NamedTemporaryFile(mode='w+', suffix='.txt', delete=False)
+        tmpfile = tempfile.NamedTemporaryFile(mode="w+", suffix=".txt", delete=False)
         os.chmod(tmpfile.name, 0o600)
 
         # get a hash of IDs -> numbers for later lookup and writable string
@@ -297,16 +294,16 @@ class MFinder(Resource):
         )
         subprocess.run(command, shell=True, check=True)
 
-        with open(tmpfile.name[:-4] + "_OUT.txt", 'r') as stats_file:
+        with open(tmpfile.name[:-4] + "_OUT.txt", "r") as stats_file:
             mfinder_stats = stats_file.read()
 
-        with open(tmpfile.name[:-4] + "_MEMBERS.txt", 'r') as members_file:
+        with open(tmpfile.name[:-4] + "_MEMBERS.txt", "r") as members_file:
             mfinder_members = members_file.read()
 
         tmpfile.close()
         os.remove(tmpfile.name)
 
-        return {'hashOfIds': hash_of_ids, 'mFinderStats': mfinder_stats, 'mFinderMembers': mfinder_members}
+        return {"hashOfIds": hash_of_ids, "mFinderStats": mfinder_stats, "mFinderMembers": mfinder_members}
 
     # Take an input of array of array of strings which represent edges and transform those gene IDs (unique!) to a hash table and
     # coinciding edges i.e. [["PHE", "PAT"], ["PAT, "PAN"]] to "232 210 1 \n 210 100 1\n"
@@ -327,37 +324,37 @@ class MFinder(Resource):
 
     # Beautify the output file string and members file string
     def beautify_results(self, mfinder_res_obj):
-        stats = mfinder_res_obj['mFinderStats']
-        mems = mfinder_res_obj['mFinderMembers']
-        id_map = mfinder_res_obj['hashOfIds']
-        ret_obj = {'sigMotifs': {}, 'motifList': {}}
+        stats = mfinder_res_obj["mFinderStats"]
+        mems = mfinder_res_obj["mFinderMembers"]
+        id_map = mfinder_res_obj["hashOfIds"]
+        ret_obj = {"sigMotifs": {}, "motifList": {}}
 
         try:
-            sig_motifs_str = stats.split('[MILI]\t\n\n')[1].split('Full')[0].split('\n\n')
+            sig_motifs_str = stats.split("[MILI]\t\n\n")[1].split("Full")[0].split("\n\n")
         # In case stats has less than 2 parts after split('[MILI]\t\n\n')[1]
         except IndexError:
             raise ValueError("Expected delimiter '[MILI]\t\n\n' or 'Full' not found in the stats string.")
-        sig_motifs_str = sig_motifs_str[:len(sig_motifs_str) - 2:2]
+        sig_motifs_str = sig_motifs_str[: len(sig_motifs_str) - 2 : 2]
         for item in sig_motifs_str:
-            split_stats_for_motif_id = item.split('\t')
-            ret_obj['sigMotifs'][split_stats_for_motif_id[0]] = {
-                'numAppearances': split_stats_for_motif_id[1],
-                'numAppearancesRand': split_stats_for_motif_id[2],
-                'appearancesZScore': split_stats_for_motif_id[3],
-                'pValue': split_stats_for_motif_id[4],
-                'uniq': split_stats_for_motif_id[5],
-                'conc': split_stats_for_motif_id[6],
+            split_stats_for_motif_id = item.split("\t")
+            ret_obj["sigMotifs"][split_stats_for_motif_id[0]] = {
+                "numAppearances": split_stats_for_motif_id[1],
+                "numAppearancesRand": split_stats_for_motif_id[2],
+                "appearancesZScore": split_stats_for_motif_id[3],
+                "pValue": split_stats_for_motif_id[4],
+                "uniq": split_stats_for_motif_id[5],
+                "conc": split_stats_for_motif_id[6],
             }
 
-        subgraphs_list_str = mems.split('subgraph id = ')[1:]
+        subgraphs_list_str = mems.split("subgraph id = ")[1:]
         for subgraph_str in subgraphs_list_str:
-            member_list_split = subgraph_str.split('\n')
-            motif_mem_list = [i.rstrip('\t') for i in member_list_split[5:-2]]
+            member_list_split = subgraph_str.split("\n")
+            motif_mem_list = [i.rstrip("\t") for i in member_list_split[5:-2]]
             motif_mem_results = []
             for i in motif_mem_list:
-                three_genes = i.split('\t')
+                three_genes = i.split("\t")
                 formatted_str = f"{id_map[int(three_genes[0])]}\t{id_map[int(three_genes[1])]}\t{id_map[int(three_genes[2])]}"  # i.e. PAT\tPAN\tEGFR
                 motif_mem_results.append(formatted_str)
-            ret_obj['motifList'][member_list_split[0]] = motif_mem_results
+            ret_obj["motifList"][member_list_split[0]] = motif_mem_results
 
         return BARUtils.success_exit(ret_obj)
