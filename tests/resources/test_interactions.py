@@ -1,7 +1,6 @@
 from api import app
 from unittest import TestCase
 import json
-from json import load
 
 
 class TestIntegrations(TestCase):

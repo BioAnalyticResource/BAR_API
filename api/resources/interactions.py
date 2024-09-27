@@ -5,18 +5,13 @@ Interactions (Protein-Protein, Protein-DNA, etc.) endpoint
 """
 
 from flask_restx import Namespace, Resource, fields
-from flask import request, jsonify
+from flask import request
 from markupsafe import escape
 from api.utils.bar_utils import BARUtils
 from marshmallow import Schema, ValidationError, fields as marshmallow_fields
 from api import db
 from api.models.rice_interactions import Interactions as RiceInteractions
 from sqlalchemy import or_
-
-import tempfile
-import os
-import subprocess
-from collections import defaultdict
 
 itrns = Namespace(
     "Interactions",
