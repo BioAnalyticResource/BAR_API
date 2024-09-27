@@ -199,7 +199,7 @@ class TestIntegrations(TestCase):
         :return:
         """
         # Valid data
-        response = self.app_client.get("/gene_information/genes_by_position/arabidopsis/Chr1/3000/9000")
+        response = self.app_client.get("/gene_information/genes_by_position/arabidopsis/1/3000/9000")
         expected = {
             "wasSuccessful": True,
             "data": [
@@ -223,7 +223,7 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
-        response = self.app_client.get("/gene_information/genes_by_position/arabidopsis/Chr1/5800/6000")
+        response = self.app_client.get("/gene_information/genes_by_position/arabidopsis/1/5800/6000")
         expected = {
             "wasSuccessful": True,
             "data": [
@@ -247,7 +247,7 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
-        response = self.app_client.get("/gene_information/genes_by_position/arabidopsis/Chr1/12000/14000")
+        response = self.app_client.get("/gene_information/genes_by_position/arabidopsis/1/12000/14000")
         expected = {
             "wasSuccessful": True,
             "data": [
@@ -264,20 +264,20 @@ class TestIntegrations(TestCase):
         self.assertEqual(response.json, expected)
 
         # Data not found, but gene is valid
-        response = self.app_client.get("/gene_information/genes_by_position/arabidopsis/Chr1/0/200")
+        response = self.app_client.get("/gene_information/genes_by_position/arabidopsis/1/0/200")
         expected = {"wasSuccessful": True, "data": []}
         self.assertEqual(response.json, expected)
 
-        response = self.app_client.get("/gene_information/genes_by_position/arabidopsis/Chr1/1000000/2000000")
+        response = self.app_client.get("/gene_information/genes_by_position/arabidopsis/1/1000000/2000000")
         expected = {"wasSuccessful": True, "data": []}
         self.assertEqual(response.json, expected)
 
-        response = self.app_client.get("/gene_information/genes_by_position/arabidopsis/Chr5/3000/6000")
+        response = self.app_client.get("/gene_information/genes_by_position/arabidopsis/5/3000/6000")
         expected = {"wasSuccessful": True, "data": []}
         self.assertEqual(response.json, expected)
 
         # Invalid start/end parameter
-        response = self.app_client.get("/gene_information/genes_by_position/arabidopsis/Chr1/3000/2000")
+        response = self.app_client.get("/gene_information/genes_by_position/arabidopsis/1/3000/2000")
         expected = {"wasSuccessful": False, "error": "Start location should be smaller than the end location"}
         self.assertEqual(response.json, expected)
 
@@ -287,7 +287,7 @@ class TestIntegrations(TestCase):
         self.assertEqual(response.json, expected)
 
         # Invalid species
-        response = self.app_client.get("/gene_information/genes_by_position/poplar/Chr1/3000/6000")
+        response = self.app_client.get("/gene_information/genes_by_position/poplar/1/3000/6000")
         expected = {"wasSuccessful": False, "error": "No data for the given species"}
         self.assertEqual(response.json, expected)
 
@@ -297,7 +297,7 @@ class TestIntegrations(TestCase):
         """
         # Valid data
         response = self.app_client.post(
-            "/gene_information/gene_query", json={"species": "Arabidopsis_thaliana", "terms": ["AT1G01030"]}
+            "/gene_information/gene_query", json={"species": "arabidopsis", "terms": ["AT1G01030"]}
         )
         data = json.loads(response.get_data(as_text=True))
         expected = {
@@ -318,7 +318,7 @@ class TestIntegrations(TestCase):
 
         response = self.app_client.post(
             "/gene_information/gene_query",
-            json={"species": "Arabidopsis_thaliana", "terms": ["AT1G01010", "AT1G01020"]},
+            json={"species": "arabidopsis", "terms": ["AT1G01010", "AT1G01020"]},
         )
         data = json.loads(response.get_data(as_text=True))
         expected = {
@@ -348,7 +348,7 @@ class TestIntegrations(TestCase):
 
         response = self.app_client.post(
             "/gene_information/gene_query",
-            json={"species": "Arabidopsis_thaliana", "terms": ["AT1G01020", "AT1G01020"]},
+            json={"species": "arabidopsis", "terms": ["AT1G01020", "AT1G01020"]},
         )
         data = json.loads(response.get_data(as_text=True))
         expected = {
@@ -369,7 +369,7 @@ class TestIntegrations(TestCase):
 
         # Terms contain those cannot find data
         response = self.app_client.post(
-            "/gene_information/gene_query", json={"species": "Arabidopsis_thaliana", "terms": ["AT1G01040.3"]}
+            "/gene_information/gene_query", json={"species": "arabidopsis", "terms": ["AT1G01040.3"]}
         )
         data = json.loads(response.get_data(as_text=True))
         expected = {"wasSuccessful": True, "data": {}}
@@ -377,7 +377,7 @@ class TestIntegrations(TestCase):
 
         response = self.app_client.post(
             "/gene_information/gene_query",
-            json={"species": "Arabidopsis_thaliana", "terms": ["AT1G01010.3", "AT1G01010"]},
+            json={"species": "arabidopsis", "terms": ["AT1G01010.3", "AT1G01010"]},
         )
         data = json.loads(response.get_data(as_text=True))
         expected = {
@@ -398,7 +398,7 @@ class TestIntegrations(TestCase):
 
         response = self.app_client.post(
             "/gene_information/gene_query",
-            json={"species": "Arabidopsis_thaliana", "terms": ["AT1G01030", "AT1G01035"]},
+            json={"species": "arabidopsis", "terms": ["AT1G01030", "AT1G01035"]},
         )
         data = json.loads(response.get_data(as_text=True))
         expected = {
@@ -419,7 +419,7 @@ class TestIntegrations(TestCase):
 
         # Invalid gene
         response = self.app_client.post(
-            "/gene_information/gene_query", json={"species": "Arabidopsis_thaliana", "terms": ["001G01030"]}
+            "/gene_information/gene_query", json={"species": "arabidopsis", "terms": ["001G01030"]}
         )
         data = json.loads(response.get_data(as_text=True))
         expected = {"wasSuccessful": False, "error": "Input list contains invalid term"}
@@ -427,7 +427,7 @@ class TestIntegrations(TestCase):
 
         response = self.app_client.post(
             "/gene_information/gene_query",
-            json={"species": "Arabidopsis_thaliana", "terms": ["001G01010", "At1g01010"]},
+            json={"species": "arabidopsis", "terms": ["001G01010", "At1g01010"]},
         )
         data = json.loads(response.get_data(as_text=True))
         expected = {"wasSuccessful": False, "error": "Input list contains invalid term"}
@@ -446,7 +446,7 @@ class TestIntegrations(TestCase):
         :return:
         """
         # Valid data
-        response = self.app_client.get("/gene_information/single_gene_query/Arabidopsis_thaliana/At1g01030")
+        response = self.app_client.get("/gene_information/single_gene_query/arabidopsis/At1g01030")
         expected = {
             "wasSuccessful": True,
             "data": {
@@ -463,7 +463,7 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
-        response = self.app_client.get("/gene_information/single_gene_query/Arabidopsis_thaliana/AT1G01010")
+        response = self.app_client.get("/gene_information/single_gene_query/arabidopsis/AT1G01010")
         expected = {
             "wasSuccessful": True,
             "data": {
@@ -481,16 +481,16 @@ class TestIntegrations(TestCase):
         self.assertEqual(response.json, expected)
 
         # Term cannot find data
-        response = self.app_client.get("/gene_information/single_gene_query/Arabidopsis_thaliana/At1g01040.3")
+        response = self.app_client.get("/gene_information/single_gene_query/arabidopsis/At1g01040.3")
         expected = {"wasSuccessful": True, "data": {}}
         self.assertEqual(response.json, expected)
 
-        response = self.app_client.get("/gene_information/single_gene_query/Arabidopsis_thaliana/At1g01035")
+        response = self.app_client.get("/gene_information/single_gene_query/arabidopsis/At1g01035")
         expected = {"wasSuccessful": True, "data": {}}
         self.assertEqual(response.json, expected)
 
         # Invalid gene
-        response = self.app_client.get("/gene_information/single_gene_query/Arabidopsis_thaliana/001G01030")
+        response = self.app_client.get("/gene_information/single_gene_query/arabidopsis/001G01030")
         expected = {"wasSuccessful": False, "error": "Input term invalid"}
         self.assertEqual(response.json, expected)
 
