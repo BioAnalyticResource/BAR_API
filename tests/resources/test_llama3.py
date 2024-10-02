@@ -23,7 +23,12 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
-        # Gene does not exist
+        # Invalid gene id
         response = self.app_client.get("/LLaMA/XX3G18850")
         expected = {"wasSuccessful": False, "error": "Invalid gene id"}
+        self.assertEqual(response.json, expected)
+
+        # Gene does not exist
+        response = self.app_client.get("/LLaMA/AT3G18851")
+        expected = {"wasSuccessful": False, "error": "There are no data found for the given gene"}
         self.assertEqual(response.json, expected)
