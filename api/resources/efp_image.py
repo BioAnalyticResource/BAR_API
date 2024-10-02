@@ -152,7 +152,7 @@ class eFPDataSource(Resource):
 
         # This will only work on the BAR
         if os.environ.get("BAR"):
-            if species in ["arabidopsis", "arachis", "cannabis", "maize", "sorghum", "soybean"]:
+            if species in ["arabidopsis", "arachis", "cannabis", "maize", "rice", "sorghum", "soybean"]:
                 efp_base_path = "/var/www/html/efp_" + species + "/data"
             else:
                 return BARUtils.error_exit("Invalid species.")
