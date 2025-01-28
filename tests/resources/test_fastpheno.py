@@ -52,6 +52,30 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
+        # Invalid site
+        response = self.app_client.get("/fastpheno/get_bands/12345/feb/band_1")
+        expected = {
+            "wasSuccessful": False,
+            "error": "Invalid site name",
+        }
+        self.assertEqual(response.json, expected)
+
+        # Invalid month
+        response = self.app_client.get("/fastpheno/get_bands/pintendre/1234/band_1")
+        expected = {
+            "wasSuccessful": False,
+            "error": "Invalid month",
+        }
+        self.assertEqual(response.json, expected)
+
+        # Invalid band
+        response = self.app_client.get("/fastpheno/get_bands/NOTASITE/feb/band_x")
+        expected = {
+            "wasSuccessful": False,
+            "error": "Invalid band",
+        }
+        self.assertEqual(response.json, expected)
+
     def test_site_genotype_ids(self):
         """This function checks GET request for fastpheno sites for genotype_ids
         :return:
@@ -92,9 +116,17 @@ class TestIntegrations(TestCase):
         self.assertEqual(response.json, expected)
 
         # Not working version
-        response = self.app_client.get("/fastpheno/get_trees/NOTAGENOTYPE")
+        response = self.app_client.get("/fastpheno/get_trees/Z")
         expected = {
             "wasSuccessful": False,
             "error": "There are no data found for the given parameters",
+        }
+        self.assertEqual(response.json, expected)
+
+        # Invalid data
+        response = self.app_client.get("/fastpheno/get_trees/NOTVALID")
+        expected = {
+            "wasSuccessful": False,
+            "error": "Invalid genotype id",
         }
         self.assertEqual(response.json, expected)
