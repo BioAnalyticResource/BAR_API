@@ -4,6 +4,8 @@ Author: Vince L
 Fastpheno endpoint for retrieving tree data
 """
 
+import re
+
 from flask_restx import Namespace, Resource
 from api import db
 from api.models.fastpheno import Sites, Trees, Band, Height
@@ -25,6 +27,16 @@ class FastPheno(Resource):
         site = escape(site).capitalize()
         month = escape(month)
         band = escape(band)
+
+        # Validate input
+        if not re.search(r"^[a-z]{1,15}$", site, re.I):
+            return BARUtils.error_exit("Invalid site name"), 400
+
+        if not re.search(r"^[a-z]{1,4}$", month, re.I):
+            return BARUtils.error_exit("Invalid month"), 400
+
+        if not re.search(r"^band_\d{1,8}$", band, re.I):
+            return BARUtils.error_exit("Invalid band"), 400
 
         rows = db.session.execute(
             db.select(Sites, Trees, Height, Band)
@@ -66,6 +78,10 @@ class FastPhenoTrees(Resource):
         """This end point returns trees for a given genotype_id across sites"""
         # Escape input data
         genotype_id = escape(genotype_id).capitalize()
+
+        # Validate input
+        if not re.search(r"^[a-z]{1,3}$", genotype_id, re.I):
+            return BARUtils.error_exit("Invalid genotype id"), 400
 
         rows = db.session.execute(
             db.select(Sites, Trees)
