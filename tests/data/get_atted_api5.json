@@ -5,7 +5,6 @@
     "entrez_gene_id": [
       839580
     ],
-    "type": null,
     "value": null,
     "topN": 5,
     "database": "Ath-u.c4-0",
@@ -14,36 +13,32 @@
   "result_set": [
     {
       "entrez_gene_id": 839580,
+      "type": "z",
       "results": [
         {
           "gene": 842367,
           "other_id": "At1g60730",
-          "mutual_rank": 793.88,
-          "logit_score": 4.5801
+          "z": 4.5801
         },
         {
           "gene": 838288,
           "other_id": "At1g17170",
-          "mutual_rank": 968.79,
-          "logit_score": 4.2795
+          "z": 4.2795
         },
         {
           "gene": 817498,
           "other_id": "At2g29490",
-          "mutual_rank": 1006.44,
-          "logit_score": 4.2216
+          "z": 4.2216
         },
         {
           "gene": 829559,
           "other_id": "At4g34131",
-          "mutual_rank": 1014.08,
-          "logit_score": 4.2101
+          "z": 4.2101
         },
         {
           "gene": 825091,
           "other_id": "At3g59220",
-          "mutual_rank": 1119.2,
-          "logit_score": 4.0597
+          "z": 4.0597
         }
       ],
       "other_id": "At1g01010"
