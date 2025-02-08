@@ -9,12 +9,12 @@ bar_proxy = Namespace("Proxy", description="Proxy to other APIs", path="/proxy")
 request_headers = {"user-agent": "BAR API", "accept": "application/json"}
 
 
-@bar_proxy.route("/atted_api4/<string:gene_id>/<int:top_n>")
-class ATTEDApi4(Resource):
+@bar_proxy.route("/atted_api5/<string:gene_id>/<int:top_n>")
+class ATTEDApi5(Resource):
     @bar_proxy.param("gene_id", _in="path", default="At1g01010")
     @bar_proxy.param("top_n", _in="path", default=5)
     def get(self, gene_id="", top_n=""):
-        """This end point is a proxy for ATTED-II api version 4.
+        """This end point is a proxy for ATTED-II api version 5.
         This is used by ThaleMine.
         This end point is currently not cached.
         """
@@ -30,7 +30,7 @@ class ATTEDApi4(Resource):
 
         # Now query the web service
         payload = {"gene": gene_id, "topN": top_n}
-        resp = requests.get("https://atted.jp/cgi-bin/api4.cgi", params=payload, headers=request_headers)
+        resp = requests.get("https://atted.jp/api5/", params=payload, headers=request_headers)
 
         # I think the remote API always returns status 200, so skip status checking
         return resp.json()
