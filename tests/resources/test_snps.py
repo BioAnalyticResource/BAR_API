@@ -115,9 +115,9 @@ class TestIntegrations(TestCase):
                     "protein_coding",
                     "CODING",
                     "GSBRNA2T00000007001",
-                    0.0066
+                    0.0066,
                 ]
-            ]
+            ],
         }
         self.assertEqual(response.json, expected)
 
