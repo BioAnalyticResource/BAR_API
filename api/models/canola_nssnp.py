@@ -1,8 +1,9 @@
 from typing import Optional
 from api import db
-#from sqlalchemy.ext.declarative import declarative_base
+# from sqlalchemy.ext.declarative import declarative_base
 
-#CanolaBase = declarative_base()
+
+# CanolaBase = declarative_base()
 class CanolaProteinReference(db.Model):
     __bind_key__ = "canola_nssnp"
     __tablename__ = "protein_reference"

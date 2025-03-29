@@ -543,7 +543,7 @@ class SeqHotspots(Resource):
 
 
 @snps.route("/homologs/<string:search_species>/<string:search_gene>/<string:target_species>")
-class SeqHotspots(Resource):
+class Homologs(Resource):
     @snps.param("search_species", _in="path", default="canola")
     @snps.param("search_gene", _in="path", default="BnaA07g31480D")
     @snps.param("target_species", _in="path", default="arabidopsis")
@@ -559,8 +559,7 @@ class SeqHotspots(Resource):
         supported = ["arabidopsis", "canola"]
         if (search_species not in supported) or (target_species not in supported):
             return BARUtils.error_exit("Species not supported"), 400
-        elif (search_species == "arabidopsis" and BARUtils.is_arabidopsis_gene_valid(gene_id)) or \
-            (search_species == "canola" and BARUtils.is_canola_gene_valid(gene_id)):
+        elif (search_species == "arabidopsis" and BARUtils.is_arabidopsis_gene_valid(gene_id)) or (search_species == "canola" and BARUtils.is_canola_gene_valid(gene_id)):
             results = HomologsDB.query.filter_by(
                 search_protein_name=gene_id,
                 search_species_name=search_species,
@@ -582,10 +581,7 @@ class SeqHotspots(Resource):
             ]
             homologs_list.sort(key=lambda x: x["e_score"])
             if len(homologs_list) >= 5: homologs_list = homologs_list[:5]
-            response = {
-                "homologs": homologs_list
-            }
-
+            response = {"homologs": homologs_list}
             return BARUtils.success_exit(response), 200
         else:
             return BARUtils.error_exit("Invalid gene id"), 400
