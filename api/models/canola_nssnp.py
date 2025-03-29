@@ -1,6 +1,5 @@
 from typing import Optional
 from api import db
-# from sqlalchemy.ext.declarative import declarative_base
 
 
 # CanolaBase = declarative_base()

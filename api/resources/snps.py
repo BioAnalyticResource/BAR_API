@@ -19,7 +19,7 @@ from api.models.soybean_nssnp import (
 )
 from api.models.canola_nssnp import (
     CanolaProteinReference as CanolaProteinReference,
-    CanolaSnpsToProtein as CanolaSnpsToProtein
+    CanolaSnpsToProtein as CanolaSnpsToProtein,
 )
 from api.models.homologs_db import homologs as HomologsDB
 from api.utils.bar_utils import BARUtils
@@ -557,13 +557,14 @@ class Homologs(Resource):
         gene_id = escape(search_gene)
         target_species = escape(target_species)
         supported = ["arabidopsis", "canola"]
+
         if (search_species not in supported) or (target_species not in supported):
             return BARUtils.error_exit("Species not supported"), 400
-        elif (search_species == "arabidopsis" and BARUtils.is_arabidopsis_gene_valid(gene_id)) or (search_species == "canola" and BARUtils.is_canola_gene_valid(gene_id)):
+        elif (search_species == "arabidopsis" and BARUtils.is_arabidopsis_gene_valid(gene_id)) or (
+            search_species == "canola" and BARUtils.is_canola_gene_valid(gene_id)
+        ):
             results = HomologsDB.query.filter_by(
-                search_protein_name=gene_id,
-                search_species_name=search_species,
-                result_species_name=target_species
+                search_protein_name=gene_id, search_species_name=search_species, result_species_name=target_species
             ).all()
             if not results:
                 return BARUtils.error_exit("No homologs found for the given query"), 400
@@ -575,7 +576,7 @@ class Homologs(Resource):
                     "result_species_name": target_species,
                     "result_protein_name": homolog.result_protein_name,
                     "Percent_id": float(homolog.Percent_id),
-                    "e_score": float(homolog.e_score)
+                    "e_score": float(homolog.e_score),
                 }
                 for homolog in results
             ]
