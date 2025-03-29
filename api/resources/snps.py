@@ -580,10 +580,9 @@ class Homologs(Resource):
                 for homolog in results
             ]
             homologs_list.sort(key=lambda x: x["e_score"])
-            if len(homologs_list) >= 5: homologs_list = homologs_list[:5]
+            if len(homologs_list) >= 5:
+                homologs_list = homologs_list[:5]
             response = {"homologs": homologs_list}
             return BARUtils.success_exit(response), 200
         else:
             return BARUtils.error_exit("Invalid gene id"), 400
-
-
