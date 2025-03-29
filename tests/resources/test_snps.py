@@ -1,6 +1,7 @@
 from api import app
 from unittest import TestCase
 import pytest
+from json import load
 
 
 class TestIntegrations(TestCase):
@@ -95,6 +96,31 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(response.json, expected)
 
+        # Valid request canola
+        response = self.app_client.get("/snps/canola/BnaC09g12790D")
+        expected = {
+            "wasSuccessful": True,
+            "data": [
+                [
+                    "chrC09",
+                    22,
+                    None,
+                    "missense_variant",
+                    "MODERATE",
+                    "MISSENSE",
+                    "67C>A",
+                    "ValPhe",
+                    None,
+                    "BnaC09g12790D",
+                    "protein_coding",
+                    "CODING",
+                    "GSBRNA2T00000007001",
+                    0.0066
+                ]
+            ]
+        }
+        self.assertEqual(response.json, expected)
+
         # Invalid gene id
         response = self.app_client.get("/snps/poplar/abc")
         expected = {"wasSuccessful": False, "error": "Invalid gene id"}
@@ -102,6 +128,19 @@ class TestIntegrations(TestCase):
 
         # Gene does not exist
         response = self.app_client.get("/snps/poplar/Potri.019G123901.1")
+        expected = {
+            "wasSuccessful": False,
+            "error": "There are no data found for the given gene",
+        }
+        self.assertEqual(response.json, expected)
+
+        # Invalid gene id for canola
+        response = self.app_client.get("/snps/canola/abc")
+        expected = {"wasSuccessful": False, "error": "Invalid gene id"}
+        self.assertEqual(response.json, expected)
+
+        # Gene does not exist for canola
+        response = self.app_client.get("/snps/canola/BnaC07g99930D")
         expected = {
             "wasSuccessful": False,
             "error": "There are no data found for the given gene",
@@ -217,4 +256,42 @@ class TestIntegrations(TestCase):
         # test_3: invalid input for snps + incorrect format
         response = self.app_client.get("/snps/pymol/Potri.016G107900.1?snps=25l&chain=None")
         expected = {"wasSuccessful": False, "error": "Invalid SNP string format"}
+        self.assertEqual(response.json, expected)
+
+    def test_homologs(self):
+
+        # test for get homologs
+        response = self.app_client.get("/snps/homologs/arabidopsis/AT5G16970.1/canola")
+        with open("tests/data/get_canola_homolog_information.json") as file:
+            expected = load(file)
+        self.assertEqual(response.json, expected)
+
+        # test for invalid input
+        response = self.app_client.get("/snps/homologs/rice/AT3G18710.1/canola")
+        expected = {
+            "wasSuccessful": False,
+            "error": "Species not supported",
+        }
+        self.assertEqual(response.json, expected)
+
+        response = self.app_client.get("/snps/homologs/arabidopsis/AT3G18710.1/rice")
+        expected = {
+            "wasSuccessful": False,
+            "error": "Species not supported",
+        }
+        self.assertEqual(response.json, expected)
+
+        response = self.app_client.get("/snps/homologs/arabidopsis/abc/canola")
+        expected = {
+            "wasSuccessful": False,
+            "error": "Invalid gene id",
+        }
+        self.assertEqual(response.json, expected)
+
+        # test for no homologs data
+        response = self.app_client.get("/snps/homologs/arabidopsis/AT3G18710.1/canola")
+        expected = {
+            "wasSuccessful": False,
+            "error": "No homologs found for the given query",
+        }
         self.assertEqual(response.json, expected)

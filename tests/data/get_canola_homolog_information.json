@@ -1,0 +1,47 @@
+{
+    "wasSuccessful": true,
+    "data": {
+        "homologs": [
+            {
+                "search_species_name": "arabidopsis",
+                "search_protein_name": "AT5G16970.1",
+                "result_species_name": "canola",
+                "result_protein_name": "BnaC09g40930D",
+                "Percent_id": 86.047,
+                "e_score": 0.0
+            },
+            {
+                "search_species_name": "arabidopsis",
+                "search_protein_name": "AT5G16970.1",
+                "result_species_name": "canola",
+                "result_protein_name": "BnaA10g17570D",
+                "Percent_id": 86.047,
+                "e_score": 0.0
+            },
+            {
+                "search_species_name": "arabidopsis",
+                "search_protein_name": "AT5G16970.1",
+                "result_species_name": "canola",
+                "result_protein_name": "BnaC03g08130D",
+                "Percent_id": 85.088,
+                "e_score": 0.0
+            },
+            {
+                "search_species_name": "arabidopsis",
+                "search_protein_name": "AT5G16970.1",
+                "result_species_name": "canola",
+                "result_protein_name": "BnaA05g32330D",
+                "Percent_id": 81.633,
+                "e_score": 0.0
+            },
+            {
+                "search_species_name": "arabidopsis",
+                "search_protein_name": "AT5G16970.1",
+                "result_species_name": "canola",
+                "result_protein_name": "BnaCnng06210D",
+                "Percent_id": 80.87,
+                "e_score": 0.0
+            }
+        ]
+    }
+}
