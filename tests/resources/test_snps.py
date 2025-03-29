@@ -140,7 +140,7 @@ class TestIntegrations(TestCase):
         self.assertEqual(response.json, expected)
 
         # Gene does not exist for canola
-        response = self.app_client.get("/snps/poplar/BnaC09g99999D")
+        response = self.app_client.get("/snps/canola/BnaC07g99930D")
         expected = {
             "wasSuccessful": False,
             "error": "There are no data found for the given gene",
