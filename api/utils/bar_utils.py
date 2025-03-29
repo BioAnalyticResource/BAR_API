@@ -84,6 +84,17 @@ class BARUtils:
             return False
 
     @staticmethod
+    def is_canola_gene_valid(gene):
+        """This function verifies if canola gene (BnaC07g42830D) is valid
+                :param gene:
+                :return:
+                """
+        if re.search(r"^Bna[AC]\d{2}g\d{5}[A-D]?$", gene, re.I):
+            return True
+        else:
+            return False
+
+    @staticmethod
     def is_arachis_gene_valid(gene):
         """This function verifies if arachis gene is valid: Adur10000_comp0_c0_seq1
         :param gene:
