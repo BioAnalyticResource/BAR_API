@@ -3,7 +3,7 @@ from api import db
 
 class homologs(db.Model):
     __bind_key__ = "homologs_db"
-    __tablename__ = 'homologs'
+    __tablename__ = "homologs"
 
     homologs_id: db.Mapped[int] = db.mapped_column(db.Integer(), primary_key=True, autoincrement=True)
     search_protein_name: db.Mapped[str] = db.mapped_column(db.String(45), nullable=False)
