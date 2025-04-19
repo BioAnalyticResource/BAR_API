@@ -25,7 +25,6 @@ class TestIntegrations(TestCase):
 
         # If no data, the service should return this response
         response = self.app_client.get("/proxy/atted_api5/At1g01011/5")
-
         expected = {"error": "No gene ID specified.", "status_code": 400}
         self.assertEqual(response.json, expected)
 
