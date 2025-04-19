@@ -1,14 +1,14 @@
 services:
 
   mysqldb:
-    image: mysql:9.0.1
+    image: mysql:9.3.0
     container_name: BAR_mysqldb
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=root
 
   redis:
-    image: redis:7.2.5
+    image: redis:7.4.2
     container_name: BAR_redis
     restart: always
     ports:
