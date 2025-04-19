@@ -17,6 +17,11 @@ from api.models.soybean_nssnp import (
     SnpsReference as SoybeanSnpsReference,
     SamplesLookup as SoybeanSampleNames,
 )
+from api.models.canola_nssnp import (
+    CanolaProteinReference as CanolaProteinReference,
+    CanolaSnpsToProtein as CanolaSnpsToProtein,
+)
+from api.models.homologs_db import homologs as HomologsDB
 from api.utils.bar_utils import BARUtils
 from flask import request
 import re
@@ -141,7 +146,7 @@ class GeneNameAlias(Resource):
     def get(self, species="", gene_id=""):
         """Endpoint returns annotated SNP poplar data in order of (to match A th API format):
         AA pos (zero-indexed), sample id, 'missense_variant','MODERATE', 'MISSENSE', codon/DNA base change,
-        AA change (DH), pro length, gene ID, 'protein_coding', 'CODING', transcript id, biotype
+        AA change (DH), pro length, gene ID, 'protein_coding', 'CODING', transcript id, biotype (allele frequency for canola)
         values with single quotes are fixed"""
         results_json = []
 
@@ -160,43 +165,76 @@ class GeneNameAlias(Resource):
             protein_reference = SoybeanProteinReference
             snps_to_protein = SoybeanSnpsToProtein
             snps_reference = SoybeanSnpsReference
+        elif species == "canola" and BARUtils.is_canola_gene_valid(gene_id):
+            protein_reference = CanolaProteinReference
+            snps_to_protein = CanolaSnpsToProtein
         else:
             return BARUtils.error_exit("Invalid gene id"), 400
 
-        rows = (
-            db.session.execute(
-                db.select(protein_reference, snps_to_protein, snps_reference)
-                .select_from(protein_reference)
-                .join(snps_to_protein)
-                .join(snps_reference)
-                .where(protein_reference.gene_identifier == gene_id)
+        if species == "canola" and BARUtils.is_canola_gene_valid(gene_id):
+            rows = (
+                db.session.execute(
+                    db.select(protein_reference, snps_to_protein)
+                    .select_from(protein_reference)
+                    .join(snps_to_protein)
+                    .where(protein_reference.gene_identifier == gene_id)
+                )
+                .tuples()
+                .all()
             )
-            .tuples()
-            .all()
-        )
+            for protein, snptoprotein in rows:
+                itm_lst = [
+                    snptoprotein.chromosome,
+                    snptoprotein.aa_pos - 1,  # zero index-ed
+                    None,
+                    "missense_variant",
+                    "MODERATE",
+                    "MISSENSE",
+                    str(snptoprotein.transcript_pos) + snptoprotein.ref_DNA + ">" + snptoprotein.alt_DNA,
+                    snptoprotein.ref_aa + snptoprotein.alt_aa,
+                    None,
+                    gene_id,
+                    "protein_coding",
+                    "CODING",
+                    protein.gene_name,
+                    float(snptoprotein.alt_freq),
+                ]
+                results_json.append(itm_lst)
+        else:
+            rows = (
+                db.session.execute(
+                    db.select(protein_reference, snps_to_protein, snps_reference)
+                    .select_from(protein_reference)
+                    .join(snps_to_protein)
+                    .join(snps_reference)
+                    .where(protein_reference.gene_identifier == gene_id)
+                )
+                .tuples()
+                .all()
+            )
 
-        # BAR A Th API format is chr, AA pos (zero-indexed), sample id, 'missense_variant',
-        # 'MODERATE', 'MISSENSE', codon/DNA base change, AA change (DH),
-        # pro length, gene ID, 'protein_coding', 'CODING', transcript id, biotype
-        for protein, snpsjoin, snpstbl in rows:
-            itm_lst = [
-                snpstbl.chromosome,
-                # snpstbl.chromosomal_loci,
-                snpsjoin.aa_pos - 1,  # zero index-ed
-                snpstbl.sample_id,
-                "missense_variant",
-                "MODERATE",
-                "MISSENSE",
-                str(snpsjoin.transcript_pos) + snpsjoin.ref_DNA + ">" + snpsjoin.alt_DNA,
-                snpsjoin.ref_aa + snpsjoin.alt_aa,
-                None,
-                re.sub(r".\d$", "", protein.gene_identifier),
-                "protein_coding",
-                "CODING",
-                protein.gene_identifier,
-                None,
-            ]
-            results_json.append(itm_lst)
+            # BAR A Th API format is chr, AA pos (zero-indexed), sample id, 'missense_variant',
+            # 'MODERATE', 'MISSENSE', codon/DNA base change, AA change (DH),
+            # pro length, gene ID, 'protein_coding', 'CODING', transcript id, biotype
+            for protein, snpsjoin, snpstbl in rows:
+                itm_lst = [
+                    snpstbl.chromosome,
+                    # snpstbl.chromosomal_loci,
+                    snpsjoin.aa_pos - 1,  # zero index-ed
+                    snpstbl.sample_id,
+                    "missense_variant",
+                    "MODERATE",
+                    "MISSENSE",
+                    str(snpsjoin.transcript_pos) + snpsjoin.ref_DNA + ">" + snpsjoin.alt_DNA,
+                    snpsjoin.ref_aa + snpsjoin.alt_aa,
+                    None,
+                    re.sub(r".\d$", "", protein.gene_identifier),
+                    "protein_coding",
+                    "CODING",
+                    protein.gene_identifier,
+                    None,
+                ]
+                results_json.append(itm_lst)
 
         # Return results if there are data
         if len(results_json) > 0:
@@ -502,3 +540,50 @@ class SeqHotspots(Resource):
         pop_both_sig_idx = HotspotUtils.get_sig_index(pop_both_sig)
         output = {"ara_id": araid, "pop_id": popid, "ara_hotspots": ara_both_sig_idx, "pop_hotspots": pop_both_sig_idx}
         return BARUtils.success_exit(output)
+
+
+@snps.route("/homologs/<string:search_species>/<string:search_gene>/<string:target_species>")
+class Homologs(Resource):
+    @snps.param("search_species", _in="path", default="canola")
+    @snps.param("search_gene", _in="path", default="BnaA07g31480D")
+    @snps.param("target_species", _in="path", default="arabidopsis")
+    def get(self, search_species="", search_gene="", target_species=""):
+        """This endpoint shows the homologs proteins of search_gene in target_species.
+        The endpoint returns a list of homologous pairs of proteins in following format:
+        Percent_id(percent identity get by blast); e score
+        """
+        # Escape input
+        search_species = escape(search_species)
+        gene_id = escape(search_gene)
+        target_species = escape(target_species)
+        supported = ["arabidopsis", "canola"]
+
+        if (search_species not in supported) or (target_species not in supported):
+            return BARUtils.error_exit("Species not supported"), 400
+        elif (search_species == "arabidopsis" and BARUtils.is_arabidopsis_gene_valid(gene_id)) or (
+            search_species == "canola" and BARUtils.is_canola_gene_valid(gene_id)
+        ):
+            results = HomologsDB.query.filter_by(
+                search_protein_name=gene_id, search_species_name=search_species, result_species_name=target_species
+            ).all()
+            if not results:
+                return BARUtils.error_exit("No homologs found for the given query"), 400
+
+            homologs_list = [
+                {
+                    "search_species_name": search_species,
+                    "search_protein_name": gene_id,
+                    "result_species_name": target_species,
+                    "result_protein_name": homolog.result_protein_name,
+                    "Percent_id": float(homolog.Percent_id),
+                    "e_score": float(homolog.e_score),
+                }
+                for homolog in results
+            ]
+            homologs_list.sort(key=lambda x: x["e_score"])
+            if len(homologs_list) >= 5:
+                homologs_list = homologs_list[:5]
+            response = {"homologs": homologs_list}
+            return BARUtils.success_exit(response), 200
+        else:
+            return BARUtils.error_exit("Invalid gene id"), 400
