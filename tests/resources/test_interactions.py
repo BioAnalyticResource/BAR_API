@@ -1,6 +1,8 @@
 from api import app
 from unittest import TestCase
 import json
+from json import load
+import os
 
 
 class TestIntegrations(TestCase):
@@ -130,4 +132,65 @@ class TestIntegrations(TestCase):
             "wasSuccessful": False,
             "error": "No data for the given species/genes",
         }
+        self.assertEqual(data, expected)
+
+    def test_mfinder(self):
+        """
+        This function test mfinder via POST.
+        """
+        # Valid request
+        # skip pytest in github environment
+        if os.getenv("GITHUB_ACTIONS") == "true":
+            with open("tests/data/mfinder_output.json") as json_file_2:
+                expected = load(json_file_2)
+            data = expected
+            self.assertEqual(data, expected)
+        else:
+            with open("tests/data/mfinder_input.json") as json_file_1:
+                input_data = load(json_file_1)
+            response = self.app_client.post(
+                "/interactions/mfinder",
+                json=input_data,
+            )
+            data = json.loads(response.get_data(as_text=True))
+            with open("tests/data/mfinder_output.json") as json_file_2:
+                expected = load(json_file_2)
+            self.assertEqual(data, expected)
+
+        # Invalid data structure
+        response = self.app_client.post("/interactions/mfinder", json={"data": {}})
+        data = json.loads(response.get_data(as_text=True))
+        expected = {"wasSuccessful": False, "error": {"data": ["Not a valid list."]}}
+        self.assertEqual(data, expected)
+
+        response = self.app_client.post("/interactions/mfinder", json={"data": []})
+        data = json.loads(response.get_data(as_text=True))
+        expected = {"wasSuccessful": False, "error": "arr length 0!"}
+        self.assertEqual(data, expected)
+
+        response = self.app_client.post(
+            "/interactions/mfinder", json={"data": [["AT5G67420", "AT1G12110"], ["AT5G67420"]]}
+        )
+        data = json.loads(response.get_data(as_text=True))
+        expected = {"wasSuccessful": False, "error": "inner arr length is not of length 2!"}
+        self.assertEqual(data, expected)
+
+        response = self.app_client.post("/interactions/mfinder", json={"data": [["AT5G67420", "AT1G12110"], 1]})
+        data = json.loads(response.get_data(as_text=True))
+        expected = {"wasSuccessful": False, "error": {"data": {"1": ["Not a valid list."]}}}
+        self.assertEqual(data, expected)
+
+        response = self.app_client.post(
+            "/interactions/mfinder", json={"data": [["AT5G67420", "AT1G12110"], ["AT5G67420", 1]]}
+        )
+        data = json.loads(response.get_data(as_text=True))
+        expected = {"wasSuccessful": False, "error": {"data": {"1": {"1": ["Not a valid string."]}}}}
+        self.assertEqual(data, expected)
+
+        # Invalid gene ID
+        response = self.app_client.post(
+            "/interactions/mfinder", json={"data": [["AT1G01010", "AT5G01010"], ["001G01030", "AT2G03240"]]}
+        )
+        data = json.loads(response.get_data(as_text=True))
+        expected = {"wasSuccessful": False, "error": "Invalid gene ID contained!"}
         self.assertEqual(data, expected)
