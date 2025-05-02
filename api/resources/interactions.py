@@ -5,9 +5,10 @@ Interactions (Protein-Protein, Protein-DNA, etc.) endpoint
 """
 
 from flask_restx import Namespace, Resource, fields
-from flask import request
+from flask import request, jsonify
 from markupsafe import escape
 from api.utils.bar_utils import BARUtils
+from api.utils.mfinder_utils import MfinderUtils
 from marshmallow import Schema, ValidationError, fields as marshmallow_fields
 from api import db
 from api.models.rice_interactions import Interactions as RiceInteractions
@@ -156,3 +157,26 @@ class InteractionsPost(Resource):
             return BARUtils.success_exit(res)
         else:
             return BARUtils.error_exit("No data for the given species/genes"), 400
+
+
+@itrns.route("/mfinder")
+class MFinder(Resource):
+    @itrns.expect(post_int_data)
+    def post(self):
+        """This endpoint was originally written by Vincent Lau to return mFinder
+        results to AGENT in his express node.JS app. However Tianhui Zhao refactored
+        to the BAR_API
+        """
+        data = request.get_json()
+        # Validate json
+        try:
+            data = MFinderDataSchema().load(data)
+        except ValidationError as err:
+            return BARUtils.error_exit(err.messages), 400
+
+        filtered_valid_arr = MfinderUtils.input_validation(data["data"])
+        if isinstance(filtered_valid_arr, str):
+            return BARUtils.error_exit(filtered_valid_arr), 400
+        settings = MfinderUtils.settings_validation(data.get("options", {}))
+        ret_json = MfinderUtils.create_files_and_mfinder(filtered_valid_arr, settings)
+        return jsonify(MfinderUtils.beautify_results(ret_json))
