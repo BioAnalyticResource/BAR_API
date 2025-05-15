@@ -1,0 +1,32 @@
+{
+  "wasSuccessful": true,
+  "data": [
+    {
+      "source_id": 35,
+      "grn_title": "Jin et al.(MOLECULAR BIOLOGY AND EVOLUTION, 2015) Curated Combined Network",
+      "image_url": "https://bar.utoronto.ca/GRN_Images/25750178.jpg",
+      "source_name": "25750178",
+      "comments": "The authors collected data from literature and with text mining tools and manual curation. Data from: http://atrm.cbi.pku.edu.cn/",
+      "cyjs_layout": "{\"name\": \"breadthfirst\", \"animate\" : \"true\"}",
+      "tags": "curation:Misc|network structure:Misc|wiring preference:Misc"
+    },
+    {
+      "source_id": 14,
+      "grn_title": "Keurentjes et al. (Proc Nat Acad Sci, 2007) Flowering Time Network",
+      "image_url": "https://bar.utoronto.ca/GRN_Images/17237218.jpg",
+      "source_name": "17237218",
+      "comments": "Flowering Time analysis with genome-wide expression variation analysis (combining eQTL mapping and regulator candidate gene selection) in an RIL population of Arabidopsis thaliana. Data From: manual annotation of Figure 2.",
+      "cyjs_layout": "{\"name\": \"cose\", \"animate\" : \"true\"}",
+      "tags": "eQTL mapping:Experiment|ERECTA:Gene|Flower:Condition|GIGANTEA:Gene|Linkage Mapping:Experiment|RIL:Experiment"
+    },
+    {
+      "source_id": 15,
+      "grn_title": "Park et al.(The Plant Journal, 2015) CBF Regulon Low Temperature Network",
+      "image_url": "https://bar.utoronto.ca/GRN_Images/25736223%231.jpg",
+      "source_name": "25736223#1",
+      "comments": "Topic:Investigating cold regulation of the CBF regulon. Methods include transgenic lines that constitutively overexpressed a truncated version of CBF2, quantitative real time PCR analysis, affymetrix GeneChip hybridization. Data From: Table S5. This GRN specifically represents COR genes regulated by first wave transcription factors",
+      "cyjs_layout": "{\"name\": \"breadthfirst\", \"animate\" : \"true\"}",
+      "tags": "CBF:Gene|CBF1:Gene|CBF2:Gene|CBF3:Gene|Cold Stress:Condition|CZF1:Gene|DREB1b:Gene|DREB1c:Gene|DREB2a:Gene|HSFC1:Gene|qRT-PCR:Experiment|RAV1:Gene|ZAT10:Gene|ZAT12:Gene|ZF:Gene"
+    }
+  ]
+}

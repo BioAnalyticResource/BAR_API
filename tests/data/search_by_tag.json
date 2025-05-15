@@ -1,0 +1,27 @@
+{
+  "wasSuccessful": true,
+  "data": [
+    {
+      "source_id": 15,
+      "source_name": "25736223#1",
+      "comments": "Topic:Investigating cold regulation of the CBF regulon. Methods include transgenic lines that constitutively overexpressed a truncated version of CBF2, quantitative real time PCR analysis, affymetrix GeneChip hybridization. Data From: Table S5. This GRN specifically represents COR genes regulated by first wave transcription factors",
+      "date_uploaded": "2019-11-12",
+      "url": "www.ncbi.nlm.nih.gov/pubmed/25736223",
+      "image_url": "https://bar.utoronto.ca/GRN_Images/25736223%231.jpg",
+      "grn_title": "Park et al.(The Plant Journal, 2015) CBF Regulon Low Temperature Network",
+      "cyjs_layout": "{\"name\": \"breadthfirst\", \"animate\" : \"true\"}",
+      "tag": "CBF:Gene|CBF1:Gene|CBF2:Gene|CBF3:Gene|Cold Stress:Condition|CZF1:Gene|DREB1b:Gene|DREB1c:Gene|DREB2a:Gene|HSFC1:Gene|qRT-PCR:Experiment|RAV1:Gene|ZAT10:Gene|ZAT12:Gene|ZF:Gene"
+    },
+    {
+      "source_id": 16,
+      "source_name": "25736223#2",
+      "comments": "Topic:Investigating cold regulation of the CBF regulon. Methods include transgenic lines that constitutively overexpressed a truncated version of CBF2, quantitative real time PCR analysis, affymetrix GeneChip hybridization. Data From: Table S6. This GRN is specifically for HSFC1 regulon genes up-regulated by first wave transcription factors.",
+      "date_uploaded": "2019-11-12",
+      "url": "www.ncbi.nlm.nih.gov/pubmed/25736223",
+      "image_url": "https://bar.utoronto.ca/GRN_Images/25736223%232.jpg",
+      "grn_title": "Park et al.(The Plant Journal, 2015) CBF Regulon Low Temperature Network",
+      "cyjs_layout": "{\"name\": \"breadthfirst\", \"animate\" : \"true\"}",
+      "tag": "CBF:Gene|CBF1:Gene|CBF2:Gene|CBF3:Gene|Cold Stress:Condition|CZF1:Gene|DREB1b:Gene|DREB1c:Gene|DREB2a:Gene|HSFC1:Gene|qRT-PCR:Experiment|RAV1:Gene|ZAT10:Gene|ZAT12:Gene|ZF:Gene"
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "wasSuccessful": true,
+  "data": [
+    {
+      "source_id": 14,
+      "source_name": "17237218",
+      "comments": "Flowering Time analysis with genome-wide expression variation analysis (combining eQTL mapping and regulator candidate gene selection) in an RIL population of Arabidopsis thaliana. Data From: manual annotation of Figure 2.",
+      "date_uploaded": "2019-11-12",
+      "url": "www.ncbi.nlm.nih.gov/pubmed/17237218",
+      "image_url": "https://bar.utoronto.ca/GRN_Images/17237218.jpg",
+      "grn_title": "Keurentjes et al. (Proc Nat Acad Sci, 2007) Flowering Time Network",
+      "cyjs_layout": "{\"name\": \"cose\", \"animate\" : \"true\"}",
+      "tag": "eQTL mapping:Experiment|ERECTA:Gene|Flower:Condition|GIGANTEA:Gene|Linkage Mapping:Experiment|RIL:Experiment"
+    },
+    {
+      "source_id": 15,
+      "source_name": "25736223#1",
+      "comments": "Topic:Investigating cold regulation of the CBF regulon. Methods include transgenic lines that constitutively overexpressed a truncated version of CBF2, quantitative real time PCR analysis, affymetrix GeneChip hybridization. Data From: Table S5. This GRN specifically represents COR genes regulated by first wave transcription factors",
+      "date_uploaded": "2019-11-12",
+      "url": "www.ncbi.nlm.nih.gov/pubmed/25736223",
+      "image_url": "https://bar.utoronto.ca/GRN_Images/25736223%231.jpg",
+      "grn_title": "Park et al.(The Plant Journal, 2015) CBF Regulon Low Temperature Network",
+      "cyjs_layout": "{\"name\": \"breadthfirst\", \"animate\" : \"true\"}",
+      "tag": "CBF:Gene|CBF1:Gene|CBF2:Gene|CBF3:Gene|Cold Stress:Condition|CZF1:Gene|DREB1b:Gene|DREB1c:Gene|DREB2a:Gene|HSFC1:Gene|qRT-PCR:Experiment|RAV1:Gene|ZAT10:Gene|ZAT12:Gene|ZF:Gene"
+    },
+    {
+      "source_id": 16,
+      "source_name": "25736223#2",
+      "comments": "Topic:Investigating cold regulation of the CBF regulon. Methods include transgenic lines that constitutively overexpressed a truncated version of CBF2, quantitative real time PCR analysis, affymetrix GeneChip hybridization. Data From: Table S6. This GRN is specifically for HSFC1 regulon genes up-regulated by first wave transcription factors.",
+      "date_uploaded": "2019-11-12",
+      "url": "www.ncbi.nlm.nih.gov/pubmed/25736223",
+      "image_url": "https://bar.utoronto.ca/GRN_Images/25736223%232.jpg",
+      "grn_title": "Park et al.(The Plant Journal, 2015) CBF Regulon Low Temperature Network",
+      "cyjs_layout": "{\"name\": \"breadthfirst\", \"animate\" : \"true\"}",
+      "tag": "CBF:Gene|CBF1:Gene|CBF2:Gene|CBF3:Gene|Cold Stress:Condition|CZF1:Gene|DREB1b:Gene|DREB1c:Gene|DREB2a:Gene|HSFC1:Gene|qRT-PCR:Experiment|RAV1:Gene|ZAT10:Gene|ZAT12:Gene|ZF:Gene"
+    },
+    {
+      "source_id": 17,
+      "source_name": "27923776",
+      "comments": "Y1H Assays Define a Network of Ground Tissue Transcription Factor Interactions. Data From: Figure 2. and supplement",
+      "date_uploaded": "2019-11-12",
+      "url": "www.ncbi.nlm.nih.gov/pubmed/27923776",
+      "image_url": "https://bar.utoronto.ca/GRN_Images/27923776.jpg",
+      "grn_title": "Sparks et al.(Developmental Cell, 2016) SHORTROOT-SCARECROW Transcriptional Cascade Network",
+      "cyjs_layout": "{\"name\": \"breadthfirst\", \"animate\" : \"true\"}",
+      "tag": "DDF1:Gene|qRT-PCR:Experiment|root:Condition|SCARECROW:Gene|SHORTROOT:Gene|Y1H:Experiment|ZML1:Gene"
+    },
+    {
+      "source_id": 18,
+      "source_name": "30616516",
+      "comments": "Existing time-course gene expression data for flower development was used to find dynamical network biomarker to create a gene regulatory network.",
+      "date_uploaded": "2019-11-12",
+      "url": "www.ncbi.nlm.nih.gov/pubmed/30616516",
+      "image_url": "https://bar.utoronto.ca/GRN_Images/30616516.jpg",
+      "grn_title": "Zhang et al. (BMC Plant Biology, 2019) Flowering Development Network",
+      "cyjs_layout": "{\"name\": \"cose\", \"animate\" : \"true\"}",
+      "tag": "APETALA2:Misc|CBC:Misc|CBP20:Gene|DNB:Experiment|Flower:Condition|LEA:Gene|NAP12:Gene|RIE1:Gene"
+    },
+    {
+      "source_id": 19,
+      "source_name": "26247122",
+      "comments": "Transcription factors involved in nitrate signaling and the control of prototypical nitrate-responsive genes. Data From: Figure 1.",
+      "date_uploaded": "2019-11-12",
+      "url": "www.ncbi.nlm.nih.gov/pubmed/26247122",
+      "image_url": "https://bar.utoronto.ca/GRN_Images/26247122-ss.png",
+      "grn_title": "Vidal et al.(Curr Opin Plant Biol., 2015) Aggregated Nitrate Response Network",
+      "cyjs_layout": "{\"name\": \"cose\", \"animate\" : \"true\"}",
+      "tag": "bZIP1:Gene|ChIP:Experiment|expression change:Experiment|NAC4:Gene|Nitrate:Condition|NLP:Gene|NLP7:Gene|root:Condition|TGA1:Gene|TGA4:Gene"
+    },
+    {
+      "source_id": 20,
+      "source_name": "29462363",
+      "comments": "Used enhanced yeast one-hybrid (Y1H) and induced wounds to identify regulatory relationships between TFs and promoters. PLETHORA 3 (PLT3), ENHANCER OF SHOOT REGENERATION 1 (ESR1) and HEAT SHOCK FACTOR B 1 (HSFB1) act as critical nodes, cytokinin and auxin are important horomones. Data From: Supplement",
+      "date_uploaded": "2019-11-12",
+      "url": "www.ncbi.nlm.nih.gov/pubmed/29462363",
+      "image_url": "https://bar.utoronto.ca/GRN_Images/29462363.jpg",
+      "grn_title": "Ikeuchi et al. (Plant Cell Physiol., 2018) Wound Response Network",
+      "cyjs_layout": "{\"name\": \"breadthfirst\", \"animate\" : \"true\"}",
+      "tag": "auxin:Misc|cytokinin:Misc|ESR1:Gene|HSFB1:Gene|PLT3:Gene|tissue:Condition|wound:Condition|Y1H:Experiment"
+    },
+    {
+      "source_id": 21,
+      "source_name": "31595065",
+      "comments": "Cambium cell-specific transcript profiling followed by a combination of transcription factor network and genetic analyses was used to identify 62 new transcription factor genotypes in the Vascular cambium (meristem). Key TFs in cambial cell proliferation and xylem differentiation are, WOX4, SHORT VEGETATIVE PHASE (SVP) and PETAL LOSS (PTL). Data manually annotated from: Figure 2c.",
+      "date_uploaded": "2019-11-12",
+      "url": "www.ncbi.nlm.nih.gov/pubmed/31595065",
+      "image_url": "https://bar.utoronto.ca/GRN_Images/31595065-ss.png",
+      "grn_title": "Zhang et al. (Nature Plants, 2019) Vascular Cambium Development Network",
+      "cyjs_layout": "{\"name\": \"cose\", \"animate\" : \"true\"}",
+      "tag": "KNAT1:Gene|meristem:Condition|PTL:Gene|SVP:Gene|Vascular cambium:Condition|WOX4:Gene|xylem:Condition"
+    },
+    {
+      "source_id": 22,
+      "source_name": "21245844",
+      "comments": "Root stele gene network initially mapped with Y1H and Y2H on highly-enriched TFs (based on root spatiotemporal map) and miRNA-of-interest promoters. In planta confirmation and regulation determined via ChIP and qPCR. GRN derived from figure 2. - Vincent",
+      "date_uploaded": "2019-11-12",
+      "url": "www.ncbi.nlm.nih.gov/pubmed/21245844",
+      "image_url": "https://bar.utoronto.ca/GRN_Images/21245844.jpg",
+      "grn_title": "Brady et al.(Mol Syst Biol, 2011) Root Stele Network",
+      "cyjs_layout": "{\"name\": \"breadthfirst\", \"animate\" : \"true\"}",
+      "tag": "ChIP:Experiment|OBP2:Gene|qPCR:Experiment|REV:Gene|Root Stele:Condition|Y1H:Experiment|Y2H:Experiment"
+    },
+    {
+      "source_id": 23,
+      "source_name": "25533953",
+      "comments": "Authors used Y1H to generate network for how secondary cell wall metabolites (cellulose, lignin, hemicellulose) is synthesized. Used reporter assay to determine key interactions involving E2Fc. Data from Table S2.",
+      "date_uploaded": "2019-11-12",
+      "url": "www.ncbi.nlm.nih.gov/pubmed/25533953",
+      "image_url": "https://bar.utoronto.ca/GRN_Images/25533953.jpg",
+      "grn_title": "Taylor-Teeples et al. (Nature, 2015) Secondary Cell Wall Network",
+      "cyjs_layout": "{\"name\": \"breadthfirst\", \"animate\" : \"true\"}",
+      "tag": "E2Fc:Gene|Secondary Cell Wall:Condition|VND6:Gene|Y1H:Experiment"
+    },
+    {
+      "source_id": 32,
+      "source_name": "31806676",
+      "comments": "Y1H Assays Define a Network of TF-promoter interactions  Data From: Supplemental Data Set 2.",
+      "date_uploaded": "2020-01-11",
+      "url": "www.ncbi.nlm.nih.gov/pubmed/31806676",
+      "image_url": "https://bar.utoronto.ca/GRN_Images/31806676.jpg",
+      "grn_title": "Smit et al.(THE PLANT CELL, 2019) Vascular Development Network",
+      "cyjs_layout": "{\"name\": \"breadthfirst\", \"animate\" : \"true\"}",
+      "tag": "eY1H:Experiment|LBD4:Gene|meristems:Condition|PXY:Gene|TMO6:Gene|vascular:Condition|WOX14:Gene"
+    },
+    {
+      "source_id": 35,
+      "source_name": "25750178",
+      "comments": "The authors collected data from literature and with text mining tools and manual curation. Data from: http://atrm.cbi.pku.edu.cn/",
+      "date_uploaded": "2020-01-14",
+      "url": "www.ncbi.nlm.nih.gov/pubmed/25750178",
+      "image_url": "https://bar.utoronto.ca/GRN_Images/25750178.jpg",
+      "grn_title": "Jin et al.(MOLECULAR BIOLOGY AND EVOLUTION, 2015) Curated Combined Network",
+      "cyjs_layout": "{\"name\": \"breadthfirst\", \"animate\" : \"true\"}",
+      "tag": "curation:Misc|network structure:Misc|wiring preference:Misc"
+    },
+    {
+      "source_id": 36,
+      "source_name": "15486106",
+      "comments": "This is a manually curated network from 2004, more research is required to determine MI term and type as well as validate old experimental evidence and mechanism of action.",
+      "date_uploaded": "2020-01-14",
+      "url": "www.ncbi.nlm.nih.gov/pubmed/15486106",
+      "image_url": "https://bar.utoronto.ca/GRN_Images/15486106.jpg",
+      "grn_title": "Espinosa-Soto et al.(THE PLANT CELL, 2004) Flower Development Network",
+      "cyjs_layout": "{\"name\": \"cose\", \"animate\" : \"true\"}",
+      "tag": "CLF:Gene|EMF1:Gene|flower:Condition|FT:Gene|LFY:Gene|LUG:Gene|TFL1:Gene|UFO:Gene"
+    }
+  ]
+}
