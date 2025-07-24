@@ -7,7 +7,6 @@ from markupsafe import escape
 from api import db
 from api.models.arachis import SampleData as Arachis
 from api.models.cannabis import SampleData as Cannabis
-from api.models.brassica_rapa import SampleData as BrassicaRapa
 from api.models.dna_damage import SampleData as DNADamage
 from api.models.embryo import SampleData as Embryo
 from api.models.germination import SampleData as Germination
@@ -79,9 +78,6 @@ class RNASeqUtils:
         elif species == "arachis":
             if not BARUtils.is_arachis_gene_valid(gene_id):
                 return {"success": False, "error": "Invalid gene id", "error_code": 400}
-        elif species == "brassica_rapa":
-            if not BARUtils.is_brassica_rapa_gene_valid(gene_id):
-                return {"success": False, "error": "Invalid gene id", "error_code": 400}
         elif species == "cannabis":
             if not BARUtils.is_cannabis_gene_valid(gene_id):
                 return {"success": False, "error": "Invalid gene id", "error_code": 400}
@@ -120,11 +116,6 @@ class RNASeqUtils:
             table = Cannabis
             # Example: PK-PFLW
             sample_regex = re.compile(r"^PK-\D{1,4}|MED_CTRL$", re.I)
-
-        elif database == "brassica_rapa":
-            table = BrassicaRapa
-            # Example: E1
-            sample_regex = re.compile(r"^\D{1,2}\d{0,2}|MED_CTRL$", re.I)
 
         elif database == "dna_damage":
             table = DNADamage
