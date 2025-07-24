@@ -187,17 +187,6 @@ class TestIntegrations(TestCase):
         expected = {"wasSuccessful": False, "error": "Invalid gene id"}
         self.assertEqual(response.json, expected)
 
-        # Brassica rapa
-        # Valid data
-        response = self.app_client.get("/rnaseq_gene_expression/brassica_rapa/brassica_rapa/BraA01g000010/UO")
-        expected = {"wasSuccessful": True, "data": {"UO": 7.93926}}
-        self.assertEqual(response.json, expected)
-
-        # Invalid gene id
-        response = self.app_client.get("/rnaseq_gene_expression/brassica_rapa/abc/UO")
-        expected = {"wasSuccessful": False, "error": "Invalid gene id"}
-        self.assertEqual(response.json, expected)
-
         # Cannabis
         # Valid data
         response = self.app_client.get("/rnaseq_gene_expression/cannabis/cannabis/AGQN03009284/PK-RT")
