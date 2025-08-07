@@ -130,6 +130,16 @@ class UtilsUnitTest(TestCase):
         self.assertFalse(result[0])
         self.assertEqual(result[1], expected)
 
+        # eFP Grape Absolute
+        result = eFPUtils.is_efp_input_valid("efp_grape", "grape_developmental", "Absolute", "VIT_00s0120g00060")
+        self.assertTrue(result[0])
+        self.assertIsNone(result[1])
+
+        result = eFPUtils.is_efp_input_valid("efp_grape", "grape_developmental", "Absolute", "Abc")
+        expected = "Gene 1 is invalid."
+        self.assertFalse(result[0])
+        self.assertEqual(result[1], expected)
+
         # eFP Sorghum Absolute
         result = eFPUtils.is_efp_input_valid("efp_sorghum", "Stress_Atlas", "Absolute", "Sobic.001G000100")
         self.assertTrue(result[0])
