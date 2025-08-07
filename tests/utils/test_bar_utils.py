@@ -37,6 +37,14 @@ class UtilsUnitTest(TestCase):
         result = BARUtils.is_brassica_rapa_gene_valid("abc")
         self.assertFalse(result)
 
+    def test_is_grape_gene_valid(self):
+        result = BARUtils.is_grape_gene_valid("VIT_00s0120g00060")
+        self.assertTrue(result)
+
+        # Invalid gene
+        result = BARUtils.is_grape_gene_valid("abc")
+        self.assertFalse(result)
+
     def test_is_kalanchoe_gene_valid(self):
         # Valid gene
         result = BARUtils.is_kalanchoe_gene_valid("Kaladp0001s0001")

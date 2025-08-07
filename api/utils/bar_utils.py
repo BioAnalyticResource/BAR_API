@@ -34,6 +34,17 @@ class BARUtils:
             return False
 
     @staticmethod
+    def is_grape_gene_valid(gene):
+        """This function verifies if grape gene is valid: VIT_00s0120g00060
+        :param gene:
+        :return:
+        """
+        if re.search(r"^VIT_\d{0,3}\D\d{0,5}g\d{0,6}$", gene, re.I):
+            return True
+        else:
+            return False
+
+    @staticmethod
     def is_poplar_gene_valid(gene):
         """This function verifies if Poplar v3 gene is valid
         :param gene:
