@@ -24,6 +24,7 @@ class eFPImageList(Resource):
             "efp_arabidopsis",
             "efp_arachis",
             "efp_cannabis",
+            "efp_grape",
             "efp_maize",
             "efp_rice",
             "efp_sorghum",
