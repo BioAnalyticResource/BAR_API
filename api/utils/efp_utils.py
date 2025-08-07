@@ -36,6 +36,7 @@ class eFPUtils:
             "efp_arabidopsis",
             "efp_arachis",
             "efp_cannabis",
+            "efp_grape",
             "efp_maize",
             "efp_rice",
             "efp_sorghum",
@@ -80,6 +81,15 @@ class eFPUtils:
 
             if mode == "Compare":
                 if not BARUtils.is_cannabis_gene_valid(gene_2):
+                    return False, "Gene 2 is invalid."
+
+        if efp == "efp_grape":
+            # Validate gene Ids
+            if not BARUtils.is_grape_gene_valid(gene_1):
+                return False, "Gene 1 is invalid."
+
+            if mode == "Compare":
+                if not BARUtils.is_grape_gene_valid(gene_2):
                     return False, "Gene 2 is invalid."
 
         if efp == "efp_maize":
