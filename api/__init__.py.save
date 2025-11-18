@@ -6,6 +6,8 @@ from flask_caching import Cache
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import os
+from api.resources.efp_proxy import efp_proxy
+bar_api.add_namespace(efp_proxy)
 
 
 def create_app():
@@ -64,7 +66,6 @@ def create_app():
     from api.resources.efp_image import efp_image
     from api.resources.fastpheno import fastpheno
     from api.resources.llama3 import llama3
-    from api.resources.efp_proxy import efp_proxy_ns
 
     bar_api.add_namespace(gene_information)
     bar_api.add_namespace(rnaseq_gene_expression)
@@ -79,7 +80,6 @@ def create_app():
     bar_api.add_namespace(efp_image)
     bar_api.add_namespace(fastpheno)
     bar_api.add_namespace(llama3)
-    bar_api.add_namespace(efp_proxy_ns)
     bar_api.init_app(bar_app)
     return bar_app
 
