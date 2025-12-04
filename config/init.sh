@@ -9,13 +9,13 @@ DB_PASS="root"
 # Load the data
 echo "Welcome to the BAR API. Running init!"
 
+# Build simple eFP databases dynamically so we do not need static SQL dumps
+python3 ./scripts/bootstrap_simple_efp_dbs.py --user "$DB_USER" --password "$DB_PASS"
+
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/annotations_lookup.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/arabidopsis_ecotypes.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/arachis.sql
-mysql -u $DB_USER -p$DB_PASS < ./config/databases/cannabis.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/canola_nssnp.sql
-mysql -u $DB_USER -p$DB_PASS < ./config/databases/dna_damage.sql
-mysql -u $DB_USER -p$DB_PASS < ./config/databases/embryo.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/eplant2.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/eplant_poplar.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/eplant_rice.sql

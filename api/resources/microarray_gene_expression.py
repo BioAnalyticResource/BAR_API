@@ -2,10 +2,13 @@ from flask_restx import Namespace, Resource
 from markupsafe import escape
 from api import db
 from api.models.annotations_lookup import AtAgiLookup
-from api.models.arabidopsis_ecotypes import SampleData as EcotypesSampleData
+from api.models.efp_dynamic import SIMPLE_EFP_SAMPLE_MODELS
 from api.utils.bar_utils import BARUtils
 from api.utils.world_efp_utils import WorldeFPUtils
 import json
+
+# pull the dynamic model so this resource stays in sync with the schema catalog
+EcotypesSampleData = SIMPLE_EFP_SAMPLE_MODELS["arabidopsis_ecotypes"]
 
 microarray_gene_expression = Namespace(
     "Microarray Gene Expression",

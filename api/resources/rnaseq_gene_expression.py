@@ -2,26 +2,10 @@ import re
 from flask_restx import Namespace, Resource, fields
 from flask import request
 from api.utils.bar_utils import BARUtils
+from api.services.efp_data import query_efp_database_dynamic
+from api.models.efp_schemas import SIMPLE_EFP_DATABASE_SCHEMAS
 from marshmallow import Schema, ValidationError, fields as marshmallow_fields
 from markupsafe import escape
-from api import db
-from api.models.arachis import SampleData as Arachis
-from api.models.cannabis import SampleData as Cannabis
-from api.models.dna_damage import SampleData as DNADamage
-from api.models.embryo import SampleData as Embryo
-from api.models.germination import SampleData as Germination
-from api.models.kalanchoe import SampleData as Kalanchoe
-from api.models.klepikova import SampleData as Klepikova
-from api.models.phelipanche import SampleData as Phelipanche
-from api.models.physcomitrella_db import SampleData as Physcomitrella
-from api.models.selaginella import SampleData as Selaginella
-from api.models.shoot_apex import SampleData as ShootApex
-from api.models.silique import SampleData as Silique
-from api.models.single_cell import SampleData as SingleCell
-from api.models.strawberry import SampleData as Strawberry
-from api.models.striga import SampleData as Striga
-from api.models.triphysaria import SampleData as Triphysaria
-from sqlalchemy import and_
 
 rnaseq_gene_expression = Namespace(
     "RNA-Seq Gene Expression",
@@ -29,7 +13,27 @@ rnaseq_gene_expression = Namespace(
     path="/rnaseq_gene_expression",
 )
 
-# I think this is only needed for Swagger UI POST
+# validators stay here so schema metadata can reference them
+SPECIES_VALIDATORS = {
+    "arabidopsis": BARUtils.is_arabidopsis_gene_valid,
+    "arachis": BARUtils.is_arachis_gene_valid,
+    "cannabis": BARUtils.is_cannabis_gene_valid,
+    "kalanchoe": BARUtils.is_kalanchoe_gene_valid,
+    "selaginella": BARUtils.is_selaginella_gene_valid,
+    "strawberry": BARUtils.is_strawberry_gene_valid,
+    "striga": BARUtils.is_striga_gene_valid,
+    "triphysaria": BARUtils.is_triphysaria_gene_valid,
+    "phelipanche": BARUtils.is_phelipanche_gene_valid,
+    "physcomitrella": BARUtils.is_physcomitrella_gene_valid,
+}
+
+# metadata mirrors the schema catalog so validation stays in sync
+DATABASE_METADATA = {
+    name: spec.get("metadata") or {}
+    for name, spec in SIMPLE_EFP_DATABASE_SCHEMAS.items()
+}
+
+# this is only needed for swagger ui post examples
 gene_expression_request_fields = rnaseq_gene_expression.model(
     "GeneExpression",
     {
@@ -48,7 +52,7 @@ gene_expression_request_fields = rnaseq_gene_expression.model(
 )
 
 
-# Validation is done in a different way to keep things simple
+# validation is done manually to keep things simple
 class RNASeqSchema(Schema):
     species = marshmallow_fields.String(required=True)
     database = marshmallow_fields.String(required=True)
@@ -59,146 +63,43 @@ class RNASeqSchema(Schema):
 class RNASeqUtils:
     @staticmethod
     def get_data(species, database, gene_id, sample_ids=None):
-        """This function is used to query the database for gene expression
-        :param species: name of species
-        :param database: name of BAR database
-        :param gene_id: gene id in the data_probeset column
-        :param sample_ids: sample ids in the data_bot_id column
-        :return: dict gene expression data
-        """
+        """query the database for gene expression values"""
         if sample_ids is None:
             sample_ids = []
-        data = {}
+        data: dict = {}
 
-        # Set species and check gene ID format
+        # validate species selection and gene id format
         species = species.lower()
-        if species == "arabidopsis":
-            if not BARUtils.is_arabidopsis_gene_valid(gene_id):
-                return {"success": False, "error": "Invalid gene id", "error_code": 400}
-        elif species == "arachis":
-            if not BARUtils.is_arachis_gene_valid(gene_id):
-                return {"success": False, "error": "Invalid gene id", "error_code": 400}
-        elif species == "cannabis":
-            if not BARUtils.is_cannabis_gene_valid(gene_id):
-                return {"success": False, "error": "Invalid gene id", "error_code": 400}
-        elif species == "kalanchoe":
-            if not BARUtils.is_kalanchoe_gene_valid(gene_id):
-                return {"success": False, "error": "Invalid gene id", "error_code": 400}
-        elif species == "selaginella":
-            if not BARUtils.is_selaginella_gene_valid(gene_id):
-                return {"success": False, "error": "Invalid gene id", "error_code": 400}
-        elif species == "strawberry":
-            if not BARUtils.is_strawberry_gene_valid(gene_id):
-                return {"success": False, "error": "Invalid gene id", "error_code": 400}
-        elif species == "striga":
-            if not BARUtils.is_striga_gene_valid(gene_id):
-                return {"success": False, "error": "Invalid gene id", "error_code": 400}
-        elif species == "triphysaria":
-            if not BARUtils.is_triphysaria_gene_valid(gene_id):
-                return {"success": False, "error": "Invalid gene id", "error_code": 400}
-        elif species == "phelipanche":
-            if not BARUtils.is_phelipanche_gene_valid(gene_id):
-                return {"success": False, "error": "Invalid gene id", "error_code": 400}
-        elif species == "physcomitrella":
-            if not BARUtils.is_physcomitrella_gene_valid(gene_id):
-                return {"success": False, "error": "Invalid gene id", "error_code": 400}
-        else:
+        gene_validator = SPECIES_VALIDATORS.get(species)
+        if not gene_validator:
             return {"success": False, "error": "Invalid species", "error_code": 400}
 
-        # Set database
         database = database.lower()
-        if database == "arachis":
-            table = Arachis
-            # Example: Pattee_8_Seed
-            sample_regex = re.compile(r"^[\D\d_]{1,30}|MED_CTRL$", re.I)
+        db_metadata = DATABASE_METADATA.get(database, {})
+        db_species = db_metadata.get("species")
+        if db_species and db_species != species:
+            return {"success": False, "error": "Invalid species", "error_code": 400}
 
-        elif database == "cannabis":
-            table = Cannabis
-            # Example: PK-PFLW
-            sample_regex = re.compile(r"^PK-\D{1,4}|MED_CTRL$", re.I)
+        if not gene_validator(gene_id):
+            return {"success": False, "error": "Invalid gene id", "error_code": 400}
 
-        elif database == "dna_damage":
-            table = DNADamage
-            # Another insane regex!
-            sample_regex = re.compile(r"^\D{1,3}.{1,30}_plus_Y|\D{1,3}.{1,30}_minus_Y|Med_CTRL$", re.I)
-
-        elif database == "embryo":
-            table = Embryo
-            sample_regex = re.compile(r"^\D{1,3}_\d$|Med_CTRL$", re.I)
-
-        elif database == "germination":
-            table = Germination
-            sample_regex = re.compile(r"^\d{1,3}\D{1,4}_\d{1,3}|harvest_\d|Med_CTRL$", re.I)
-
-        elif database == "kalanchoe":
-            table = Kalanchoe
-            # Example: FRL_Dusk_rep3
-            sample_regex = re.compile(r"^\D{1,4}_\D{1,5}_rep\d|MED_CTRL$", re.I)
-
-        elif database == "klepikova":
-            table = Klepikova
-            sample_regex = re.compile(r"^SRR\d{1,9}|Med_CTRL$", re.I)
-
-        elif database == "phelipanche":
-            table = Phelipanche
-            # Example: Pre-Emergence_from_Soil_Shoots
-            sample_regex = re.compile(r"^[a-z_-]{1,35}|MED_CTRL$", re.I)
-
-        elif database == "physcomitrella_db":
-            table = Physcomitrella
-            # Example: Sporophyte_S1
-            sample_regex = re.compile(r"^[a-z_123]{1,15}|MED_CTRL$", re.I)
-
-        elif database == "selaginella":
-            table = Selaginella
-            # Insane regex!
-            sample_regex = re.compile(r"^[\D\d]{1,33}|MED_CTRL$", re.I)
-
-        elif database == "shoot_apex":
-            table = ShootApex
-            sample_regex = re.compile(r"^\D{1,5}\d{0,2}|MED_CTRL$", re.I)
-
-        elif database == "silique":
-            table = Silique
-            # Insane regex! Needs work
-            sample_regex = re.compile(r"^\d{1,3}_dap.{1,58}_R1_001|Med_CTRL$", re.I)
-
-        elif database == "single_cell":
-            table = SingleCell
-            # Example: cluster0_WT1.ExprMean
-            sample_regex = re.compile(r"^\D+\d+_WT\d+.ExprMean|MED_CTRL$", re.I)
-
-        elif database == "strawberry":
-            table = Strawberry
-            # Example: Perianth_5-6_A
-            sample_regex = re.compile(r"^\D{1,12}_.{1,8}_\D{1,2}|MED_CTRL$", re.I)
-
-        elif database == "striga":
-            table = Striga
-            # Example: Reproductive_Structures
-            sample_regex = re.compile(r"^\D{1,35}|MED_CTRL$", re.I)
-
-        elif database == "triphysaria":
-            table = Triphysaria
-            # Example: Roots_in_Late_Post_Attachment
-            sample_regex = re.compile(r"^[a-z_]{1,35}|MED_CTRL$", re.I)
-
-        else:
+        if database not in DATABASE_METADATA:
             return {"success": False, "error": "Invalid database", "error_code": 400}
 
-        # Now query the database
-        # We are querying only some columns because full indexes are made on some columns, now the whole table
-        if len(sample_ids) == 0 or sample_ids is None:
-            rows = db.session.execute(
-                db.select(table.data_probeset_id, table.data_bot_id, table.data_signal).where(
-                    table.data_probeset_id == gene_id
-                )
-            ).all()
-            for row in rows:
-                data[row[1]] = row[2]
+        # sample validation is driven by metadata so regex updates live in one place
+        sample_pattern = db_metadata.get("sample_regex")
+        if not sample_pattern:
+            return {
+                "success": False,
+                "error": f"Sample validation metadata missing for database {database}",
+                "error_code": 500,
+            }
 
-        else:
-            # Validate all samples
+        regex_flags = re.I if db_metadata.get("sample_regex_case_insensitive", True) else 0
+        sample_regex = re.compile(sample_pattern, regex_flags)
+
+        # validate samples if the caller provided any
+        if sample_ids:
             for sample_id in sample_ids:
                 if not sample_regex.search(sample_id):
                     return {
@@ -207,16 +108,30 @@ class RNASeqUtils:
                         "error_code": 400,
                     }
 
-            rows = db.session.execute(
-                db.select(table.data_probeset_id, table.data_bot_id, table.data_signal).where(
-                    and_(
-                        table.data_probeset_id == gene_id,
-                        table.data_bot_id.in_(sample_ids),
-                    )
-                )
-            ).all()
-            for row in rows:
-                data[row[1]] = row[2]
+        query_result = query_efp_database_dynamic(
+            database,
+            gene_id,
+            sample_ids=sample_ids or None,
+            allow_empty_results=True,
+            sample_case_insensitive=db_metadata.get("sample_case_insensitive_query", True),
+        )
+
+        if not query_result["success"]:
+            return {
+                "success": False,
+                "error": query_result.get("error", "Database query failed"),
+                "error_code": query_result.get("error_code", 500),
+            }
+
+        for entry in query_result.get("data", []):
+            sample_name = entry.get("name")
+            value = entry.get("value")
+            if sample_name is None:
+                continue
+            try:
+                data[sample_name] = float(value)
+            except (TypeError, ValueError):
+                data[sample_name] = value
 
         return {"success": True, "data": data}
 
@@ -225,10 +140,10 @@ class RNASeqUtils:
 class PostRNASeqExpression(Resource):
     @rnaseq_gene_expression.expect(gene_expression_request_fields)
     def post(self):
-        """This end point returns gene expression data for a single gene and multiple samples."""
+        """return gene expression data for a single gene and a list of samples"""
         json_data = request.get_json()
 
-        # Validate json
+        # validate json payload
         try:
             json_data = RNASeqSchema().load(json_data)
         except ValidationError as err:
@@ -242,7 +157,7 @@ class PostRNASeqExpression(Resource):
         results = RNASeqUtils.get_data(species, database, gene_id, sample_ids)
 
         if results["success"]:
-            # Return results if there are data
+            # return results when rows exist
             if len(results["data"]) > 0:
                 return BARUtils.success_exit(results["data"])
             else:
@@ -257,8 +172,8 @@ class GetRNASeqGeneExpression(Resource):
     @rnaseq_gene_expression.param("database", _in="path", default="single_cell")
     @rnaseq_gene_expression.param("gene_id", _in="path", default="At1g01010")
     def get(self, species="", database="", gene_id=""):
-        """This end point returns RNA-Seq gene expression data"""
-        # Variables
+        """return rna-seq gene expression data"""
+        # sanitize path inputs
         species = escape(species)
         database = escape(database)
         gene_id = escape(gene_id)
@@ -266,7 +181,7 @@ class GetRNASeqGeneExpression(Resource):
         results = RNASeqUtils.get_data(species, database, gene_id)
 
         if results["success"]:
-            # Return results if there are data
+            # return results when rows exist
             if len(results["data"]) > 0:
                 return BARUtils.success_exit(results["data"])
             else:
@@ -282,8 +197,8 @@ class GetRNASeqGeneExpressionSample(Resource):
     @rnaseq_gene_expression.param("gene_id", _in="path", default="At1g01010")
     @rnaseq_gene_expression.param("sample_id", _in="path", default="cluster0_WT1.ExprMean")
     def get(self, species="", database="", gene_id="", sample_id=""):
-        """This end point returns RNA-Seq gene expression data"""
-        # Variables
+        """return rna-seq gene expression for a specific sample"""
+        # sanitize path inputs
         species = escape(species)
         database = escape(database)
         gene_id = escape(gene_id)
@@ -292,7 +207,7 @@ class GetRNASeqGeneExpressionSample(Resource):
         results = RNASeqUtils.get_data(species, database, gene_id, [sample_id])
 
         if results["success"]:
-            # Return results if there are data
+            # return results when rows exist
             if len(results["data"]) > 0:
                 return BARUtils.success_exit(results["data"])
             else:
