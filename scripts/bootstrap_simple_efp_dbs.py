@@ -18,8 +18,10 @@ def _default_host() -> str:
         return os.environ["DB_HOST"]
     if os.environ.get("MYSQL_HOST"):
         return os.environ["MYSQL_HOST"]
-    # inside docker compose the db host is bar_mysqldb; locally it is usually localhost
-    return "BAR_mysqldb" if os.environ.get("CI") else "localhost"
+    # GitHub Actions CI uses localhost; Docker Compose uses bar_mysqldb
+    # CI env var is set in GitHub Actions, but not DB_HOST
+    # In Docker, DB_HOST should be explicitly set to BAR_mysqldb
+    return "localhost"
 
 
 def parse_args() -> argparse.Namespace:

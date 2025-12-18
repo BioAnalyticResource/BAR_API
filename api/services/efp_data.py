@@ -117,8 +117,9 @@ def _iter_engine_candidates(database: str) -> Iterable[Tuple[str, Engine, bool]]
     db_path = DATABASE_DIR / DYNAMIC_DATABASE_SCHEMAS[database]["filename"]
     if has_app_context():
         try:
-            bound_engine = db.get_engine(bind=database)
-            yield ("sqlalchemy_bind", bound_engine, False)
+            bound_engine = db.engines.get(database)
+            if bound_engine:
+                yield ("sqlalchemy_bind", bound_engine, False)
         except Exception as exc:
             print(f"[warn] unable to load sqlalchemy bind for {database}: {exc}")
 
