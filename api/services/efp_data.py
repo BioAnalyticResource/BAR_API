@@ -112,7 +112,34 @@ def agi_to_probset(gene_id: str) -> Optional[str]:
 
 
 def _iter_engine_candidates(database: str) -> Iterable[Tuple[str, Engine, bool]]:
-    """yield engine candidates (bind first, then sqlite mirror)"""
+    """
+    Yield database engine candidates with MySQL priority and SQLite fallback.
+
+    This function enables dual-mode operation:
+    - Production/CI: Uses MySQL via Flask-SQLAlchemy binds
+    - Local development: Falls back to SQLite mirror files
+
+    Priority order:
+    1. Flask-SQLAlchemy bind (MySQL) - if Flask app context exists
+    2. SQLite mirror file - if exists in config/databases/
+
+    :param database: Database name (e.g., 'cannabis', 'dna_damage')
+    :type database: str
+    :yields: Tuples of (engine_type, engine, is_sqlite) where:
+        - engine_type: 'sqlalchemy_bind' or 'sqlite_mirror'
+        - engine: SQLAlchemy Engine object
+        - is_sqlite: True if SQLite, False if MySQL
+    :rtype: Iterator[Tuple[str, sqlalchemy.engine.Engine, bool]]
+
+    Example::
+
+        for engine_type, engine, is_sqlite in _iter_engine_candidates('cannabis'):
+            try:
+                result = engine.execute('SELECT * FROM sample_data LIMIT 1')
+                break  # Found working engine
+            except:
+                continue  # Try next engine
+    """
     # prefer live mysql binds but fall back to sqlite mirrors when needed
     db_path = DATABASE_DIR / DYNAMIC_DATABASE_SCHEMAS[database]["filename"]
     if has_app_context():

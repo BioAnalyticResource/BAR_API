@@ -16,7 +16,15 @@ from api.models.efp_schemas import SIMPLE_EFP_DATABASE_SCHEMAS
 
 
 def _column_type(column_spec):
-    """Return the MySQL column type for a schema entry."""
+    """
+    Convert a column specification dictionary to a SQLAlchemy MySQL column type.
+
+    :param column_spec: Dictionary containing column metadata from schema definition
+    :type column_spec: Dict[str, Any]
+    :return: SQLAlchemy column type object (VARCHAR, INTEGER, FLOAT, or TEXT)
+    :rtype: sqlalchemy.types.TypeEngine
+    :raises ValueError: If column type is not one of: string, integer, float, text
+    """
     col_type = column_spec.get("type")
     if col_type == "string":
         return VARCHAR(column_spec["length"])
@@ -31,6 +39,22 @@ def _column_type(column_spec):
 
 
 def _build_table(metadata: MetaData, spec, db_name: str) -> Table:
+    """
+    Build a SQLAlchemy Table object from a schema specification.
+
+    Creates columns with proper types, constraints, defaults, and indexes based on
+    the schema definition. This Table object can be used to generate CREATE TABLE
+    SQL statements.
+
+    :param metadata: SQLAlchemy MetaData object to attach the table to
+    :type metadata: sqlalchemy.schema.MetaData
+    :param spec: Database schema specification from SIMPLE_EFP_DATABASE_SCHEMAS
+    :type spec: Dict[str, Any]
+    :param db_name: Name of the database (used for index naming)
+    :type db_name: str
+    :return: SQLAlchemy Table object with all columns and indexes defined
+    :rtype: sqlalchemy.schema.Table
+    """
     columns = []
     for column in spec["columns"]:
         kwargs = {"nullable": column.get("nullable", True)}
@@ -53,6 +77,22 @@ def _build_table(metadata: MetaData, spec, db_name: str) -> Table:
 
 
 def _build_url(host: str, port: int, user: str, password: str, database: str | None = None) -> URL:
+    """
+    Build a SQLAlchemy database URL for MySQL connections.
+
+    :param host: MySQL server hostname (e.g., 'localhost', 'BAR_mysqldb')
+    :type host: str
+    :param port: MySQL server port number (typically 3306)
+    :type port: int
+    :param user: MySQL username for authentication
+    :type user: str
+    :param password: MySQL password for authentication
+    :type password: str
+    :param database: Optional database name to connect to; if None, connects to server without selecting a database
+    :type database: str or None
+    :return: SQLAlchemy URL object for mysql+mysqldb connections
+    :rtype: sqlalchemy.engine.URL
+    """
     return URL.create(
         drivername="mysql+mysqldb",
         username=user,
@@ -64,12 +104,43 @@ def _build_url(host: str, port: int, user: str, password: str, database: str | N
 
 
 def ensure_database(server_url: URL, db_name: str, charset: str) -> None:
+    """
+    Create a MySQL database if it doesn't already exist.
+
+    Executes CREATE DATABASE IF NOT EXISTS with the specified character set.
+    Safe to call multiple times - will not error if database already exists.
+
+    :param server_url: SQLAlchemy URL for MySQL server connection (without database selected)
+    :type server_url: sqlalchemy.engine.URL
+    :param db_name: Name of the database to create
+    :type db_name: str
+    :param charset: MySQL character set (e.g., 'latin1', 'utf8mb4')
+    :type charset: str
+    :return: None
+    :rtype: None
+    """
     server_engine = create_engine(server_url)
     with server_engine.begin() as conn:
         conn.execute(text(f"CREATE DATABASE IF NOT EXISTS `{db_name}` DEFAULT CHARACTER SET {charset}"))
 
 
 def ensure_schema(db_url: URL, spec, db_name: str) -> Dict[str, object]:
+    """
+    Create database tables and insert seed data if the table is empty.
+
+    Uses SQLAlchemy's metadata.create_all() to generate CREATE TABLE statements
+    from the schema specification. If seed_rows are defined in the spec and the
+    table is empty, inserts the seed data.
+
+    :param db_url: SQLAlchemy URL for the specific database connection
+    :type db_url: sqlalchemy.engine.URL
+    :param spec: Database schema specification from SIMPLE_EFP_DATABASE_SCHEMAS
+    :type spec: Dict[str, Any]
+    :param db_name: Name of the database (used for table naming)
+    :type db_name: str
+    :return: Dictionary with 'table' (table name) and 'seeded_rows' (count of inserted rows)
+    :rtype: Dict[str, object]
+    """
     metadata = MetaData()
     table = _build_table(metadata, spec, db_name)
     engine = create_engine(db_url)
@@ -97,8 +168,45 @@ def bootstrap_simple_efp_databases(
     databases: Iterable[str] | None = None,
 ) -> List[Dict[str, object]]:
     """
-    Ensure that all requested simple eFP databases exist in MySQL and their schema
-    matches the definitions in SIMPLE_EFP_DATABASE_SCHEMAS.
+    Bootstrap simple eFP databases in MySQL from schema definitions.
+
+    This is the main entry point for creating eFP databases. For each database:
+    1. Creates the database if it doesn't exist
+    2. Creates the sample_data table with schema from SIMPLE_EFP_DATABASE_SCHEMAS
+    3. Inserts seed rows if the table is empty and seed_rows are defined
+
+    Used by:
+    - scripts/bootstrap_simple_efp_dbs.py (CLI tool)
+    - config/init.sh (Docker/CI initialization)
+    - api/resources/efp_proxy.py (HTTP bootstrap endpoint)
+
+    :param host: MySQL server hostname (e.g., 'localhost', 'BAR_mysqldb' for Docker)
+    :type host: str
+    :param port: MySQL server port number (typically 3306)
+    :type port: int
+    :param user: MySQL username with CREATE DATABASE privileges
+    :type user: str
+    :param password: MySQL password for authentication
+    :type password: str
+    :param databases: Optional list of specific databases to bootstrap; if None, bootstraps all databases in SIMPLE_EFP_DATABASE_SCHEMAS
+    :type databases: Iterable[str] or None
+    :return: List of result dictionaries, each containing 'database' (name), 'table' (table name), and 'seeded_rows' (count)
+    :rtype: List[Dict[str, object]]
+    :raises ValueError: If a requested database is not defined in SIMPLE_EFP_DATABASE_SCHEMAS
+
+    Example::
+
+        results = bootstrap_simple_efp_databases(
+            host='localhost',
+            port=3306,
+            user='root',
+            password='password',
+            databases=['cannabis', 'dna_damage']
+        )
+        # Returns: [
+        #     {'database': 'cannabis', 'table': 'sample_data', 'seeded_rows': 1},
+        #     {'database': 'dna_damage', 'table': 'sample_data', 'seeded_rows': 1}
+        # ]
     """
 
     results: List[Dict[str, object]] = []
