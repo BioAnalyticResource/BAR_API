@@ -28,7 +28,7 @@ jsonschema-specifications==2025.9.1
 limits==5.6.0
 markdown-it-py==4.0.0
 MarkupSafe==3.0.3
-marshmallow==4.1.1
+marshmallow==4.1.2
 mccabe==0.7.0
 mdurl==0.1.2
 mypy_extensions==1.1.0
