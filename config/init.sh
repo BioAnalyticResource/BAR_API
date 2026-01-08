@@ -10,7 +10,13 @@ DB_PASS="root"
 echo "Welcome to the BAR API. Running init!"
 
 # Build simple eFP databases dynamically so we do not need static SQL dumps
+echo "Bootstrapping simple eFP databases..."
 python3 ./scripts/bootstrap_simple_efp_dbs.py --user "$DB_USER" --password "$DB_PASS"
+if [ $? -ne 0 ]; then
+    echo "ERROR: Failed to bootstrap simple eFP databases"
+    exit 1
+fi
+echo "Successfully bootstrapped simple eFP databases"
 
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/annotations_lookup.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/arabidopsis_ecotypes.sql
