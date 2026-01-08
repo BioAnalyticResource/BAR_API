@@ -18,10 +18,11 @@ from api.services.efp_data import query_efp_database_dynamic
 # 1. /values talks to the live bar eplant cgi
 # 2. /expression reads from our local or remote databases using one shared query
 efp_proxy_ns = Namespace(
-    'efp Proxy', 
+    'efp Proxy',
     description='Expression data retrieveal service from BAR eplant databse.',
     path='/efp_proxy',
 )
+
 
 # normalize optional samples from the query string so legacy formats still work
 def parse_samples_query_values(raw_values: Optional[List[str]]) -> Optional[List[str]]:
@@ -55,6 +56,7 @@ def parse_samples_query_values(raw_values: Optional[List[str]]) -> Optional[List
             return split_values
 
     return [candidate]
+
 
 # fetch gene expression data from the external bar eplant api
 # either use the samples provided or auto-fill the list before calling the cgi
@@ -90,10 +92,10 @@ def fetch_efp_data(datasource, gene_id, samples=None):
     url_called = response.url
 
     # check if the request failed with an http error code
-    if not response.ok: 
+    if not response.ok:
         # propagate error status so clients see the same http code the cgi returned
         return {"success": False, "error": f"bar returned {response.status_code} for url {url_called}"}, response.status_code
-    
+
     # attempt to parse json response and extract the data array
     try:
         data = response.json()
@@ -112,7 +114,6 @@ def fetch_efp_data(datasource, gene_id, samples=None):
         ]
         retry_resp = requests.get(base_url, params=retry_params)
         # even if this second call fails, we still return an empty array to the caller
-        retry_url = retry_resp.url
 
         try:
             retry_data = retry_resp.json()
@@ -136,6 +137,7 @@ def fetch_efp_data(datasource, gene_id, samples=None):
         "data": data  # payload mirrors what the real cgi would have returned
     }
 
+
 # load all available samples for a datasource using the metadata json and fallbacks
 def get_all_samples_for_view(datasource: str):
     # point at the scraped metadata json so tests resolve it from the repo
@@ -145,15 +147,14 @@ def get_all_samples_for_view(datasource: str):
     if datasource == "root_Schaefer_lab":
         # this dataset is missing from the scraped metadata so we pin a curated set
         print("[info] using hardcoded fallback samples for root_Schaefer_lab")
-        return ["WTCHG_203594_01","WTCHG_203594_05","WTCHG_203839_04","WTCHG_203594_03","WTCHG_203594_07","WTCHG_203839_06","WTCHG_203839_01","WTCHG_203594_10","WTCHG_203839_08","WTCHG_129187_01","WTCHG_129189_01","WTCHG_129190_01","WTCHG_129187_03","WTCHG_129189_03","WTCHG_129190_03","WTCHG_129187_05","WTCHG_129189_05","WTCHG_129187_07","WTCHG_131167_01","WTCHG_125416_01","WTCHG_129190_05","WTCHG_131167_03","WTCHG_125416_03","WTCHG_129190_07","WTCHG_131167_05","WTCHG_125416_05","WTCHG_129189_07"]
-    
+        return ["WTCHG_203594_01", "WTCHG_203594_05", "WTCHG_203839_04", "WTCHG_203594_03", "WTCHG_203594_07", "WTCHG_203839_06", "WTCHG_203839_01", "WTCHG_203594_10", "WTCHG_203839_08", "WTCHG_129187_01", "WTCHG_129189_01", "WTCHG_129190_01", "WTCHG_129187_03", "WTCHG_129189_03", "WTCHG_129190_03", "WTCHG_129187_05", "WTCHG_129189_05", "WTCHG_129187_07", "WTCHG_131167_01", "WTCHG_125416_01", "WTCHG_129190_05", "WTCHG_131167_03", "WTCHG_125416_03", "WTCHG_129190_07", "WTCHG_131167_05", "WTCHG_125416_05", "WTCHG_129189_07"]
+
     if datasource == "atgenexp_stress":
         # atgenexp stress views still rely on the json metadata so we keep a minimal fallback
         print("[info] using fallback arabidopsis samples from json spec")
-        return ["AtGen_6_0011", "AtGen_6_0012", "AtGen_6_0021", "AtGen_6_0022", 
-                "AtGen_6_0711", "AtGen_6_0712", "AtGen_6_0721", "AtGen_6_0722"
-        ]
-    
+        return ["AtGen_6_0011", "AtGen_6_0012", "AtGen_6_0021", "AtGen_6_0022",
+                "AtGen_6_0711", "AtGen_6_0712", "AtGen_6_0721", "AtGen_6_0722"]
+
     # check if metadata json file exists
     if not os.path.exists(path):
         # repo clones without fixtures can still run, just without auto-sample loading
@@ -167,7 +168,7 @@ def get_all_samples_for_view(datasource: str):
     except Exception as e:
         print(f"[error] unable to read json: {e}")
         return []
-    
+
     # search through all species and views to find a matching datasource
     for species, obj in metadata.items():
         views = obj.get("data", {}).get("views", {})
@@ -181,7 +182,7 @@ def get_all_samples_for_view(datasource: str):
                         samples.extend(treatment_samples)
                 print(f"[info] found {len(samples)} samples in json for {datasource}")
                 return sorted(set(samples))
-    
+
     print(f"[warn] datasource {datasource} not found in json")
     return []
 
@@ -201,6 +202,7 @@ def _infer_default_db_credentials():
             "password": url.password or "",
         }
     raise ValueError("No SQLAlchemy bind configured for the simple eFP databases.")
+
 
 # rest endpoint that proxies requests to the external bar eplant api
 # supports urls like /efp_proxy/values/atgenexp_stress/AT1G01010
@@ -245,6 +247,8 @@ class EFPValues(Resource):
 
         # delegate to fetch_efp_data which auto-loads samples when none provided
         return fetch_efp_data(database, gene_id, samples=samples_arg)
+
+
 # rest endpoint that uses the static schema catalog to query local sqlite databases
 # supports urls like /efp_proxy/expression/sample_data/261585_at
 @efp_proxy_ns.route("/expression/<string:database>/<string:gene_id>")
@@ -338,6 +342,7 @@ class EFPSimpleBootstrap(Resource):
             "models": model_info,
             "note": "Simple eFP databases are materialized in MySQL while SQLAlchemy models remain dynamic.",
         }, 200
+
 
 efp_proxy_ns.add_resource(EFPValues, '/values/<string:database>/<string:gene_id>')
 efp_proxy_ns.add_resource(EFPExpression, '/expression/<string:database>/<string:gene_id>')

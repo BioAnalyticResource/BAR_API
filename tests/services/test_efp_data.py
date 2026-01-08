@@ -8,9 +8,9 @@ ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
 
-from api import app, db
-from api.models.annotations_lookup import AtAgiLookup
-from api.services.efp_data import query_efp_database_dynamic
+from api import app, db  # noqa: E402
+from api.models.annotations_lookup import AtAgiLookup  # noqa: E402
+from api.services.efp_data import query_efp_database_dynamic  # noqa: E402
 
 
 class TestDynamicEfpData(TestCase):

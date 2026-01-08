@@ -61,7 +61,8 @@ class GetWorldeFPExpression(Resource):
             return BARUtils.success_exit(final_json)
         else:
             return BARUtils.error_exit("There are no data found for the given gene")
-    
+
+
 # endpoint made by reena
 # return view and database mappings for a given species
 @microarray_gene_expression.route("/<string:species>/databases")
