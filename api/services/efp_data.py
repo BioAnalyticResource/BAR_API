@@ -4,6 +4,7 @@ shared helper utilities for querying efp databases
 
 from __future__ import annotations
 
+import re
 import traceback
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
@@ -91,7 +92,23 @@ DYNAMIC_DATABASE_SCHEMAS = _build_schema_catalog()
 
 
 def agi_to_probset(gene_id: str) -> Optional[str]:
-    """convert an arabidopsis agi to its probeset when needed"""
+    """
+    Convert an Arabidopsis AGI identifier to its corresponding probeset ID.
+
+    Looks up the most recent mapping in the AtAgiLookup table, ordered by date
+    descending. This ensures the newest array design mapping is used when multiple
+    mappings exist for the same AGI.
+
+    :param gene_id: Arabidopsis gene ID in AGI format (e.g., 'AT1G01010')
+    :type gene_id: str
+    :return: Probeset ID (e.g., '261585_at') if found, None otherwise
+    :rtype: Optional[str]
+
+    Example::
+
+        probeset = agi_to_probset('AT1G01010')
+        # Returns: '261585_at' (if mapping exists)
+    """
     try:
         subquery = (
             db.select(AtAgiLookup.probeset)
@@ -162,7 +179,34 @@ def query_efp_database_dynamic(
     allow_empty_results: bool = False,
     sample_case_insensitive: bool = False,
 ) -> Dict[str, object]:
-    """dynamically query any efp database using the shared schema catalog"""
+    """
+    Dynamically query any eFP database using the shared schema catalog.
+
+    This function provides a unified interface for querying expression data across
+    different eFP databases, handling species-specific gene ID validation and
+    automatic probeset conversion when needed.
+
+    :param database: Database name (e.g., 'cannabis', 'embryo', 'sample_data')
+    :type database: str
+    :param gene_id: Gene identifier (AGI format, probeset, or species-specific format)
+    :type gene_id: str
+    :param sample_ids: Optional list of sample IDs to filter results; if None, returns all samples
+    :type sample_ids: Optional[List[str]]
+    :param allow_empty_results: If True, return success even when no data found; if False, return 404 error
+    :type allow_empty_results: bool
+    :param sample_case_insensitive: If True, compare sample IDs case-insensitively
+    :type sample_case_insensitive: bool
+    :return: Dictionary with 'success' boolean, data or error message, and HTTP status code
+    :rtype: Dict[str, object]
+
+    Example::
+
+        result = query_efp_database_dynamic('embryo', 'AT1G01010')
+        # Returns: {'success': True, 'gene_id': 'AT1G01010', 'data': [...]}
+
+        result = query_efp_database_dynamic('sample_data', 'AT1G01010')
+        # Auto-converts to probeset, returns: {'probset_id': '261585_at', ...}
+    """
     try:
         database = str(database)
         gene_id = str(gene_id)
@@ -178,20 +222,54 @@ def query_efp_database_dynamic(
                 "error_code": 400,
             }
 
+        # Extract species information from schema metadata
+        species = schema.get("metadata", {}).get("species", "").lower()
+
         query_id = gene_id
         probset_display = None
         gene_case_insensitive = False
         upper_id = gene_id.upper()
         is_agi_id = upper_id.startswith("AT") and "G" in upper_id
 
+        # Validate gene ID format based on species and ID pattern
+        # Only validate if the ID looks like it's in the species-specific format
         if is_agi_id:
+            # This looks like an Arabidopsis AGI ID - validate it
             if not BARUtils.is_arabidopsis_gene_valid(upper_id):
-                return {
-                    "success": False,
-                    "error": "Invalid Arabidopsis gene ID format",
-                    "error_code": 400,
-                }
+                return {"success": False, "error": "Invalid Arabidopsis gene ID format", "error_code": 400}
+        elif species and schema["identifier_type"] == "agi":
+            # For non-AGI formatted IDs in species databases that expect AGI format,
+            # validate against the specific species validator
+            if species == "arachis":
+                if not BARUtils.is_arachis_gene_valid(upper_id):
+                    return {"success": False, "error": "Invalid Arachis gene ID", "error_code": 400}
+            elif species == "cannabis":
+                if not BARUtils.is_cannabis_gene_valid(upper_id):
+                    return {"success": False, "error": "Invalid Cannabis gene ID", "error_code": 400}
+            elif species == "kalanchoe":
+                if not BARUtils.is_kalanchoe_gene_valid(upper_id):
+                    return {"success": False, "error": "Invalid Kalanchoe gene ID", "error_code": 400}
+            elif species == "phelipanche":
+                if not BARUtils.is_phelipanche_gene_valid(upper_id):
+                    return {"success": False, "error": "Invalid Phelipanche gene ID", "error_code": 400}
+            elif species == "physcomitrella":
+                if not BARUtils.is_physcomitrella_gene_valid(upper_id):
+                    return {"success": False, "error": "Invalid Physcomitrella gene ID", "error_code": 400}
+            elif species == "selaginella":
+                if not BARUtils.is_selaginella_gene_valid(upper_id):
+                    return {"success": False, "error": "Invalid Selaginella gene ID", "error_code": 400}
+            elif species == "strawberry":
+                if not BARUtils.is_strawberry_gene_valid(upper_id):
+                    return {"success": False, "error": "Invalid Strawberry gene ID", "error_code": 400}
+            elif species == "striga":
+                if not BARUtils.is_striga_gene_valid(upper_id):
+                    return {"success": False, "error": "Invalid Striga gene ID", "error_code": 400}
+            elif species == "triphysaria":
+                if not BARUtils.is_triphysaria_gene_valid(upper_id):
+                    return {"success": False, "error": "Invalid Triphysaria gene ID", "error_code": 400}
 
+        # Handle Arabidopsis-specific logic for AGI IDs
+        if is_agi_id:
             if schema["identifier_type"] == "probeset":
                 probset = agi_to_probset(upper_id)
                 if not probset:
@@ -207,6 +285,10 @@ def query_efp_database_dynamic(
                 query_id = upper_id
                 gene_case_insensitive = True
                 probset_display = upper_id
+        else:
+            # Non-AGI IDs: use as-is, typically already uppercase from validation
+            query_id = upper_id if species else gene_id
+            gene_case_insensitive = bool(species)
 
         engine_candidates = list(_iter_engine_candidates(database))
         if not engine_candidates:
@@ -216,20 +298,35 @@ def query_efp_database_dynamic(
                 "error_code": 404,
             }
 
-        gene_column_expr = (
-            f"UPPER({schema['gene_column']})" if gene_case_insensitive else schema["gene_column"]
-        )
+        # Build SQL query using parameterized queries to prevent SQL injection
+        # Column and table names come from the internal schema catalog, which is safe
+        gene_col = schema["gene_column"]
+        sample_col = schema["sample_column"]
+        value_col = schema["value_column"]
+        table_name = schema["table"]
+
+        # Validate identifiers contain only safe characters (alphanumeric and underscore)
+        for identifier, name in [
+            (gene_col, "gene_column"),
+            (sample_col, "sample_column"),
+            (value_col, "value_column"),
+            (table_name, "table"),
+        ]:
+            if not re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', identifier):
+                return {
+                    "success": False,
+                    "error": f"Invalid schema identifier for {name}: {identifier}",
+                    "error_code": 500,
+                }
+
+        gene_column_expr = f"UPPER({gene_col})" if gene_case_insensitive else gene_col
         params = {"gene_id": query_id.upper() if gene_case_insensitive else query_id}
         where_clauses = [f"{gene_column_expr} = :gene_id"]
 
         if sample_ids:
             filtered = [s for s in sample_ids if s]
             if filtered:
-                sample_column_expr = (
-                    f"UPPER({schema['sample_column']})"
-                    if sample_case_insensitive
-                    else schema["sample_column"]
-                )
+                sample_column_expr = f"UPPER({sample_col})" if sample_case_insensitive else sample_col
                 sample_conditions = []
                 for idx, sample in enumerate(filtered):
                     key = f"sample_{idx}"
@@ -238,8 +335,8 @@ def query_efp_database_dynamic(
                 where_clauses.append(f"({' OR '.join(sample_conditions)})")
 
         query_sql = text(
-            f"SELECT {schema['sample_column']} AS sample, {schema['value_column']} AS value "
-            f"FROM {schema['table']} "
+            f"SELECT {sample_col} AS sample, {value_col} AS value "
+            f"FROM {table_name} "
             f"WHERE {' AND '.join(where_clauses)}"
         )
 

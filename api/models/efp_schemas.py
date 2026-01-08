@@ -1,5 +1,9 @@
 """
-simple schema definitions for efp databases that only expose a sample_data table
+Simple schema definitions for eFP databases that only expose a sample_data table.
+
+This module provides the single source of truth for all simple eFP database schemas,
+including column definitions, indexes, seed data, and metadata. These schemas are used
+by both the ORM model generator and the database bootstrap scripts.
 """
 
 from __future__ import annotations
@@ -20,6 +24,34 @@ def _column(
     default: Any | None = None,
     primary_key: bool = False,
 ) -> ColumnSpec:
+    """
+    Create a column specification dictionary for schema definitions.
+
+    Helper function to construct column metadata with type, constraints, and defaults
+    in a consistent format.
+
+    :param name: Column name (e.g., 'data_probeset_id', 'data_signal')
+    :type name: str
+    :param col_type: Column type ('string', 'integer', 'float', or 'text')
+    :type col_type: str
+    :param length: Maximum length for string types (required for 'string')
+    :type length: int or None
+    :param unsigned: Whether integer type is unsigned (MySQL-specific)
+    :type unsigned: bool
+    :param nullable: Whether column allows NULL values
+    :type nullable: bool
+    :param default: Default value for the column
+    :type default: Any or None
+    :param primary_key: Whether column is part of primary key
+    :type primary_key: bool
+    :return: Column specification dictionary
+    :rtype: ColumnSpec
+
+    Example::
+
+        col = _column("data_signal", "float", nullable=False, default=0)
+        # Returns: {"name": "data_signal", "type": "float", "nullable": False, "default": 0}
+    """
     column: ColumnSpec = {"name": name, "type": col_type, "nullable": nullable}
     if length is not None:
         column["length"] = length
@@ -57,6 +89,40 @@ def _build_schema(
     identifier_type: str = "agi",
     metadata: Dict[str, Any] | None = None,
 ) -> DatabaseSpec:
+    """
+    Build a complete database schema specification from base columns and customizations.
+
+    Constructs a schema by starting with the default BASE_COLUMNS, applying any
+    overrides, and adding extra columns. The resulting schema dictionary is used by
+    both the ORM generator and bootstrap scripts to ensure consistency.
+
+    :param charset: MySQL character set (e.g., 'latin1', 'utf8mb4')
+    :type charset: str
+    :param table_name: Name of the table to create (typically 'sample_data')
+    :type table_name: str
+    :param column_overrides: Dictionary of column names to property overrides
+    :type column_overrides: Dict[str, Dict[str, Any]] or None
+    :param extra_columns: Additional columns beyond the base set
+    :type extra_columns: List[ColumnSpec] or None
+    :param index: List of column names to include in the index
+    :type index: List[str] or None
+    :param seed_rows: Initial rows to insert if table is empty
+    :type seed_rows: List[Dict[str, Any]] or None
+    :param identifier_type: Gene ID format ('agi' or 'probeset')
+    :type identifier_type: str
+    :param metadata: Additional metadata (species, sample_regex, etc.)
+    :type metadata: Dict[str, Any] or None
+    :return: Complete database schema specification
+    :rtype: DatabaseSpec
+
+    Example::
+
+        schema = _build_schema(
+            charset="utf8mb4",
+            column_overrides={"proj_id": {"length": 5}},
+            metadata={"species": "arabidopsis"}
+        )
+    """
     overrides = column_overrides or {}
     columns: List[ColumnSpec] = []
 
