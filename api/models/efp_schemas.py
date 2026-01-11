@@ -152,27 +152,214 @@ def _build_schema(
     return schema
 
 
+# Schema pattern helpers - group databases with similar column structures
+def _simple_schema(
+    species: str,
+    sample_regex: str,
+    probeset_len: int = 24,
+    bot_id_len: int = 16,
+    proj_id_len: int = 5,
+    charset: str = "latin1",
+    **kwargs,
+) -> DatabaseSpec:
+    """
+    Helper for simple 5-column schemas (most common pattern).
+
+    :param species: Species name for metadata
+    :param sample_regex: Regular expression for sample validation
+    :param probeset_len: Length of data_probeset_id column
+    :param bot_id_len: Length of data_bot_id column
+    :param proj_id_len: Length of proj_id column
+    :param charset: MySQL character set
+    :param kwargs: Additional arguments passed to _build_schema
+    :return: Database schema specification
+    """
+    overrides = {
+        "data_probeset_id": {"length": probeset_len},
+        "data_bot_id": {"length": bot_id_len},
+    }
+    if proj_id_len != 5:
+        overrides["proj_id"] = {"length": proj_id_len}
+    if "proj_id_default" in kwargs:
+        overrides.setdefault("proj_id", {})["default"] = kwargs.pop("proj_id_default")
+    if "signal_nullable" in kwargs:
+        overrides.setdefault("data_signal", {})["nullable"] = kwargs.pop("signal_nullable")
+    if "bot_id_nullable" in kwargs:
+        overrides.setdefault("data_bot_id", {})["nullable"] = kwargs.pop("bot_id_nullable")
+
+    return _build_schema(
+        charset=charset,
+        column_overrides=overrides,
+        metadata={"species": species, "sample_regex": sample_regex},
+        **kwargs,
+    )
+
+
+def _schema_with_qa_columns(
+    species: str,
+    sample_regex: str,
+    probeset_len: int = 24,
+    bot_id_len: int = 16,
+    **kwargs,
+) -> DatabaseSpec:
+    """
+    Helper for schemas with quality assurance columns (sample_file_name, data_call, data_p_val).
+
+    :param species: Species name for metadata
+    :param sample_regex: Regular expression for sample validation
+    :param probeset_len: Length of data_probeset_id column
+    :param bot_id_len: Length of data_bot_id column
+    :param kwargs: Additional arguments passed to _build_schema
+    :return: Database schema specification
+    """
+    extra_cols = [
+        _column("sample_file_name", kwargs.pop("file_name_type", "text"), nullable=True),
+        _column("data_call", kwargs.pop("call_type", "text"), nullable=True),
+        _column("data_p_val", "float", nullable=True, default=0),
+    ]
+    return _simple_schema(
+        species=species,
+        sample_regex=sample_regex,
+        probeset_len=probeset_len,
+        bot_id_len=bot_id_len,
+        extra_columns=extra_cols,
+        index=["data_probeset_id"],
+        **kwargs,
+    )
+
+
 # simple canonical schema for the easiest efp mirrors so the orm code and bootstrap script stay in sync
 SIMPLE_EFP_DATABASE_SCHEMAS: Dict[str, DatabaseSpec] = {
-    "arabidopsis_ecotypes": _build_schema(
-        charset="latin1",
-        column_overrides={
-            "proj_id": {"length": 15},
-            "data_probeset_id": {"length": 30},
-            "data_signal": {"nullable": True, "primary_key": False},
-            "data_bot_id": {"nullable": True},
-        },
-        extra_columns=[
-            _column("sample_file_name", "text", nullable=True),
-            _column("data_call", "text", nullable=True),
-            _column("data_p_val", "float", nullable=True, default=0),
-        ],
-        index=["data_probeset_id"],
-        metadata={
-            "species": "arabidopsis",
-            "sample_regex": r"^[A-Z0-9_]{1,20}$|Med_CTRL$",
-        },
+    # Schemas with QA columns (sample_file_name, data_call, data_p_val)
+    "arabidopsis_ecotypes": _schema_with_qa_columns(
+        species="arabidopsis",
+        sample_regex=r"^[A-Z0-9_]{1,20}$|Med_CTRL$",
+        probeset_len=30,
+        proj_id_len=15,
+        signal_nullable=True,
+        bot_id_nullable=True,
     ),
+    "shoot_apex": _schema_with_qa_columns(
+        species="arabidopsis",
+        sample_regex=r"^\D{1,5}\d{0,2}|MED_CTRL$",
+        probeset_len=12,
+        bot_id_len=8,
+        proj_id_len=2,
+        proj_id_default=None,
+        file_name_type="string",
+        call_type="string",
+    ),
+    # Simple 5-column schemas
+    "cannabis": _simple_schema(
+        species="cannabis",
+        sample_regex=r"^PK-\D{1,4}|MED_CTRL$",
+        probeset_len=24,
+        bot_id_len=8,
+        proj_id_len=2,
+        seed_rows=[
+            {"proj_id": "1", "sample_id": 1, "data_probeset_id": "AGQN03009284", "data_signal": 0, "data_bot_id": "PK-RT"}
+        ],
+    ),
+    "dna_damage": _simple_schema(
+        species="arabidopsis",
+        sample_regex=r"^\D{1,3}.{1,30}_plus_Y|\D{1,3}.{1,30}_minus_Y|Med_CTRL$",
+        charset="utf8mb4",
+        probeset_len=10,
+        bot_id_len=32,
+        bot_id_nullable=True,
+        seed_rows=[
+            {
+                "proj_id": "1",
+                "sample_id": 1,
+                "data_probeset_id": "AT1G01010",
+                "data_signal": 59,
+                "data_bot_id": "col-0_rep1_12hr_minus_Y",
+            }
+        ],
+    ),
+    "embryo": _simple_schema(
+        species="arabidopsis",
+        sample_regex=r"^\D{1,3}_\d$|Med_CTRL$",
+        proj_id_len=3,
+        bot_id_len=8,
+        signal_nullable=True,
+        seed_rows=[
+            {"proj_id": "1", "sample_id": 1, "data_probeset_id": "AT1G01010", "data_signal": 0.67, "data_bot_id": "pg_1"}
+        ],
+    ),
+    "germination": _simple_schema(
+        species="arabidopsis",
+        sample_regex=r"^\d{1,3}\D{1,4}_\d{1,3}|harvest_\d|Med_CTRL$",
+        proj_id_len=3,
+        probeset_len=30,
+    ),
+    "kalanchoe": _simple_schema(
+        species="kalanchoe",
+        sample_regex=r"^\D{1,4}_\D{1,5}_rep\d|MED_CTRL$",
+        proj_id_len=2,
+    ),
+    "phelipanche": _simple_schema(
+        species="phelipanche",
+        sample_regex=r"^[a-z_-]{1,35}|MED_CTRL$",
+        charset="utf8mb4",
+        proj_id_len=5,
+        proj_id_default=None,
+        bot_id_len=32,
+    ),
+    "selaginella": _simple_schema(
+        species="selaginella",
+        sample_regex=r"^[\D\d]{1,33}|MED_CTRL$",
+        proj_id_len=5,
+        probeset_len=18,
+        bot_id_len=36,
+    ),
+    "silique": _simple_schema(
+        species="arabidopsis",
+        sample_regex=r"^\d{1,3}_dap.{1,58}_R1_001|Med_CTRL$",
+        proj_id_len=5,
+        proj_id_default=None,
+        probeset_len=12,
+        bot_id_len=64,
+    ),
+    "single_cell": _simple_schema(
+        species="arabidopsis",
+        sample_regex=r"^\D+\d+_WT\d+.ExprMean|MED_CTRL$",
+        proj_id_len=5,
+        proj_id_default=None,
+        bot_id_len=32,
+    ),
+    "strawberry": _simple_schema(
+        species="strawberry",
+        sample_regex=r"^\D{1,12}_.{1,8}_\D{1,2}|MED_CTRL$",
+        charset="utf8mb4",
+        proj_id_len=5,
+        proj_id_default=None,
+        bot_id_len=24,
+    ),
+    "striga": _simple_schema(
+        species="striga",
+        sample_regex=r"^\D{1,35}|MED_CTRL$",
+        proj_id_len=5,
+        proj_id_default=None,
+        bot_id_len=42,
+    ),
+    "triphysaria": _simple_schema(
+        species="triphysaria",
+        sample_regex=r"^[a-z_]{1,35}|MED_CTRL$",
+        charset="utf8mb4",
+        proj_id_len=5,
+        proj_id_default=None,
+        bot_id_len=32,
+    ),
+    # Schema with data_call column
+    "klepikova": _simple_schema(
+        species="arabidopsis",
+        sample_regex=r"^SRR\d{1,9}|Med_CTRL$",
+        proj_id_len=3,
+        probeset_len=30,
+        extra_columns=[_column("data_call", "string", length=2, nullable=True)],
+    ),
+    # Schemas with string sample_id column (non-standard)
     "arachis": _build_schema(
         column_overrides={
             "proj_id": {"length": 24, "default": None},
@@ -185,99 +372,6 @@ SIMPLE_EFP_DATABASE_SCHEMAS: Dict[str, DatabaseSpec] = {
             "sample_regex": r"^[\D\d_]{1,30}|MED_CTRL$",
         },
     ),
-    "cannabis": _build_schema(
-        column_overrides={
-            "proj_id": {"length": 2},
-            "data_bot_id": {"length": 8},
-        },
-        seed_rows=[
-            {"proj_id": "1", "sample_id": 1, "data_probeset_id": "AGQN03009284", "data_signal": 0, "data_bot_id": "PK-RT"}
-        ],
-        metadata={
-            "species": "cannabis",
-            "sample_regex": r"^PK-\D{1,4}|MED_CTRL$",
-        },
-    ),
-    "dna_damage": _build_schema(
-        charset="utf8mb4",
-        column_overrides={
-            "data_probeset_id": {"length": 10},
-            "data_bot_id": {"length": 32, "nullable": True},
-        },
-        seed_rows=[
-            {
-                "proj_id": "1",
-                "sample_id": 1,
-                "data_probeset_id": "AT1G01010",
-                "data_signal": 59,
-                "data_bot_id": "col-0_rep1_12hr_minus_Y",
-            }
-        ],
-        metadata={
-            "species": "arabidopsis",
-            "sample_regex": r"^\D{1,3}.{1,30}_plus_Y|\D{1,3}.{1,30}_minus_Y|Med_CTRL$",
-        },
-    ),
-    "embryo": _build_schema(
-        column_overrides={
-            "proj_id": {"length": 3},
-            "data_probeset_id": {"length": 16},
-            "data_signal": {"nullable": True},
-            "data_bot_id": {"length": 8},
-        },
-        seed_rows=[
-            {"proj_id": "1", "sample_id": 1, "data_probeset_id": "AT1G01010", "data_signal": 0.67, "data_bot_id": "pg_1"}
-        ],
-        metadata={
-            "species": "arabidopsis",
-            "sample_regex": r"^\D{1,3}_\d$|Med_CTRL$",
-        },
-    ),
-    "germination": _build_schema(
-        column_overrides={
-            "proj_id": {"length": 3},
-            "data_probeset_id": {"length": 30},
-            "data_bot_id": {"length": 16},
-        },
-        metadata={
-            "species": "arabidopsis",
-            "sample_regex": r"^\d{1,3}\D{1,4}_\d{1,3}|harvest_\d|Med_CTRL$",
-        },
-    ),
-    "kalanchoe": _build_schema(
-        column_overrides={
-            "proj_id": {"length": 2},
-            "data_bot_id": {"length": 16},
-        },
-        metadata={
-            "species": "kalanchoe",
-            "sample_regex": r"^\D{1,4}_\D{1,5}_rep\d|MED_CTRL$",
-        },
-    ),
-    "klepikova": _build_schema(
-        column_overrides={
-            "proj_id": {"length": 3},
-            "data_probeset_id": {"length": 30},
-            "data_bot_id": {"length": 16},
-        },
-        extra_columns=[_column("data_call", "string", length=2, nullable=True)],
-        metadata={
-            "species": "arabidopsis",
-            "sample_regex": r"^SRR\d{1,9}|Med_CTRL$",
-        },
-    ),
-    "phelipanche": _build_schema(
-        charset="utf8mb4",
-        column_overrides={
-            "proj_id": {"length": 5, "default": None},
-            "data_probeset_id": {"length": 16},
-            "data_bot_id": {"length": 32},
-        },
-        metadata={
-            "species": "phelipanche",
-            "sample_regex": r"^[a-z_-]{1,35}|MED_CTRL$",
-        },
-    ),
     "physcomitrella_db": _build_schema(
         column_overrides={
             "proj_id": {"length": 30, "default": ""},
@@ -288,90 +382,6 @@ SIMPLE_EFP_DATABASE_SCHEMAS: Dict[str, DatabaseSpec] = {
         metadata={
             "species": "physcomitrella",
             "sample_regex": r"^[a-z_123]{1,15}|MED_CTRL$",
-        },
-    ),
-    "selaginella": _build_schema(
-        column_overrides={
-            "proj_id": {"length": 5},
-            "data_probeset_id": {"length": 18},
-            "data_bot_id": {"length": 36},
-        },
-        metadata={
-            "species": "selaginella",
-            "sample_regex": r"^[\D\d]{1,33}|MED_CTRL$",
-        },
-    ),
-    "shoot_apex": _build_schema(
-        column_overrides={
-            "proj_id": {"length": 2, "nullable": True, "default": None},
-            "data_probeset_id": {"length": 12},
-            "data_bot_id": {"length": 8},
-        },
-        extra_columns=[
-            _column("sample_file_name", "string", length=16, nullable=True),
-            _column("data_call", "string", length=2, nullable=True),
-            _column("data_p_val", "float", nullable=True, default=0),
-        ],
-        metadata={
-            "species": "arabidopsis",
-            "sample_regex": r"^\D{1,5}\d{0,2}|MED_CTRL$",
-        },
-    ),
-    "silique": _build_schema(
-        column_overrides={
-            "proj_id": {"length": 5, "default": None},
-            "data_probeset_id": {"length": 12},
-            "data_bot_id": {"length": 64},
-        },
-        metadata={
-            "species": "arabidopsis",
-            "sample_regex": r"^\d{1,3}_dap.{1,58}_R1_001|Med_CTRL$",
-        },
-    ),
-    "single_cell": _build_schema(
-        column_overrides={
-            "proj_id": {"length": 5, "default": None},
-            "data_probeset_id": {"length": 24},
-            "data_bot_id": {"length": 32},
-        },
-        metadata={
-            "species": "arabidopsis",
-            "sample_regex": r"^\D+\d+_WT\d+.ExprMean|MED_CTRL$",
-        },
-    ),
-    "strawberry": _build_schema(
-        charset="utf8mb4",
-        column_overrides={
-            "proj_id": {"length": 5, "default": None},
-            "data_probeset_id": {"length": 16},
-            "data_bot_id": {"length": 24},
-        },
-        metadata={
-            "species": "strawberry",
-            "sample_regex": r"^\D{1,12}_.{1,8}_\D{1,2}|MED_CTRL$",
-        },
-    ),
-    "striga": _build_schema(
-        column_overrides={
-            "proj_id": {"length": 5, "default": None},
-            "data_probeset_id": {"length": 24},
-            "data_bot_id": {"length": 42},
-        },
-        metadata={
-            "species": "striga",
-            "sample_regex": r"^\D{1,35}|MED_CTRL$",
-        },
-    ),
-    "triphysaria": _build_schema(
-        charset="utf8mb4",
-        column_overrides={
-            "proj_id": {"length": 5, "default": None},
-            "data_probeset_id": {"length": 16},
-            "data_bot_id": {"length": 32},
-        },
-        metadata={
-            "species": "triphysaria",
-            "sample_regex": r"^[a-z_]{1,35}|MED_CTRL$",
         },
     ),
 }
