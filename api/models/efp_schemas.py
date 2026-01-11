@@ -212,9 +212,17 @@ def _schema_with_qa_columns(
     :param kwargs: Additional arguments passed to _build_schema
     :return: Database schema specification
     """
+    # Handle file_name column type/length
+    file_name_type = kwargs.pop("file_name_type", "text")
+    file_name_len = kwargs.pop("file_name_len", 16) if file_name_type == "string" else None
+
+    # Handle call column type/length
+    call_type = kwargs.pop("call_type", "text")
+    call_len = kwargs.pop("call_len", 2) if call_type == "string" else None
+
     extra_cols = [
-        _column("sample_file_name", kwargs.pop("file_name_type", "text"), nullable=True),
-        _column("data_call", kwargs.pop("call_type", "text"), nullable=True),
+        _column("sample_file_name", file_name_type, length=file_name_len, nullable=True),
+        _column("data_call", call_type, length=call_len, nullable=True),
         _column("data_p_val", "float", nullable=True, default=0),
     ]
     return _simple_schema(
@@ -247,7 +255,9 @@ SIMPLE_EFP_DATABASE_SCHEMAS: Dict[str, DatabaseSpec] = {
         proj_id_len=2,
         proj_id_default=None,
         file_name_type="string",
+        file_name_len=16,
         call_type="string",
+        call_len=2,
     ),
     # Simple 5-column schemas
     "cannabis": _simple_schema(
