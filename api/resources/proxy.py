@@ -32,5 +32,11 @@ class ATTEDApi5(Resource):
         payload = {"gene": gene_id, "topN": top_n}
         resp = requests.get("https://atted.jp/api5/", params=payload, headers=request_headers)
 
-        # I think the remote API always returns status 200, so skip status checking
-        return resp.json()
+        # Handle HTTP errors and invalid JSON responses
+        if resp.status_code != 200:
+            return BARUtils.error_exit(f"External API returned HTTP {resp.status_code}"), 502
+
+        try:
+            return resp.json()
+        except requests.exceptions.JSONDecodeError:
+            return BARUtils.error_exit("External API returned invalid response"), 502
