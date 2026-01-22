@@ -6,6 +6,7 @@ one implementation.
 
 from __future__ import annotations
 
+import re
 from typing import Dict, Iterable, List
 
 from sqlalchemy import Column, Index, MetaData, Table, create_engine, text
@@ -118,9 +119,19 @@ def ensure_database(server_url: URL, db_name: str, charset: str) -> None:
     :type charset: str
     :return: None
     :rtype: None
+    :raises ValueError: If db_name or charset contains invalid characters
     """
+    # Validate database name to prevent SQL injection - only allow safe identifier characters
+    if not re.match(r'^[a-zA-Z0-9_$]+$', db_name):
+        raise ValueError(f"Invalid database name: {db_name}. Only alphanumeric, underscore, and dollar sign characters are allowed.")
+
+    # Validate charset name to prevent SQL injection - only allow safe characters
+    if not re.match(r'^[a-zA-Z0-9_]+$', charset):
+        raise ValueError(f"Invalid charset name: {charset}. Only alphanumeric and underscore characters are allowed.")
+
     server_engine = create_engine(server_url)
     with server_engine.begin() as conn:
+        # Safe to use f-string here since we've validated the inputs above
         conn.execute(text(f"CREATE DATABASE IF NOT EXISTS `{db_name}` DEFAULT CHARACTER SET {charset}"))
 
 

@@ -443,12 +443,13 @@ class EFPDataService:
                 }
 
             if not results and not allow_empty_results:
+                error_dict = BARUtils.error_exit(
+                    f"No expression data found for {gene_id} (query identifier: {query_id})"
+                )
+                # Convert BARUtils format to match EFP service format
                 return {
                     "success": False,
-                    "error": (
-                        f"No expression data found for {gene_id} "
-                        f"(query identifier: {query_id})"
-                    ),
+                    "error": error_dict["error"],
                     "error_code": 404,
                 }
 
