@@ -7,6 +7,7 @@ one implementation.
 from __future__ import annotations
 
 import re
+import hashlib
 from typing import Dict, Iterable, List
 
 from sqlalchemy import Column, Index, MetaData, Table, create_engine, text
@@ -73,8 +74,28 @@ def _build_table(metadata: MetaData, spec, db_name: str) -> Table:
     table = Table(spec["table_name"], metadata, *columns, mysql_charset=spec.get("charset"))
     index_cols = spec.get("index") or []
     if index_cols:
-        Index(f"ix_{db_name}_{'_'.join(index_cols)}", *[table.c[col] for col in index_cols])
+        index_name = _make_index_name(db_name, index_cols)
+        Index(index_name, *[table.c[col] for col in index_cols])
     return table
+
+
+def _make_index_name(db_name: str, index_cols: Iterable[str], max_len: int = 64) -> str:
+    """
+    Create a MySQL-safe index name capped at 64 characters.
+
+    If the generated name is too long, fall back to a truncated db_name with a stable hash
+    to keep names deterministic and avoid collisions.
+    """
+    base = f"ix_{db_name}_{'_'.join(index_cols)}"
+    if len(base) <= max_len:
+        return base
+
+    digest = hashlib.sha1(base.encode("utf-8")).hexdigest()[:8]
+    reserved = len("ix_") + 1 + len(digest)
+    db_len = max_len - reserved
+    if db_len <= 0:
+        return f"ix_{digest}"
+    return f"ix_{db_name[:db_len]}_{digest}"
 
 
 def _build_url(host: str, port: int, user: str, password: str, database: str | None = None) -> URL:
