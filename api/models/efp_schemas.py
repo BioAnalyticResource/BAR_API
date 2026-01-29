@@ -167,18 +167,49 @@ class EfpSchemaBuilder:
         :param kwargs: Additional arguments passed to _build_schema
         :return: Database schema specification
         """
-        overrides = {
-            "data_probeset_id": {"length": probeset_len},
-            "data_bot_id": {"length": bot_id_len},
-        }
+        overrides = {}
+
+        # Handle data_probeset_id
+        if "probeset_type" in kwargs:
+            probeset_type = kwargs.pop("probeset_type")
+            overrides["data_probeset_id"] = {"type": probeset_type, "length": None}
+        else:
+            overrides["data_probeset_id"] = {"length": probeset_len}
+
+        # Handle data_bot_id
+        if "bot_id_type" in kwargs:
+            bot_id_type = kwargs.pop("bot_id_type")
+            overrides["data_bot_id"] = {"type": bot_id_type, "length": None}
+        else:
+            overrides["data_bot_id"] = {"length": bot_id_len}
+
+        # Handle proj_id
         if proj_id_len != 5:
             overrides["proj_id"] = {"length": proj_id_len}
+
+        # Handle type changes for base columns
+        if "proj_id_type" in kwargs:
+            proj_type = kwargs.pop("proj_id_type")
+            overrides.setdefault("proj_id", {})["type"] = proj_type
+            if proj_type == "integer":
+                overrides["proj_id"]["unsigned"] = True
+
+        if "sample_id_type" in kwargs:
+            sample_type = kwargs.pop("sample_id_type")
+            overrides.setdefault("sample_id", {})["type"] = sample_type
+            overrides["sample_id"]["unsigned"] = False
+            if "sample_id_len" in kwargs:
+                overrides["sample_id"]["length"] = kwargs.pop("sample_id_len")
+
+        # Handle nullable flags and defaults
         if "proj_id_default" in kwargs:
             overrides.setdefault("proj_id", {})["default"] = kwargs.pop("proj_id_default")
         if "signal_nullable" in kwargs:
             overrides.setdefault("data_signal", {})["nullable"] = kwargs.pop("signal_nullable")
         if "bot_id_nullable" in kwargs:
             overrides.setdefault("data_bot_id", {})["nullable"] = kwargs.pop("bot_id_nullable")
+        if "probeset_nullable" in kwargs:
+            overrides.setdefault("data_probeset_id", {})["nullable"] = kwargs.pop("probeset_nullable")
 
         return EfpSchemaBuilder._build_schema(
             charset=charset,
@@ -213,17 +244,23 @@ class EfpSchemaBuilder:
         call_type = kwargs.pop("call_type", "text")
         call_len = kwargs.pop("call_len", 2) if call_type == "string" else None
 
-        extra_cols = [
+        # Build QA columns
+        qa_cols = [
             EfpSchemaBuilder._column("sample_file_name", file_name_type, length=file_name_len, nullable=True),
             EfpSchemaBuilder._column("data_call", call_type, length=call_len, nullable=True),
             EfpSchemaBuilder._column("data_p_val", "float", nullable=True, default=0),
         ]
+
+        # Merge with any extra columns passed in
+        extra_columns = kwargs.pop("extra_columns", [])
+        all_extra_cols = qa_cols + extra_columns
+
         return EfpSchemaBuilder._simple_schema(
             species=species,
             sample_regex=sample_regex,
             probeset_len=probeset_len,
             bot_id_len=bot_id_len,
-            extra_columns=extra_cols,
+            extra_columns=all_extra_cols,
             index=["data_probeset_id"],
             **kwargs,
         )
@@ -244,167 +281,1680 @@ BASE_COLUMNS: Dict[str, ColumnSpec] = {
 DEFAULT_BLUEPRINT: List[str] = ["proj_id", "sample_id", "data_probeset_id", "data_signal", "data_bot_id"]
 DEFAULT_INDEX = ["data_probeset_id", "data_bot_id", "data_signal"]
 
+# Replace the existing SIMPLE_EFP_DATABASE_SCHEMAS dict in efp_schemas.py with this:
 
-# Schema pattern helpers - group databases with similar column structures
-
-
-# simple canonical schema for the easiest efp mirrors so the orm code and bootstrap script stay in sync
 SIMPLE_EFP_DATABASE_SCHEMAS: Dict[str, DatabaseSpec] = {
-    # Schemas with QA columns (sample_file_name, data_call, data_p_val)
-    "arabidopsis_ecotypes": EfpSchemaBuilder._schema_with_qa_columns(
-        species="arabidopsis",
-        sample_regex=r"^[A-Z0-9_]{1,20}$|Med_CTRL$",
+    'actinidia_bud_development': EfpSchemaBuilder._simple_schema(
+        species='actinidia',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=12,
+        signal_nullable=True,
+        bot_id_len=8,
+        charset='utf8mb4',
+    ),
+    'actinidia_flower_fruit_development': EfpSchemaBuilder._simple_schema(
+        species='actinidia',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=12,
+        signal_nullable=True,
+        charset='utf8mb4',
+    ),
+    'actinidia_postharvest': EfpSchemaBuilder._simple_schema(
+        species='actinidia',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=12,
+        signal_nullable=True,
+        bot_id_len=24,
+        charset='utf8mb4',
+    ),
+    'actinidia_vegetative_growth': EfpSchemaBuilder._simple_schema(
+        species='actinidia',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=12,
+        signal_nullable=True,
+        charset='utf8mb4',
+    ),
+    'affydb': EfpSchemaBuilder._schema_with_qa_columns(
+        species='arabidopsis',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_type='integer',
         probeset_len=30,
+        probeset_nullable=True,
+        bot_id_type='text',
+        bot_id_nullable=True,
+        extra_columns=[
+            EfpSchemaBuilder._column('data_num', 'integer', default=0),
+        ],
+    ),
+    'apple': EfpSchemaBuilder._simple_schema(
+        species='apple',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        probeset_len=18,
+        bot_id_len=12,
+        bot_id_nullable=True,
+        charset='utf8mb4',
+    ),
+    'arabidopsis_ecotypes': EfpSchemaBuilder._schema_with_qa_columns(
+        species='arabidopsis',
+        sample_regex=r"^[A-Z0-9_]{1,20}$|Med_CTRL$",
         proj_id_len=15,
+        probeset_len=30,
+        probeset_nullable=True,
         signal_nullable=True,
         bot_id_nullable=True,
     ),
-    "shoot_apex": EfpSchemaBuilder._schema_with_qa_columns(
-        species="arabidopsis",
-        sample_regex=r"^\D{1,5}\d{0,2}|MED_CTRL$",
-        probeset_len=12,
-        bot_id_len=8,
-        proj_id_len=2,
+    'arachis': EfpSchemaBuilder._simple_schema(
+        species='arachis',
+        sample_regex=r"^[\D\d_]{1,30}|MED_CTRL$",
+        sample_id_type='string',
+        sample_id_len=5,
+        proj_id_len=24,
         proj_id_default=None,
-        file_name_type="string",
-        file_name_len=16,
-        call_type="string",
-        call_len=2,
+        probeset_len=30,
+        bot_id_len=65,
     ),
-    # Simple 5-column schemas
-    "cannabis": EfpSchemaBuilder._simple_schema(
-        species="cannabis",
-        sample_regex=r"^PK-\D{1,4}|MED_CTRL$",
-        probeset_len=24,
-        bot_id_len=8,
-        proj_id_len=2,
-        seed_rows=[
-            {"proj_id": "1", "sample_id": 1, "data_probeset_id": "AGQN03009284", "data_signal": 0, "data_bot_id": "PK-RT"}
+    'atgenexp': EfpSchemaBuilder._schema_with_qa_columns(
+        species='arabidopsis',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_type='integer',
+        probeset_len=30,
+        probeset_nullable=True,
+        bot_id_len=50,
+    ),
+    'atgenexp_hormone': EfpSchemaBuilder._simple_schema(
+        species='arabidopsis',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_type='integer',
+        probeset_len=30,
+        probeset_nullable=True,
+        signal_nullable=True,
+        bot_id_len=50,
+        bot_id_nullable=True,
+    ),
+    'atgenexp_pathogen': EfpSchemaBuilder._simple_schema(
+        species='arabidopsis',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=30,
+        probeset_nullable=True,
+        signal_nullable=True,
+        bot_id_len=50,
+        bot_id_nullable=True,
+    ),
+    'atgenexp_plus': EfpSchemaBuilder._schema_with_qa_columns(
+        species='arabidopsis',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=30,
+        probeset_nullable=True,
+        signal_nullable=True,
+        bot_id_len=50,
+    ),
+    'atgenexp_stress': EfpSchemaBuilder._simple_schema(
+        # TODO: atgenexp_stress needs manual review for data_call/sample_file_name columns
+        species='arabidopsis',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=30,
+        probeset_nullable=True,
+        bot_id_len=40,
+        bot_id_nullable=True,
+    ),
+    'barley_mas': EfpSchemaBuilder._schema_with_qa_columns(
+        species='barley',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=30,
+        signal_nullable=True,
+        bot_id_len=24,
+        extra_columns=[
+            EfpSchemaBuilder._column('sample_tissue', 'string', length=20, nullable=True),
         ],
     ),
-    "dna_damage": EfpSchemaBuilder._simple_schema(
-        species="arabidopsis",
+    'barley_rma': EfpSchemaBuilder._schema_with_qa_columns(
+        species='barley',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=30,
+        signal_nullable=True,
+        bot_id_len=24,
+    ),
+    'barley_seed': EfpSchemaBuilder._simple_schema(
+        species='barley',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=32,
+        signal_nullable=True,
+        bot_id_len=12,
+        charset='utf8mb4',
+    ),
+    'barley_spike_meristem': EfpSchemaBuilder._simple_schema(
+        species='barley',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        signal_nullable=True,
+        bot_id_len=24,
+        charset='utf8mb4',
+    ),
+    'barley_spike_meristem_v3': EfpSchemaBuilder._simple_schema(
+        species='barley',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=32,
+        signal_nullable=True,
+        bot_id_len=24,
+        charset='utf8mb4',
+    ),
+    'brachypodium': EfpSchemaBuilder._simple_schema(
+        species='brachypodium',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=18,
+        signal_nullable=True,
+        bot_id_len=50,
+    ),
+    'brachypodium_Bd21': EfpSchemaBuilder._simple_schema(
+        species='brachypodium',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=18,
+        signal_nullable=True,
+        bot_id_len=32,
+        charset='utf8mb4',
+    ),
+    'brachypodium_embryogenesis': EfpSchemaBuilder._simple_schema(
+        species='brachypodium',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=18,
+        signal_nullable=True,
+        bot_id_len=50,
+    ),
+    'brachypodium_grains': EfpSchemaBuilder._simple_schema(
+        species='brachypodium',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=18,
+        signal_nullable=True,
+        bot_id_len=32,
+        charset='utf8mb4',
+    ),
+    'brachypodium_metabolites_map': EfpSchemaBuilder._simple_schema(
+        species='brachypodium',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=64,
+        signal_nullable=True,
+        bot_id_len=45,
+        charset='utf8mb4',
+    ),
+    'brachypodium_photo_thermocycle': EfpSchemaBuilder._simple_schema(
+        species='brachypodium',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=18,
+        signal_nullable=True,
+        bot_id_len=12,
+    ),
+    'brassica_rapa': EfpSchemaBuilder._simple_schema(
+        species='brassica',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        probeset_len=16,
+        bot_id_len=10,
+        bot_id_nullable=True,
+        charset='utf8mb4',
+    ),
+    'cacao_developmental_atlas': EfpSchemaBuilder._simple_schema(
+        species='cacao',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        bot_id_nullable=True,
+        charset='utf8mb4',
+    ),
+    'cacao_developmental_atlas_sca': EfpSchemaBuilder._simple_schema(
+        species='cacao',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        bot_id_nullable=True,
+        charset='utf8mb4',
+    ),
+    'cacao_drought_diurnal_atlas': EfpSchemaBuilder._simple_schema(
+        species='cacao',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        bot_id_nullable=True,
+        charset='utf8mb4',
+    ),
+    'cacao_drought_diurnal_atlas_sca': EfpSchemaBuilder._simple_schema(
+        species='cacao',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        bot_id_nullable=True,
+        charset='utf8mb4',
+    ),
+    'cacao_infection': EfpSchemaBuilder._simple_schema(
+        species='cacao',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        probeset_len=18,
+        bot_id_len=24,
+        bot_id_nullable=True,
+        charset='utf8mb4',
+    ),
+    'cacao_leaf': EfpSchemaBuilder._simple_schema(
+        species='cacao',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        probeset_len=18,
+        bot_id_len=12,
+        bot_id_nullable=True,
+        charset='utf8mb4',
+    ),
+    'cacao_meristem_atlas_sca': EfpSchemaBuilder._simple_schema(
+        species='cacao',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        bot_id_len=24,
+        bot_id_nullable=True,
+        charset='utf8mb4',
+    ),
+    'cacao_seed_atlas_sca': EfpSchemaBuilder._simple_schema(
+        species='cacao',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        bot_id_len=24,
+        bot_id_nullable=True,
+        charset='utf8mb4',
+    ),
+    'camelina': EfpSchemaBuilder._simple_schema(
+        # TODO: camelina needs manual review for data_call/sample_file_name columns
+        species='camelina',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        sample_id_type='string',
+        sample_id_len=5,
+        proj_id_default=None,
+        probeset_len=20,
+        bot_id_len=40,
+    ),
+    'camelina_tpm': EfpSchemaBuilder._simple_schema(
+        # TODO: camelina_tpm needs manual review for data_call/sample_file_name columns
+        species='camelina',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        sample_id_type='string',
+        sample_id_len=5,
+        proj_id_default=None,
+        probeset_len=20,
+        bot_id_len=40,
+    ),
+    'cannabis': EfpSchemaBuilder._simple_schema(
+        species='cannabis',
+        sample_regex=r"^PK-\D{1,4}|MED_CTRL$",
+        proj_id_len=2,
+        bot_id_len=8,
+    ),
+    'canola': EfpSchemaBuilder._schema_with_qa_columns(
+        species='canola',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_type='text',
+        signal_nullable=True,
+        bot_id_type='text',
+        extra_columns=[
+            EfpSchemaBuilder._column('sample_tissue', 'text'),
+        ],
+    ),
+    'canola_original': EfpSchemaBuilder._schema_with_qa_columns(
+        species='canola',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_type='text',
+        signal_nullable=True,
+        bot_id_type='text',
+        extra_columns=[
+            EfpSchemaBuilder._column('sample_tissue', 'text'),
+        ],
+    ),
+    'canola_original_v2': EfpSchemaBuilder._schema_with_qa_columns(
+        species='canola',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_type='text',
+        signal_nullable=True,
+        bot_id_type='text',
+        extra_columns=[
+            EfpSchemaBuilder._column('sample_tissue', 'text'),
+        ],
+    ),
+    'canola_seed': EfpSchemaBuilder._simple_schema(
+        species='canola',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=16,
+        signal_nullable=True,
+        bot_id_len=12,
+        charset='utf8mb4',
+    ),
+    'cassava_atlas': EfpSchemaBuilder._simple_schema(
+        species='cassava',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        signal_nullable=True,
+        bot_id_len=24,
+        charset='utf8mb4',
+    ),
+    'cassava_cbb': EfpSchemaBuilder._simple_schema(
+        species='cassava',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        signal_nullable=True,
+        bot_id_len=24,
+        charset='utf8mb4',
+    ),
+    'cassava_eacmv': EfpSchemaBuilder._simple_schema(
+        species='cassava',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        signal_nullable=True,
+        bot_id_len=24,
+        charset='utf8mb4',
+    ),
+    'circadian_mutants': EfpSchemaBuilder._simple_schema(
+        species='circadian mutants',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=12,
+        signal_nullable=True,
+        bot_id_len=18,
+        charset='utf8mb4',
+    ),
+    'cuscuta': EfpSchemaBuilder._simple_schema(
+        species='cuscuta',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=2,
+        probeset_len=16,
+        probeset_nullable=True,
+        signal_nullable=True,
+        bot_id_len=12,
+        bot_id_nullable=True,
+        charset='utf8mb4',
+    ),
+    'cuscuta_early_haustoriogenesis': EfpSchemaBuilder._simple_schema(
+        species='cuscuta',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=12,
+        signal_nullable=True,
+        bot_id_len=8,
+        charset='utf8mb4',
+    ),
+    'cuscuta_lmd': EfpSchemaBuilder._simple_schema(
+        species='cuscuta',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=12,
+        signal_nullable=True,
+        bot_id_len=8,
+        charset='utf8mb4',
+    ),
+    'dna_damage': EfpSchemaBuilder._simple_schema(
+        species='arabidopsis',
         sample_regex=r"^\D{1,3}.{1,30}_plus_Y|\D{1,3}.{1,30}_minus_Y|Med_CTRL$",
-        charset="utf8mb4",
         probeset_len=10,
         bot_id_len=32,
         bot_id_nullable=True,
-        seed_rows=[
-            {
-                "proj_id": "1",
-                "sample_id": 1,
-                "data_probeset_id": "AT1G01010",
-                "data_signal": 59,
-                "data_bot_id": "col-0_rep1_12hr_minus_Y",
-            }
-        ],
+        charset='utf8mb4',
     ),
-    "embryo": EfpSchemaBuilder._simple_schema(
-        species="arabidopsis",
+    'durum_wheat_abiotic_stress': EfpSchemaBuilder._simple_schema(
+        species='wheat',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=32,
+        signal_nullable=True,
+        bot_id_len=32,
+        charset='utf8mb4',
+    ),
+    'durum_wheat_biotic_stress': EfpSchemaBuilder._simple_schema(
+        species='wheat',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=32,
+        signal_nullable=True,
+        bot_id_len=42,
+        charset='utf8mb4',
+    ),
+    'durum_wheat_development': EfpSchemaBuilder._simple_schema(
+        species='wheat',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=32,
+        signal_nullable=True,
+        bot_id_len=24,
+        charset='utf8mb4',
+    ),
+    'embryo': EfpSchemaBuilder._simple_schema(
+        species='arabidopsis',
         sample_regex=r"^\D{1,3}_\d$|Med_CTRL$",
         proj_id_len=3,
-        bot_id_len=8,
+        probeset_len=16,
         signal_nullable=True,
-        seed_rows=[
-            {"proj_id": "1", "sample_id": 1, "data_probeset_id": "AT1G01010", "data_signal": 0.67, "data_bot_id": "pg_1"}
-        ],
+        bot_id_len=8,
     ),
-    "germination": EfpSchemaBuilder._simple_schema(
-        species="arabidopsis",
+    'eucalyptus': EfpSchemaBuilder._simple_schema(
+        species='eucalyptus',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=16,
+        signal_nullable=True,
+        bot_id_len=42,
+        charset='utf8mb4',
+    ),
+    'euphorbia': EfpSchemaBuilder._simple_schema(
+        species='euphorbia',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=18,
+        signal_nullable=True,
+        bot_id_len=24,
+        charset='utf8mb4',
+    ),
+    'gc_drought': EfpSchemaBuilder._simple_schema(
+        species='gc drought',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=12,
+        signal_nullable=True,
+        bot_id_len=12,
+        charset='utf8mb4',
+    ),
+    'germination': EfpSchemaBuilder._simple_schema(
+        species='arabidopsis',
         sample_regex=r"^\d{1,3}\D{1,4}_\d{1,3}|harvest_\d|Med_CTRL$",
         proj_id_len=3,
         probeset_len=30,
+        signal_nullable=True,
     ),
-    "kalanchoe": EfpSchemaBuilder._simple_schema(
-        species="kalanchoe",
+    'grape_developmental': EfpSchemaBuilder._schema_with_qa_columns(
+        species='grape',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_type='integer',
+        proj_id_default=None,
+        probeset_len=40,
+        bot_id_len=50,
+        extra_columns=[
+            EfpSchemaBuilder._column('sample_tissue', 'text'),
+        ],
+    ),
+    'guard_cell': EfpSchemaBuilder._schema_with_qa_columns(
+        species='guard cell',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=30,
+        signal_nullable=True,
+        bot_id_len=24,
+    ),
+    'gynoecium': EfpSchemaBuilder._simple_schema(
+        species='gynoecium',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=12,
+        signal_nullable=True,
+        charset='utf8mb4',
+    ),
+    'heterodera_schachtii': EfpSchemaBuilder._simple_schema(
+        species='heterodera',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=12,
+        signal_nullable=True,
+        charset='utf8mb4',
+    ),
+    'hnahal': EfpSchemaBuilder._simple_schema(
+        species='hnahal',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_type='text',
+        signal_nullable=True,
+        bot_id_type='text',
+        extra_columns=[
+            EfpSchemaBuilder._column('channel', 'string', length=5, nullable=True),
+        ],
+    ),
+    'human_body_map_2': EfpSchemaBuilder._schema_with_qa_columns(
+        species='human',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=28,
+        signal_nullable=True,
+        bot_id_len=20,
+    ),
+    'human_developmental': EfpSchemaBuilder._schema_with_qa_columns(
+        species='human',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=32,
+        probeset_nullable=True,
+        signal_nullable=True,
+        bot_id_len=24,
+        bot_id_nullable=True,
+    ),
+    'human_developmental_SpongeLab': EfpSchemaBuilder._schema_with_qa_columns(
+        species='human',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_type='text',
+        signal_nullable=True,
+        bot_id_type='text',
+    ),
+    'human_diseased': EfpSchemaBuilder._schema_with_qa_columns(
+        species='human',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_type='text',
+        signal_nullable=True,
+        bot_id_type='text',
+    ),
+    'kalanchoe': EfpSchemaBuilder._simple_schema(
+        species='kalanchoe',
         sample_regex=r"^\D{1,4}_\D{1,5}_rep\d|MED_CTRL$",
         proj_id_len=2,
     ),
-    "phelipanche": EfpSchemaBuilder._simple_schema(
-        species="phelipanche",
-        sample_regex=r"^[a-z_-]{1,35}|MED_CTRL$",
-        charset="utf8mb4",
-        proj_id_len=5,
+    'kalanchoe_time_course_analysis': EfpSchemaBuilder._simple_schema(
+        species='kalanchoe',
+        sample_regex=r'.*',  # TODO: Add specific pattern
         proj_id_default=None,
-        bot_id_len=32,
-    ),
-    "selaginella": EfpSchemaBuilder._simple_schema(
-        species="selaginella",
-        sample_regex=r"^[\D\d]{1,33}|MED_CTRL$",
-        proj_id_len=5,
         probeset_len=18,
-        bot_id_len=36,
+        signal_nullable=True,
+        charset='utf8mb4',
     ),
-    "silique": EfpSchemaBuilder._simple_schema(
-        species="arabidopsis",
-        sample_regex=r"^\d{1,3}_dap.{1,58}_R1_001|Med_CTRL$",
-        proj_id_len=5,
-        proj_id_default=None,
-        probeset_len=12,
-        bot_id_len=64,
-    ),
-    "single_cell": EfpSchemaBuilder._simple_schema(
-        species="arabidopsis",
-        sample_regex=r"^\D+\d+_WT\d+.ExprMean|MED_CTRL$",
-        proj_id_len=5,
-        proj_id_default=None,
-        bot_id_len=32,
-    ),
-    "strawberry": EfpSchemaBuilder._simple_schema(
-        species="strawberry",
-        sample_regex=r"^\D{1,12}_.{1,8}_\D{1,2}|MED_CTRL$",
-        charset="utf8mb4",
-        proj_id_len=5,
-        proj_id_default=None,
-        bot_id_len=24,
-    ),
-    "striga": EfpSchemaBuilder._simple_schema(
-        species="striga",
-        sample_regex=r"^\D{1,35}|MED_CTRL$",
-        proj_id_len=5,
-        proj_id_default=None,
-        bot_id_len=42,
-    ),
-    "triphysaria": EfpSchemaBuilder._simple_schema(
-        species="triphysaria",
-        sample_regex=r"^[a-z_]{1,35}|MED_CTRL$",
-        charset="utf8mb4",
-        proj_id_len=5,
-        proj_id_default=None,
-        bot_id_len=32,
-    ),
-    # Schema with data_call column
-    "klepikova": EfpSchemaBuilder._simple_schema(
-        species="arabidopsis",
+    'klepikova': EfpSchemaBuilder._simple_schema(
+        # TODO: klepikova needs manual review for data_call/sample_file_name columns
+        species='arabidopsis',
         sample_regex=r"^SRR\d{1,9}|Med_CTRL$",
         proj_id_len=3,
         probeset_len=30,
-        extra_columns=[EfpSchemaBuilder._column("data_call", "string", length=2, nullable=True)],
+        signal_nullable=True,
     ),
-    # Schemas with string sample_id column (non-standard)
-    "arachis": EfpSchemaBuilder._build_schema(
-        column_overrides={
-            "proj_id": {"length": 24, "default": None},
-            "sample_id": {"type": "string", "length": 5, "unsigned": False, "default": None},
-            "data_probeset_id": {"length": 30},
-            "data_bot_id": {"length": 65},
-        },
-        metadata={
-            "species": "arachis",
-            "sample_regex": r"^[\D\d_]{1,30}|MED_CTRL$",
-        },
+    # TODO: 'lateral_root_initiation': Complex schema (missing base columns) - needs manual definition
+    'light_series': EfpSchemaBuilder._schema_with_qa_columns(
+        species='light series',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=30,
+        signal_nullable=True,
+        bot_id_len=30,
     ),
-    "physcomitrella_db": EfpSchemaBuilder._build_schema(
+    'lipid_map': EfpSchemaBuilder._simple_schema(
+        species='lipid map',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=64,
+        signal_nullable=True,
+        charset='utf8mb4',
+    ),
+    'little_millet': EfpSchemaBuilder._simple_schema(
+        species='little_millet',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=2,
+        probeset_len=32,
+        probeset_nullable=True,
+        signal_nullable=True,
+        bot_id_len=12,
+        bot_id_nullable=True,
+        charset='utf8mb4',
+    ),
+    'lupin_lcm_leaf': EfpSchemaBuilder._simple_schema(
+        species='lupin',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=32,
+        signal_nullable=True,
+        bot_id_len=32,
+        charset='utf8mb4',
+    ),
+    'lupin_lcm_pod': EfpSchemaBuilder._simple_schema(
+        species='lupin',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=32,
+        signal_nullable=True,
+        bot_id_len=32,
+        charset='utf8mb4',
+    ),
+    'lupin_lcm_stem': EfpSchemaBuilder._simple_schema(
+        species='lupin',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=32,
+        signal_nullable=True,
+        bot_id_len=32,
+        charset='utf8mb4',
+    ),
+    'lupin_pod_seed': EfpSchemaBuilder._simple_schema(
+        species='lupin',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=32,
+        signal_nullable=True,
+        bot_id_len=32,
+        charset='utf8mb4',
+    ),
+    'lupin_whole_plant': EfpSchemaBuilder._simple_schema(
+        species='lupin',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=32,
+        signal_nullable=True,
+        bot_id_len=32,
+        charset='utf8mb4',
+    ),
+    'maize_RMA_linear': EfpSchemaBuilder._schema_with_qa_columns(
+        species='maize',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=20,
+        signal_nullable=True,
+        bot_id_len=30,
+        extra_columns=[
+            EfpSchemaBuilder._column('sample_tissue', 'text'),
+        ],
+    ),
+    'maize_RMA_log': EfpSchemaBuilder._schema_with_qa_columns(
+        species='maize',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=20,
+        signal_nullable=True,
+        bot_id_len=30,
+    ),
+    'maize_atlas': EfpSchemaBuilder._simple_schema(
+        species='maize',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        sample_id_type='string',
+        sample_id_len=5,
+        proj_id_default=None,
+        probeset_len=25,
+        bot_id_len=40,
+    ),
+    'maize_atlas_v5': EfpSchemaBuilder._simple_schema(
+        species='maize',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=25,
+        signal_nullable=True,
+        bot_id_len=40,
+        charset='utf8mb4',
+    ),
+    'maize_buell_lab': EfpSchemaBuilder._simple_schema(
+        species='maize',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        bot_id_len=50,
+    ),
+    'maize_early_seed': EfpSchemaBuilder._simple_schema(
+        species='maize',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        bot_id_len=50,
+    ),
+    'maize_ears': EfpSchemaBuilder._schema_with_qa_columns(
+        species='maize',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=20,
+        signal_nullable=True,
+    ),
+    'maize_embryonic_leaf_development': EfpSchemaBuilder._simple_schema(
+        species='maize',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=18,
+        signal_nullable=True,
+        bot_id_len=24,
+        charset='utf8mb4',
+    ),
+    'maize_enzyme': EfpSchemaBuilder._schema_with_qa_columns(
+        species='maize',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=40,
+        signal_nullable=True,
+        bot_id_len=8,
+    ),
+    'maize_gdowns': EfpSchemaBuilder._simple_schema(
+        species='maize',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        sample_id_type='string',
+        sample_id_len=30,
+        proj_id_len=30,
+        proj_id_default=None,
+        probeset_len=40,
+        bot_id_len=40,
+    ),
+    'maize_iplant': EfpSchemaBuilder._schema_with_qa_columns(
+        species='maize',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=20,
+        signal_nullable=True,
+    ),
+    'maize_kernel_v5': EfpSchemaBuilder._simple_schema(
+        species='maize',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=25,
+        signal_nullable=True,
+        bot_id_len=8,
+        charset='utf8mb4',
+    ),
+    'maize_leaf_gradient': EfpSchemaBuilder._schema_with_qa_columns(
+        species='maize',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=20,
+        signal_nullable=True,
+        bot_id_len=12,
+    ),
+    'maize_lipid_map': EfpSchemaBuilder._simple_schema(
+        species='maize',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        signal_nullable=True,
+        bot_id_len=12,
+        charset='utf8mb4',
+    ),
+    'maize_metabolite': EfpSchemaBuilder._schema_with_qa_columns(
+        species='maize',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=64,
+        signal_nullable=True,
+        bot_id_len=5,
+    ),
+    'maize_nitrogen_use_efficiency': EfpSchemaBuilder._simple_schema(
+        species='maize',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        signal_nullable=True,
+        bot_id_len=24,
+        charset='utf8mb4',
+    ),
+    'maize_rice_comparison': EfpSchemaBuilder._schema_with_qa_columns(
+        species='maize',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=16,
+        signal_nullable=True,
+        bot_id_len=12,
+    ),
+    'maize_root': EfpSchemaBuilder._simple_schema(
+        species='maize',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=30,
+        signal_nullable=True,
+        bot_id_len=255,
+    ),
+    'maize_stress_v5': EfpSchemaBuilder._simple_schema(
+        species='maize',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=25,
+        signal_nullable=True,
+        bot_id_len=20,
+        charset='utf8mb4',
+    ),
+    'mangosteen_aril_vs_rind': EfpSchemaBuilder._simple_schema(
+        species='mangosteen',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=2,
+        proj_id_default=None,
+        probeset_len=8,
+        signal_nullable=True,
+        bot_id_len=8,
+        charset='utf8mb4',
+    ),
+    'mangosteen_callus': EfpSchemaBuilder._simple_schema(
+        species='mangosteen',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=2,
+        proj_id_default=None,
+        probeset_len=8,
+        signal_nullable=True,
+        bot_id_len=8,
+        charset='utf8mb4',
+    ),
+    'mangosteen_diseased_vs_normal': EfpSchemaBuilder._simple_schema(
+        species='mangosteen',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=2,
+        proj_id_default=None,
+        probeset_len=8,
+        signal_nullable=True,
+        bot_id_len=12,
+        charset='utf8mb4',
+    ),
+    'mangosteen_fruit_ripening': EfpSchemaBuilder._simple_schema(
+        species='mangosteen',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=2,
+        proj_id_default=None,
+        probeset_len=8,
+        signal_nullable=True,
+        bot_id_len=8,
+        charset='utf8mb4',
+    ),
+    'mangosteen_seed_development': EfpSchemaBuilder._simple_schema(
+        species='mangosteen',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=2,
+        proj_id_default=None,
+        probeset_len=8,
+        signal_nullable=True,
+        bot_id_len=12,
+        charset='utf8mb4',
+    ),
+    'mangosteen_seed_development_germination': EfpSchemaBuilder._simple_schema(
+        species='mangosteen',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=2,
+        proj_id_default=None,
+        probeset_len=8,
+        signal_nullable=True,
+        bot_id_len=8,
+        charset='utf8mb4',
+    ),
+    'mangosteen_seed_germination': EfpSchemaBuilder._simple_schema(
+        species='mangosteen',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=2,
+        proj_id_default=None,
+        probeset_len=8,
+        signal_nullable=True,
+        bot_id_len=12,
+        charset='utf8mb4',
+    ),
+    'marchantia_organ_stress': EfpSchemaBuilder._simple_schema(
+        species='marchantia',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=32,
+        signal_nullable=True,
+        bot_id_len=32,
+        charset='utf8mb4',
+    ),
+    'medicago_mas': EfpSchemaBuilder._schema_with_qa_columns(
+        species='medicago',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=28,
+        signal_nullable=True,
+        bot_id_len=22,
+        extra_columns=[
+            EfpSchemaBuilder._column('sample_tissue', 'text'),
+        ],
+    ),
+    'medicago_rma': EfpSchemaBuilder._schema_with_qa_columns(
+        species='medicago',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=28,
+        signal_nullable=True,
+        bot_id_len=22,
+    ),
+    'medicago_root': EfpSchemaBuilder._simple_schema(
+        species='medicago',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=18,
+        signal_nullable=True,
+        charset='utf8mb4',
+    ),
+    'medicago_root_v5': EfpSchemaBuilder._simple_schema(
+        species='medicago',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=64,
+        signal_nullable=True,
+        charset='utf8mb4',
+    ),
+    'medicago_seed': EfpSchemaBuilder._simple_schema(
+        species='medicago',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=18,
+        signal_nullable=True,
+        bot_id_len=15,
+    ),
+    'meristem_db': EfpSchemaBuilder._simple_schema(
+        species='meristem db',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=30,
+        signal_nullable=True,
+        bot_id_len=18,
+        extra_columns=[
+            EfpSchemaBuilder._column('channel', 'string', length=5, nullable=True),
+        ],
+    ),
+    'meristem_db_new': EfpSchemaBuilder._simple_schema(
+        species='meristem db new',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_type='text',
+        signal_nullable=True,
+        bot_id_type='text',
+        extra_columns=[
+            EfpSchemaBuilder._column('channel', 'string', length=5, nullable=True),
+        ],
+    ),
+    # TODO: 'mouse_db': Complex schema (missing base columns) - needs manual definition
+    # TODO: 'oat': Complex schema (missing base columns) - needs manual definition
+    'phelipanche': EfpSchemaBuilder._simple_schema(
+        species='phelipanche',
+        sample_regex=r"^[a-z_-]{1,35}|MED_CTRL$",
+        proj_id_default=None,
+        probeset_len=16,
+        signal_nullable=True,
+        bot_id_len=32,
+        charset='utf8mb4',
+    ),
+    'physcomitrella_db': EfpSchemaBuilder._simple_schema(
+        species='physcomitrella',
+        sample_regex=r"^[a-z_123]{1,15}|MED_CTRL$",
+        sample_id_type='string',
+        sample_id_len=30,
+        proj_id_len=30,
+        proj_id_default=None,
+        probeset_len=40,
+        bot_id_len=40,
+    ),
+    'poplar': EfpSchemaBuilder._schema_with_qa_columns(
+        species='poplar',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        file_name_type='string',
+        file_name_len=40,
+        probeset_len=70,
+        call_type='string',
+        call_len=12,
+        bot_id_len=40,
+        bot_id_nullable=True,
+        extra_columns=[
+            EfpSchemaBuilder._column('data_num', 'integer', default=0),
+        ],
+    ),
+    'poplar_hormone': EfpSchemaBuilder._simple_schema(
+        species='poplar',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=18,
+        signal_nullable=True,
+        bot_id_len=12,
+        charset='utf8mb4',
+    ),
+    'poplar_leaf': EfpSchemaBuilder._simple_schema(
+        species='poplar',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        probeset_len=70,
+        bot_id_len=40,
+        bot_id_nullable=True,
+    ),
+    'poplar_xylem': EfpSchemaBuilder._simple_schema(
+        species='poplar',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        probeset_len=70,
+        bot_id_len=40,
+        bot_id_nullable=True,
+    ),
+    'potato_dev': EfpSchemaBuilder._simple_schema(
+        species='potato',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=40,
+        signal_nullable=True,
+        bot_id_len=15,
+    ),
+    'potato_stress': EfpSchemaBuilder._simple_schema(
+        species='potato',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=40,
+        signal_nullable=True,
+        bot_id_len=12,
+    ),
+    'potato_wounding': EfpSchemaBuilder._simple_schema(
+        species='potato',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=40,
+        signal_nullable=True,
+        bot_id_len=12,
+        charset='utf8mb4',
+    ),
+    'rice_abiotic_stress_sc_pseudobulk': EfpSchemaBuilder._simple_schema(
+        species='rice',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=16,
+        signal_nullable=True,
+        bot_id_len=64,
+        charset='utf8mb4',
+    ),
+    'rice_drought_heat_stress': EfpSchemaBuilder._simple_schema(
+        species='rice',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        signal_nullable=True,
+        bot_id_len=12,
+        charset='utf8mb4',
+    ),
+    'rice_leaf_gradient': EfpSchemaBuilder._schema_with_qa_columns(
+        species='rice',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=18,
+        signal_nullable=True,
+        bot_id_len=12,
+    ),
+    'rice_maize_comparison': EfpSchemaBuilder._schema_with_qa_columns(
+        species='maize',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=18,
+        signal_nullable=True,
+        bot_id_len=12,
+    ),
+    'rice_mas': EfpSchemaBuilder._schema_with_qa_columns(
+        species='rice',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=28,
+        signal_nullable=True,
+        bot_id_len=26,
+        extra_columns=[
+            EfpSchemaBuilder._column('sample_tissue', 'text'),
+        ],
+    ),
+    'rice_metabolite': EfpSchemaBuilder._schema_with_qa_columns(
+        species='rice',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=25,
+        signal_nullable=True,
+        bot_id_len=6,
+    ),
+    'rice_rma': EfpSchemaBuilder._schema_with_qa_columns(
+        species='rice',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=28,
+        signal_nullable=True,
+        bot_id_len=26,
+    ),
+    'rice_root': EfpSchemaBuilder._simple_schema(
+        species='rice',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=2,
+        probeset_len=16,
+        signal_nullable=True,
+        bot_id_len=8,
+        charset='utf8mb4',
+    ),
+    'rohan': EfpSchemaBuilder._schema_with_qa_columns(
+        species='rohan',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_type='text',
+        signal_nullable=True,
+        bot_id_type='text',
+    ),
+    'root': EfpSchemaBuilder._schema_with_qa_columns(
+        species='root',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=30,
+        signal_nullable=True,
+        bot_id_len=24,
+    ),
+    'root_Schaefer_lab': EfpSchemaBuilder._simple_schema(
+        species='root Schaefer lab',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        probeset_len=16,
+        bot_id_len=20,
+        bot_id_nullable=True,
+    ),
+    'rpatel': EfpSchemaBuilder._schema_with_qa_columns(
+        species='rpatel',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_type='text',
+        signal_nullable=True,
+        bot_id_type='text',
+    ),
+    'seed_db': EfpSchemaBuilder._schema_with_qa_columns(
+        species='seed db',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=20,
+        file_name_type='string',
+        file_name_len=100,
+        probeset_len=30,
+        signal_nullable=True,
+        call_type='string',
+        call_len=40,
+        bot_id_len=64,
+    ),
+    'seedcoat': EfpSchemaBuilder._schema_with_qa_columns(
+        species='oat',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=22,
+        signal_nullable=True,
+        bot_id_len=12,
+    ),
+    'selaginella': EfpSchemaBuilder._simple_schema(
+        species='selaginella',
+        sample_regex=r"^[\D\d]{1,33}|MED_CTRL$",
+        probeset_len=18,
+        bot_id_len=36,
+    ),
+    'shoot_apex': EfpSchemaBuilder._schema_with_qa_columns(
+        species='arabidopsis',
+        sample_regex=r"^\D{1,5}\d{0,2}|MED_CTRL$",
+        proj_id_len=2,
+        proj_id_default=None,
+        file_name_type='string',
+        file_name_len=16,
+        probeset_len=12,
+        call_type='string',
+        call_len=2,
+        bot_id_len=8,
+    ),
+    'silique': EfpSchemaBuilder._simple_schema(
+        species='arabidopsis',
+        sample_regex=r"^\d{1,3}_dap.{1,58}_R1_001|Med_CTRL$",
+        proj_id_default=None,
+        probeset_len=12,
+        signal_nullable=True,
+        bot_id_len=64,
+    ),
+    'single_cell': EfpSchemaBuilder._simple_schema(
+        species='arabidopsis',
+        sample_regex=r"^\D+\d+_WT\d+.ExprMean|MED_CTRL$",
+        proj_id_default=None,
+        signal_nullable=True,
+        bot_id_len=32,
+    ),
+    'sorghum_atlas_w_BS_cells': EfpSchemaBuilder._simple_schema(
+        species='sorghum',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        signal_nullable=True,
+        bot_id_len=24,
+        charset='utf8mb4',
+    ),
+    'sorghum_comparative_transcriptomics': EfpSchemaBuilder._simple_schema(
+        species='sorghum',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=18,
+        signal_nullable=True,
+        bot_id_len=40,
+        charset='utf8mb4',
+    ),
+    'sorghum_developmental': EfpSchemaBuilder._simple_schema(
+        species='sorghum',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=16,
+        signal_nullable=True,
+        bot_id_len=12,
+        charset='utf8mb4',
+    ),
+    'sorghum_developmental_2': EfpSchemaBuilder._simple_schema(
+        species='sorghum',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=16,
+        signal_nullable=True,
+        bot_id_len=32,
+        charset='utf8mb4',
+    ),
+    'sorghum_flowering_activation': EfpSchemaBuilder._simple_schema(
+        species='sorghum',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=16,
+        signal_nullable=True,
+        bot_id_len=32,
+        charset='utf8mb4',
+    ),
+    'sorghum_low_phosphorus': EfpSchemaBuilder._simple_schema(
+        species='sorghum',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        signal_nullable=True,
+        charset='utf8mb4',
+    ),
+    'sorghum_nitrogen_stress': EfpSchemaBuilder._simple_schema(
+        species='sorghum',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=16,
+        signal_nullable=True,
+        bot_id_len=32,
+        charset='utf8mb4',
+    ),
+    'sorghum_nitrogen_use_efficiency': EfpSchemaBuilder._simple_schema(
+        species='sorghum',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        signal_nullable=True,
+        bot_id_len=12,
+        charset='utf8mb4',
+    ),
+    'sorghum_phosphate_stress': EfpSchemaBuilder._simple_schema(
+        species='sorghum',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        signal_nullable=True,
+        bot_id_len=32,
+        charset='utf8mb4',
+    ),
+    'sorghum_plasma': EfpSchemaBuilder._simple_schema(
+        species='sorghum',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        signal_nullable=True,
+        charset='utf8mb4',
+    ),
+    'sorghum_saline_alkali_stress': EfpSchemaBuilder._simple_schema(
+        species='sorghum',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=16,
+        signal_nullable=True,
+        bot_id_len=32,
+        charset='utf8mb4',
+    ),
+    'sorghum_stress': EfpSchemaBuilder._simple_schema(
+        species='sorghum',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=16,
+        signal_nullable=True,
+        bot_id_len=12,
+        charset='utf8mb4',
+    ),
+    'sorghum_strigolactone_variation': EfpSchemaBuilder._simple_schema(
+        species='sorghum',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=16,
+        signal_nullable=True,
+        bot_id_len=32,
+        charset='utf8mb4',
+    ),
+    'sorghum_sulfur_stress': EfpSchemaBuilder._simple_schema(
+        species='sorghum',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        signal_nullable=True,
+        bot_id_len=32,
+        charset='utf8mb4',
+    ),
+    'sorghum_temperature_stress': EfpSchemaBuilder._simple_schema(
+        species='sorghum',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=16,
+        signal_nullable=True,
+        bot_id_len=32,
+        charset='utf8mb4',
+    ),
+    'sorghum_vascularization_and_internode': EfpSchemaBuilder._simple_schema(
+        species='sorghum',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        signal_nullable=True,
+        bot_id_len=32,
+        charset='utf8mb4',
+    ),
+    'soybean': EfpSchemaBuilder._schema_with_qa_columns(
+        species='soybean',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        proj_id_default=None,
+        probeset_len=36,
+        bot_id_len=22,
+    ),
+    'soybean_embryonic_development': EfpSchemaBuilder._simple_schema(
+        species='soybean',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        signal_nullable=True,
+        bot_id_len=42,
+        charset='utf8mb4',
+    ),
+    'soybean_heart_cotyledon_globular': EfpSchemaBuilder._simple_schema(
+        species='soybean',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        signal_nullable=True,
+        bot_id_len=42,
+        charset='utf8mb4',
+    ),
+    'soybean_senescence': EfpSchemaBuilder._simple_schema(
+        species='soybean',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        signal_nullable=True,
+        bot_id_len=8,
+        charset='utf8mb4',
+    ),
+    'soybean_severin': EfpSchemaBuilder._schema_with_qa_columns(
+        species='soybean',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        proj_id_default=None,
+        probeset_len=18,
+        bot_id_len=18,
+    ),
+    'spruce': EfpSchemaBuilder._simple_schema(
+        species='spruce',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=16,
+        signal_nullable=True,
+        bot_id_len=24,
+        charset='utf8mb4',
+    ),
+    'strawberry': EfpSchemaBuilder._simple_schema(
+        species='strawberry',
+        sample_regex=r"^\D{1,12}_.{1,8}_\D{1,2}|MED_CTRL$",
+        proj_id_default=None,
+        probeset_len=16,
+        signal_nullable=True,
+        bot_id_len=24,
+        charset='utf8mb4',
+    ),
+    'striga': EfpSchemaBuilder._simple_schema(
+        species='striga',
+        sample_regex=r"^\D{1,35}|MED_CTRL$",
+        proj_id_default=None,
+        signal_nullable=True,
+        bot_id_len=42,
+    ),
+    'sugarcane_culms': EfpSchemaBuilder._simple_schema(
+        species='sugarcane',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        probeset_len=32,
+        bot_id_nullable=True,
+        charset='utf8mb4',
+    ),
+    'sugarcane_leaf': EfpSchemaBuilder._simple_schema(
+        species='sugarcane',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=12,
+        probeset_len=32,
+        bot_id_len=32,
+        bot_id_nullable=True,
+        charset='utf8mb4',
+    ),
+    'sunflower': EfpSchemaBuilder._simple_schema(
+        species='sunflower',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        probeset_len=16,
+        bot_id_nullable=True,
+    ),
+    'thellungiella_db': EfpSchemaBuilder._simple_schema(
+        # TODO: thellungiella_db needs manual review for data_call/sample_file_name columns
+        species='thellungiella',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        sample_id_type='string',
+        sample_id_len=30,
+        proj_id_len=30,
+        proj_id_default=None,
+        probeset_len=40,
+        bot_id_len=40,
+    ),
+    'tomato': EfpSchemaBuilder._schema_with_qa_columns(
+        species='tomato',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=18,
+        probeset_nullable=True,
+        signal_nullable=True,
+        bot_id_len=18,
+        bot_id_nullable=True,
+    ),
+    'tomato_ils': EfpSchemaBuilder._simple_schema(
+        species='tomato',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=20,
+        probeset_nullable=True,
+        signal_nullable=True,
+        bot_id_len=12,
+        bot_id_nullable=True,
+    ),
+    'tomato_ils2': EfpSchemaBuilder._simple_schema(
+        species='tomato',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=20,
+        probeset_nullable=True,
+        signal_nullable=True,
+        bot_id_len=12,
+        bot_id_nullable=True,
+        extra_columns=[
+            EfpSchemaBuilder._column('log', 'float'),
+            EfpSchemaBuilder._column('p_val', 'float'),
+        ],
+    ),
+    'tomato_ils3': EfpSchemaBuilder._simple_schema(
+        species='tomato',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=20,
+        probeset_nullable=True,
+        signal_nullable=True,
+        bot_id_nullable=True,
+    ),
+    'tomato_meristem': EfpSchemaBuilder._simple_schema(
+        species='tomato',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=2,
+        probeset_len=18,
+        probeset_nullable=True,
+        signal_nullable=True,
+        bot_id_len=24,
+        bot_id_nullable=True,
+    ),
+    'tomato_renormalized': EfpSchemaBuilder._schema_with_qa_columns(
+        species='tomato',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=18,
+        probeset_nullable=True,
+        signal_nullable=True,
+        bot_id_len=18,
+        bot_id_nullable=True,
+    ),
+    'tomato_root': EfpSchemaBuilder._simple_schema(
+        species='tomato',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=2,
+        probeset_len=18,
+        probeset_nullable=True,
+        signal_nullable=True,
+        bot_id_len=12,
+        bot_id_nullable=True,
+        charset='utf8mb4',
+    ),
+    'tomato_root_field_pot': EfpSchemaBuilder._simple_schema(
+        species='tomato',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=2,
+        probeset_len=18,
+        probeset_nullable=True,
+        signal_nullable=True,
+        bot_id_len=12,
+        bot_id_nullable=True,
+        charset='utf8mb4',
+    ),
+    'tomato_s_pennellii': EfpSchemaBuilder._simple_schema(
+        species='tomato',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=20,
+        probeset_nullable=True,
+        signal_nullable=True,
+        bot_id_len=24,
+        bot_id_nullable=True,
+    ),
+    'tomato_seed': EfpSchemaBuilder._simple_schema(
+        species='tomato',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        signal_nullable=True,
+        charset='utf8mb4',
+    ),
+    'tomato_shade_mutants': EfpSchemaBuilder._simple_schema(
+        species='tomato',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=16,
+        signal_nullable=True,
+        bot_id_len=20,
+        charset='utf8mb4',
+    ),
+    'tomato_shade_timecourse': EfpSchemaBuilder._simple_schema(
+        species='tomato',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_default=None,
+        probeset_len=16,
+        signal_nullable=True,
+        charset='utf8mb4',
+    ),
+    'tomato_trait': EfpSchemaBuilder._schema_with_qa_columns(
+        species='tomato',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=30,
+        probeset_len=100,
+        signal_nullable=True,
+        bot_id_type='text',
+        extra_columns=[
+            EfpSchemaBuilder._column('qvalue', 'float', nullable=True),
+        ],
+    ),
+    'triphysaria': EfpSchemaBuilder._simple_schema(
+        species='triphysaria',
+        sample_regex=r"^[a-z_]{1,35}|MED_CTRL$",
+        proj_id_default=None,
+        probeset_len=16,
+        signal_nullable=True,
+        bot_id_len=32,
+        charset='utf8mb4',
+    ),
+    'triticale': EfpSchemaBuilder._schema_with_qa_columns(
+        species='triticale',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=30,
+        signal_nullable=True,
+        bot_id_len=18,
+    ),
+    'triticale_mas': EfpSchemaBuilder._schema_with_qa_columns(
+        species='triticale',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=30,
+        signal_nullable=True,
+        bot_id_len=30,
+    ),
+    'tung_tree': EfpSchemaBuilder._simple_schema(
+        species='tung_tree',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        probeset_len=16,
+        bot_id_nullable=True,
+    ),
+    'wheat': EfpSchemaBuilder._simple_schema(
+        species='wheat',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=32,
+        signal_nullable=True,
+    ),
+    'wheat_abiotic_stress': EfpSchemaBuilder._simple_schema(
+        species='wheat',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=32,
+        signal_nullable=True,
+        charset='utf8mb4',
+    ),
+    'wheat_embryogenesis': EfpSchemaBuilder._simple_schema(
+        species='wheat',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=32,
+        signal_nullable=True,
+        bot_id_len=50,
+    ),
+    'wheat_meiosis': EfpSchemaBuilder._simple_schema(
+        species='wheat',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=32,
+        signal_nullable=True,
+        bot_id_len=24,
+        charset='utf8mb4',
+    ),
+    'wheat_root': EfpSchemaBuilder._simple_schema(
+        species='wheat',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=15,
+        probeset_len=32,
+        signal_nullable=True,
+        charset='utf8mb4',
+    ),
+    'willow': EfpSchemaBuilder._simple_schema(
+        species='willow',
+        sample_regex=r'.*',  # TODO: Add specific pattern
+        proj_id_len=2,
+        probeset_len=32,
+    ),
+    # Complex/non-standard schemas (manually defined)
+    'lateral_root_initiation': EfpSchemaBuilder._build_schema(
         column_overrides={
-            "proj_id": {"length": 30, "default": ""},
-            "sample_id": {"type": "string", "length": 30, "unsigned": False, "default": ""},
-            "data_probeset_id": {"length": 40, "default": "", "primary_key": True},
-            "data_bot_id": {"length": 40},
+            "sample_id": {"type": "string", "length": 30, "unsigned": False, "default": None},
+            "data_probeset_id": {"length": 40, "default": None},
+            "data_bot_id": {"length": 64, "nullable": True},
         },
-        metadata={
-            "species": "physcomitrella",
-            "sample_regex": r"^[a-z_123]{1,15}|MED_CTRL$",
+        extra_columns=[
+            EfpSchemaBuilder._column("project_id", "string", length=30, nullable=False),
+            EfpSchemaBuilder._column("sample_file_name", "string", length=80, nullable=True),
+        ],
+        charset="utf8mb4",
+        metadata={"species": "arabidopsis", "sample_regex": r".*"},
+    ),
+    'mouse_db': EfpSchemaBuilder._build_schema(
+        column_overrides={
+            "data_probeset_id": {"length": 15, "primary_key": True},
+            "data_bot_id": {"length": 18, "primary_key": True},
         },
+        index=["data_probeset_id", "data_bot_id"],
+        metadata={"species": "mouse", "sample_regex": r".*"},
+    ),
+    'oat': EfpSchemaBuilder._build_schema(
+        column_overrides={
+            "data_probeset_id": {"length": 36, "primary_key": True},
+            "data_bot_id": {"length": 24, "primary_key": True},
+            "data_signal": {"nullable": True},
+        },
+        extra_columns=[
+            EfpSchemaBuilder._column("genome", "string", length=16, nullable=False),
+            EfpSchemaBuilder._column("genome_id", "string", length=16, nullable=False),
+            EfpSchemaBuilder._column("orthogroup", "string", length=16, nullable=False),
+            EfpSchemaBuilder._column("version", "string", length=2, nullable=False),
+        ],
+        charset="utf8mb4",
+        index=["data_probeset_id", "data_bot_id"],
+        metadata={"species": "oat", "sample_regex": r".*"},
     ),
 }
 
