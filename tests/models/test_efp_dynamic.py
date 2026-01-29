@@ -14,10 +14,10 @@ ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
 
-from sqlalchemy import inspect
-from api import app
-from api.models.efp_dynamic import SIMPLE_EFP_SAMPLE_MODELS
-from api.models.efp_schemas import SIMPLE_EFP_DATABASE_SCHEMAS
+from sqlalchemy import inspect  # noqa: E402
+from api import app  # noqa: E402
+from api.models.efp_dynamic import SIMPLE_EFP_SAMPLE_MODELS  # noqa: E402
+from api.models.efp_schemas import SIMPLE_EFP_DATABASE_SCHEMAS  # noqa: E402
 
 
 class TestDynamicModelColumns(TestCase):

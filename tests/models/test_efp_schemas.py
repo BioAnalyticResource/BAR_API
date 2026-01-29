@@ -17,9 +17,9 @@ ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
 
-from api import app
-from api.models.efp_schemas import SIMPLE_EFP_DATABASE_SCHEMAS, EfpSchemaBuilder
-from api.models.efp_dynamic import SIMPLE_EFP_SAMPLE_MODELS
+from api import app  # noqa: E402
+from api.models.efp_schemas import SIMPLE_EFP_DATABASE_SCHEMAS, EfpSchemaBuilder  # noqa: E402
+from api.models.efp_dynamic import SIMPLE_EFP_SAMPLE_MODELS  # noqa: E402
 
 
 class TestEfpSchemaDefinitions(TestCase):
@@ -310,7 +310,7 @@ class TestComplexSchemas(TestCase):
         extra_columns = {'genome', 'genome_id', 'orthogroup', 'version'}
         self.assertTrue(
             extra_columns.issubset(column_names),
-            f"oat missing expected extra columns"
+            "oat missing expected extra columns"
         )
 
     def test_oat_has_utf8mb4_charset(self):
@@ -348,7 +348,7 @@ class TestSchemaBuilderHelpers(TestCase):
 
         self.assertTrue(
             qa_columns.issubset(column_names),
-            f"QA schema missing QA columns"
+            "QA schema missing QA columns"
         )
 
     def test_build_schema_handles_extra_columns(self):
