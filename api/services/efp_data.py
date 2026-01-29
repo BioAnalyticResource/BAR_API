@@ -427,8 +427,14 @@ class EFPDataService:
             else:
                 last_error = f"Database {database} is not available (no active bind or sqlite mirror)."
 
-            if results is None:
-                local_rows = EFPDataService._query_local_dataset(database, query_id, sample_ids, sample_case_insensitive)
+            local_rows = None
+            if results is None or not results:
+                local_rows = EFPDataService._query_local_dataset(
+                    database,
+                    query_id,
+                    sample_ids,
+                    sample_case_insensitive,
+                )
                 if local_rows is not None:
                     results = local_rows
 
