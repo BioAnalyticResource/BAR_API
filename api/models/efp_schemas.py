@@ -173,6 +173,9 @@ class EfpSchemaBuilder:
         if "probeset_type" in kwargs:
             probeset_type = kwargs.pop("probeset_type")
             overrides["data_probeset_id"] = {"type": probeset_type, "length": None}
+            # TEXT columns cannot be primary keys in MySQL
+            if probeset_type == "text":
+                overrides["data_probeset_id"]["primary_key"] = False
         else:
             overrides["data_probeset_id"] = {"length": probeset_len}
 
@@ -180,6 +183,9 @@ class EfpSchemaBuilder:
         if "bot_id_type" in kwargs:
             bot_id_type = kwargs.pop("bot_id_type")
             overrides["data_bot_id"] = {"type": bot_id_type, "length": None}
+            # TEXT columns cannot be primary keys in MySQL
+            if bot_id_type == "text":
+                overrides["data_bot_id"]["primary_key"] = False
         else:
             overrides["data_bot_id"] = {"length": bot_id_len}
 
