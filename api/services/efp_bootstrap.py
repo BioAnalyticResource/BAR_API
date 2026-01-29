@@ -74,6 +74,11 @@ def _build_table(metadata: MetaData, spec, db_name: str) -> Table:
     table = Table(spec["table_name"], metadata, *columns, mysql_charset=spec.get("charset"))
     index_cols = spec.get("index") or []
     if index_cols:
+        # MySQL cannot index TEXT/BLOB columns without a prefix length.
+        # Filter them out to avoid bootstrap failures when schemas use TEXT.
+        text_cols = {col["name"] for col in spec["columns"] if col.get("type") == "text"}
+        index_cols = [col for col in index_cols if col not in text_cols]
+    if index_cols:
         index_name = _make_index_name(db_name, index_cols)
         Index(index_name, *[table.c[col] for col in index_cols])
     return table

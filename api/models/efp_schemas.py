@@ -217,6 +217,17 @@ class EfpSchemaBuilder:
         if "probeset_nullable" in kwargs:
             overrides.setdefault("data_probeset_id", {})["nullable"] = kwargs.pop("probeset_nullable")
 
+        # Build index list, excluding TEXT columns (can't be indexed in MySQL)
+        index_columns = list(DEFAULT_INDEX)
+        if "data_probeset_id" in overrides and overrides["data_probeset_id"].get("type") == "text":
+            index_columns = [col for col in index_columns if col != "data_probeset_id"]
+        if "data_bot_id" in overrides and overrides["data_bot_id"].get("type") == "text":
+            index_columns = [col for col in index_columns if col != "data_bot_id"]
+
+        # Allow manual index override if specified
+        if "index" not in kwargs:
+            kwargs["index"] = index_columns
+
         return EfpSchemaBuilder._build_schema(
             charset=charset,
             column_overrides=overrides,
@@ -261,13 +272,18 @@ class EfpSchemaBuilder:
         extra_columns = kwargs.pop("extra_columns", [])
         all_extra_cols = qa_cols + extra_columns
 
+        # Build index list - exclude data_probeset_id if it's TEXT type
+        index_columns = ["data_probeset_id"]
+        if kwargs.get("probeset_type") == "text":
+            index_columns = []
+
         return EfpSchemaBuilder._simple_schema(
             species=species,
             sample_regex=sample_regex,
             probeset_len=probeset_len,
             bot_id_len=bot_id_len,
             extra_columns=all_extra_cols,
-            index=["data_probeset_id"],
+            index=index_columns,
             **kwargs,
         )
 
