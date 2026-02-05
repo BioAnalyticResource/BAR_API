@@ -36,9 +36,7 @@ class TestDynamicModelColumns(TestCase):
         """Test cannabis model has correct columns and types."""
         model = SIMPLE_EFP_SAMPLE_MODELS['cannabis']
 
-        # Check basic attributes
-        self.assertTrue(hasattr(model, 'proj_id'))
-        self.assertTrue(hasattr(model, 'sample_id'))
+        # Check the 3 data columns
         self.assertTrue(hasattr(model, 'data_probeset_id'))
         self.assertTrue(hasattr(model, 'data_signal'))
         self.assertTrue(hasattr(model, 'data_bot_id'))
@@ -47,70 +45,32 @@ class TestDynamicModelColumns(TestCase):
         mapper = inspect(model)
         columns = {col.name: col for col in mapper.columns}
 
-        self.assertEqual(str(columns['proj_id'].type), 'VARCHAR(2)')
+        self.assertEqual(len(columns), 3)
         self.assertEqual(str(columns['data_bot_id'].type), 'VARCHAR(8)')
+        self.assertEqual(str(columns['data_probeset_id'].type), 'VARCHAR(24)')
 
-    def test_oat_model_has_extra_columns(self):
-        """Test oat model has all extra genome columns."""
-        model = SIMPLE_EFP_SAMPLE_MODELS['oat']
-
-        # Check extra columns exist
-        self.assertTrue(hasattr(model, 'genome'))
-        self.assertTrue(hasattr(model, 'genome_id'))
-        self.assertTrue(hasattr(model, 'orthogroup'))
-        self.assertTrue(hasattr(model, 'version'))
-
-        # Inspect column types
-        mapper = inspect(model)
-        columns = {col.name: col for col in mapper.columns}
-
-        self.assertEqual(str(columns['genome'].type), 'VARCHAR(16)')
-        self.assertEqual(str(columns['version'].type), 'VARCHAR(2)')
-
-    def test_mouse_db_has_minimal_columns(self):
-        """Test mouse_db model has the 3 main data columns."""
+    def test_mouse_db_has_3_columns(self):
+        """Test mouse_db model has exactly 3 columns."""
         model = SIMPLE_EFP_SAMPLE_MODELS['mouse_db']
 
         # Get all columns
         mapper = inspect(model)
         column_names = {col.name for col in mapper.columns}
 
-        # Should have the 3 main data columns
-        required_columns = {'data_probeset_id', 'data_signal', 'data_bot_id'}
-        self.assertTrue(required_columns.issubset(column_names))
+        # Should have exactly 3 columns
+        expected = {'data_probeset_id', 'data_signal', 'data_bot_id'}
+        self.assertEqual(column_names, expected)
 
-        # Should have 5 total columns (includes base proj_id and sample_id)
-        self.assertEqual(len(column_names), 5)
-
-    def test_arabidopsis_ecotypes_has_qa_columns(self):
-        """Test arabidopsis_ecotypes has QA columns."""
-        model = SIMPLE_EFP_SAMPLE_MODELS['arabidopsis_ecotypes']
-
-        self.assertTrue(hasattr(model, 'sample_file_name'))
-        self.assertTrue(hasattr(model, 'data_call'))
-        self.assertTrue(hasattr(model, 'data_p_val'))
-
-    def test_affydb_has_data_num_column(self):
-        """Test affydb has the extra data_num column."""
-        model = SIMPLE_EFP_SAMPLE_MODELS['affydb']
-
-        self.assertTrue(hasattr(model, 'data_num'))
-
-        # Check it's an integer
-        mapper = inspect(model)
-        columns = {col.name: col for col in mapper.columns}
-        self.assertIn('INTEGER', str(columns['data_num'].type))
-
-    def test_lateral_root_initiation_has_project_id(self):
-        """Test lateral_root_initiation has project_id as extra column."""
-        model = SIMPLE_EFP_SAMPLE_MODELS['lateral_root_initiation']
-
-        # Has extra project_id column
-        self.assertTrue(hasattr(model, 'project_id'))
-        # Also has standard proj_id from base columns
-        self.assertTrue(hasattr(model, 'proj_id'))
-        # Has sample_file_name extra column
-        self.assertTrue(hasattr(model, 'sample_file_name'))
+    def test_all_models_have_3_columns(self):
+        """Test all models have exactly 3 columns."""
+        for db_name, model in SIMPLE_EFP_SAMPLE_MODELS.items():
+            with self.subTest(database=db_name):
+                mapper = inspect(model)
+                column_names = {col.name for col in mapper.columns}
+                self.assertEqual(
+                    len(column_names), 3,
+                    f"{db_name} has {len(column_names)} columns, expected 3: {column_names}"
+                )
 
 
 class TestDynamicModelPrimaryKeys(TestCase):
@@ -139,27 +99,15 @@ class TestDynamicModelPrimaryKeys(TestCase):
         self.assertIn('data_bot_id', pk_columns)
 
     def test_mouse_db_primary_keys(self):
-        """Test mouse_db has primary keys (even without proj_id/sample_id)."""
+        """Test mouse_db has correct primary keys."""
         model = SIMPLE_EFP_SAMPLE_MODELS['mouse_db']
         mapper = inspect(model)
 
         pk_columns = [col.name for col in mapper.primary_key]
 
-        # Should have at least 2 primary keys
-        self.assertGreaterEqual(len(pk_columns), 2)
+        self.assertEqual(len(pk_columns), 3)
         self.assertIn('data_probeset_id', pk_columns)
-        self.assertIn('data_bot_id', pk_columns)
-
-    def test_oat_primary_keys(self):
-        """Test oat has primary keys."""
-        model = SIMPLE_EFP_SAMPLE_MODELS['oat']
-        mapper = inspect(model)
-
-        pk_columns = [col.name for col in mapper.primary_key]
-
-        # Should have primary keys
-        self.assertGreater(len(pk_columns), 0)
-        self.assertIn('data_probeset_id', pk_columns)
+        self.assertIn('data_signal', pk_columns)
         self.assertIn('data_bot_id', pk_columns)
 
     def test_all_models_have_primary_keys(self):
@@ -201,41 +149,15 @@ class TestDynamicModelNullability(TestCase):
 
         self.assertTrue(bot_id_col.get('nullable', False))
 
-    def test_lateral_root_initiation_bot_id_nullable(self):
-        """Test lateral_root_initiation has nullable data_bot_id."""
-        schema = SIMPLE_EFP_DATABASE_SCHEMAS['lateral_root_initiation']
-        bot_id_col = next(col for col in schema['columns'] if col['name'] == 'data_bot_id')
-
-        self.assertTrue(bot_id_col.get('nullable', False))
-
-
-class TestDynamicModelDefaults(TestCase):
-    """Test column default values."""
-
-    def setUp(self):
-        """Set up application context for each test."""
-        self.ctx = app.app_context()
-        self.ctx.push()
-
-    def tearDown(self):
-        """Tear down application context."""
-        self.ctx.pop()
-
-    def test_cannabis_proj_id_default(self):
-        """Test cannabis proj_id has default value."""
-        schema = SIMPLE_EFP_DATABASE_SCHEMAS['cannabis']
-        proj_id_col = next(col for col in schema['columns'] if col['name'] == 'proj_id')
-
-        # Cannabis has custom proj_id_len but standard default
-        self.assertIn('default', proj_id_col)
-
-    def test_phelipanche_proj_id_nullable(self):
-        """Test phelipanche has nullable proj_id (None default)."""
-        schema = SIMPLE_EFP_DATABASE_SCHEMAS['phelipanche']
-        proj_id_col = next(col for col in schema['columns'] if col['name'] == 'proj_id')
-
-        # phelipanche has proj_id_default=None
-        self.assertEqual(proj_id_col.get('default'), None)
+    def test_all_columns_nullable(self):
+        """All 3 columns in every schema should be nullable."""
+        for db_name, schema in SIMPLE_EFP_DATABASE_SCHEMAS.items():
+            for col in schema['columns']:
+                with self.subTest(database=db_name, column=col['name']):
+                    self.assertTrue(
+                        col.get('nullable', False),
+                        f"{db_name}.{col['name']} is not nullable"
+                    )
 
 
 class TestDynamicModelTextColumns(TestCase):
@@ -266,41 +188,13 @@ class TestDynamicModelTextColumns(TestCase):
         self.assertEqual(probeset_col['type'], 'text')
         self.assertIsNone(probeset_col.get('length'))
 
+    def test_canola_bot_id_is_text(self):
+        """Test canola has text type for data_bot_id."""
+        schema = SIMPLE_EFP_DATABASE_SCHEMAS['canola']
+        bot_id_col = next(col for col in schema['columns'] if col['name'] == 'data_bot_id')
 
-class TestDynamicModelIntegerColumns(TestCase):
-    """Test integer column type handling."""
-
-    def setUp(self):
-        """Set up application context for each test."""
-        self.ctx = app.app_context()
-        self.ctx.push()
-
-    def tearDown(self):
-        """Tear down application context."""
-        self.ctx.pop()
-
-    def test_affydb_proj_id_is_integer(self):
-        """Test affydb has integer proj_id."""
-        schema = SIMPLE_EFP_DATABASE_SCHEMAS['affydb']
-        proj_id_col = next(col for col in schema['columns'] if col['name'] == 'proj_id')
-
-        self.assertEqual(proj_id_col['type'], 'integer')
-        self.assertTrue(proj_id_col.get('unsigned', False))
-
-    def test_atgenexp_proj_id_is_integer(self):
-        """Test atgenexp has integer proj_id."""
-        schema = SIMPLE_EFP_DATABASE_SCHEMAS['atgenexp']
-        proj_id_col = next(col for col in schema['columns'] if col['name'] == 'proj_id')
-
-        self.assertEqual(proj_id_col['type'], 'integer')
-
-    def test_arachis_sample_id_is_string(self):
-        """Test arachis has string sample_id (not integer)."""
-        schema = SIMPLE_EFP_DATABASE_SCHEMAS['arachis']
-        sample_id_col = next(col for col in schema['columns'] if col['name'] == 'sample_id')
-
-        self.assertEqual(sample_id_col['type'], 'string')
-        self.assertEqual(sample_id_col['length'], 5)
+        self.assertEqual(bot_id_col['type'], 'text')
+        self.assertIsNone(bot_id_col.get('length'))
 
 
 class TestModelClassNames(TestCase):

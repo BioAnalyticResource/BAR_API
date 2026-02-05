@@ -87,6 +87,11 @@ LOCAL_EFP_DATASETS: Dict[str, Dict[str, List[Dict[str, str]]]] = {
             {"sample": "PK-RT", "value": "0"},
         ]
     },
+    "dna_damage": {
+        "AT1G01010": [
+            {"sample": "col-0_rep1_12hr_minus_Y", "value": "59"},
+        ]
+    },
 }
 
 

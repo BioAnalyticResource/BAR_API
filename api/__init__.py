@@ -6,6 +6,8 @@ from flask_caching import Cache
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import os
+from pathlib import Path
+import tempfile
 
 
 def create_app():
@@ -33,6 +35,53 @@ def create_app():
     else:
         # The localhost
         bar_app.config.from_pyfile(os.path.expanduser("~") + "/.config/BAR_API.cfg", silent=True)
+
+    repo_root = Path(__file__).resolve().parents[1]
+    db_dir = repo_root / "config" / "databases"
+    if db_dir.exists():
+        is_test_run = (
+            bar_app.config.get("TESTING")
+            or "pytest" in os.sys.modules
+            or os.environ.get("BAR_API_AUTO_SQLITE_MIRRORS") == "1"
+        )
+
+        # For tests/local dev, build sqlite mirrors in a temp directory (no repo db files needed).
+        if is_test_run and not os.environ.get("BAR"):
+            from api.utils.sqlite_mirror_utils import build_sqlite_db
+
+            tmp_root = Path(tempfile.gettempdir()) / "bar_api_sqlite"
+            tmp_root.mkdir(parents=True, exist_ok=True)
+
+            bind_names = set()
+            if bar_app.config.get("SQLALCHEMY_BINDS"):
+                bind_names.update(bar_app.config["SQLALCHEMY_BINDS"].keys())
+            else:
+                bind_names.update(p.stem for p in db_dir.glob("*.sql") if p.stem)
+
+            sqlite_binds = {}
+            for name in sorted(bind_names):
+                sql_path = db_dir / f"{name}.sql"
+                if not sql_path.exists():
+                    continue
+                db_path = tmp_root / f"{name}.db"
+                if (
+                    os.environ.get("BAR_API_AUTO_SQLITE_MIRRORS") == "1"
+                    or not db_path.exists()
+                    or db_path.stat().st_size == 0
+                ):
+                    build_sqlite_db(sql_path, db_path)
+                sqlite_binds[name] = f"sqlite:///{db_path}"
+
+            bar_app.config["SQLALCHEMY_BINDS"] = sqlite_binds
+
+        # If no binds were configured and we're not in test mode, fall back to local sqlite mirrors.
+        if not bar_app.config.get("SQLALCHEMY_BINDS"):
+            binds = {}
+            for db_path in db_dir.glob("*.db"):
+                if not db_path.stem:
+                    continue
+                binds[db_path.stem] = f"sqlite:///{db_path}"
+            bar_app.config["SQLALCHEMY_BINDS"] = binds
 
     # Initialize the databases
     db.init_app(bar_app)

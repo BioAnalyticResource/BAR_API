@@ -5,7 +5,6 @@ Tests all 191 EFP databases to ensure:
 1. Schema definitions are valid
 2. Dynamic ORM models generate correctly
 3. Column types and constraints are properly configured
-4. Complex schemas (lateral_root_initiation, mouse_db, oat) work correctly
 """
 
 import os
@@ -18,7 +17,7 @@ if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
 
 from api import app  # noqa: E402
-from api.models.efp_schemas import SIMPLE_EFP_DATABASE_SCHEMAS, EfpSchemaBuilder  # noqa: E402
+from api.models.efp_schemas import SIMPLE_EFP_DATABASE_SCHEMAS  # noqa: E402
 from api.models.efp_dynamic import SIMPLE_EFP_SAMPLE_MODELS  # noqa: E402
 
 
@@ -53,34 +52,17 @@ class TestEfpSchemaDefinitions(TestCase):
                 self.assertIn('species', metadata, f"{db_name} missing species metadata")
                 self.assertIn('sample_regex', metadata, f"{db_name} missing sample_regex metadata")
 
-    def test_all_schemas_have_base_columns(self):
-        """Most databases should have the 5 base columns (except mouse_db which has only 3)."""
-        base_column_names = {'proj_id', 'sample_id', 'data_probeset_id', 'data_signal', 'data_bot_id'}
+    def test_all_schemas_have_3_columns(self):
+        """Every database should have exactly 3 columns: data_probeset_id, data_signal, data_bot_id."""
+        expected_columns = {'data_probeset_id', 'data_signal', 'data_bot_id'}
 
         for db_name, schema in SIMPLE_EFP_DATABASE_SCHEMAS.items():
             with self.subTest(database=db_name):
                 column_names = {col['name'] for col in schema['columns']}
-
-                # mouse_db is special - only has 3 columns
-                if db_name == 'mouse_db':
-                    expected = {'data_probeset_id', 'data_signal', 'data_bot_id'}
-                    self.assertTrue(
-                        expected.issubset(column_names),
-                        f"{db_name} missing expected columns. Has: {column_names}"
-                    )
-                # lateral_root_initiation has project_id instead of proj_id
-                elif db_name == 'lateral_root_initiation':
-                    expected = {'sample_id', 'data_probeset_id', 'data_signal', 'data_bot_id', 'project_id'}
-                    self.assertTrue(
-                        expected.issubset(column_names),
-                        f"{db_name} missing expected columns. Has: {column_names}"
-                    )
-                else:
-                    # Standard databases should have all 5 base columns
-                    self.assertTrue(
-                        base_column_names.issubset(column_names),
-                        f"{db_name} missing base columns. Has: {column_names}"
-                    )
+                self.assertEqual(
+                    column_names, expected_columns,
+                    f"{db_name} has unexpected columns: {column_names}"
+                )
 
     def test_column_types_are_valid(self):
         """All column types must be one of: string, integer, float, text."""
@@ -248,15 +230,10 @@ class TestDynamicOrmGeneration(TestCase):
                 )
 
     def test_known_models_have_expected_columns(self):
-        """Verify specific models have their expected columns."""
-        test_cases = {
-            'cannabis': ['proj_id', 'sample_id', 'data_probeset_id', 'data_signal', 'data_bot_id'],
-            'oat': ['proj_id', 'sample_id', 'data_probeset_id', 'data_signal', 'data_bot_id',
-                    'genome', 'genome_id', 'orthogroup', 'version'],
-            'mouse_db': ['data_probeset_id', 'data_signal', 'data_bot_id'],
-        }
+        """Verify specific models have the 3 expected columns."""
+        expected_columns = ['data_probeset_id', 'data_signal', 'data_bot_id']
 
-        for db_name, expected_columns in test_cases.items():
+        for db_name in ['cannabis', 'oat', 'mouse_db', 'embryo', 'wheat']:
             with self.subTest(database=db_name):
                 model = SIMPLE_EFP_SAMPLE_MODELS[db_name]
                 for col_name in expected_columns:
@@ -264,106 +241,6 @@ class TestDynamicOrmGeneration(TestCase):
                         hasattr(model, col_name),
                         f"{db_name} model missing column: {col_name}"
                     )
-
-
-class TestComplexSchemas(TestCase):
-    """Test the 3 complex/non-standard schemas."""
-
-    def test_lateral_root_initiation_has_project_id(self):
-        """lateral_root_initiation has both project_id and sample_file_name as extra columns."""
-        schema = SIMPLE_EFP_DATABASE_SCHEMAS['lateral_root_initiation']
-        column_names = {col['name'] for col in schema['columns']}
-
-        # Has the extra project_id column
-        self.assertIn('project_id', column_names)
-        # Also has standard proj_id from base columns
-        self.assertIn('proj_id', column_names)
-        # Has sample_file_name extra column
-        self.assertIn('sample_file_name', column_names)
-
-    def test_lateral_root_initiation_has_string_sample_id(self):
-        """lateral_root_initiation has string sample_id instead of integer."""
-        schema = SIMPLE_EFP_DATABASE_SCHEMAS['lateral_root_initiation']
-        sample_id_col = next(col for col in schema['columns'] if col['name'] == 'sample_id')
-
-        self.assertEqual(sample_id_col['type'], 'string')
-        self.assertEqual(sample_id_col['length'], 30)
-
-    def test_mouse_db_has_minimal_columns(self):
-        """mouse_db has the 3 main data columns (still includes base proj_id/sample_id from template)."""
-        schema = SIMPLE_EFP_DATABASE_SCHEMAS['mouse_db']
-        column_names = {col['name'] for col in schema['columns']}
-
-        # Has the 3 data columns
-        self.assertIn('data_probeset_id', column_names)
-        self.assertIn('data_signal', column_names)
-        self.assertIn('data_bot_id', column_names)
-
-        # Should have 5 columns total (includes base proj_id and sample_id)
-        self.assertEqual(len(column_names), 5)
-
-    def test_oat_has_extra_genome_columns(self):
-        """oat has 4 extra columns: genome, genome_id, orthogroup, version."""
-        schema = SIMPLE_EFP_DATABASE_SCHEMAS['oat']
-        column_names = {col['name'] for col in schema['columns']}
-
-        extra_columns = {'genome', 'genome_id', 'orthogroup', 'version'}
-        self.assertTrue(
-            extra_columns.issubset(column_names),
-            "oat missing expected extra columns"
-        )
-
-    def test_oat_has_utf8mb4_charset(self):
-        """oat uses utf8mb4 charset."""
-        schema = SIMPLE_EFP_DATABASE_SCHEMAS['oat']
-        self.assertEqual(schema['charset'], 'utf8mb4')
-
-
-class TestSchemaBuilderHelpers(TestCase):
-    """Test the schema builder helper methods."""
-
-    def test_simple_schema_creates_valid_schema(self):
-        """_simple_schema helper should create a valid schema structure."""
-        schema = EfpSchemaBuilder._simple_schema(
-            species='test_species',
-            sample_regex=r'.*',
-            probeset_len=24,
-            bot_id_len=16,
-        )
-
-        self.assertIn('table_name', schema)
-        self.assertIn('columns', schema)
-        self.assertIn('metadata', schema)
-        self.assertEqual(schema['metadata']['species'], 'test_species')
-
-    def test_schema_with_qa_columns_adds_three_columns(self):
-        """_schema_with_qa_columns should add sample_file_name, data_call, data_p_val."""
-        schema = EfpSchemaBuilder._schema_with_qa_columns(
-            species='test_species',
-            sample_regex=r'.*',
-        )
-
-        column_names = {col['name'] for col in schema['columns']}
-        qa_columns = {'sample_file_name', 'data_call', 'data_p_val'}
-
-        self.assertTrue(
-            qa_columns.issubset(column_names),
-            "QA schema missing QA columns"
-        )
-
-    def test_build_schema_handles_extra_columns(self):
-        """_build_schema should properly merge extra columns."""
-        extra_cols = [
-            EfpSchemaBuilder._column('test_col', 'string', length=10)
-        ]
-
-        schema = EfpSchemaBuilder._build_schema(
-            extra_columns=extra_cols,
-            metadata={'species': 'test', 'sample_regex': r'.*'}
-        )
-
-        column_names = {col['name'] for col in schema['columns']}
-        self.assertIn('test_col', column_names)
 
 
 class TestDatabaseCategoryDistribution(TestCase):
@@ -406,25 +283,6 @@ class TestDatabaseCategoryDistribution(TestCase):
             f"Expected ~126 utf8mb4 databases, found {charset_counts['utf8mb4']}"
         )
 
-    def test_qa_column_distribution(self):
-        """Verify we have databases with and without QA columns."""
-        with_qa = 0
-        without_qa = 0
-
-        for schema in SIMPLE_EFP_DATABASE_SCHEMAS.values():
-            column_names = {col['name'] for col in schema['columns']}
-            if 'sample_file_name' in column_names:
-                with_qa += 1
-            else:
-                without_qa += 1
-
-        # Should have both types
-        self.assertGreater(with_qa, 0, "No databases with QA columns found")
-        self.assertGreater(without_qa, 0, "No databases without QA columns found")
-
-        # Most should be without QA columns
-        self.assertGreater(without_qa, with_qa, "Expected more non-QA databases")
-
 
 class TestVarcharLengths(TestCase):
     """Test that varchar lengths are within expected ranges."""
@@ -455,18 +313,4 @@ class TestVarcharLengths(TestCase):
                     self.assertLessEqual(
                         probeset_col['length'], 100,
                         f"{db_name}.data_probeset_id length exceeds 100"
-                    )
-
-    def test_proj_id_max_length(self):
-        """proj_id varchar should not exceed 30."""
-        for db_name, schema in SIMPLE_EFP_DATABASE_SCHEMAS.items():
-            proj_id_col = next(
-                (col for col in schema['columns'] if col['name'] == 'proj_id'),
-                None
-            )
-            if proj_id_col and proj_id_col['type'] == 'string':
-                with self.subTest(database=db_name):
-                    self.assertLessEqual(
-                        proj_id_col['length'], 30,
-                        f"{db_name}.proj_id length exceeds 30"
                     )
