@@ -43,7 +43,7 @@ def _schema(pl: int, bl: int, species: str, charset: str = "latin1") -> Database
         "columns": [p, s, b],
         "index": idx,
         "identifier_type": "agi",
-        "metadata": {"species": species, "sample_regex": r".*"},
+        "metadata": {"species": species, "sample_regex": r"^[\w.\-]+$"},
     }
 
 
