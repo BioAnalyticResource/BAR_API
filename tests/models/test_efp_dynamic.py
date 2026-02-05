@@ -46,8 +46,8 @@ class TestDynamicModelColumns(TestCase):
         columns = {col.name: col for col in mapper.columns}
 
         self.assertEqual(len(columns), 3)
-        self.assertEqual(str(columns['data_bot_id'].type), 'VARCHAR(8)')
-        self.assertEqual(str(columns['data_probeset_id'].type), 'VARCHAR(24)')
+        self.assertEqual(str(columns['data_bot_id'].type), 'VARCHAR(255)')
+        self.assertEqual(str(columns['data_probeset_id'].type), 'VARCHAR(255)')
 
     def test_mouse_db_has_3_columns(self):
         """Test mouse_db model has exactly 3 columns."""
@@ -160,8 +160,8 @@ class TestDynamicModelNullability(TestCase):
                     )
 
 
-class TestDynamicModelTextColumns(TestCase):
-    """Test text (tinytext) column handling."""
+class TestUniformColumnTypes(TestCase):
+    """Test that all databases use uniform VARCHAR(255) columns."""
 
     def setUp(self):
         """Set up application context for each test."""
@@ -172,29 +172,30 @@ class TestDynamicModelTextColumns(TestCase):
         """Tear down application context."""
         self.ctx.pop()
 
-    def test_affydb_bot_id_is_text(self):
-        """Test affydb has text type for data_bot_id."""
+    def test_all_string_columns_are_varchar_255(self):
+        """All string columns should be VARCHAR(255)."""
+        for db_name, schema in SIMPLE_EFP_DATABASE_SCHEMAS.items():
+            for col in schema['columns']:
+                if col['type'] == 'string':
+                    with self.subTest(database=db_name, column=col['name']):
+                        self.assertEqual(col['length'], 255)
+
+    def test_affydb_bot_id_is_varchar(self):
+        """Test affydb uses VARCHAR(255) for data_bot_id (was TEXT)."""
         schema = SIMPLE_EFP_DATABASE_SCHEMAS['affydb']
         bot_id_col = next(col for col in schema['columns'] if col['name'] == 'data_bot_id')
 
-        self.assertEqual(bot_id_col['type'], 'text')
-        self.assertIsNone(bot_id_col.get('length'))
+        self.assertEqual(bot_id_col['type'], 'string')
+        self.assertEqual(bot_id_col['length'], 255)
 
-    def test_canola_probeset_is_text(self):
-        """Test canola has text type for data_probeset_id."""
+    def test_canola_columns_are_varchar(self):
+        """Test canola uses VARCHAR(255) for both string columns (was TEXT)."""
         schema = SIMPLE_EFP_DATABASE_SCHEMAS['canola']
-        probeset_col = next(col for col in schema['columns'] if col['name'] == 'data_probeset_id')
-
-        self.assertEqual(probeset_col['type'], 'text')
-        self.assertIsNone(probeset_col.get('length'))
-
-    def test_canola_bot_id_is_text(self):
-        """Test canola has text type for data_bot_id."""
-        schema = SIMPLE_EFP_DATABASE_SCHEMAS['canola']
-        bot_id_col = next(col for col in schema['columns'] if col['name'] == 'data_bot_id')
-
-        self.assertEqual(bot_id_col['type'], 'text')
-        self.assertIsNone(bot_id_col.get('length'))
+        for col in schema['columns']:
+            if col['name'] in ('data_probeset_id', 'data_bot_id'):
+                with self.subTest(column=col['name']):
+                    self.assertEqual(col['type'], 'string')
+                    self.assertEqual(col['length'], 255)
 
 
 class TestModelClassNames(TestCase):

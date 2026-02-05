@@ -96,18 +96,6 @@ class TestEfpSchemaDefinitions(TestCase):
                             f"{db_name}.{column['name']} length must be > 0"
                         )
 
-    def test_text_columns_have_no_length(self):
-        """Text columns should not have a length."""
-        for db_name, schema in SIMPLE_EFP_DATABASE_SCHEMAS.items():
-            for column in schema['columns']:
-                with self.subTest(database=db_name, column=column['name']):
-                    if column.get('type') == 'text':
-                        length = column.get('length')
-                        self.assertIsNone(
-                            length,
-                            f"{db_name}.{column['name']} is text but has length={length}"
-                        )
-
     def test_charset_is_valid(self):
         """Charset must be either latin1 or utf8mb4."""
         valid_charsets = {'latin1', 'utf8mb4'}
@@ -285,32 +273,15 @@ class TestDatabaseCategoryDistribution(TestCase):
 
 
 class TestVarcharLengths(TestCase):
-    """Test that varchar lengths are within expected ranges."""
+    """Test that all string columns use VARCHAR(255)."""
 
-    def test_data_bot_id_max_length(self):
-        """data_bot_id varchar should not exceed 255."""
+    def test_all_string_columns_are_255(self):
+        """All string columns should use a uniform length of 255."""
         for db_name, schema in SIMPLE_EFP_DATABASE_SCHEMAS.items():
-            bot_id_col = next(
-                (col for col in schema['columns'] if col['name'] == 'data_bot_id'),
-                None
-            )
-            if bot_id_col and bot_id_col['type'] == 'string':
-                with self.subTest(database=db_name):
-                    self.assertLessEqual(
-                        bot_id_col['length'], 255,
-                        f"{db_name}.data_bot_id length exceeds 255"
-                    )
-
-    def test_data_probeset_id_max_length(self):
-        """data_probeset_id varchar should not exceed 100."""
-        for db_name, schema in SIMPLE_EFP_DATABASE_SCHEMAS.items():
-            probeset_col = next(
-                (col for col in schema['columns'] if col['name'] == 'data_probeset_id'),
-                None
-            )
-            if probeset_col and probeset_col['type'] == 'string':
-                with self.subTest(database=db_name):
-                    self.assertLessEqual(
-                        probeset_col['length'], 100,
-                        f"{db_name}.data_probeset_id length exceeds 100"
-                    )
+            for col in schema['columns']:
+                if col.get('type') == 'string':
+                    with self.subTest(database=db_name, column=col['name']):
+                        self.assertEqual(
+                            col['length'], 255,
+                            f"{db_name}.{col['name']} length is {col['length']}, expected 255"
+                        )
