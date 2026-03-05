@@ -15,14 +15,16 @@ def create_app():
     bar_app = Flask(__name__)
     CORS(bar_app)
 
-    # Load configuration
-    if os.environ.get("CI"):
-        # Travis
-        print("We are now loading configuration.")
-        bar_app.config.from_pyfile(os.getcwd() + "/config/BAR_API.cfg", silent=True)
+    # Detect execution environment.
+    # Priority: BAR server > GitHub CI > local development
+    is_bar = bool(os.environ.get("BAR"))
+    is_ci = bool(os.environ.get("CI"))
 
-    elif os.environ.get("BAR"):
-        # The BAR
+    # Load configuration
+    if is_bar:
+        # --- BAR server ---
+        # Uses MySQL databases via SQLALCHEMY_BINDS defined in the server config.
+        # SQLite mirrors are never built in this environment.
         bar_app.config.from_pyfile(os.environ.get("BAR_API_PATH"), silent=True)
 
         # Load environment variables on the BAR
@@ -32,21 +34,51 @@ def create_app():
             os.environ["PHENIX_VERSION"] = bar_app.config.get("PHENIX_VERSION")
         if bar_app.config.get("PATH"):
             os.environ["PATH"] = bar_app.config.get("PATH") + ":/usr/local/phenix-1.18.2-3874/build/bin"
+
+        # Auto-populate MySQL binds for all eFP databases using a single base URI.
+        # Set MYSQL_EFP_BASE_URI = 'mysql://user:pass@host' in the BAR server config
+        # to avoid manually listing every database in SQLALCHEMY_BINDS.
+        # Only adds databases that are not already explicitly configured.
+        mysql_efp_base = bar_app.config.get("MYSQL_EFP_BASE_URI")
+        if mysql_efp_base:
+            from api.models.efp_schemas import SIMPLE_EFP_DATABASE_SCHEMAS
+            binds = bar_app.config.get("SQLALCHEMY_BINDS") or {}
+            base = mysql_efp_base.rstrip("/")
+            for db_name in SIMPLE_EFP_DATABASE_SCHEMAS:
+                if db_name not in binds:
+                    binds[db_name] = f"{base}/{db_name}"
+            bar_app.config["SQLALCHEMY_BINDS"] = binds
+
+    elif is_ci:
+        # --- GitHub CI (Travis / GitHub Actions) ---
+        # Loads the repo's committed config which sets TESTING=True and MySQL SQLALCHEMY_BINDS.
+        # SQLite mirrors are then built from the SQL files in config/databases/ and override
+        # the MySQL binds so tests run without a real MySQL instance.
+        print("We are now loading configuration.")
+        bar_app.config.from_pyfile(os.getcwd() + "/config/BAR_API.cfg", silent=True)
+
     else:
-        # The localhost
+        # --- Local development ---
+        # Loads the developer's personal config from ~/.config/BAR_API.cfg (if it exists).
+        # If no SQLALCHEMY_BINDS are configured, falls back to pre-built SQLite mirrors
+        # in config/databases/ or auto-builds them from SQL files.
         bar_app.config.from_pyfile(os.path.expanduser("~") + "/.config/BAR_API.cfg", silent=True)
 
     repo_root = Path(__file__).resolve().parents[1]
     db_dir = repo_root / "config" / "databases"
-    if db_dir.exists():
-        is_test_run = (
-            bar_app.config.get("TESTING")
-            or "pytest" in os.sys.modules
-            or os.environ.get("BAR_API_AUTO_SQLITE_MIRRORS") == "1"
+    if db_dir.exists() and not is_bar:
+        # On BAR, MySQL binds come from the server config — never build SQLite mirrors there.
+        # For CI and local dev, determine whether to build SQLite mirrors.
+        needs_sqlite_mirrors = (
+            is_ci                                               # always build on CI
+            or bar_app.config.get("TESTING")                   # config requests test mode
+            or "pytest" in os.sys.modules                      # running under pytest
+            or os.environ.get("BAR_API_AUTO_SQLITE_MIRRORS") == "1"  # explicit override
         )
 
-        # For tests/local dev, build sqlite mirrors in a temp directory (no repo db files needed).
-        if is_test_run and not os.environ.get("BAR"):
+        if needs_sqlite_mirrors:
+            # Build SQLite mirrors in a temp directory from the SQL schema/seed files.
+            # These override any MySQL SQLALCHEMY_BINDS so tests run without MySQL.
             from api.utils.sqlite_mirror_utils import build_sqlite_db
 
             tmp_root = Path(tempfile.gettempdir()) / "bar_api_sqlite"
@@ -74,7 +106,8 @@ def create_app():
 
             bar_app.config["SQLALCHEMY_BINDS"] = sqlite_binds
 
-        # If no binds were configured and we're not in test mode, fall back to local sqlite mirrors.
+        # Local dev fallback: if no binds are configured yet, use pre-built SQLite files
+        # from config/databases/ (populated by scripts/build_sqlite_mirrors.py).
         if not bar_app.config.get("SQLALCHEMY_BINDS"):
             binds = {}
             for db_path in db_dir.glob("*.db"):

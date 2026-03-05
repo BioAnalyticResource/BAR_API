@@ -247,6 +247,16 @@ class EFPDataService:
 
         if db_path.exists():
             sqlite_engine = create_engine(f"sqlite:///{db_path}")
+            # ensure a fast UPPER() expression index exists so case-insensitive
+            # gene lookups use the index rather than a full table scan
+            try:
+                with sqlite_engine.begin() as _conn:
+                    _conn.execute(text(
+                        "CREATE INDEX IF NOT EXISTS ix_upper_probeset "
+                        "ON sample_data (UPPER(data_probeset_id))"
+                    ))
+            except Exception:
+                pass  # read-only db or schema mismatch — best-effort
             yield ("sqlite_mirror", sqlite_engine, True)
 
     @staticmethod
@@ -419,7 +429,8 @@ class EFPDataService:
                     try:
                         with Session(engine) as session:
                             results = session.execute(query_sql, params).all()
-                        break
+                        if results:  # only stop if we got actual rows; empty → try next candidate
+                            break
                     except SQLAlchemyError as exc:
                         last_error = f"{source_label} failed: {exc}"
                         print(f"[warn] {last_error}")
