@@ -33,4 +33,5 @@ services:
     volumes:
       - './api:/usr/src/app/api'
       - './tests:/usr/src/app/tests'
+      - './config/databases:/usr/src/app/config/databases'
 

@@ -234,6 +234,44 @@ _SPECS: List[tuple] = [
     ("willow", "willow"),
 ]
 
+# databases that store Affymetrix/microarray probeset IDs instead of gene identifiers.
+# For Arabidopsis databases in this set, the API will auto-convert AGI → probeset
+# via the at_agi_lookup service before querying expression data.
+_PROBESET_DBS = {
+    # Arabidopsis microarray databases (Affymetrix ATH1 chip, need AGI→probeset lookup)
+    "affydb",
+    "arabidopsis_ecotypes",
+    "atgenexp",
+    "atgenexp_hormone",
+    "atgenexp_pathogen",
+    "atgenexp_plus",
+    "atgenexp_stress",
+    "guard_cell",
+    "hnahal",
+    "lateral_root_initiation",
+    "light_series",
+    "meristem_db",
+    "meristem_db_new",
+    "root",
+    "rohan",
+    "rpatel",
+    "seed_db",
+    # Non-Arabidopsis microarray databases (probeset IDs, no AGI lookup needed)
+    "barley_mas",
+    "barley_rma",
+    "human_developmental",
+    "human_developmental_SpongeLab",
+    "human_diseased",
+    "maize_gdowns",
+    "medicago_mas",
+    "medicago_rma",
+    "poplar",
+    "rice_mas",
+    "rice_rma",
+    "triticale",
+    "triticale_mas",
+}
+
 # databases that use utf8mb4 charset (all others default to latin1)
 _UTF8MB4 = {
     "actinidia_bud_development", "actinidia_flower_fruit_development",
@@ -281,7 +319,10 @@ _UTF8MB4 = {
 # fmt: on
 
 SIMPLE_EFP_DATABASE_SCHEMAS: Dict[str, DatabaseSpec] = {
-    n: _schema(s, "utf8mb4" if n in _UTF8MB4 else "latin1")
+    n: {
+        **_schema(s, "utf8mb4" if n in _UTF8MB4 else "latin1"),
+        **({"identifier_type": "probeset"} if n in _PROBESET_DBS else {}),
+    }
     for n, s in _SPECS
 }
 
