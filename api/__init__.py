@@ -146,7 +146,7 @@ def create_app():
     from api.resources.efp_image import efp_image
     from api.resources.fastpheno import fastpheno
     from api.resources.llama3 import llama3
-    from api.resources.efp_gene_expression import gene_expression
+    from api.resources.gene_expression import gene_expression
 
     bar_api.add_namespace(gene_information)
     bar_api.add_namespace(rnaseq_gene_expression)
