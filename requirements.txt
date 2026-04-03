@@ -48,7 +48,7 @@ pytokens==0.4.1
 pytz==2026.1.post1
 redis==7.4.0
 referencing==0.37.0
-requests==2.33.1
+requests==2.33.0
 rich==14.3.3
 rpds-py==0.30.0
 setuptools==82.0.1
