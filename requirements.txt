@@ -42,7 +42,7 @@ pycodestyle==2.14.0
 pyflakes==3.4.0
 Pygments==2.20.0
 pyrsistent==0.20.0
-pytest==9.0.2
+pytest==9.0.3
 python-dateutil==2.9.0.post0
 pytokens==0.4.1
 pytz==2026.1.post1
