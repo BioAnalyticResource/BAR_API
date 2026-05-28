@@ -1,3 +1,16 @@
+"""
+Reena Obmina | UTEA Project 2026 | University of Toronto
+
+Tests for the gene information endpoints (GET /gene_information/*).
+
+Covers id_autocomplete, gene_aliases, gene_publications, and isoforms,
+including valid requests and all error cases.
+
+Usage::
+
+    python3 -m pytest tests/resources/test_gene_information.py -v
+"""
+
 from api import app
 from unittest import TestCase
 import json
@@ -6,6 +19,43 @@ import json
 class TestIntegrations(TestCase):
     def setUp(self):
         self.app_client = app.test_client()
+
+    def test_id_autocomplete(self):
+        """Tests GET /gene_information/id_autocomplete"""
+        # Valid search by AGI prefix
+        response = self.app_client.get("/gene_information/id_autocomplete?species=arabidopsis&term=AT1G010")
+        self.assertEqual(response.status_code, 200)
+        data = response.json
+        self.assertTrue(data["wasSuccessful"])
+        self.assertIsInstance(data["data"], list)
+        for item in data["data"]:
+            self.assertIn("agi", item)
+            self.assertIn("match", item)
+
+        # Valid search by alias name
+        response = self.app_client.get("/gene_information/id_autocomplete?species=arabidopsis&term=NAC")
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json["wasSuccessful"])
+
+        # term too short
+        response = self.app_client.get("/gene_information/id_autocomplete?species=arabidopsis&term=A")
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response.json["wasSuccessful"])
+
+        # missing term
+        response = self.app_client.get("/gene_information/id_autocomplete?species=arabidopsis")
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response.json["wasSuccessful"])
+
+        # missing species
+        response = self.app_client.get("/gene_information/id_autocomplete?term=AT1G010")
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response.json["wasSuccessful"])
+
+        # invalid species
+        response = self.app_client.get("/gene_information/id_autocomplete?species=potato&term=AT1G010")
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response.json["wasSuccessful"])
 
     def test_post_gene_aliases(self):
         """This test POST request to /gene_information/gene_aliases/
@@ -292,12 +342,12 @@ class TestIntegrations(TestCase):
         self.assertEqual(response.json, expected)
 
     def test_query_genes(self):
-        """This tests checks POST request for genes of Arabidopsis given its terms
+        """This tests checks GET request for genes of Arabidopsis given its terms
         :return:
         """
         # Valid data
-        response = self.app_client.post(
-            "/gene_information/gene_query", json={"species": "arabidopsis", "terms": ["AT1G01030"]}
+        response = self.app_client.get(
+            "/gene_information/gene_query?species=arabidopsis&terms=AT1G01030"
         )
         data = json.loads(response.get_data(as_text=True))
         expected = {
@@ -316,9 +366,8 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(data, expected)
 
-        response = self.app_client.post(
-            "/gene_information/gene_query",
-            json={"species": "arabidopsis", "terms": ["AT1G01010", "AT1G01020"]},
+        response = self.app_client.get(
+            "/gene_information/gene_query?species=arabidopsis&terms=AT1G01010,AT1G01020"
         )
         data = json.loads(response.get_data(as_text=True))
         expected = {
@@ -346,9 +395,8 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(data, expected)
 
-        response = self.app_client.post(
-            "/gene_information/gene_query",
-            json={"species": "arabidopsis", "terms": ["AT1G01020", "AT1G01020"]},
+        response = self.app_client.get(
+            "/gene_information/gene_query?species=arabidopsis&terms=AT1G01020,AT1G01020"
         )
         data = json.loads(response.get_data(as_text=True))
         expected = {
@@ -368,16 +416,15 @@ class TestIntegrations(TestCase):
         self.assertEqual(data, expected)
 
         # Terms contain those cannot find data
-        response = self.app_client.post(
-            "/gene_information/gene_query", json={"species": "arabidopsis", "terms": ["AT1G01040.3"]}
+        response = self.app_client.get(
+            "/gene_information/gene_query?species=arabidopsis&terms=AT1G01040.3"
         )
         data = json.loads(response.get_data(as_text=True))
         expected = {"wasSuccessful": True, "data": {}}
         self.assertEqual(data, expected)
 
-        response = self.app_client.post(
-            "/gene_information/gene_query",
-            json={"species": "arabidopsis", "terms": ["AT1G01010.3", "AT1G01010"]},
+        response = self.app_client.get(
+            "/gene_information/gene_query?species=arabidopsis&terms=AT1G01010.3,AT1G01010"
         )
         data = json.loads(response.get_data(as_text=True))
         expected = {
@@ -396,9 +443,8 @@ class TestIntegrations(TestCase):
         }
         self.assertEqual(data, expected)
 
-        response = self.app_client.post(
-            "/gene_information/gene_query",
-            json={"species": "arabidopsis", "terms": ["AT1G01030", "AT1G01035"]},
+        response = self.app_client.get(
+            "/gene_information/gene_query?species=arabidopsis&terms=AT1G01030,AT1G01035"
         )
         data = json.loads(response.get_data(as_text=True))
         expected = {
@@ -418,24 +464,23 @@ class TestIntegrations(TestCase):
         self.assertEqual(data, expected)
 
         # Invalid gene
-        response = self.app_client.post(
-            "/gene_information/gene_query", json={"species": "arabidopsis", "terms": ["001G01030"]}
+        response = self.app_client.get(
+            "/gene_information/gene_query?species=arabidopsis&terms=001G01030"
         )
         data = json.loads(response.get_data(as_text=True))
         expected = {"wasSuccessful": False, "error": "Input list contains invalid term"}
         self.assertEqual(data, expected)
 
-        response = self.app_client.post(
-            "/gene_information/gene_query",
-            json={"species": "arabidopsis", "terms": ["001G01010", "At1g01010"]},
+        response = self.app_client.get(
+            "/gene_information/gene_query?species=arabidopsis&terms=001G01010,At1g01010"
         )
         data = json.loads(response.get_data(as_text=True))
         expected = {"wasSuccessful": False, "error": "Input list contains invalid term"}
         self.assertEqual(data, expected)
 
         # Invalid species
-        response = self.app_client.post(
-            "/gene_information/gene_query", json={"species": "xxx", "terms": ["At1g01010", "At1g01020"]}
+        response = self.app_client.get(
+            "/gene_information/gene_query?species=xxx&terms=At1g01010,At1g01020"
         )
         data = json.loads(response.get_data(as_text=True))
         expected = {"wasSuccessful": False, "error": "No data for the given species"}

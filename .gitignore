@@ -144,3 +144,16 @@ output/*
 
 # Local sqlite mirrors generated from MySQL dumps
 config/databases/*.db
+
+# Archive test data — large DB dumps, exports, and CSVs; not for version control
+archive/test_data/
+
+# Large production DB dumps — loaded into MySQL manually, not version-controlled
+api/db_dumps/
+config/databases/light_series.sql
+config/databases/maize_RMA_linear.sql
+config/databases/meristem_db.sql
+config/databases/potato_stress.sql
+config/databases/seedcoat.sql
+config/databases/soybean_severin.sql
+config/databases/tomato_ils.sql

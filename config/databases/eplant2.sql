@@ -257,6 +257,30 @@ INSERT INTO `agi_annotation` VALUES ('At1g01010','ANAC001_NAC001_NTL10__NAC doma
 UNLOCK TABLES;
 
 --
+-- Table structure for table `agi_names`
+--
+
+DROP TABLE IF EXISTS `agi_names`;
+CREATE TABLE `agi_names` (
+  `agi` varchar(30) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  PRIMARY KEY (`agi`, `name`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `agi_names`
+--
+
+LOCK TABLES `agi_names` WRITE;
+INSERT INTO `agi_names` VALUES
+('AT1G01010', 'NAC domain containing protein 1'),
+('AT1G01020', 'Arv1-like protein'),
+('AT1G01030', 'AP2/B3-like transcriptional factor family protein'),
+('AT1G01040', 'dicer-like 1'),
+('AT1G01060', 'LATE ELONGATED HYPOCOTYL');
+UNLOCK TABLES;
+
+--
 -- Table structure for table `geneRIFs`
 --
 

@@ -213,9 +213,9 @@ class TestDatabaseCategoryDistribution(TestCase):
         self.assertIn("latin1", charset_counts)
         self.assertIn("utf8mb4", charset_counts)
 
-        # utf8mb4 should be more common (126 databases)
+        # utf8mb4 should be more common (101 databases as of the current _UTF8MB4 set)
         self.assertGreater(
-            charset_counts["utf8mb4"], 100, f"Expected ~126 utf8mb4 databases, found {charset_counts['utf8mb4']}"
+            charset_counts["utf8mb4"], 100, f"Expected ~101 utf8mb4 databases, found {charset_counts['utf8mb4']}"
         )
 
 

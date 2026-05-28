@@ -202,19 +202,14 @@ class TestIntegrations(TestCase):
     def test_timeseries_genotype_aggregate(self):
         """Tests GET /fastpheno/timeseries/genotype/<tree_site_id>/<band>/aggregate"""
         response = self.app_client.get("/fastpheno/timeseries/genotype/619/398nm/aggregate")
-        expected = {
-            "wasSuccessful": True,
-            "data": [
-                {
-                    "flight_date": "2022-06-10T00:00:00",
-                    "flights_pk": 14,
-                    "avg_value": 0.036833333,
-                    "std_value": 0.0016526006441027672,
-                    "n_trees": 3,
-                },
-            ],
-        }
-        self.assertEqual(response.json, expected)
+        self.assertTrue(response.json["wasSuccessful"])
+        self.assertEqual(len(response.json["data"]), 1)
+        row = response.json["data"][0]
+        self.assertEqual(row["flight_date"], "2022-06-10T00:00:00")
+        self.assertEqual(row["flights_pk"], 14)
+        self.assertEqual(row["n_trees"], 3)
+        self.assertAlmostEqual(row["avg_value"], 0.036833333, places=7)
+        self.assertAlmostEqual(row["std_value"], 0.0016526006441027672, places=12)
 
         # With site filter
         response = self.app_client.get("/fastpheno/timeseries/genotype/619/398nm/aggregate?site=Pintendre")

@@ -4,13 +4,8 @@ from markupsafe import escape
 from api.services.efp_data import query_efp_database_dynamic
 from api.utils.bar_utils import BARUtils
 from api.utils.gene_id_utils import (
-    CROSS_SPECIES_DATABASES,
     DATABASE_SPECIES,
-    PROBESET_DATABASES,
-    convert_gene_to_probeset,
-    is_probeset_id,
-    normalize_gene_id,
-    validate_gene_id,
+    GeneIdUtils,
 )
 
 gene_expression = Namespace(
@@ -36,42 +31,32 @@ gene_expression = Namespace(
 )
 class GeneExpression(Resource):
     def get(self, database, gene_id):
+        """Retrieve expression values for a gene from a given eFP database."""
         database = str(escape(database))
         gene_id = str(escape(gene_id))
 
-        # 1. Resolve database species and expected input species.
-        #    Cross-species databases (e.g. phelipanche) accept an Arabidopsis AGI
-        #    even though the database itself belongs to a different species.
         species = DATABASE_SPECIES.get(database)
         if species is None:
             return BARUtils.error_exit(f"Unknown database '{database}'"), 400
-        input_species = CROSS_SPECIES_DATABASES.get(database, species)
 
-        # 2. If the caller already supplied a probeset ID, use it directly
-        if is_probeset_id(gene_id):
+        if GeneIdUtils.is_probeset_id(gene_id):
             query_id = gene_id
         else:
-            # 3. Validate gene ID format against the expected input species regex
-            if not validate_gene_id(gene_id, input_species):
-                return BARUtils.error_exit(f"Invalid {input_species} gene ID: '{gene_id}'"), 400
-
-            # 4. Normalise (e.g. strip maize transcript suffix _T##)
-            gene_id = normalize_gene_id(gene_id, species)
-
-            # 5. Microarray / non-direct databases need gene ID → probeset conversion
-            if database in PROBESET_DATABASES:
-                probeset, err = convert_gene_to_probeset(gene_id, species, database)
-                if err:
-                    return BARUtils.error_exit(err), 404
-                query_id = probeset
-            else:
-                query_id = gene_id
+            if not GeneIdUtils.validate_gene_id(gene_id, species):
+                return BARUtils.error_exit(f"Invalid {species} gene ID: '{gene_id}'"), 400
+            query_id = GeneIdUtils.normalize_gene_id(gene_id, species)
 
         result = query_efp_database_dynamic(database, query_id)
 
         if result["success"]:
             return BARUtils.success_exit(result)
-        return BARUtils.error_exit(result["error"]), result.get("error_code", 500)
+
+        error_code = result.get("error_code", 500)
+        if error_code == 404:
+            return BARUtils.error_exit("No data found for the given gene"), 404
+        if error_code == 503:
+            return BARUtils.error_exit("Database not available"), 503
+        return BARUtils.error_exit("An error occurred"), 500
 
 
 gene_expression.add_resource(GeneExpression, "/expression/<string:database>/<string:gene_id>")

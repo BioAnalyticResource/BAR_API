@@ -1,8 +1,11 @@
 """
-Dynamic SQLAlchemy model generation for simple eFP databases.
+Reena Obmina | BCB330 Project 2025-2026 | University of Toronto
 
-This module provides runtime generation of SQLAlchemy ORM models from schema
-definitions, enabling dynamic database access without hardcoded model classes.
+Dynamic SQLAlchemy model generation for all eFP databases.
+
+At import time, one ORM model class is generated per database entry in
+SIMPLE_EFP_DATABASE_SCHEMAS and stored in SIMPLE_EFP_SAMPLE_MODELS.
+This replaces ~1,984 lines of hand-written boilerplate with a single registry.
 """
 
 from __future__ import annotations

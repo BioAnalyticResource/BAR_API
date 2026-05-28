@@ -1,8 +1,12 @@
 """
-Compact schema definitions for eFP databases exposing a sample_data table.
+Reena Obmina | BCB330 Project 2025-2026 | University of Toronto
 
-Each database only needs 3 columns: data_probeset_id, data_signal, data_bot_id.
-All databases share the same column structure (VARCHAR(255) for string columns).
+Schema definitions for all eFP databases that expose a sample_data table.
+
+Every database shares the same three-column structure:
+  data_probeset_id (VARCHAR 255), data_signal (FLOAT), data_bot_id (VARCHAR 255).
+
+To add a new database, append one tuple to _SPECS — no other changes needed.
 """
 
 from __future__ import annotations
@@ -25,11 +29,12 @@ _SCHEMA_TEMPLATE: DatabaseSpec = {
 
 
 def _schema(species: str, charset: str = "latin1") -> DatabaseSpec:
-    """Build a schema for one eFP database.
+    """Build a schema entry for one eFP database.
 
-    :param species: Species name for metadata.
-    :param charset: MySQL character set ('latin1' or 'utf8mb4').
-    :return: Full database schema specification.
+    :param species: Species name stored in metadata (e.g., 'arabidopsis').
+    :param charset: MySQL character set — 'latin1' for most, 'utf8mb4' for non-Latin labels.
+    :returns: Full database schema dict ready for model generation.
+    :rtype: DatabaseSpec
     """
     return {
         **_SCHEMA_TEMPLATE,
@@ -234,9 +239,7 @@ _SPECS: List[tuple] = [
     ("willow", "willow"),
 ]
 
-# databases that store Affymetrix/microarray probeset IDs instead of gene identifiers.
-# For Arabidopsis databases in this set, the API will auto-convert AGI → probeset
-# via the at_agi_lookup service before querying expression data.
+# Databases that store Affymetrix/microarray probeset IDs instead of gene identifiers.
 _PROBESET_DBS = {
     # Arabidopsis microarray databases (Affymetrix ATH1 chip, need AGI→probeset lookup)
     "affydb",
@@ -272,7 +275,7 @@ _PROBESET_DBS = {
     "triticale_mas",
 }
 
-# databases that use utf8mb4 charset (all others default to latin1)
+# Databases that use utf8mb4 charset (all others default to latin1)
 _UTF8MB4 = {
     "actinidia_bud_development", "actinidia_flower_fruit_development",
     "actinidia_postharvest", "actinidia_vegetative_growth", "apple",

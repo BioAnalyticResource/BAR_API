@@ -171,7 +171,12 @@ class TestProbesetConversion(TestCase):
         # If the DB has no local mirror, the query fails at the connection stage —
         # that is fine for this test. What we must NOT see is a conversion failure
         # ("Could not find probeset"), which means the lookup never ran.
-        db_unavailable = "not available" in error or "no active bind" in error
+        # 503 is returned when MySQL reports "Unknown database" or no bind exists.
+        db_unavailable = (
+            "not available" in error
+            or "no active bind" in error
+            or result.get("error_code") == 503
+        )
 
         if result["success"]:
             # Full success: conversion ran and data was returned — check probset_id format
@@ -239,8 +244,14 @@ class TestProbesetConversion(TestCase):
         self._assert_probeset_conversion_ran("seed_db")
 
     def test_no_conversion_when_lookup_missing(self):
-        """if at_agi_lookup has no entry for the gene, the call should fail with 404"""
-        # use a gene with no seeded mapping
-        result = query_efp_database_dynamic("atgenexp", "AT9G99999", allow_empty_results=True)
+        """a valid AGI with no probeset mapping should fail with a 404 (lookup not found)
+
+        AT5G99997 is syntactically valid (chromosome 5, 5-digit gene number) but is
+        not seeded in setUp, so agi_to_probset returns None and the service returns 404.
+        """
+        # remove any stale entry that might exist from a previous run
+        db.session.query(AtAgiLookup).filter_by(agi="AT5G99997").delete()
+        db.session.commit()
+        result = query_efp_database_dynamic("atgenexp", "AT5G99997", allow_empty_results=True)
         self.assertFalse(result["success"])
-        self.assertEqual(result["error_code"], 400)  # invalid gene format catches this first
+        self.assertEqual(result["error_code"], 404)

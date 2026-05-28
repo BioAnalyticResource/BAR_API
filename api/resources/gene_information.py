@@ -7,6 +7,7 @@ from api.models.eplant2 import Publications as EPlant2Publications
 from api.models.eplant2 import TAIR10GFF3 as EPlant2TAIR10GFF3
 from api.models.eplant2 import AgiAlias as EPlant2AgiAlias
 from api.models.eplant2 import AgiAnnotation as EPlant2AgiAnnotation
+from api.models.eplant2 import AgiNames as EPlant2AgiNames
 from api.models.eplant_poplar import Isoforms as EPlantPoplarIsoforms
 from api.models.eplant_tomato import Isoforms as EPlantTomatoIsoforms
 from api.models.eplant_soybean import Isoforms as EPlantSoybeanIsoforms
@@ -100,11 +101,16 @@ class GeneAliases(Resource):
 
         if len(rows) > 0:
             for row in rows:
-                if row.agi in data_items.keys():
-                    data_items[row.agi].append(row.agi)
+                normalized_agi = BARUtils.normalize_arabidopsis_gene(row.agi)
+                alias_value = row.alias
+                if BARUtils.is_arabidopsis_gene_valid(alias_value):
+                    alias_value = BARUtils.normalize_arabidopsis_gene(alias_value)
+
+                if normalized_agi in data_items.keys():
+                    data_items[normalized_agi].append(normalized_agi)
                 else:
-                    data_items[row.agi] = []
-                    data_items[row.agi].append(row.alias)
+                    data_items[normalized_agi] = []
+                    data_items[normalized_agi].append(alias_value)
 
             for gene in data_items.keys():
                 data.append({"gene": gene, "aliases": data_items[gene]})
@@ -260,14 +266,17 @@ class GeneTair10Gff3(Resource):
 
 @gene_information.route("/gene_query")
 class GeneQueryGene(Resource):
-    @gene_information.expect(query_genes_request_fields)
-    def post(self):
+    @gene_information.param("species", _in="query", default="arabidopsis")
+    @gene_information.param("terms", _in="query", default="AT1G01010,AT1G01020")
+    def get(self):
         """This end point provides gene information for multiple genes given multiple terms."""
 
-        # Escape input
-        data = request.get_json()
-        species = data["species"]
-        terms = [term.upper() for term in data["terms"]]
+        species = escape(request.args.get("species", ""))
+        terms_raw = request.args.get("terms", "")
+        terms = [t.strip().upper() for t in terms_raw.split(",") if t.strip()]
+
+        if not species or not terms:
+            return BARUtils.error_exit("Missing species or terms"), 400
 
         # Species check
         if species == "arabidopsis":
@@ -437,6 +446,79 @@ class SingleGeneQueryGene(Resource):
                     gene["annotation"] = temp[0]
 
         return BARUtils.success_exit(genes_info)
+
+
+@gene_information.route("/id_autocomplete")
+class IdAutocomplete(Resource):
+    @gene_information.param("species", _in="query", default="arabidopsis")
+    @gene_information.param("term", _in="query", default="AT1G010")
+    def get(self):
+        """Return autocomplete suggestions for a gene ID or alias search term.
+        """
+        species = escape(request.args.get("species", ""))
+        term = escape(request.args.get("term", ""))
+
+        if not species or not term:
+            return BARUtils.error_exit("Missing species or term"), 400
+
+        if len(term) < 2:
+            return BARUtils.error_exit("term must be at least 2 characters"), 400
+
+        if species == "arabidopsis":
+            alias_db = EPlant2AgiAlias
+            names_db = EPlant2AgiNames
+            gff3_db = EPlant2TAIR10GFF3
+        else:
+            return BARUtils.error_exit("No data for the given species"), 400
+
+        results = []
+        seen_agis = set()
+
+        # 1. Search agi_alias by AGI or alias
+        alias_query = (
+            db.select(alias_db.agi, alias_db.alias)
+            .where(alias_db.agi.ilike(f"%{term}%") | alias_db.alias.ilike(f"%{term}%"))
+            .limit(15)
+        )
+        for row in db.session.execute(alias_query).all():
+            if row.agi not in seen_agis:
+                seen_agis.add(row.agi)
+                results.append({"agi": row.agi, "match": row.alias})
+            if len(results) >= 15:
+                break
+
+        # 2. Search agi_names by AGI or name (only if we still have room)
+        if len(results) < 15:
+            names_query = (
+                db.select(names_db.agi, names_db.name)
+                .where(names_db.agi.ilike(f"%{term}%") | names_db.name.ilike(f"%{term}%"))
+                .limit(15 - len(results))
+            )
+            for row in db.session.execute(names_query).all():
+                if row.agi not in seen_agis:
+                    seen_agis.add(row.agi)
+                    results.append({"agi": row.agi, "match": row.name})
+                if len(results) >= 15:
+                    break
+
+        # 3. Fallback: raw gene IDs from tair10_gff3 (only if we still have room)
+        if len(results) < 15:
+            gff3_query = (
+                db.select(gff3_db.geneId)
+                .where(
+                    (gff3_db.Type == "gene") | (gff3_db.Type == "transposable_element_gene"),
+                    gff3_db.geneId.ilike(f"%{term}%"),
+                )
+                .limit(15 - len(results))
+            )
+            for row in db.session.execute(gff3_query).all():
+                if row.geneId not in seen_agis:
+                    seen_agis.add(row.geneId)
+                    results.append({"agi": row.geneId, "match": row.geneId})
+                if len(results) >= 15:
+                    break
+
+        return BARUtils.success_exit(results)
 
 
 @gene_information.route("/gene_isoforms/<string:species>/<string:gene_id>")

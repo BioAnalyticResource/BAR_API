@@ -5,9 +5,10 @@ from api.models.annotations_lookup import AtAgiLookup
 from api.models.efp_dynamic import SIMPLE_EFP_SAMPLE_MODELS
 from api.utils.bar_utils import BARUtils
 from api.utils.world_efp_utils import WorldeFPUtils
+from sqlalchemy import func
 import json
 
-# pull the dynamic model so this resource stays in sync with the schema catalog
+# Pull the dynamic model so this resource stays in sync with the schema catalog
 EcotypesSampleData = SIMPLE_EFP_SAMPLE_MODELS["arabidopsis_ecotypes"]
 
 microarray_gene_expression = Namespace(
@@ -33,7 +34,7 @@ class GetWorldeFPExpression(Resource):
             return BARUtils.error_exit("Invalid species")
         subquery = (
             db.select(AtAgiLookup.probeset)
-            .where(AtAgiLookup.agi == gene_id)
+            .where(func.lower(AtAgiLookup.agi) == gene_id.lower())
             .order_by(AtAgiLookup.date.desc())
             .limit(1)
             .subquery()
@@ -63,8 +64,7 @@ class GetWorldeFPExpression(Resource):
             return BARUtils.error_exit("There are no data found for the given gene")
 
 
-# endpoint made by reena
-# return view and database mappings for a given species
+# Endpoint made by Reena
 @microarray_gene_expression.route("/<string:species>/databases")
 class GetDatabases(Resource):
     @microarray_gene_expression.param("species", _in="path", default="arabidopsis")
@@ -220,8 +220,7 @@ class GetDatabases(Resource):
         return BARUtils.success_exit({"species": species, "databases": species_databases[species]})
 
 
-# endpoint made by reena
-# return control and sample mappings for a given species
+# Endpoint made by Reena
 @microarray_gene_expression.route("/<string:species>/<string:view>/samples")
 class GetSamples1(Resource):
     """This endpoint returns control and sample group mappings for a given species and view (or all views)"""
@@ -234,7 +233,7 @@ class GetSamples1(Resource):
         view = escape(view)
 
         try:
-            with open("data/efp_info/efp_species_view_info.json") as f:
+            with open("data/efp_info/efp_species_view_info_typed.json") as f:
                 all_species_data = json.load(f)
         except Exception as e:
             return BARUtils.error_exit(f"Data file missing or invalid: {e}")
@@ -252,6 +251,10 @@ class GetSamples1(Resource):
         if view not in species_data["views"]:
             return BARUtils.error_exit("Invalid view for this species")
 
-        return BARUtils.success_exit(
-            {"species": species, "view": view, "groups": species_data["views"][view]["groups"]}
-        )
+        view_data = species_data["views"][view]
+        return BARUtils.success_exit({
+            "species": species,
+            "view": view,
+            "data_type": view_data.get("data_type", "Unknown"),
+            "groups": view_data["groups"]
+        })

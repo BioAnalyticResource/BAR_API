@@ -1,3 +1,7 @@
+import re as _re
+import sqlite3
+import statistics as _statistics
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_restx import Api
@@ -5,9 +9,42 @@ from flask_cors import CORS
 from flask_caching import Cache
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from sqlalchemy import event
+from sqlalchemy.engine import Engine
 import os
 from pathlib import Path
 import tempfile
+
+
+@event.listens_for(Engine, "connect")
+def _register_sqlite_functions(dbapi_conn, connection_record):
+    """Register MySQL-compatible functions for SQLite (used in CI and local tests)."""
+    if not isinstance(dbapi_conn, sqlite3.Connection):
+        return
+
+    class _PopStdDev:
+        """Population standard deviation aggregate (equivalent to MySQL STD())."""
+
+        def __init__(self):
+            self._vals = []
+
+        def step(self, value):
+            if value is not None:
+                self._vals.append(float(value))
+
+        def finalize(self):
+            if len(self._vals) < 2:
+                return None
+            return _statistics.pstdev(self._vals)
+
+    dbapi_conn.create_aggregate("std", 1, _PopStdDev)
+
+    def _regexp_replace(string, pattern, replacement):
+        if string is None:
+            return None
+        return _re.sub(pattern, replacement, string)
+
+    dbapi_conn.create_function("regexp_replace", 3, _regexp_replace)
 
 
 def create_app():
@@ -91,10 +128,24 @@ def create_app():
             else:
                 bind_names.update(p.stem for p in db_dir.glob("*.sql") if p.stem)
 
+            # SQL files larger than this are production-sized MySQL dumps and
+            # cannot be mirrored to SQLite — they are only usable via MySQL.
+            _SQLITE_MIRROR_MAX_BYTES = 50 * 1024 * 1024  # 50 MB
+
+            db_host = os.environ.get("DB_HOST", "localhost")
+            cfg_binds = bar_app.config.get("SQLALCHEMY_BINDS") or {}
+
             sqlite_binds = {}
             for name in sorted(bind_names):
                 sql_path = db_dir / f"{name}.sql"
                 if not sql_path.exists():
+                    continue
+                if sql_path.stat().st_size > _SQLITE_MIRROR_MAX_BYTES:
+                    # Too large to mirror — fall back to MySQL bind if configured,
+                    # substituting DB_HOST so Docker containers resolve correctly.
+                    mysql_bind = cfg_binds.get(name)
+                    if mysql_bind:
+                        sqlite_binds[name] = mysql_bind.replace("localhost", db_host)
                     continue
                 db_path = tmp_root / f"{name}.db"
                 if (
@@ -149,6 +200,8 @@ def create_app():
     from api.resources.fastpheno import fastpheno
     from api.resources.llama3 import llama3
     from api.resources.gene_expression import gene_expression
+    from api.resources.gene_density import gene_density
+    from api.resources.expression import expression
 
     bar_api.add_namespace(gene_information)
     bar_api.add_namespace(gaia)
@@ -165,6 +218,8 @@ def create_app():
     bar_api.add_namespace(fastpheno)
     bar_api.add_namespace(llama3)
     bar_api.add_namespace(gene_expression)
+    bar_api.add_namespace(gene_density)
+    bar_api.add_namespace(expression)
     bar_api.init_app(bar_app)
     return bar_app
 

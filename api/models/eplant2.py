@@ -75,3 +75,11 @@ class AgiAlias(db.Model):
 
     agi: db.Mapped[str] = db.mapped_column(db.String(30), nullable=False, primary_key=True)
     alias: db.Mapped[str] = db.mapped_column(db.String(30), nullable=False, primary_key=True)
+
+
+class AgiNames(db.Model):
+    __bind_key__ = "eplant2"
+    __tablename__ = "agi_names"
+
+    agi: db.Mapped[str] = db.mapped_column(db.String(30), nullable=False, primary_key=True)
+    name: db.Mapped[str] = db.mapped_column(db.String(255), nullable=False, primary_key=True)

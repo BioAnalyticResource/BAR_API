@@ -1,7 +1,11 @@
 """
-Utilities to bootstrap the simple eFP databases directly from the shared schema
-definitions. Shared by the CLI script and the Flask endpoint so we only maintain
-one implementation.
+Reena Obmina | BCB330 Project 2025-2026 | University of Toronto
+
+Bootstrap utilities for creating eFP MySQL databases from the shared schema registry.
+
+Used by:
+  - scripts/bootstrap_simple_efp_dbs.py  (CLI)
+  - config/init.sh                        (Docker / CI)
 """
 
 from __future__ import annotations
@@ -86,10 +90,16 @@ def _build_table(metadata: MetaData, spec, db_name: str) -> Table:
 
 def _make_index_name(db_name: str, index_cols: Iterable[str], max_len: int = 64) -> str:
     """
-    Create a MySQL-safe index name capped at 64 characters.
+    Create a MySQL-safe index name, capped at 64 characters.
 
-    If the generated name is too long, fall back to a truncated db_name with a stable hash
-    to keep names deterministic and avoid collisions.
+    Falls back to a hash suffix if the name would be too long,
+    keeping names deterministic and collision-free.
+
+    :param db_name: Database name used as the index name prefix.
+    :param index_cols: Column names included in the index.
+    :param max_len: Maximum allowed index name length (MySQL limit is 64).
+    :returns: A valid MySQL index name.
+    :rtype: str
     """
     base = f"ix_{db_name}_{'_'.join(index_cols)}"
     if len(base) <= max_len:
@@ -159,7 +169,6 @@ def ensure_database(server_url: URL, db_name: str, charset: str) -> None:
 
     server_engine = create_engine(server_url)
     with server_engine.begin() as conn:
-        # Safe to use f-string here since we've validated the inputs above
         conn.execute(text(f"CREATE DATABASE IF NOT EXISTS `{db_name}` DEFAULT CHARACTER SET {charset}"))
 
 

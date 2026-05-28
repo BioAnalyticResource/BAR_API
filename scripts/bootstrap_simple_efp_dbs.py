@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
 """
-bootstrap the simple efp databases from the shared schema definitions
+Reena Obmina | BCB330 Project 2025-2026 | University of Toronto
+
+CLI script to create all eFP MySQL databases from the shared schema registry.
+
+Usage:
+    python scripts/bootstrap_simple_efp_dbs.py
+    python scripts/bootstrap_simple_efp_dbs.py --databases embryo klepikova
+    python scripts/bootstrap_simple_efp_dbs.py --host localhost --port 3306
 """
 
 from __future__ import annotations
@@ -12,7 +19,7 @@ from pathlib import Path
 
 from sqlalchemy.exc import SQLAlchemyError
 
-# ensure the repository root is importable when this script is executed standalone
+# Ensure the repository root is importable when this script is executed standalone
 ROOT_DIR = Path(__file__).resolve().parents[1]
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
@@ -21,34 +28,25 @@ from api.services.efp_bootstrap import bootstrap_simple_efp_databases  # noqa: E
 
 
 def _default_host() -> str:
-    """
-    Determine the default MySQL hostname from environment variables.
+    """Resolve the default MySQL hostname from environment variables.
 
-    Priority order:
-    1. DB_HOST environment variable (explicit override)
-    2. MYSQL_HOST environment variable (alternative name)
-    3. 'localhost' (default for local dev and GitHub Actions CI)
-
+    Checks DB_HOST, then MYSQL_HOST, then falls back to 'localhost'.
     Docker deployments should set DB_HOST=BAR_mysqldb explicitly.
 
-    :return: MySQL hostname to use for connections
+    :returns: MySQL hostname string.
     :rtype: str
     """
     if os.environ.get("DB_HOST"):
         return os.environ["DB_HOST"]
     if os.environ.get("MYSQL_HOST"):
         return os.environ["MYSQL_HOST"]
-    # GitHub Actions CI uses localhost; Docker Compose uses bar_mysqldb
-    # CI env var is set in GitHub Actions, but not DB_HOST
-    # In Docker, DB_HOST should be explicitly set to BAR_mysqldb
     return "localhost"
 
 
 def parse_args() -> argparse.Namespace:
-    """
-    Parse command-line arguments for the bootstrap script.
+    """Parse command-line arguments for the bootstrap script.
 
-    :return: Parsed arguments containing host, port, user, password, and optional database list
+    :returns: Parsed arguments with host, port, user, password, and optional database list.
     :rtype: argparse.Namespace
     """
     parser = argparse.ArgumentParser(description="Create simple eFP MySQL databases from in-memory schemas.")
@@ -65,15 +63,11 @@ def parse_args() -> argparse.Namespace:
 
 
 def main():
-    """
-    Main entry point for the bootstrap CLI script.
-
-    Parses command-line arguments and calls bootstrap_simple_efp_databases()
-    to create MySQL databases. Prints success messages for each database created.
+    """Run the bootstrap CLI — creates all eFP databases and prints a result per entry.
 
     Output format: [ok] ensured database_name.table_name (seeded N rows)
 
-    :raises SQLAlchemyError: If database creation or connection fails
+    :raises SQLAlchemyError: If database creation or connection fails.
     """
     args = parse_args()
     results = bootstrap_simple_efp_databases(
@@ -93,6 +87,5 @@ if __name__ == "__main__":
     try:
         main()
     except SQLAlchemyError as exc:
-        # match init.sh style output to keep ci logs readable
         print(f"failed to initialize simple efp databases: {exc}")
         raise

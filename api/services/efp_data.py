@@ -1,5 +1,12 @@
 """
-shared helper utilities for querying efp databases
+Reena Obmina | BCB330 Project 2025-2026 | University of Toronto
+
+Centralised query service for all eFP databases.
+
+Exposes a single entry point query_efp_database_dynamic() that handles:
+  - Engine resolution: live MySQL first, SQLite mirror fallback
+  - AGI-to-probeset lookup for Arabidopsis microarray databases
+  - Parameterised queries to prevent SQL injection
 """
 
 from __future__ import annotations
@@ -21,7 +28,7 @@ from api.models.annotations_lookup import AtAgiLookup
 from api.models.bar_utils import BARUtils
 from api.models.efp_schemas import SIMPLE_EFP_DATABASE_SCHEMAS
 
-# absolute path to the config/databases directory where the sqlite mirrors live
+# Absolute path to the config/databases directory where the sqlite mirrors live
 ROOT_DIR = Path(__file__).resolve().parents[2]
 DATABASE_DIR = ROOT_DIR / "config" / "databases"
 
@@ -32,7 +39,7 @@ DEFAULT_SAMPLE_SCHEMA = {
     "value_column": "data_signal",
 }
 
-# manual list covers datasets still backed by shipped dumps
+# Manual list covers datasets still backed by shipped dumps
 _MANUAL_DEFAULT_DATABASES = [
     "canola_nssnp",
     "eplant2",
@@ -68,8 +75,8 @@ MANUAL_DATABASE_SCHEMAS["sample_data"] = {
     "metadata": {"species": "arabidopsis"},
 }
 
-# minimal seed data for CI environments that don't have local mirrors yet
-# keys are normalized to uppercase to simplify lookups
+# Minimal seed data for CI environments that don't have local mirrors yet
+# Keys are normalized to uppercase to simplify lookups
 LOCAL_EFP_DATASETS: Dict[str, Dict[str, List[Dict[str, str]]]] = {
     "sample_data": {
         "261585_AT": [
@@ -198,10 +205,9 @@ class EFPDataService:
 
             sq_query = db.session.query(subquery)
             if sq_query.count() > 0:
-                # safest pick is the newest mapping because the array design changed over time
                 return sq_query[0][0]
             return None
-        except Exception as exc:  # pragma: no cover - defensive logging path
+        except Exception as exc:
             print(f"[error] agi to probeset conversion failed {exc}")
             return None
 
@@ -235,7 +241,7 @@ class EFPDataService:
                 except:
                     continue  # Try next engine
         """
-        # prefer live mysql binds but fall back to sqlite mirrors when needed
+        # Prefer live mysql binds but fall back to sqlite mirrors when needed
         db_path = DATABASE_DIR / DYNAMIC_DATABASE_SCHEMAS[database]["filename"]
         if has_app_context():
             try:
@@ -247,15 +253,13 @@ class EFPDataService:
 
         if db_path.exists():
             sqlite_engine = create_engine(f"sqlite:///{db_path}")
-            # ensure a fast UPPER() expression index exists so case-insensitive
-            # gene lookups use the index rather than a full table scan
             try:
                 with sqlite_engine.begin() as _conn:
                     _conn.execute(
                         text("CREATE INDEX IF NOT EXISTS ix_upper_probeset " "ON sample_data (UPPER(data_probeset_id))")
                     )
             except Exception:
-                pass  # read-only db or schema mismatch — best-effort
+                pass
             yield ("sqlite_mirror", sqlite_engine, True)
 
     @staticmethod
@@ -326,7 +330,7 @@ class EFPDataService:
                     return {"success": False, "error": "Invalid Arabidopsis gene ID format", "error_code": 400}
             elif species and schema["identifier_type"] == "agi":
                 # For non-AGI formatted IDs in species databases that expect AGI format,
-                # validate against the specific species validator
+                # Validate against the specific species validator
                 if species == "arachis":
                     if not BARUtils.is_arachis_gene_valid(upper_id):
                         return {"success": False, "error": "Invalid Arachis gene ID", "error_code": 400}
@@ -428,7 +432,7 @@ class EFPDataService:
                     try:
                         with Session(engine) as session:
                             results = session.execute(query_sql, params).all()
-                        if results:  # only stop if we got actual rows; empty → try next candidate
+                        if results:
                             break
                     except SQLAlchemyError as exc:
                         last_error = f"{source_label} failed: {exc}"
@@ -454,10 +458,27 @@ class EFPDataService:
                     results = local_rows
 
             if results is None:
+                _UNAVAILABLE_PHRASES = (
+                    "Unknown database",
+                    "Can't connect",
+                    "Connection refused",
+                    "not available",
+                )
+                is_missing_db = last_error and any(
+                    phrase in last_error for phrase in _UNAVAILABLE_PHRASES
+                )
+                if is_missing_db:
+                    print(f"[warn] {database}: {last_error}")
+                    return {
+                        "success": False,
+                        "error": f"Database '{database}' is not available.",
+                        "error_code": 503,
+                    }
                 return {
                     "success": False,
                     "error": (
-                        f"Database query failed for {database}. " f"{'Last error: ' + last_error if last_error else ''}"
+                        f"Database query failed for {database}. "
+                        f"{'Last error: ' + last_error if last_error else ''}"
                     ).strip(),
                     "error_code": 500,
                 }
@@ -466,7 +487,6 @@ class EFPDataService:
                 error_dict = BARUtils.error_exit(
                     f"No expression data found for {gene_id} (query identifier: {query_id})"
                 )
-                # Convert BARUtils format to match EFP service format
                 return {
                     "success": False,
                     "error": error_dict["error"],
