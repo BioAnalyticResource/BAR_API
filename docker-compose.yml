@@ -21,6 +21,7 @@ services:
     restart: always
     # Run like it's running on CI/CD pipeline
     environment:
+      - DB_HOST=BAR_mysqldb
       - REDIS_HOST=BAR_redis
       - REDIS_PORT=6379
       - CI=TRUE
@@ -32,4 +33,5 @@ services:
     volumes:
       - './api:/usr/src/app/api'
       - './tests:/usr/src/app/tests'
+      - './config/databases:/usr/src/app/config/databases'
 

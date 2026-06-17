@@ -13,7 +13,6 @@ from api.models.fastpheno import Sites, Flights, Trees, TreesFlightsJoinTbl, Ban
 from api.utils.bar_utils import BARUtils
 from markupsafe import escape
 
-
 fastpheno = Namespace("FastPheno", description="FastPheno API service", path="/fastpheno")
 
 
@@ -240,9 +239,7 @@ class FastPhenoGenotypeTimeSeries(Resource):
 class FastPhenoSites(Resource):
     def get(self):
         """Returns all sites with coordinates, for initializing the map view."""
-        rows = db.session.execute(
-            db.select(Sites).order_by(Sites.site_name)
-        ).scalars().all()
+        rows = db.session.execute(db.select(Sites).order_by(Sites.site_name)).scalars().all()
 
         res = [
             {
@@ -266,11 +263,11 @@ class FastPhenoFlights(Resource):
         if not BARUtils.is_integer(str(sites_pk)):
             return BARUtils.error_exit("Invalid sites_pk"), 400
 
-        rows = db.session.execute(
-            db.select(Flights)
-            .where(Flights.sites_pk == sites_pk)
-            .order_by(Flights.flight_date)
-        ).scalars().all()
+        rows = (
+            db.session.execute(db.select(Flights).where(Flights.sites_pk == sites_pk).order_by(Flights.flight_date))
+            .scalars()
+            .all()
+        )
 
         if len(rows) == 0:
             return BARUtils.error_exit("No flights found for the given site"), 400
@@ -297,12 +294,16 @@ class FastPhenoBandsAvailable(Resource):
         if not BARUtils.is_integer(str(flights_pk)):
             return BARUtils.error_exit("Invalid flights_pk"), 400
 
-        rows = db.session.execute(
-            db.select(Bands.band)
-            .where(Bands.flights_pk == flights_pk)
-            .distinct()
-            .order_by(db.func.cast(db.func.regexp_replace(Bands.band, "[^0-9]", ""), db.Integer))
-        ).scalars().all()
+        rows = (
+            db.session.execute(
+                db.select(Bands.band)
+                .where(Bands.flights_pk == flights_pk)
+                .distinct()
+                .order_by(db.func.cast(db.func.regexp_replace(Bands.band, "[^0-9]", ""), db.Integer))
+            )
+            .scalars()
+            .all()
+        )
 
         if len(rows) == 0:
             return BARUtils.error_exit("No bands found for the given flight"), 400

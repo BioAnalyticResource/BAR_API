@@ -1,0 +1,1128 @@
+database_name,ORDINAL_POSITION,COLUMN_NAME,COLUMN_TYPE,IS_NULLABLE,COLUMN_DEFAULT
+hnahal,7,channel,varchar(5),YES,NULL
+meristem_db,7,channel,varchar(5),YES,NULL
+meristem_db_new,7,channel,varchar(5),YES,NULL
+actinidia_bud_development,5,data_bot_id,varchar(8),NO,NULL
+actinidia_flower_fruit_development,5,data_bot_id,varchar(16),NO,NULL
+actinidia_postharvest,5,data_bot_id,varchar(24),NO,NULL
+actinidia_vegetative_growth,5,data_bot_id,varchar(16),NO,NULL
+affydb,9,data_bot_id,tinytext,YES,NULL
+apple,5,data_bot_id,varchar(12),YES,NULL
+arabidopsis_ecotypes,8,data_bot_id,varchar(16),YES,NULL
+arachis,5,data_bot_id,varchar(65),NO,NULL
+atgenexp,8,data_bot_id,varchar(50),NO,NULL
+atgenexp_hormone,7,data_bot_id,varchar(50),YES,NULL
+atgenexp_pathogen,7,data_bot_id,varchar(50),YES,NULL
+atgenexp_plus,8,data_bot_id,varchar(50),NO,NULL
+atgenexp_stress,7,data_bot_id,varchar(40),YES,NULL
+barley_mas,8,data_bot_id,varchar(24),NO,NULL
+barley_rma,8,data_bot_id,varchar(24),NO,NULL
+barley_seed,5,data_bot_id,varchar(12),NO,NULL
+barley_spike_meristem,5,data_bot_id,varchar(24),NO,NULL
+barley_spike_meristem_v3,5,data_bot_id,varchar(24),NO,NULL
+brachypodium,5,data_bot_id,varchar(50),NO,NULL
+brachypodium_Bd21,5,data_bot_id,varchar(32),NO,NULL
+brachypodium_embryogenesis,5,data_bot_id,varchar(50),NO,NULL
+brachypodium_grains,5,data_bot_id,varchar(32),NO,NULL
+brachypodium_metabolites_map,5,data_bot_id,varchar(45),NO,NULL
+brachypodium_photo_thermocycle,5,data_bot_id,varchar(12),NO,NULL
+brassica_rapa,5,data_bot_id,varchar(10),YES,NULL
+cacao_developmental_atlas,5,data_bot_id,varchar(16),YES,NULL
+cacao_developmental_atlas_sca,5,data_bot_id,varchar(16),YES,NULL
+cacao_drought_diurnal_atlas,5,data_bot_id,varchar(16),YES,NULL
+cacao_drought_diurnal_atlas_sca,5,data_bot_id,varchar(16),YES,NULL
+cacao_infection,5,data_bot_id,varchar(24),YES,NULL
+cacao_leaf,5,data_bot_id,varchar(12),YES,NULL
+cacao_meristem_atlas_sca,5,data_bot_id,varchar(24),YES,NULL
+cacao_seed_atlas_sca,5,data_bot_id,varchar(24),YES,NULL
+camelina,6,data_bot_id,varchar(40),NO,NULL
+camelina_tpm,6,data_bot_id,varchar(40),NO,NULL
+cannabis,5,data_bot_id,varchar(8),NO,NULL
+canola,8,data_bot_id,tinytext,NO,NULL
+canola_original,8,data_bot_id,tinytext,NO,NULL
+canola_original_v2,8,data_bot_id,tinytext,NO,NULL
+canola_seed,5,data_bot_id,varchar(12),NO,NULL
+cassava_atlas,5,data_bot_id,varchar(24),NO,NULL
+cassava_cbb,5,data_bot_id,varchar(24),NO,NULL
+cassava_eacmv,5,data_bot_id,varchar(24),NO,NULL
+circadian_mutants,5,data_bot_id,varchar(18),NO,NULL
+cuscuta,5,data_bot_id,varchar(12),YES,NULL
+cuscuta_early_haustoriogenesis,5,data_bot_id,varchar(8),NO,NULL
+cuscuta_lmd,5,data_bot_id,varchar(8),NO,NULL
+dna_damage,5,data_bot_id,varchar(32),YES,NULL
+durum_wheat_abiotic_stress,5,data_bot_id,varchar(32),NO,NULL
+durum_wheat_biotic_stress,5,data_bot_id,varchar(42),NO,NULL
+durum_wheat_development,5,data_bot_id,varchar(24),NO,NULL
+embryo,5,data_bot_id,varchar(8),NO,NULL
+eucalyptus,5,data_bot_id,varchar(42),NO,NULL
+euphorbia,5,data_bot_id,varchar(24),NO,NULL
+gc_drought,5,data_bot_id,varchar(12),NO,NULL
+germination,5,data_bot_id,varchar(16),NO,NULL
+grape_developmental,8,data_bot_id,varchar(50),NO,NULL
+guard_cell,8,data_bot_id,varchar(24),NO,NULL
+gynoecium,5,data_bot_id,varchar(16),NO,NULL
+heterodera_schachtii,5,data_bot_id,varchar(16),NO,NULL
+hnahal,6,data_bot_id,tinytext,NO,NULL
+human_body_map_2,8,data_bot_id,varchar(20),NO,NULL
+human_developmental,8,data_bot_id,varchar(24),YES,NULL
+human_developmental_SpongeLab,8,data_bot_id,tinytext,NO,NULL
+human_diseased,8,data_bot_id,tinytext,NO,NULL
+kalanchoe,5,data_bot_id,varchar(16),NO,NULL
+kalanchoe_time_course_analysis,5,data_bot_id,varchar(16),NO,NULL
+klepikova,5,data_bot_id,varchar(16),NO,NULL
+lateral_root_initiation,6,data_bot_id,varchar(64),YES,NULL
+light_series,8,data_bot_id,varchar(30),NO,NULL
+lipid_map,5,data_bot_id,varchar(16),NO,NULL
+little_millet,5,data_bot_id,varchar(12),YES,NULL
+lupin_lcm_leaf,5,data_bot_id,varchar(32),NO,NULL
+lupin_lcm_pod,5,data_bot_id,varchar(32),NO,NULL
+lupin_lcm_stem,5,data_bot_id,varchar(32),NO,NULL
+lupin_pod_seed,5,data_bot_id,varchar(32),NO,NULL
+lupin_whole_plant,5,data_bot_id,varchar(32),NO,NULL
+maize_RMA_linear,8,data_bot_id,varchar(30),NO,NULL
+maize_RMA_log,8,data_bot_id,varchar(30),NO,NULL
+maize_atlas,5,data_bot_id,varchar(40),NO,NULL
+maize_atlas_v5,5,data_bot_id,varchar(40),NO,NULL
+maize_buell_lab,5,data_bot_id,varchar(50),NO,NULL
+maize_early_seed,5,data_bot_id,varchar(50),NO,NULL
+maize_ears,8,data_bot_id,varchar(16),NO,NULL
+maize_embryonic_leaf_development,5,data_bot_id,varchar(24),NO,NULL
+maize_enzyme,8,data_bot_id,varchar(8),NO,NULL
+maize_gdowns,5,data_bot_id,varchar(40),NO,NULL
+maize_iplant,8,data_bot_id,varchar(16),NO,NULL
+maize_kernel_v5,5,data_bot_id,varchar(8),NO,NULL
+maize_leaf_gradient,8,data_bot_id,varchar(12),NO,NULL
+maize_lipid_map,5,data_bot_id,varchar(12),NO,NULL
+maize_metabolite,8,data_bot_id,varchar(5),NO,NULL
+maize_nitrogen_use_efficiency,5,data_bot_id,varchar(24),NO,NULL
+maize_rice_comparison,8,data_bot_id,varchar(12),NO,NULL
+maize_root,5,data_bot_id,varchar(255),NO,NULL
+maize_stress_v5,5,data_bot_id,varchar(20),NO,NULL
+mangosteen_aril_vs_rind,5,data_bot_id,varchar(8),NO,NULL
+mangosteen_callus,5,data_bot_id,varchar(8),NO,NULL
+mangosteen_diseased_vs_normal,5,data_bot_id,varchar(12),NO,NULL
+mangosteen_fruit_ripening,5,data_bot_id,varchar(8),NO,NULL
+mangosteen_seed_development,5,data_bot_id,varchar(12),NO,NULL
+mangosteen_seed_development_germination,5,data_bot_id,varchar(8),NO,NULL
+mangosteen_seed_germination,5,data_bot_id,varchar(12),NO,NULL
+marchantia_organ_stress,5,data_bot_id,varchar(32),NO,NULL
+medicago_mas,8,data_bot_id,varchar(22),NO,NULL
+medicago_rma,8,data_bot_id,varchar(22),NO,NULL
+medicago_root,6,data_bot_id,varchar(16),NO,NULL
+medicago_root_v5,5,data_bot_id,varchar(16),NO,NULL
+medicago_seed,6,data_bot_id,varchar(15),NO,NULL
+meristem_db,6,data_bot_id,varchar(18),NO,NULL
+meristem_db_new,6,data_bot_id,tinytext,NO,NULL
+mouse_db,3,data_bot_id,varchar(18),NO,NULL
+oat,8,data_bot_id,varchar(24),NO,NULL
+phelipanche,5,data_bot_id,varchar(32),NO,NULL
+physcomitrella_db,5,data_bot_id,varchar(40),NO,NULL
+poplar,9,data_bot_id,varchar(40),YES,NULL
+poplar_hormone,5,data_bot_id,varchar(12),NO,NULL
+poplar_leaf,5,data_bot_id,varchar(40),YES,NULL
+poplar_xylem,5,data_bot_id,varchar(40),YES,NULL
+potato_dev,5,data_bot_id,varchar(15),NO,NULL
+potato_stress,5,data_bot_id,varchar(12),NO,NULL
+potato_wounding,5,data_bot_id,varchar(12),NO,NULL
+rice_abiotic_stress_sc_pseudobulk,5,data_bot_id,varchar(64),NO,NULL
+rice_drought_heat_stress,5,data_bot_id,varchar(12),NO,NULL
+rice_leaf_gradient,8,data_bot_id,varchar(12),NO,NULL
+rice_maize_comparison,8,data_bot_id,varchar(12),NO,NULL
+rice_mas,8,data_bot_id,varchar(26),NO,NULL
+rice_metabolite,8,data_bot_id,varchar(6),NO,NULL
+rice_rma,8,data_bot_id,varchar(26),NO,NULL
+rice_root,5,data_bot_id,varchar(8),NO,NULL
+rohan,8,data_bot_id,tinytext,NO,NULL
+root,8,data_bot_id,varchar(24),NO,NULL
+root_Schaefer_lab,5,data_bot_id,varchar(20),YES,NULL
+rpatel,8,data_bot_id,tinytext,NO,NULL
+seed_db,8,data_bot_id,varchar(64),NO,NULL
+seedcoat,8,data_bot_id,varchar(12),NO,NULL
+selaginella,5,data_bot_id,varchar(36),NO,NULL
+shoot_apex,8,data_bot_id,varchar(8),NO,NULL
+silique,5,data_bot_id,varchar(64),NO,NULL
+single_cell,5,data_bot_id,varchar(32),NO,NULL
+sorghum_atlas_w_BS_cells,5,data_bot_id,varchar(24),NO,NULL
+sorghum_comparative_transcriptomics,5,data_bot_id,varchar(40),NO,NULL
+sorghum_developmental,5,data_bot_id,varchar(12),NO,NULL
+sorghum_developmental_2,5,data_bot_id,varchar(32),NO,NULL
+sorghum_flowering_activation,5,data_bot_id,varchar(32),NO,NULL
+sorghum_low_phosphorus,5,data_bot_id,varchar(16),NO,NULL
+sorghum_nitrogen_stress,5,data_bot_id,varchar(32),NO,NULL
+sorghum_nitrogen_use_efficiency,5,data_bot_id,varchar(12),NO,NULL
+sorghum_phosphate_stress,5,data_bot_id,varchar(32),NO,NULL
+sorghum_plasma,5,data_bot_id,varchar(16),NO,NULL
+sorghum_saline_alkali_stress,5,data_bot_id,varchar(32),NO,NULL
+sorghum_stress,5,data_bot_id,varchar(12),NO,NULL
+sorghum_strigolactone_variation,5,data_bot_id,varchar(32),NO,NULL
+sorghum_sulfur_stress,5,data_bot_id,varchar(32),NO,NULL
+sorghum_temperature_stress,5,data_bot_id,varchar(32),NO,NULL
+sorghum_vascularization_and_internode,5,data_bot_id,varchar(32),NO,NULL
+soybean,8,data_bot_id,varchar(22),NO,NULL
+soybean_embryonic_development,5,data_bot_id,varchar(42),NO,NULL
+soybean_heart_cotyledon_globular,5,data_bot_id,varchar(42),NO,NULL
+soybean_senescence,5,data_bot_id,varchar(8),NO,NULL
+soybean_severin,8,data_bot_id,varchar(18),NO,NULL
+spruce,5,data_bot_id,varchar(24),NO,NULL
+strawberry,5,data_bot_id,varchar(24),NO,NULL
+striga,5,data_bot_id,varchar(42),NO,NULL
+sugarcane_culms,5,data_bot_id,varchar(16),YES,NULL
+sugarcane_leaf,5,data_bot_id,varchar(32),YES,NULL
+sunflower,5,data_bot_id,varchar(16),YES,NULL
+thellungiella_db,6,data_bot_id,varchar(40),NO,NULL
+tomato,8,data_bot_id,varchar(18),YES,NULL
+tomato_ils,6,data_bot_id,varchar(12),YES,NULL
+tomato_ils2,6,data_bot_id,varchar(12),YES,NULL
+tomato_ils3,6,data_bot_id,varchar(16),YES,NULL
+tomato_meristem,5,data_bot_id,varchar(24),YES,NULL
+tomato_renormalized,8,data_bot_id,varchar(18),YES,NULL
+tomato_root,5,data_bot_id,varchar(12),YES,NULL
+tomato_root_field_pot,5,data_bot_id,varchar(12),YES,NULL
+tomato_s_pennellii,6,data_bot_id,varchar(24),YES,NULL
+tomato_seed,5,data_bot_id,varchar(16),NO,NULL
+tomato_shade_mutants,5,data_bot_id,varchar(20),NO,NULL
+tomato_shade_timecourse,5,data_bot_id,varchar(16),NO,NULL
+tomato_trait,8,data_bot_id,tinytext,NO,NULL
+triphysaria,5,data_bot_id,varchar(32),NO,NULL
+triticale,8,data_bot_id,varchar(18),NO,NULL
+triticale_mas,8,data_bot_id,varchar(30),NO,NULL
+tung_tree,5,data_bot_id,varchar(16),YES,NULL
+wheat,5,data_bot_id,varchar(16),NO,NULL
+wheat_abiotic_stress,5,data_bot_id,varchar(16),NO,NULL
+wheat_embryogenesis,5,data_bot_id,varchar(50),NO,NULL
+wheat_meiosis,5,data_bot_id,varchar(24),NO,NULL
+wheat_root,5,data_bot_id,varchar(16),NO,NULL
+willow,5,data_bot_id,varchar(16),NO,NULL
+affydb,7,data_call,tinytext,NO,NULL
+arabidopsis_ecotypes,6,data_call,tinytext,YES,NULL
+atgenexp,6,data_call,tinytext,NO,NULL
+atgenexp_hormone,5,data_call,tinytext,YES,NULL
+atgenexp_pathogen,5,data_call,tinytext,YES,NULL
+atgenexp_plus,6,data_call,tinytext,YES,NULL
+atgenexp_stress,5,data_call,varchar(20),YES,NULL
+barley_mas,6,data_call,tinytext,YES,NULL
+barley_rma,6,data_call,tinytext,YES,NULL
+canola,6,data_call,tinytext,YES,NULL
+canola_original,6,data_call,tinytext,YES,NULL
+canola_original_v2,6,data_call,tinytext,YES,NULL
+grape_developmental,6,data_call,tinytext,NO,NULL
+guard_cell,6,data_call,tinytext,YES,NULL
+human_body_map_2,6,data_call,tinytext,YES,NULL
+human_developmental,6,data_call,tinytext,YES,NULL
+human_developmental_SpongeLab,6,data_call,tinytext,YES,NULL
+human_diseased,6,data_call,tinytext,YES,NULL
+klepikova,6,data_call,varchar(2),YES,NULL
+light_series,6,data_call,tinytext,YES,NULL
+maize_RMA_linear,6,data_call,tinytext,YES,NULL
+maize_RMA_log,6,data_call,tinytext,YES,NULL
+maize_ears,6,data_call,tinytext,YES,NULL
+maize_enzyme,6,data_call,tinytext,YES,NULL
+maize_iplant,6,data_call,tinytext,YES,NULL
+maize_leaf_gradient,6,data_call,tinytext,YES,NULL
+maize_metabolite,6,data_call,tinytext,YES,NULL
+maize_rice_comparison,6,data_call,tinytext,YES,NULL
+medicago_mas,6,data_call,tinytext,YES,NULL
+medicago_rma,6,data_call,tinytext,YES,NULL
+poplar,7,data_call,varchar(12),NO,NULL
+rice_leaf_gradient,6,data_call,tinytext,YES,NULL
+rice_maize_comparison,6,data_call,tinytext,YES,NULL
+rice_mas,6,data_call,tinytext,YES,NULL
+rice_metabolite,6,data_call,tinytext,YES,NULL
+rice_rma,6,data_call,tinytext,YES,NULL
+rohan,6,data_call,tinytext,YES,NULL
+root,6,data_call,tinytext,YES,NULL
+rpatel,6,data_call,tinytext,YES,NULL
+seed_db,6,data_call,varchar(40),YES,NULL
+seedcoat,6,data_call,tinytext,YES,NULL
+shoot_apex,6,data_call,varchar(2),YES,NULL
+soybean,6,data_call,tinytext,NO,NULL
+soybean_severin,6,data_call,tinytext,NO,NULL
+tomato,6,data_call,tinytext,YES,NULL
+tomato_renormalized,6,data_call,tinytext,YES,NULL
+tomato_trait,6,data_call,tinytext,YES,NULL
+triticale,6,data_call,tinytext,YES,NULL
+triticale_mas,6,data_call,tinytext,YES,NULL
+affydb,4,data_num,int unsigned,NO,0
+poplar,4,data_num,int unsigned,NO,0
+affydb,8,data_p_val,float,NO,0
+arabidopsis_ecotypes,7,data_p_val,float,YES,0
+atgenexp,7,data_p_val,float,NO,0
+atgenexp_hormone,6,data_p_val,float,YES,0
+atgenexp_pathogen,6,data_p_val,float,YES,NULL
+atgenexp_plus,7,data_p_val,float,YES,0
+atgenexp_stress,6,data_p_val,float,YES,0
+barley_mas,7,data_p_val,float,YES,0
+barley_rma,7,data_p_val,float,YES,0
+canola,7,data_p_val,float,YES,0
+canola_original,7,data_p_val,float,YES,0
+canola_original_v2,7,data_p_val,float,YES,0
+grape_developmental,7,data_p_val,float,NO,NULL
+guard_cell,7,data_p_val,float,YES,0
+human_body_map_2,7,data_p_val,float,YES,0
+human_developmental,7,data_p_val,float,YES,0
+human_developmental_SpongeLab,7,data_p_val,float,YES,0
+human_diseased,7,data_p_val,float,YES,0
+light_series,7,data_p_val,float,YES,0
+maize_RMA_linear,7,data_p_val,float,YES,0
+maize_RMA_log,7,data_p_val,float,YES,0
+maize_ears,7,data_p_val,float,YES,0
+maize_enzyme,7,data_p_val,float,YES,0
+maize_iplant,7,data_p_val,float,YES,0
+maize_leaf_gradient,7,data_p_val,float,YES,0
+maize_metabolite,7,data_p_val,float,YES,0
+maize_rice_comparison,7,data_p_val,float,YES,0
+medicago_mas,7,data_p_val,float,YES,0
+medicago_rma,7,data_p_val,float,YES,0
+poplar,8,data_p_val,float,NO,0
+rice_leaf_gradient,7,data_p_val,float,YES,0
+rice_maize_comparison,7,data_p_val,float,YES,0
+rice_mas,7,data_p_val,float,YES,0
+rice_metabolite,7,data_p_val,float,YES,0
+rice_rma,7,data_p_val,float,YES,0
+rohan,7,data_p_val,float,YES,0
+root,7,data_p_val,float,YES,0
+rpatel,7,data_p_val,float,YES,0
+seed_db,7,data_p_val,float,YES,0
+seedcoat,7,data_p_val,float,YES,0
+shoot_apex,7,data_p_val,float,YES,0
+soybean,7,data_p_val,float,NO,NULL
+soybean_severin,7,data_p_val,float,NO,NULL
+tomato,7,data_p_val,float,YES,0
+tomato_renormalized,7,data_p_val,float,YES,0
+tomato_trait,7,data_p_val,float,YES,0
+triticale,7,data_p_val,float,YES,0
+triticale_mas,7,data_p_val,float,YES,0
+medicago_root,5,data_p_value,float,YES,0
+medicago_seed,5,data_p_value,float,YES,0
+tomato_ils,5,data_p_value,float,YES,0
+tomato_ils2,5,data_p_value,float,YES,0
+tomato_ils3,5,data_p_value,float,YES,0
+tomato_s_pennellii,5,data_p_value,float,YES,0
+actinidia_bud_development,3,data_probeset_id,varchar(12),NO,NULL
+actinidia_flower_fruit_development,3,data_probeset_id,varchar(12),NO,NULL
+actinidia_postharvest,3,data_probeset_id,varchar(12),NO,NULL
+actinidia_vegetative_growth,3,data_probeset_id,varchar(12),NO,NULL
+affydb,5,data_probeset_id,varchar(30),YES,NULL
+apple,3,data_probeset_id,varchar(18),NO,NULL
+arabidopsis_ecotypes,4,data_probeset_id,varchar(30),YES,NULL
+arachis,3,data_probeset_id,varchar(30),NO,NULL
+atgenexp,4,data_probeset_id,varchar(30),YES,NULL
+atgenexp_hormone,3,data_probeset_id,varchar(30),YES,NULL
+atgenexp_pathogen,3,data_probeset_id,varchar(30),YES,NULL
+atgenexp_plus,4,data_probeset_id,varchar(30),YES,NULL
+atgenexp_stress,3,data_probeset_id,varchar(30),YES,NULL
+barley_mas,4,data_probeset_id,varchar(30),NO,NULL
+barley_rma,4,data_probeset_id,varchar(30),NO,NULL
+barley_seed,3,data_probeset_id,varchar(32),NO,NULL
+barley_spike_meristem,3,data_probeset_id,varchar(24),NO,NULL
+barley_spike_meristem_v3,3,data_probeset_id,varchar(32),NO,NULL
+brachypodium,3,data_probeset_id,varchar(18),NO,NULL
+brachypodium_Bd21,3,data_probeset_id,varchar(18),NO,NULL
+brachypodium_embryogenesis,3,data_probeset_id,varchar(18),NO,NULL
+brachypodium_grains,3,data_probeset_id,varchar(18),NO,NULL
+brachypodium_metabolites_map,3,data_probeset_id,varchar(64),NO,NULL
+brachypodium_photo_thermocycle,3,data_probeset_id,varchar(18),NO,NULL
+brassica_rapa,3,data_probeset_id,varchar(16),NO,NULL
+cacao_developmental_atlas,3,data_probeset_id,varchar(24),NO,NULL
+cacao_developmental_atlas_sca,3,data_probeset_id,varchar(24),NO,NULL
+cacao_drought_diurnal_atlas,3,data_probeset_id,varchar(24),NO,NULL
+cacao_drought_diurnal_atlas_sca,3,data_probeset_id,varchar(24),NO,NULL
+cacao_infection,3,data_probeset_id,varchar(18),NO,NULL
+cacao_leaf,3,data_probeset_id,varchar(18),NO,NULL
+cacao_meristem_atlas_sca,3,data_probeset_id,varchar(24),NO,NULL
+cacao_seed_atlas_sca,3,data_probeset_id,varchar(24),NO,NULL
+camelina,4,data_probeset_id,varchar(20),NO,NULL
+camelina_tpm,4,data_probeset_id,varchar(20),NO,NULL
+cannabis,3,data_probeset_id,varchar(24),NO,NULL
+canola,4,data_probeset_id,tinytext,NO,NULL
+canola_original,4,data_probeset_id,tinytext,NO,NULL
+canola_original_v2,4,data_probeset_id,tinytext,NO,NULL
+canola_seed,3,data_probeset_id,varchar(16),NO,NULL
+cassava_atlas,3,data_probeset_id,varchar(24),NO,NULL
+cassava_cbb,3,data_probeset_id,varchar(24),NO,NULL
+cassava_eacmv,3,data_probeset_id,varchar(24),NO,NULL
+circadian_mutants,3,data_probeset_id,varchar(12),NO,NULL
+cuscuta,3,data_probeset_id,varchar(16),YES,NULL
+cuscuta_early_haustoriogenesis,3,data_probeset_id,varchar(12),NO,NULL
+cuscuta_lmd,3,data_probeset_id,varchar(12),NO,NULL
+dna_damage,3,data_probeset_id,varchar(10),NO,NULL
+durum_wheat_abiotic_stress,3,data_probeset_id,varchar(32),NO,NULL
+durum_wheat_biotic_stress,3,data_probeset_id,varchar(32),NO,NULL
+durum_wheat_development,3,data_probeset_id,varchar(32),NO,NULL
+embryo,3,data_probeset_id,varchar(16),NO,NULL
+eucalyptus,3,data_probeset_id,varchar(16),NO,NULL
+euphorbia,3,data_probeset_id,varchar(18),NO,NULL
+gc_drought,3,data_probeset_id,varchar(12),NO,NULL
+germination,3,data_probeset_id,varchar(30),NO,NULL
+grape_developmental,4,data_probeset_id,varchar(40),NO,NULL
+guard_cell,4,data_probeset_id,varchar(30),NO,NULL
+gynoecium,3,data_probeset_id,varchar(12),NO,NULL
+heterodera_schachtii,3,data_probeset_id,varchar(12),NO,NULL
+hnahal,4,data_probeset_id,tinytext,NO,NULL
+human_body_map_2,4,data_probeset_id,varchar(28),NO,NULL
+human_developmental,4,data_probeset_id,varchar(32),YES,NULL
+human_developmental_SpongeLab,4,data_probeset_id,tinytext,NO,NULL
+human_diseased,4,data_probeset_id,tinytext,NO,NULL
+kalanchoe,3,data_probeset_id,varchar(24),NO,NULL
+kalanchoe_time_course_analysis,3,data_probeset_id,varchar(18),NO,NULL
+klepikova,3,data_probeset_id,varchar(30),NO,NULL
+lateral_root_initiation,4,data_probeset_id,varchar(40),NO,NULL
+light_series,4,data_probeset_id,varchar(30),NO,NULL
+lipid_map,3,data_probeset_id,varchar(64),NO,NULL
+little_millet,3,data_probeset_id,varchar(32),YES,NULL
+lupin_lcm_leaf,3,data_probeset_id,varchar(32),NO,NULL
+lupin_lcm_pod,3,data_probeset_id,varchar(32),NO,NULL
+lupin_lcm_stem,3,data_probeset_id,varchar(32),NO,NULL
+lupin_pod_seed,3,data_probeset_id,varchar(32),NO,NULL
+lupin_whole_plant,3,data_probeset_id,varchar(32),NO,NULL
+maize_RMA_linear,4,data_probeset_id,varchar(20),NO,NULL
+maize_RMA_log,4,data_probeset_id,varchar(20),NO,NULL
+maize_atlas,3,data_probeset_id,varchar(25),NO,NULL
+maize_atlas_v5,3,data_probeset_id,varchar(25),NO,NULL
+maize_buell_lab,3,data_probeset_id,varchar(24),NO,NULL
+maize_early_seed,3,data_probeset_id,varchar(24),NO,NULL
+maize_ears,4,data_probeset_id,varchar(20),NO,NULL
+maize_embryonic_leaf_development,3,data_probeset_id,varchar(18),NO,NULL
+maize_enzyme,4,data_probeset_id,varchar(40),NO,NULL
+maize_gdowns,3,data_probeset_id,varchar(40),NO,NULL
+maize_iplant,4,data_probeset_id,varchar(20),NO,NULL
+maize_kernel_v5,3,data_probeset_id,varchar(25),NO,NULL
+maize_leaf_gradient,4,data_probeset_id,varchar(20),NO,NULL
+maize_lipid_map,3,data_probeset_id,varchar(24),NO,NULL
+maize_metabolite,4,data_probeset_id,varchar(64),NO,NULL
+maize_nitrogen_use_efficiency,3,data_probeset_id,varchar(24),NO,NULL
+maize_rice_comparison,4,data_probeset_id,varchar(16),NO,NULL
+maize_root,3,data_probeset_id,varchar(30),NO,NULL
+maize_stress_v5,3,data_probeset_id,varchar(25),NO,NULL
+mangosteen_aril_vs_rind,3,data_probeset_id,varchar(8),NO,NULL
+mangosteen_callus,3,data_probeset_id,varchar(8),NO,NULL
+mangosteen_diseased_vs_normal,3,data_probeset_id,varchar(8),NO,NULL
+mangosteen_fruit_ripening,3,data_probeset_id,varchar(8),NO,NULL
+mangosteen_seed_development,3,data_probeset_id,varchar(8),NO,NULL
+mangosteen_seed_development_germination,3,data_probeset_id,varchar(8),NO,NULL
+mangosteen_seed_germination,3,data_probeset_id,varchar(8),NO,NULL
+marchantia_organ_stress,3,data_probeset_id,varchar(32),NO,NULL
+medicago_mas,4,data_probeset_id,varchar(28),NO,NULL
+medicago_rma,4,data_probeset_id,varchar(28),NO,NULL
+medicago_root,3,data_probeset_id,varchar(18),NO,NULL
+medicago_root_v5,3,data_probeset_id,varchar(64),NO,NULL
+medicago_seed,3,data_probeset_id,varchar(18),NO,NULL
+meristem_db,4,data_probeset_id,varchar(30),NO,NULL
+meristem_db_new,4,data_probeset_id,tinytext,NO,NULL
+mouse_db,1,data_probeset_id,varchar(15),NO,NULL
+oat,6,data_probeset_id,varchar(36),NO,NULL
+phelipanche,3,data_probeset_id,varchar(16),NO,NULL
+physcomitrella_db,3,data_probeset_id,varchar(40),NO,
+poplar,5,data_probeset_id,varchar(70),NO,NULL
+poplar_hormone,3,data_probeset_id,varchar(18),NO,NULL
+poplar_leaf,3,data_probeset_id,varchar(70),NO,NULL
+poplar_xylem,3,data_probeset_id,varchar(70),NO,NULL
+potato_dev,3,data_probeset_id,varchar(40),NO,NULL
+potato_stress,3,data_probeset_id,varchar(40),NO,NULL
+potato_wounding,3,data_probeset_id,varchar(40),NO,NULL
+rice_abiotic_stress_sc_pseudobulk,3,data_probeset_id,varchar(16),NO,NULL
+rice_drought_heat_stress,3,data_probeset_id,varchar(24),NO,NULL
+rice_leaf_gradient,4,data_probeset_id,varchar(18),NO,NULL
+rice_maize_comparison,4,data_probeset_id,varchar(18),NO,NULL
+rice_mas,4,data_probeset_id,varchar(28),NO,NULL
+rice_metabolite,4,data_probeset_id,varchar(25),NO,NULL
+rice_rma,4,data_probeset_id,varchar(28),NO,NULL
+rice_root,3,data_probeset_id,varchar(16),NO,NULL
+rohan,4,data_probeset_id,tinytext,NO,NULL
+root,4,data_probeset_id,varchar(30),NO,NULL
+root_Schaefer_lab,3,data_probeset_id,varchar(16),NO,NULL
+rpatel,4,data_probeset_id,tinytext,NO,NULL
+seed_db,4,data_probeset_id,varchar(30),NO,NULL
+seedcoat,4,data_probeset_id,varchar(22),NO,NULL
+selaginella,3,data_probeset_id,varchar(18),NO,NULL
+shoot_apex,4,data_probeset_id,varchar(12),NO,NULL
+silique,3,data_probeset_id,varchar(12),NO,NULL
+single_cell,3,data_probeset_id,varchar(24),NO,NULL
+sorghum_atlas_w_BS_cells,3,data_probeset_id,varchar(24),NO,NULL
+sorghum_comparative_transcriptomics,3,data_probeset_id,varchar(18),NO,NULL
+sorghum_developmental,3,data_probeset_id,varchar(16),NO,NULL
+sorghum_developmental_2,3,data_probeset_id,varchar(16),NO,NULL
+sorghum_flowering_activation,3,data_probeset_id,varchar(16),NO,NULL
+sorghum_low_phosphorus,3,data_probeset_id,varchar(24),NO,NULL
+sorghum_nitrogen_stress,3,data_probeset_id,varchar(16),NO,NULL
+sorghum_nitrogen_use_efficiency,3,data_probeset_id,varchar(24),NO,NULL
+sorghum_phosphate_stress,3,data_probeset_id,varchar(24),NO,NULL
+sorghum_plasma,3,data_probeset_id,varchar(24),NO,NULL
+sorghum_saline_alkali_stress,3,data_probeset_id,varchar(16),NO,NULL
+sorghum_stress,3,data_probeset_id,varchar(16),NO,NULL
+sorghum_strigolactone_variation,3,data_probeset_id,varchar(16),NO,NULL
+sorghum_sulfur_stress,3,data_probeset_id,varchar(24),NO,NULL
+sorghum_temperature_stress,3,data_probeset_id,varchar(16),NO,NULL
+sorghum_vascularization_and_internode,3,data_probeset_id,varchar(24),NO,NULL
+soybean,4,data_probeset_id,varchar(36),NO,NULL
+soybean_embryonic_development,3,data_probeset_id,varchar(24),NO,NULL
+soybean_heart_cotyledon_globular,3,data_probeset_id,varchar(24),NO,NULL
+soybean_senescence,3,data_probeset_id,varchar(24),NO,NULL
+soybean_severin,4,data_probeset_id,varchar(18),NO,NULL
+spruce,3,data_probeset_id,varchar(16),NO,NULL
+strawberry,3,data_probeset_id,varchar(16),NO,NULL
+striga,3,data_probeset_id,varchar(24),NO,NULL
+sugarcane_culms,3,data_probeset_id,varchar(32),NO,NULL
+sugarcane_leaf,3,data_probeset_id,varchar(32),NO,NULL
+sunflower,3,data_probeset_id,varchar(16),NO,NULL
+thellungiella_db,4,data_probeset_id,varchar(40),NO,NULL
+tomato,4,data_probeset_id,varchar(18),YES,NULL
+tomato_ils,3,data_probeset_id,varchar(20),YES,NULL
+tomato_ils2,3,data_probeset_id,varchar(20),YES,NULL
+tomato_ils3,3,data_probeset_id,varchar(20),YES,NULL
+tomato_meristem,3,data_probeset_id,varchar(18),YES,NULL
+tomato_renormalized,4,data_probeset_id,varchar(18),YES,NULL
+tomato_root,3,data_probeset_id,varchar(18),YES,NULL
+tomato_root_field_pot,3,data_probeset_id,varchar(18),YES,NULL
+tomato_s_pennellii,3,data_probeset_id,varchar(20),YES,NULL
+tomato_seed,3,data_probeset_id,varchar(24),NO,NULL
+tomato_shade_mutants,3,data_probeset_id,varchar(16),NO,NULL
+tomato_shade_timecourse,3,data_probeset_id,varchar(16),NO,NULL
+tomato_trait,4,data_probeset_id,varchar(100),NO,NULL
+triphysaria,3,data_probeset_id,varchar(16),NO,NULL
+triticale,4,data_probeset_id,varchar(30),NO,NULL
+triticale_mas,4,data_probeset_id,varchar(30),NO,NULL
+tung_tree,3,data_probeset_id,varchar(16),NO,NULL
+wheat,3,data_probeset_id,varchar(32),NO,NULL
+wheat_abiotic_stress,3,data_probeset_id,varchar(32),NO,NULL
+wheat_embryogenesis,3,data_probeset_id,varchar(32),NO,NULL
+wheat_meiosis,3,data_probeset_id,varchar(32),NO,NULL
+wheat_root,3,data_probeset_id,varchar(32),NO,NULL
+willow,3,data_probeset_id,varchar(32),NO,NULL
+actinidia_bud_development,4,data_signal,float,YES,0
+actinidia_flower_fruit_development,4,data_signal,float,YES,0
+actinidia_postharvest,4,data_signal,float,YES,0
+actinidia_vegetative_growth,4,data_signal,float,YES,0
+affydb,6,data_signal,float,NO,0
+apple,4,data_signal,float,NO,0
+arabidopsis_ecotypes,5,data_signal,float,YES,0
+arachis,4,data_signal,float,NO,NULL
+atgenexp,5,data_signal,float,NO,0
+atgenexp_hormone,4,data_signal,float,YES,0
+atgenexp_pathogen,4,data_signal,float,YES,NULL
+atgenexp_plus,5,data_signal,float,YES,0
+atgenexp_stress,4,data_signal,float,NO,0
+barley_mas,5,data_signal,float,YES,0
+barley_rma,5,data_signal,float,YES,0
+barley_seed,4,data_signal,float,YES,0
+barley_spike_meristem,4,data_signal,float,YES,0
+barley_spike_meristem_v3,4,data_signal,float,YES,0
+brachypodium,4,data_signal,float,YES,0
+brachypodium_Bd21,4,data_signal,float,YES,0
+brachypodium_embryogenesis,4,data_signal,float,YES,0
+brachypodium_grains,4,data_signal,float,YES,0
+brachypodium_metabolites_map,4,data_signal,float,YES,NULL
+brachypodium_photo_thermocycle,4,data_signal,float,YES,0
+brassica_rapa,4,data_signal,float,NO,0
+cacao_developmental_atlas,4,data_signal,float,NO,0
+cacao_developmental_atlas_sca,4,data_signal,float,NO,0
+cacao_drought_diurnal_atlas,4,data_signal,float,NO,0
+cacao_drought_diurnal_atlas_sca,4,data_signal,float,NO,0
+cacao_infection,4,data_signal,float,NO,0
+cacao_leaf,4,data_signal,float,NO,0
+cacao_meristem_atlas_sca,4,data_signal,float,NO,0
+cacao_seed_atlas_sca,4,data_signal,float,NO,0
+camelina,5,data_signal,float,NO,NULL
+camelina_tpm,5,data_signal,float,NO,NULL
+cannabis,4,data_signal,float,NO,NULL
+canola,5,data_signal,float,YES,0
+canola_original,5,data_signal,float,YES,0
+canola_original_v2,5,data_signal,float,YES,0
+canola_seed,4,data_signal,float,YES,0
+cassava_atlas,4,data_signal,float,YES,0
+cassava_cbb,4,data_signal,float,YES,0
+cassava_eacmv,4,data_signal,float,YES,0
+circadian_mutants,4,data_signal,float,YES,0
+cuscuta,4,data_signal,float,YES,0
+cuscuta_early_haustoriogenesis,4,data_signal,float,YES,0
+cuscuta_lmd,4,data_signal,float,YES,0
+dna_damage,4,data_signal,float,NO,0
+durum_wheat_abiotic_stress,4,data_signal,float,YES,0
+durum_wheat_biotic_stress,4,data_signal,float,YES,0
+durum_wheat_development,4,data_signal,float,YES,0
+embryo,4,data_signal,float,YES,0
+eucalyptus,4,data_signal,float,YES,0
+euphorbia,4,data_signal,float,YES,0
+gc_drought,4,data_signal,float,YES,0
+germination,4,data_signal,float,YES,0
+grape_developmental,5,data_signal,float,NO,NULL
+guard_cell,5,data_signal,float,YES,0
+gynoecium,4,data_signal,float,YES,0
+heterodera_schachtii,4,data_signal,float,YES,0
+hnahal,5,data_signal,float,YES,0
+human_body_map_2,5,data_signal,float,YES,0
+human_developmental,5,data_signal,float,YES,0
+human_developmental_SpongeLab,5,data_signal,float,YES,0
+human_diseased,5,data_signal,float,YES,0
+kalanchoe,4,data_signal,float,NO,NULL
+kalanchoe_time_course_analysis,4,data_signal,float,YES,0
+klepikova,4,data_signal,float,YES,0
+lateral_root_initiation,5,data_signal,float,NO,NULL
+light_series,5,data_signal,float,YES,0
+lipid_map,4,data_signal,float,YES,NULL
+little_millet,4,data_signal,float,YES,0
+lupin_lcm_leaf,4,data_signal,float,YES,0
+lupin_lcm_pod,4,data_signal,float,YES,0
+lupin_lcm_stem,4,data_signal,float,YES,0
+lupin_pod_seed,4,data_signal,float,YES,0
+lupin_whole_plant,4,data_signal,float,YES,0
+maize_RMA_linear,5,data_signal,float,YES,0
+maize_RMA_log,5,data_signal,float,YES,0
+maize_atlas,4,data_signal,float,NO,NULL
+maize_atlas_v5,4,data_signal,float,YES,0
+maize_buell_lab,4,data_signal,float,NO,0
+maize_early_seed,4,data_signal,float,NO,0
+maize_ears,5,data_signal,float,YES,0
+maize_embryonic_leaf_development,4,data_signal,float,YES,0
+maize_enzyme,5,data_signal,float,YES,0
+maize_gdowns,4,data_signal,float,NO,NULL
+maize_iplant,5,data_signal,float,YES,0
+maize_kernel_v5,4,data_signal,float,YES,0
+maize_leaf_gradient,5,data_signal,float,YES,0
+maize_lipid_map,4,data_signal,float,YES,NULL
+maize_metabolite,5,data_signal,float,YES,0
+maize_nitrogen_use_efficiency,4,data_signal,float,YES,0
+maize_rice_comparison,5,data_signal,float,YES,0
+maize_root,4,data_signal,float,YES,0
+maize_stress_v5,4,data_signal,float,YES,0
+mangosteen_aril_vs_rind,4,data_signal,float,YES,0
+mangosteen_callus,4,data_signal,float,YES,0
+mangosteen_diseased_vs_normal,4,data_signal,float,YES,0
+mangosteen_fruit_ripening,4,data_signal,float,YES,0
+mangosteen_seed_development,4,data_signal,float,YES,0
+mangosteen_seed_development_germination,4,data_signal,float,YES,0
+mangosteen_seed_germination,4,data_signal,float,YES,0
+marchantia_organ_stress,4,data_signal,float,YES,0
+medicago_mas,5,data_signal,float,YES,0
+medicago_rma,5,data_signal,float,YES,0
+medicago_root,4,data_signal,float,YES,0
+medicago_root_v5,4,data_signal,float,YES,0
+medicago_seed,4,data_signal,float,YES,0
+meristem_db,5,data_signal,float,YES,0
+meristem_db_new,5,data_signal,float,YES,0
+mouse_db,2,data_signal,float,NO,0
+oat,7,data_signal,float,YES,0
+phelipanche,4,data_signal,float,YES,0
+physcomitrella_db,4,data_signal,float,NO,NULL
+poplar,6,data_signal,float,NO,0
+poplar_hormone,4,data_signal,float,YES,0
+poplar_leaf,4,data_signal,float,NO,0
+poplar_xylem,4,data_signal,float,NO,0
+potato_dev,4,data_signal,float,YES,0
+potato_stress,4,data_signal,float,YES,0
+potato_wounding,4,data_signal,float,YES,0
+rice_abiotic_stress_sc_pseudobulk,4,data_signal,float,YES,0
+rice_drought_heat_stress,4,data_signal,float,YES,0
+rice_leaf_gradient,5,data_signal,float,YES,0
+rice_maize_comparison,5,data_signal,float,YES,0
+rice_mas,5,data_signal,float,YES,0
+rice_metabolite,5,data_signal,float,YES,0
+rice_rma,5,data_signal,float,YES,0
+rice_root,4,data_signal,float,YES,0
+rohan,5,data_signal,float,YES,0
+root,5,data_signal,float,YES,0
+root_Schaefer_lab,4,data_signal,float,NO,0
+rpatel,5,data_signal,float,YES,0
+seed_db,5,data_signal,float,YES,0
+seedcoat,5,data_signal,float,YES,0
+selaginella,4,data_signal,float,NO,0
+shoot_apex,5,data_signal,float,NO,NULL
+silique,4,data_signal,float,YES,0
+single_cell,4,data_signal,float,YES,0
+sorghum_atlas_w_BS_cells,4,data_signal,float,YES,0
+sorghum_comparative_transcriptomics,4,data_signal,float,YES,0
+sorghum_developmental,4,data_signal,float,YES,0
+sorghum_developmental_2,4,data_signal,float,YES,0
+sorghum_flowering_activation,4,data_signal,float,YES,0
+sorghum_low_phosphorus,4,data_signal,float,YES,0
+sorghum_nitrogen_stress,4,data_signal,float,YES,0
+sorghum_nitrogen_use_efficiency,4,data_signal,float,YES,0
+sorghum_phosphate_stress,4,data_signal,float,YES,0
+sorghum_plasma,4,data_signal,float,YES,0
+sorghum_saline_alkali_stress,4,data_signal,float,YES,0
+sorghum_stress,4,data_signal,float,YES,0
+sorghum_strigolactone_variation,4,data_signal,float,YES,0
+sorghum_sulfur_stress,4,data_signal,float,YES,0
+sorghum_temperature_stress,4,data_signal,float,YES,0
+sorghum_vascularization_and_internode,4,data_signal,float,YES,0
+soybean,5,data_signal,float,NO,NULL
+soybean_embryonic_development,4,data_signal,float,YES,0
+soybean_heart_cotyledon_globular,4,data_signal,float,YES,0
+soybean_senescence,4,data_signal,float,YES,0
+soybean_severin,5,data_signal,float,NO,NULL
+spruce,4,data_signal,float,YES,0
+strawberry,4,data_signal,float,YES,0
+striga,4,data_signal,float,YES,0
+sugarcane_culms,4,data_signal,float,NO,0
+sugarcane_leaf,4,data_signal,float,NO,0
+sunflower,4,data_signal,float,NO,0
+thellungiella_db,5,data_signal,float,NO,NULL
+tomato,5,data_signal,float,YES,0
+tomato_ils,4,data_signal,float,YES,0
+tomato_ils2,4,data_signal,float,YES,0
+tomato_ils3,4,data_signal,float,YES,0
+tomato_meristem,4,data_signal,float,YES,0
+tomato_renormalized,5,data_signal,float,YES,0
+tomato_root,4,data_signal,float,YES,0
+tomato_root_field_pot,4,data_signal,float,YES,0
+tomato_s_pennellii,4,data_signal,float,YES,0
+tomato_seed,4,data_signal,float,YES,0
+tomato_shade_mutants,4,data_signal,float,YES,0
+tomato_shade_timecourse,4,data_signal,float,YES,0
+tomato_trait,5,data_signal,float,YES,NULL
+triphysaria,4,data_signal,float,YES,0
+triticale,5,data_signal,float,YES,0
+triticale_mas,5,data_signal,float,YES,0
+tung_tree,4,data_signal,float,NO,0
+wheat,4,data_signal,float,YES,0
+wheat_abiotic_stress,4,data_signal,float,YES,0
+wheat_embryogenesis,4,data_signal,float,YES,0
+wheat_meiosis,4,data_signal,float,YES,0
+wheat_root,4,data_signal,float,YES,0
+willow,4,data_signal,float,NO,NULL
+oat,2,genome,varchar(16),NO,NULL
+oat,4,genome_id,varchar(16),NO,NULL
+tomato_ils2,7,log,float,NO,NULL
+oat,5,orthogroup,varchar(16),NO,NULL
+tomato_ils2,8,p_val,float,NO,NULL
+actinidia_bud_development,1,proj_id,varchar(5),NO,NULL
+actinidia_flower_fruit_development,1,proj_id,varchar(5),NO,NULL
+actinidia_postharvest,1,proj_id,varchar(5),NO,NULL
+actinidia_vegetative_growth,1,proj_id,varchar(5),NO,NULL
+affydb,2,proj_id,int unsigned,NO,0
+apple,2,proj_id,varchar(5),NO,0
+arabidopsis_ecotypes,2,proj_id,varchar(15),NO,0
+arachis,2,proj_id,varchar(24),NO,NULL
+atgenexp,2,proj_id,int unsigned,NO,0
+atgenexp_hormone,2,proj_id,int unsigned,NO,0
+atgenexp_pathogen,2,proj_id,varchar(15),NO,0
+atgenexp_plus,2,proj_id,varchar(15),NO,0
+atgenexp_stress,2,proj_id,varchar(15),NO,0
+barley_mas,2,proj_id,varchar(15),NO,0
+barley_rma,2,proj_id,varchar(15),NO,0
+barley_seed,1,proj_id,varchar(5),NO,NULL
+barley_spike_meristem,1,proj_id,varchar(5),NO,NULL
+barley_spike_meristem_v3,1,proj_id,varchar(5),NO,NULL
+brachypodium,1,proj_id,varchar(5),NO,NULL
+brachypodium_Bd21,1,proj_id,varchar(5),NO,NULL
+brachypodium_embryogenesis,1,proj_id,varchar(5),NO,NULL
+brachypodium_grains,1,proj_id,varchar(5),NO,NULL
+brachypodium_metabolites_map,1,proj_id,varchar(5),NO,NULL
+brachypodium_photo_thermocycle,1,proj_id,varchar(5),NO,NULL
+brassica_rapa,2,proj_id,varchar(5),NO,0
+cacao_developmental_atlas,2,proj_id,varchar(5),NO,0
+cacao_developmental_atlas_sca,2,proj_id,varchar(5),NO,0
+cacao_drought_diurnal_atlas,2,proj_id,varchar(5),NO,0
+cacao_drought_diurnal_atlas_sca,2,proj_id,varchar(5),NO,0
+cacao_infection,2,proj_id,varchar(5),NO,0
+cacao_leaf,2,proj_id,varchar(5),NO,0
+cacao_meristem_atlas_sca,2,proj_id,varchar(5),NO,0
+cacao_seed_atlas_sca,2,proj_id,varchar(5),NO,0
+camelina,2,proj_id,varchar(5),NO,NULL
+camelina_tpm,2,proj_id,varchar(5),NO,NULL
+cannabis,1,proj_id,varchar(2),NO,0
+canola,2,proj_id,varchar(15),NO,0
+canola_original,2,proj_id,varchar(15),NO,0
+canola_original_v2,2,proj_id,varchar(15),NO,0
+canola_seed,1,proj_id,varchar(5),NO,NULL
+cassava_atlas,1,proj_id,varchar(5),NO,NULL
+cassava_cbb,1,proj_id,varchar(5),NO,NULL
+cassava_eacmv,1,proj_id,varchar(5),NO,NULL
+circadian_mutants,1,proj_id,varchar(5),NO,NULL
+cuscuta,2,proj_id,varchar(2),NO,0
+cuscuta_early_haustoriogenesis,1,proj_id,varchar(5),NO,NULL
+cuscuta_lmd,1,proj_id,varchar(5),NO,NULL
+dna_damage,2,proj_id,varchar(5),NO,0
+durum_wheat_abiotic_stress,1,proj_id,varchar(5),NO,NULL
+durum_wheat_biotic_stress,1,proj_id,varchar(5),NO,NULL
+durum_wheat_development,1,proj_id,varchar(5),NO,NULL
+embryo,1,proj_id,varchar(3),NO,0
+eucalyptus,1,proj_id,varchar(5),NO,NULL
+euphorbia,1,proj_id,varchar(5),NO,NULL
+gc_drought,1,proj_id,varchar(5),NO,NULL
+germination,1,proj_id,varchar(3),NO,0
+grape_developmental,2,proj_id,int,NO,NULL
+guard_cell,2,proj_id,varchar(15),NO,0
+gynoecium,1,proj_id,varchar(5),NO,NULL
+heterodera_schachtii,1,proj_id,varchar(5),NO,NULL
+hnahal,2,proj_id,varchar(15),NO,0
+human_body_map_2,2,proj_id,varchar(15),NO,0
+human_developmental,2,proj_id,varchar(15),NO,0
+human_developmental_SpongeLab,2,proj_id,varchar(15),NO,0
+human_diseased,2,proj_id,varchar(15),NO,0
+kalanchoe,1,proj_id,varchar(2),NO,0
+kalanchoe_time_course_analysis,1,proj_id,varchar(5),NO,NULL
+klepikova,1,proj_id,varchar(3),NO,0
+light_series,2,proj_id,varchar(15),NO,0
+lipid_map,1,proj_id,varchar(5),NO,NULL
+little_millet,2,proj_id,varchar(2),NO,0
+lupin_lcm_leaf,1,proj_id,varchar(5),NO,NULL
+lupin_lcm_pod,1,proj_id,varchar(5),NO,NULL
+lupin_lcm_stem,1,proj_id,varchar(5),NO,NULL
+lupin_pod_seed,1,proj_id,varchar(5),NO,NULL
+lupin_whole_plant,1,proj_id,varchar(5),NO,NULL
+maize_RMA_linear,2,proj_id,varchar(15),NO,0
+maize_RMA_log,2,proj_id,varchar(15),NO,0
+maize_atlas,2,proj_id,varchar(5),NO,NULL
+maize_atlas_v5,1,proj_id,varchar(5),NO,NULL
+maize_buell_lab,2,proj_id,varchar(5),NO,0
+maize_early_seed,2,proj_id,varchar(5),NO,0
+maize_ears,2,proj_id,varchar(15),NO,0
+maize_embryonic_leaf_development,1,proj_id,varchar(5),NO,NULL
+maize_enzyme,2,proj_id,varchar(15),NO,0
+maize_gdowns,2,proj_id,varchar(30),NO,NULL
+maize_iplant,2,proj_id,varchar(15),NO,0
+maize_kernel_v5,1,proj_id,varchar(5),NO,NULL
+maize_leaf_gradient,2,proj_id,varchar(15),NO,0
+maize_lipid_map,1,proj_id,varchar(5),NO,NULL
+maize_metabolite,2,proj_id,varchar(15),NO,0
+maize_nitrogen_use_efficiency,1,proj_id,varchar(5),NO,NULL
+maize_rice_comparison,2,proj_id,varchar(15),NO,0
+maize_root,2,proj_id,varchar(15),NO,0
+maize_stress_v5,1,proj_id,varchar(5),NO,NULL
+mangosteen_aril_vs_rind,1,proj_id,varchar(2),NO,NULL
+mangosteen_callus,1,proj_id,varchar(2),NO,NULL
+mangosteen_diseased_vs_normal,1,proj_id,varchar(2),NO,NULL
+mangosteen_fruit_ripening,1,proj_id,varchar(2),NO,NULL
+mangosteen_seed_development,1,proj_id,varchar(2),NO,NULL
+mangosteen_seed_development_germination,1,proj_id,varchar(2),NO,NULL
+mangosteen_seed_germination,1,proj_id,varchar(2),NO,NULL
+marchantia_organ_stress,1,proj_id,varchar(5),NO,NULL
+medicago_mas,2,proj_id,varchar(15),NO,0
+medicago_rma,2,proj_id,varchar(15),NO,0
+medicago_root,2,proj_id,varchar(5),NO,NULL
+medicago_root_v5,2,proj_id,varchar(5),NO,NULL
+medicago_seed,2,proj_id,varchar(5),NO,NULL
+meristem_db,2,proj_id,varchar(15),NO,0
+meristem_db_new,2,proj_id,varchar(15),NO,0
+phelipanche,1,proj_id,varchar(5),NO,NULL
+physcomitrella_db,2,proj_id,varchar(30),NO,
+poplar,2,proj_id,varchar(15),NO,0
+poplar_hormone,1,proj_id,varchar(5),NO,NULL
+poplar_leaf,2,proj_id,varchar(5),NO,0
+poplar_xylem,2,proj_id,varchar(5),NO,0
+potato_dev,2,proj_id,varchar(15),NO,0
+potato_stress,2,proj_id,varchar(15),NO,0
+potato_wounding,2,proj_id,varchar(15),NO,0
+rice_abiotic_stress_sc_pseudobulk,1,proj_id,varchar(5),NO,NULL
+rice_drought_heat_stress,1,proj_id,varchar(5),NO,NULL
+rice_leaf_gradient,2,proj_id,varchar(15),NO,0
+rice_maize_comparison,2,proj_id,varchar(15),NO,0
+rice_mas,2,proj_id,varchar(15),NO,0
+rice_metabolite,2,proj_id,varchar(15),NO,0
+rice_rma,2,proj_id,varchar(15),NO,0
+rice_root,2,proj_id,varchar(2),NO,0
+rohan,2,proj_id,varchar(15),NO,0
+root,2,proj_id,varchar(15),NO,0
+root_Schaefer_lab,2,proj_id,varchar(5),NO,0
+rpatel,2,proj_id,varchar(15),NO,0
+seed_db,2,proj_id,varchar(20),NO,0
+seedcoat,2,proj_id,varchar(15),NO,0
+selaginella,2,proj_id,varchar(5),NO,0
+shoot_apex,2,proj_id,varchar(2),YES,NULL
+silique,1,proj_id,varchar(5),NO,NULL
+single_cell,1,proj_id,varchar(5),NO,NULL
+sorghum_atlas_w_BS_cells,1,proj_id,varchar(5),NO,NULL
+sorghum_comparative_transcriptomics,1,proj_id,varchar(5),NO,NULL
+sorghum_developmental,1,proj_id,varchar(5),NO,NULL
+sorghum_developmental_2,1,proj_id,varchar(5),NO,NULL
+sorghum_flowering_activation,1,proj_id,varchar(5),NO,NULL
+sorghum_low_phosphorus,1,proj_id,varchar(5),NO,NULL
+sorghum_nitrogen_stress,1,proj_id,varchar(5),NO,NULL
+sorghum_nitrogen_use_efficiency,1,proj_id,varchar(5),NO,NULL
+sorghum_phosphate_stress,1,proj_id,varchar(5),NO,NULL
+sorghum_plasma,1,proj_id,varchar(5),NO,NULL
+sorghum_saline_alkali_stress,1,proj_id,varchar(5),NO,NULL
+sorghum_stress,1,proj_id,varchar(5),NO,NULL
+sorghum_strigolactone_variation,1,proj_id,varchar(5),NO,NULL
+sorghum_sulfur_stress,1,proj_id,varchar(5),NO,NULL
+sorghum_temperature_stress,1,proj_id,varchar(5),NO,NULL
+sorghum_vascularization_and_internode,1,proj_id,varchar(5),NO,NULL
+soybean,2,proj_id,varchar(15),NO,NULL
+soybean_embryonic_development,1,proj_id,varchar(5),NO,NULL
+soybean_heart_cotyledon_globular,1,proj_id,varchar(5),NO,NULL
+soybean_senescence,1,proj_id,varchar(5),NO,NULL
+soybean_severin,2,proj_id,varchar(15),NO,NULL
+spruce,1,proj_id,varchar(5),NO,NULL
+strawberry,1,proj_id,varchar(5),NO,NULL
+striga,1,proj_id,varchar(5),NO,NULL
+sugarcane_culms,2,proj_id,varchar(5),NO,0
+sugarcane_leaf,2,proj_id,varchar(12),NO,0
+sunflower,2,proj_id,varchar(5),NO,0
+thellungiella_db,2,proj_id,varchar(30),NO,NULL
+tomato,2,proj_id,varchar(15),NO,0
+tomato_ils,2,proj_id,varchar(15),NO,0
+tomato_ils2,2,proj_id,varchar(15),NO,0
+tomato_ils3,2,proj_id,varchar(15),NO,0
+tomato_meristem,2,proj_id,varchar(2),NO,0
+tomato_renormalized,2,proj_id,varchar(15),NO,0
+tomato_root,2,proj_id,varchar(2),NO,0
+tomato_root_field_pot,2,proj_id,varchar(2),NO,0
+tomato_s_pennellii,2,proj_id,varchar(15),NO,0
+tomato_seed,1,proj_id,varchar(5),NO,NULL
+tomato_shade_mutants,1,proj_id,varchar(5),NO,NULL
+tomato_shade_timecourse,1,proj_id,varchar(5),NO,NULL
+tomato_trait,2,proj_id,varchar(30),NO,0
+triphysaria,1,proj_id,varchar(5),NO,NULL
+triticale,2,proj_id,varchar(15),NO,0
+triticale_mas,2,proj_id,varchar(15),NO,0
+tung_tree,2,proj_id,varchar(5),NO,0
+wheat,1,proj_id,varchar(15),NO,0
+wheat_abiotic_stress,1,proj_id,varchar(15),NO,0
+wheat_embryogenesis,1,proj_id,varchar(15),NO,0
+wheat_meiosis,1,proj_id,varchar(15),NO,0
+wheat_root,1,proj_id,varchar(15),NO,0
+willow,1,proj_id,varchar(2),NO,0
+lateral_root_initiation,2,project_id,varchar(30),NO,NULL
+tomato_trait,9,qvalue,float,YES,NULL
+affydb,3,sample_file_name,tinytext,NO,NULL
+arabidopsis_ecotypes,3,sample_file_name,tinytext,YES,NULL
+atgenexp,3,sample_file_name,tinytext,NO,NULL
+atgenexp_plus,3,sample_file_name,tinytext,YES,NULL
+barley_mas,3,sample_file_name,tinytext,YES,NULL
+barley_rma,3,sample_file_name,tinytext,YES,NULL
+camelina,3,sample_file_name,varchar(20),YES,NULL
+camelina_tpm,3,sample_file_name,varchar(20),YES,NULL
+canola,3,sample_file_name,tinytext,YES,NULL
+canola_original,3,sample_file_name,tinytext,YES,NULL
+canola_original_v2,3,sample_file_name,tinytext,YES,NULL
+grape_developmental,3,sample_file_name,tinytext,NO,NULL
+guard_cell,3,sample_file_name,tinytext,YES,NULL
+hnahal,3,sample_file_name,tinytext,YES,NULL
+human_body_map_2,3,sample_file_name,tinytext,YES,NULL
+human_developmental,3,sample_file_name,tinytext,YES,NULL
+human_developmental_SpongeLab,3,sample_file_name,tinytext,YES,NULL
+human_diseased,3,sample_file_name,tinytext,YES,NULL
+lateral_root_initiation,3,sample_file_name,varchar(80),YES,NULL
+light_series,3,sample_file_name,tinytext,YES,NULL
+maize_RMA_linear,3,sample_file_name,tinytext,YES,NULL
+maize_RMA_log,3,sample_file_name,tinytext,YES,NULL
+maize_ears,3,sample_file_name,tinytext,YES,NULL
+maize_enzyme,3,sample_file_name,tinytext,YES,NULL
+maize_iplant,3,sample_file_name,tinytext,YES,NULL
+maize_leaf_gradient,3,sample_file_name,tinytext,YES,NULL
+maize_metabolite,3,sample_file_name,tinytext,YES,NULL
+maize_rice_comparison,3,sample_file_name,tinytext,YES,NULL
+medicago_mas,3,sample_file_name,tinytext,YES,NULL
+medicago_rma,3,sample_file_name,tinytext,YES,NULL
+meristem_db,3,sample_file_name,tinytext,YES,NULL
+meristem_db_new,3,sample_file_name,tinytext,YES,NULL
+poplar,3,sample_file_name,varchar(40),NO,NULL
+rice_leaf_gradient,3,sample_file_name,tinytext,YES,NULL
+rice_maize_comparison,3,sample_file_name,tinytext,YES,NULL
+rice_mas,3,sample_file_name,tinytext,YES,NULL
+rice_metabolite,3,sample_file_name,tinytext,YES,NULL
+rice_rma,3,sample_file_name,tinytext,YES,NULL
+rohan,3,sample_file_name,tinytext,YES,NULL
+root,3,sample_file_name,tinytext,YES,NULL
+rpatel,3,sample_file_name,tinytext,YES,NULL
+seed_db,3,sample_file_name,varchar(100),YES,NULL
+seedcoat,3,sample_file_name,tinytext,YES,NULL
+shoot_apex,3,sample_file_name,varchar(16),YES,NULL
+soybean,3,sample_file_name,tinytext,NO,NULL
+soybean_severin,3,sample_file_name,tinytext,NO,NULL
+thellungiella_db,3,sample_file_name,varchar(80),YES,NULL
+tomato,3,sample_file_name,tinytext,YES,NULL
+tomato_renormalized,3,sample_file_name,tinytext,YES,NULL
+tomato_trait,3,sample_file_name,tinytext,YES,NULL
+triticale,3,sample_file_name,tinytext,YES,NULL
+triticale_mas,3,sample_file_name,tinytext,YES,NULL
+actinidia_bud_development,2,sample_id,int unsigned,NO,0
+actinidia_flower_fruit_development,2,sample_id,int unsigned,NO,0
+actinidia_postharvest,2,sample_id,int unsigned,NO,0
+actinidia_vegetative_growth,2,sample_id,int unsigned,NO,0
+affydb,1,sample_id,int unsigned,NO,0
+apple,1,sample_id,int unsigned,NO,0
+arabidopsis_ecotypes,1,sample_id,int unsigned,NO,0
+arachis,1,sample_id,varchar(5),NO,NULL
+atgenexp,1,sample_id,int unsigned,NO,0
+atgenexp_hormone,1,sample_id,int unsigned,NO,0
+atgenexp_pathogen,1,sample_id,int unsigned,NO,0
+atgenexp_plus,1,sample_id,int unsigned,NO,0
+atgenexp_stress,1,sample_id,int unsigned,NO,0
+barley_mas,1,sample_id,int unsigned,NO,0
+barley_rma,1,sample_id,int unsigned,NO,0
+barley_seed,2,sample_id,int unsigned,NO,0
+barley_spike_meristem,2,sample_id,int unsigned,NO,0
+barley_spike_meristem_v3,2,sample_id,int unsigned,NO,0
+brachypodium,2,sample_id,int unsigned,NO,0
+brachypodium_Bd21,2,sample_id,int unsigned,NO,0
+brachypodium_embryogenesis,2,sample_id,int unsigned,NO,0
+brachypodium_grains,2,sample_id,int unsigned,NO,0
+brachypodium_metabolites_map,2,sample_id,int unsigned,NO,0
+brachypodium_photo_thermocycle,2,sample_id,int unsigned,NO,0
+brassica_rapa,1,sample_id,int unsigned,NO,0
+cacao_developmental_atlas,1,sample_id,int unsigned,NO,0
+cacao_developmental_atlas_sca,1,sample_id,int unsigned,NO,0
+cacao_drought_diurnal_atlas,1,sample_id,int unsigned,NO,0
+cacao_drought_diurnal_atlas_sca,1,sample_id,int unsigned,NO,0
+cacao_infection,1,sample_id,int unsigned,NO,0
+cacao_leaf,1,sample_id,int unsigned,NO,0
+cacao_meristem_atlas_sca,1,sample_id,int unsigned,NO,0
+cacao_seed_atlas_sca,1,sample_id,int unsigned,NO,0
+camelina,1,sample_id,varchar(5),NO,NULL
+camelina_tpm,1,sample_id,varchar(5),NO,NULL
+cannabis,2,sample_id,int unsigned,NO,0
+canola,1,sample_id,int unsigned,NO,0
+canola_original,1,sample_id,int unsigned,NO,0
+canola_original_v2,1,sample_id,int unsigned,NO,0
+canola_seed,2,sample_id,int unsigned,NO,0
+cassava_atlas,2,sample_id,int unsigned,NO,0
+cassava_cbb,2,sample_id,int unsigned,NO,0
+cassava_eacmv,2,sample_id,int unsigned,NO,0
+circadian_mutants,2,sample_id,int unsigned,NO,0
+cuscuta,1,sample_id,int unsigned,NO,0
+cuscuta_early_haustoriogenesis,2,sample_id,int unsigned,NO,0
+cuscuta_lmd,2,sample_id,int unsigned,NO,0
+dna_damage,1,sample_id,int unsigned,NO,0
+durum_wheat_abiotic_stress,2,sample_id,int unsigned,NO,0
+durum_wheat_biotic_stress,2,sample_id,int unsigned,NO,0
+durum_wheat_development,2,sample_id,int unsigned,NO,0
+embryo,2,sample_id,int unsigned,NO,0
+eucalyptus,2,sample_id,int unsigned,NO,0
+euphorbia,2,sample_id,int unsigned,NO,0
+gc_drought,2,sample_id,int unsigned,NO,0
+germination,2,sample_id,int unsigned,NO,0
+grape_developmental,1,sample_id,int,NO,NULL
+guard_cell,1,sample_id,int unsigned,NO,0
+gynoecium,2,sample_id,int unsigned,NO,0
+heterodera_schachtii,2,sample_id,int unsigned,NO,0
+hnahal,1,sample_id,int unsigned,NO,0
+human_body_map_2,1,sample_id,int unsigned,NO,0
+human_developmental,1,sample_id,int unsigned,NO,0
+human_developmental_SpongeLab,1,sample_id,int unsigned,NO,0
+human_diseased,1,sample_id,int unsigned,NO,0
+kalanchoe,2,sample_id,int unsigned,NO,0
+kalanchoe_time_course_analysis,2,sample_id,int unsigned,NO,0
+klepikova,2,sample_id,int unsigned,NO,0
+lateral_root_initiation,1,sample_id,varchar(30),NO,NULL
+light_series,1,sample_id,int unsigned,NO,0
+lipid_map,2,sample_id,int unsigned,NO,0
+little_millet,1,sample_id,int unsigned,NO,0
+lupin_lcm_leaf,2,sample_id,int unsigned,NO,0
+lupin_lcm_pod,2,sample_id,int unsigned,NO,0
+lupin_lcm_stem,2,sample_id,int unsigned,NO,0
+lupin_pod_seed,2,sample_id,int unsigned,NO,0
+lupin_whole_plant,2,sample_id,int unsigned,NO,0
+maize_RMA_linear,1,sample_id,int unsigned,NO,0
+maize_RMA_log,1,sample_id,int unsigned,NO,0
+maize_atlas,1,sample_id,varchar(5),NO,NULL
+maize_atlas_v5,2,sample_id,int unsigned,NO,0
+maize_buell_lab,1,sample_id,int unsigned,NO,0
+maize_early_seed,1,sample_id,int unsigned,NO,0
+maize_ears,1,sample_id,int unsigned,NO,0
+maize_embryonic_leaf_development,2,sample_id,int unsigned,NO,0
+maize_enzyme,1,sample_id,int unsigned,NO,0
+maize_gdowns,1,sample_id,varchar(30),NO,NULL
+maize_iplant,1,sample_id,int unsigned,NO,0
+maize_kernel_v5,2,sample_id,int unsigned,NO,0
+maize_leaf_gradient,1,sample_id,int unsigned,NO,0
+maize_lipid_map,2,sample_id,int unsigned,NO,0
+maize_metabolite,1,sample_id,int unsigned,NO,0
+maize_nitrogen_use_efficiency,2,sample_id,int unsigned,NO,0
+maize_rice_comparison,1,sample_id,int unsigned,NO,0
+maize_root,1,sample_id,int unsigned,NO,0
+maize_stress_v5,2,sample_id,int unsigned,NO,0
+mangosteen_aril_vs_rind,2,sample_id,int unsigned,NO,0
+mangosteen_callus,2,sample_id,int unsigned,NO,0
+mangosteen_diseased_vs_normal,2,sample_id,int unsigned,NO,0
+mangosteen_fruit_ripening,2,sample_id,int unsigned,NO,0
+mangosteen_seed_development,2,sample_id,int unsigned,NO,0
+mangosteen_seed_development_germination,2,sample_id,int unsigned,NO,0
+mangosteen_seed_germination,2,sample_id,int unsigned,NO,0
+marchantia_organ_stress,2,sample_id,int unsigned,NO,0
+medicago_mas,1,sample_id,int unsigned,NO,0
+medicago_rma,1,sample_id,int unsigned,NO,0
+medicago_root,1,sample_id,int unsigned,NO,0
+medicago_root_v5,1,sample_id,int unsigned,NO,0
+medicago_seed,1,sample_id,int unsigned,NO,0
+meristem_db,1,sample_id,int unsigned,NO,0
+meristem_db_new,1,sample_id,int unsigned,NO,0
+oat,1,sample_id,int unsigned,NO,0
+phelipanche,2,sample_id,int unsigned,NO,0
+physcomitrella_db,1,sample_id,varchar(30),NO,
+poplar,1,sample_id,int unsigned,NO,0
+poplar_hormone,2,sample_id,int unsigned,NO,0
+poplar_leaf,1,sample_id,int unsigned,NO,0
+poplar_xylem,1,sample_id,int unsigned,NO,0
+potato_dev,1,sample_id,int unsigned,NO,0
+potato_stress,1,sample_id,int unsigned,NO,0
+potato_wounding,1,sample_id,int unsigned,NO,0
+rice_abiotic_stress_sc_pseudobulk,2,sample_id,int unsigned,NO,0
+rice_drought_heat_stress,2,sample_id,int unsigned,NO,0
+rice_leaf_gradient,1,sample_id,int unsigned,NO,0
+rice_maize_comparison,1,sample_id,int unsigned,NO,0
+rice_mas,1,sample_id,int unsigned,NO,0
+rice_metabolite,1,sample_id,int unsigned,NO,0
+rice_rma,1,sample_id,int unsigned,NO,0
+rice_root,1,sample_id,int unsigned,NO,0
+rohan,1,sample_id,int unsigned,NO,0
+root,1,sample_id,int unsigned,NO,0
+root_Schaefer_lab,1,sample_id,int unsigned,NO,0
+rpatel,1,sample_id,int unsigned,NO,0
+seed_db,1,sample_id,int unsigned,NO,0
+seedcoat,1,sample_id,int unsigned,NO,0
+selaginella,1,sample_id,int unsigned,NO,0
+shoot_apex,1,sample_id,int unsigned,NO,0
+silique,2,sample_id,int unsigned,NO,0
+single_cell,2,sample_id,int unsigned,NO,0
+sorghum_atlas_w_BS_cells,2,sample_id,int unsigned,NO,0
+sorghum_comparative_transcriptomics,2,sample_id,int unsigned,NO,0
+sorghum_developmental,2,sample_id,int unsigned,NO,0
+sorghum_developmental_2,2,sample_id,int unsigned,NO,0
+sorghum_flowering_activation,2,sample_id,int unsigned,NO,0
+sorghum_low_phosphorus,2,sample_id,int unsigned,NO,0
+sorghum_nitrogen_stress,2,sample_id,int unsigned,NO,0
+sorghum_nitrogen_use_efficiency,2,sample_id,int unsigned,NO,0
+sorghum_phosphate_stress,2,sample_id,int unsigned,NO,0
+sorghum_plasma,2,sample_id,int unsigned,NO,0
+sorghum_saline_alkali_stress,2,sample_id,int unsigned,NO,0
+sorghum_stress,2,sample_id,int unsigned,NO,0
+sorghum_strigolactone_variation,2,sample_id,int unsigned,NO,0
+sorghum_sulfur_stress,2,sample_id,int unsigned,NO,0
+sorghum_temperature_stress,2,sample_id,int unsigned,NO,0
+sorghum_vascularization_and_internode,2,sample_id,int unsigned,NO,0
+soybean,1,sample_id,int,NO,NULL
+soybean_embryonic_development,2,sample_id,int unsigned,NO,0
+soybean_heart_cotyledon_globular,2,sample_id,int unsigned,NO,0
+soybean_senescence,2,sample_id,int unsigned,NO,0
+soybean_severin,1,sample_id,int,NO,NULL
+spruce,2,sample_id,int unsigned,NO,0
+strawberry,2,sample_id,int unsigned,NO,0
+striga,2,sample_id,int unsigned,NO,0
+sugarcane_culms,1,sample_id,int unsigned,NO,0
+sugarcane_leaf,1,sample_id,int unsigned,NO,0
+sunflower,1,sample_id,int unsigned,NO,0
+thellungiella_db,1,sample_id,varchar(30),NO,NULL
+tomato,1,sample_id,int unsigned,NO,0
+tomato_ils,1,sample_id,int unsigned,NO,0
+tomato_ils2,1,sample_id,int unsigned,NO,0
+tomato_ils3,1,sample_id,int unsigned,NO,0
+tomato_meristem,1,sample_id,int unsigned,NO,0
+tomato_renormalized,1,sample_id,int unsigned,NO,0
+tomato_root,1,sample_id,int unsigned,NO,0
+tomato_root_field_pot,1,sample_id,int unsigned,NO,0
+tomato_s_pennellii,1,sample_id,int unsigned,NO,0
+tomato_seed,2,sample_id,int unsigned,NO,0
+tomato_shade_mutants,2,sample_id,int unsigned,NO,0
+tomato_shade_timecourse,2,sample_id,int unsigned,NO,0
+tomato_trait,1,sample_id,int unsigned,NO,0
+triphysaria,2,sample_id,int unsigned,NO,0
+triticale,1,sample_id,int unsigned,NO,0
+triticale_mas,1,sample_id,int unsigned,NO,0
+tung_tree,1,sample_id,int unsigned,NO,0
+wheat,2,sample_id,int unsigned,NO,0
+wheat_abiotic_stress,2,sample_id,int unsigned,NO,0
+wheat_embryogenesis,2,sample_id,int unsigned,NO,0
+wheat_meiosis,2,sample_id,int unsigned,NO,0
+wheat_root,2,sample_id,int unsigned,NO,0
+willow,2,sample_id,int unsigned,NO,0
+barley_mas,9,sample_tissue,varchar(20),YES,NULL
+canola,9,sample_tissue,text,NO,NULL
+canola_original,9,sample_tissue,text,NO,NULL
+canola_original_v2,9,sample_tissue,text,NO,NULL
+grape_developmental,9,sample_tissue,text,NO,NULL
+maize_RMA_linear,9,sample_tissue,text,NO,NULL
+medicago_mas,9,sample_tissue,text,NO,NULL
+rice_mas,9,sample_tissue,text,NO,NULL
+oat,3,version,varchar(2),NO,NULL

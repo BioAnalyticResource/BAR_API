@@ -5,6 +5,7 @@ Interactions (Protein-Protein, Protein-DNA, etc.) endpoint
 """
 
 from flask_restx import Namespace, Resource, fields
+import re
 from flask import request, jsonify
 from markupsafe import escape
 from api.utils.bar_utils import BARUtils
@@ -12,7 +13,7 @@ from api.utils.mfinder_utils import MfinderUtils
 from marshmallow import Schema, ValidationError, fields as marshmallow_fields
 from api import db
 from api.models.rice_interactions import Interactions as RiceInteractions
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 from api.models.interactions_vincent_v2 import Interactions as PostInteractions
 from api.models.interactions_vincent_v2 import InteractionsSourceMiJoin as PostInteractionsSourceMiJoin
 from api.models.interactions_vincent_v2 import TagLookupTable as TagLookupTable
@@ -24,6 +25,57 @@ itrns = Namespace(
     description="Interactions (protein-protein, protein-DNA, etc) endpoint",
     path="/interactions",
 )
+
+
+def _normalize_cyjs_layout(value):
+    if value is None:
+        return None
+    if isinstance(value, str):
+        # SQLite imports may keep escaped quotes from MySQL dumps; normalize for API output.
+        return value.replace('\\"', '"').replace("\\'", "'")
+    return value
+
+
+def _sort_tag_strings(tags):
+    def sort_key(tag):
+        if ":" in tag:
+            name, group = tag.split(":", 1)
+        else:
+            name, group = tag, ""
+        return (name.lower(), group.lower())
+
+    return sorted(tags, key=sort_key)
+
+
+def _sort_tag_strings_case_sensitive(tags):
+    def sort_key(tag):
+        if ":" in tag:
+            name, group = tag.split(":", 1)
+        else:
+            name, group = tag, ""
+        return (name, group)
+
+    return sorted(tags, key=sort_key)
+
+
+def _sort_tag_strings_natural_case_sensitive(tags):
+    def split_tag(tag):
+        if ":" in tag:
+            name, group = tag.split(":", 1)
+        else:
+            name, group = tag, ""
+        return name, group
+
+    def sort_key(tag):
+        name, group = split_tag(tag)
+        match = re.match(r"^(.*?)(\d+)$", name)
+        if match:
+            base, num = match.group(1), int(match.group(2))
+            return (base, 0, num, group)
+        return (name, 1, 0, group)
+
+    return sorted(tags, key=sort_key)
+
 
 itrns_post_ex = itrns.model(
     "ItrnsRiceGenes",
@@ -392,8 +444,12 @@ class SearchByTag(Resource):
             query = (
                 db.select(ext_src_database, src_tag_join_database.tag_name, tag_lkup_database.tag_group)
                 .join(src_tag_join_database, ext_src_database.source_id == src_tag_join_database.source_id)
-                .join(tag_lkup_database, src_tag_join_database.tag_name == tag_lkup_database.tag_name)
+                .join(
+                    tag_lkup_database,
+                    func.lower(src_tag_join_database.tag_name) == func.lower(tag_lkup_database.tag_name),
+                )
                 .where(ext_src_database.source_id.in_(matching_source_ids))  # Keep all tags for matched sources
+                .order_by(ext_src_database.source_id, src_tag_join_database.tag_name)
             )
             rows = db.session.execute(query).all()
 
@@ -417,11 +473,12 @@ class SearchByTag(Resource):
                         "url": ex.url,
                         "image_url": ex.image_url,
                         "grn_title": ex.grn_title,
-                        "cyjs_layout": ex.cyjs_layout,
-                        "tag": "|".join(src_tag_match[ex.source_id]),
+                        "cyjs_layout": _normalize_cyjs_layout(ex.cyjs_layout),
+                        "tag": "|".join(_sort_tag_strings(src_tag_match[ex.source_id])),
                     }
                     result.append(one_source[source_id])
 
+            result.sort(key=lambda item: item["source_id"])
             return BARUtils.success_exit(result)
         except ValidationError as err:
             return BARUtils.error_exit(err.messages), 400
@@ -450,7 +507,7 @@ class GetAllPapers(Resource):
                         "url": row.url,
                         "image_url": row.image_url,
                         "grn_title": row.grn_title,
-                        "cyjs_layout": row.cyjs_layout,
+                        "cyjs_layout": _normalize_cyjs_layout(row.cyjs_layout),
                     }
                 )
             return BARUtils.success_exit(result)
@@ -487,7 +544,7 @@ class GetPaper(Resource):
                         "url": row.url,
                         "image_url": row.image_url,
                         "grn_title": row.grn_title,
-                        "cyjs_layout": row.cyjs_layout,
+                        "cyjs_layout": _normalize_cyjs_layout(row.cyjs_layout),
                     }
                 )
 
@@ -521,14 +578,14 @@ class GetPaperByAGI(Resource):
                     es.image_url,
                     es.source_name,
                     es.comments,
-                    es.cyjs_layout,
+                    _normalize_cyjs_layout(es.cyjs_layout),
                     stjt.tag_name,
                     tlt.tag_group,
                 )
                 .join(i_s_mi_join_table, i_s_mi_join_table.source_id == es.source_id)
                 .join(i, i.interaction_id == i_s_mi_join_table.interaction_id)
                 .join(stjt, es.source_id == stjt.source_id)
-                .join(tlt, stjt.tag_name == tlt.tag_name)
+                .join(tlt, func.lower(stjt.tag_name) == func.lower(tlt.tag_name))
                 .filter(
                     (i.entity_1 == stringAGI) | (i.entity_2 == stringAGI)  # Either entity 1 or entity 2 is stringAGI
                 )
@@ -549,7 +606,7 @@ class GetPaperByAGI(Resource):
                         "image_url": row.image_url,
                         "source_name": row.source_name,
                         "comments": row.comments,
-                        "cyjs_layout": row.cyjs_layout,
+                        "cyjs_layout": _normalize_cyjs_layout(row.cyjs_layout),
                         "tags": [],
                     }
 
@@ -557,7 +614,8 @@ class GetPaperByAGI(Resource):
                 if tag_entry not in result_dict[source_id]["tags"]:  # DISTINCT
                     result_dict[source_id]["tags"].append(tag_entry)
 
-            result = [{**data, "tags": "|".join(data["tags"])} for data in result_dict.values()]  # overwrites tags
+            result = [{**data, "tags": "|".join(_sort_tag_strings(data["tags"]))} for data in result_dict.values()]
+            result.sort(key=lambda item: (item["grn_title"] or ""))
 
             if len(result) == 0:
                 return BARUtils.error_exit("Invalid AGI"), 400
@@ -588,14 +646,14 @@ class GetPaperByAGIPair(Resource):
                     es.image_url,
                     es.source_name,
                     es.comments,
-                    es.cyjs_layout,
+                    _normalize_cyjs_layout(es.cyjs_layout),
                     stjt.tag_name,
                     tlt.tag_group,
                 )
                 .join(i_s_mi_join_table, i_s_mi_join_table.source_id == es.source_id)
                 .join(i, i.interaction_id == i_s_mi_join_table.interaction_id)
                 .join(stjt, es.source_id == stjt.source_id)
-                .join(tlt, stjt.tag_name == tlt.tag_name)
+                .join(tlt, func.lower(stjt.tag_name) == func.lower(tlt.tag_name))
                 .filter(
                     ((i.entity_1 == AGI_1) | (i.entity_2 == AGI_1))  # Matches first AGI
                     | ((i.entity_1 == AGI_2) | (i.entity_2 == AGI_2))  # Matches second AGI
@@ -616,15 +674,19 @@ class GetPaperByAGIPair(Resource):
                         "image_url": row.image_url,
                         "source_name": row.source_name,
                         "comments": row.comments,
-                        "cyjs_layout": row.cyjs_layout,
-                        "tags": set(),
+                        "cyjs_layout": _normalize_cyjs_layout(row.cyjs_layout),
+                        "tags": [],
                     }
 
-                result_dict[source_id]["tags"].add(
-                    f"{row.tag_name}:{row.tag_group}"
-                )  # ensures uniqueness automatically with `set`
+                tag_entry = f"{row.tag_name}:{row.tag_group}"
+                if tag_entry not in result_dict[source_id]["tags"]:
+                    result_dict[source_id]["tags"].append(tag_entry)
 
-            result = [{**data, "tags": "|".join(sorted(data["tags"]))} for data in result_dict.values()]
+            result = [
+                {**data, "tags": "|".join(_sort_tag_strings_natural_case_sensitive(data["tags"]))}
+                for data in result_dict.values()
+            ]
+            result.sort(key=lambda item: item["source_id"])
 
             if len(result) == 0:
                 return BARUtils.error_exit("Both AGI invalid"), 400
@@ -649,7 +711,8 @@ class GetAllGRNs(Resource):
             query = (
                 db.select(es, stjt.tag_name, tlt.tag_group)
                 .join(stjt, es.source_id == stjt.source_id)
-                .join(tlt, stjt.tag_name == tlt.tag_name)
+                .join(tlt, func.lower(stjt.tag_name) == func.lower(tlt.tag_name))
+                .order_by(es.source_id, stjt.tag_name)
             )
             rows = db.session.execute(query).all()
 
@@ -673,11 +736,12 @@ class GetAllGRNs(Resource):
                         "url": ex.url,
                         "image_url": ex.image_url,
                         "grn_title": ex.grn_title,
-                        "cyjs_layout": ex.cyjs_layout,
-                        "tag": "|".join(src_tag_match[ex.source_id]),
+                        "cyjs_layout": _normalize_cyjs_layout(ex.cyjs_layout),
+                        "tag": "|".join(_sort_tag_strings(src_tag_match[ex.source_id])),
                     }
                     result.append(one_source[source_id])
 
+            result.sort(key=lambda item: item["source_id"])
             return BARUtils.success_exit(result)
         except ValidationError as err:
             return BARUtils.error_exit(err.messages), 400

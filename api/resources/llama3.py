@@ -10,7 +10,6 @@ from api.utils.bar_utils import BARUtils
 from api import db
 from api.models.llama3 import Summaries
 
-
 llama3 = Namespace("LLaMA", description="Endpoint for retreiving LLaMA3 results", path="/LLaMA")
 
 

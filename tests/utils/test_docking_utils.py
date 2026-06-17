@@ -7,7 +7,6 @@ from api.utils.docking_utils import Docking, MonomerDocking, ComplexDocking
 from api.utils.docking_utils import SDFMapping
 import os
 
-
 NOT_IN_BAR = not os.environ.get("BAR") == "true"
 
 

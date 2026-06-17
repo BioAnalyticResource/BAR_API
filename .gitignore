@@ -141,3 +141,6 @@ dmypy.json
 output/*
 !output
 !output/placeholder.txt
+
+# Local sqlite mirrors generated from MySQL dumps
+config/databases/*.db

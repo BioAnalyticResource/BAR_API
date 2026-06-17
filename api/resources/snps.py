@@ -33,7 +33,6 @@ import sys
 from api import db, cache, limiter
 from api.utils.docking_utils import Docker
 
-
 snps = Namespace("SNPs", description="Information about SNPs", path="/snps")
 
 parser = snps.parser()
