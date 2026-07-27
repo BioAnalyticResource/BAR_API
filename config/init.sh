@@ -49,6 +49,20 @@ mysql -u $DB_USER -p$DB_PASS < ./config/databases/tomato_nssnp.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/tomato_sequence.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/triphysaria.sql
 mysql -u $DB_USER -p$DB_PASS < ./config/databases/gaia.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/arabidopsis_NIE_pseudobulk.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/rice_OW_pseudobulk.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/arabidopsis_stem_lee_pseudobulk.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/arabidopsis_flower_lee_pseudobulk.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/arabidopsis_silique_lee_pseudobulk.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/arabidopsis_root_rs_pseudobulk.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/arabidopsis_seed_martin_pseudobulk.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/rice_OW_umap.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/arabidopsis_NIE_umap.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/arabidopsis_root_shahan_umap.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/arabidopsis_seed_martin_umap.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/arabidopsis_flower_lee_umap.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/arabidopsis_silique_lee_umap.sql
+mysql -u $DB_USER -p$DB_PASS < ./config/databases/arabidopsis_stem_lee_umap.sql
 
 echo "Data are now loaded. Preparing API config"
 echo "Please manually edit config file!"

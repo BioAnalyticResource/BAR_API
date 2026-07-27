@@ -75,6 +75,7 @@ DATABASE_SPECIES: dict[str, str] = {
     "shoot_apex":                           "arabidopsis",
     "silique":                              "arabidopsis",
     "single_cell":                          "arabidopsis",
+
     # Actinidia (kiwifruit)
     "actinidia_bud_development":            "actinidia",
     "actinidia_flower_fruit_development":   "actinidia",
@@ -285,6 +286,20 @@ DATABASE_SPECIES: dict[str, str] = {
     "willow":                               "willow",
     # Test
     "sample_data":                          "arabidopsis",
+    'arabidopsis_NIE_pseudobulk':           "arabidopsis",
+    "arabidopsis_stem_lee_pseudobulk":      "arabidopsis",
+    "arabidopsis_flower_lee_pseudobulk":    "arabidopsis",
+    "arabidopsis_silique_lee_pseudobulk":   "arabidopsis",
+    "arabidopsis_root_rs_pseudobulk":       "arabidopsis",
+    "arabidopsis_seed_martin_pseudobulk":   "arabidopsis",
+    "rice_OW_pseudobulk":                   "rice",
+    "rice_OW_umap":                         "rice",
+    "arabidopsis_NIE_umap":                 "arabidopsis",
+    "arabidopsis_root_shahan_umap":         "arabidopsis",
+    "arabidopsis_seed_martin_umap":         "arabidopsis",
+    "arabidopsis_flower_lee_umap":          "arabidopsis",
+    "arabidopsis_silique_lee_umap":         "arabidopsis",
+    "arabidopsis_stem_lee_umap":            "arabidopsis",
 }
 # fmt: on
 

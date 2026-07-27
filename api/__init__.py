@@ -93,6 +93,8 @@ def create_app():
     from api.resources.llama3 import llama3
     from api.resources.gene_expression import gene_expression
     from api.resources.gene_density import gene_density
+    from api.resources.umap_expression import umap_expression
+    from api.resources.super_viewer_gene_expression import super_viewer_gene_expression
 
     bar_api.add_namespace(gene_information)
     bar_api.add_namespace(gaia)
@@ -110,6 +112,8 @@ def create_app():
     bar_api.add_namespace(llama3)
     bar_api.add_namespace(gene_expression)
     bar_api.add_namespace(gene_density)
+    bar_api.add_namespace(umap_expression)
+    bar_api.add_namespace(super_viewer_gene_expression)
     bar_api.init_app(bar_app)
     return bar_app
 

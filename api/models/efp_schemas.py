@@ -237,6 +237,21 @@ _SPECS: List[tuple] = [
     ("wheat_meiosis", "wheat"),
     ("wheat_root", "wheat"),
     ("willow", "willow"),
+    ("arabidopsis_NIE_pseudobulk", "arabidopsis"),
+    ("rice_OW_pseudobulk", "rice"),
+    ("rice_OW_umap", "rice"),
+    ("arabidopsis_stem_lee_pseudobulk", "arabidopsis"),
+    ("arabidopsis_flower_lee_pseudobulk", "arabidopsis"),
+    ("arabidopsis_silique_lee_pseudobulk", "arabidopsis"),
+    ("arabidopsis_root_rs_pseudobulk", "arabidopsis"),
+    ("arabidopsis_seed_martin_pseudobulk", "arabidopsis"),
+    ("arabidopsis_NIE_umap", "arabidopsis"),
+    ("arabidopsis_root_shahan_umap", "arabidopsis"),
+    ("arabidopsis_seed_martin_umap", "arabidopsis"),
+    ("arabidopsis_flower_lee_umap", "arabidopsis"),
+    ("arabidopsis_silique_lee_umap", "arabidopsis"),
+    ("arabidopsis_stem_lee_umap", "arabidopsis"),
+
 ]
 
 # Databases that store Affymetrix/microarray probeset IDs instead of gene identifiers.
