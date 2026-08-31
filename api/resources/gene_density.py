@@ -1,19 +1,4 @@
-"""
-Reena Obmina | UTEA Project 2026 | University of Toronto
-
-Gene density endpoint for the BAR API.
-
-Returns per-bin gene density across all Arabidopsis thaliana chromosomes for a
-given bin size (in base pairs), as used by Eplant's ChromosomeView to colour
-chromosomes by gene density.
-
-Reads:  eplant2.tair10_gff3
-Writes: JSON — list of chromosomes with density arrays
-
-Usage::
-
-    GET /gene_density?species=Arabidopsis_thaliana&bin_size=143061.51645207437
-"""
+"""Per-bin gene density across Arabidopsis chromosomes, used by Eplant's ChromosomeView to colour chromosomes by gene density."""
 
 from flask import request
 from flask_restx import Namespace, Resource
@@ -69,9 +54,7 @@ class GeneDensity(Resource):
         start_bin_expr = func.floor(TAIR10GFF3.Start / bin_size)
         end_bin_expr = func.floor(TAIR10GFF3.End / bin_size)
 
-        # Aggregated query for single-bin genes (~98%+ of all genes at typical zoom levels).
-        # FLOOR(start/binSize) == FLOOR(end/binSize) means the gene fits within one bin,
-        # so GROUP BY is safe and avoids fetching one row per gene.
+        # genes that fit in one bin (~98%+) can be counted with GROUP BY instead of fetched row by row
         single_bin_rows = db.session.execute(
             db.select(chr_expr, start_bin_expr, func.count())
             .where(
@@ -87,8 +70,7 @@ class GeneDensity(Resource):
                 if 0 <= idx < len(bins[chr_char]):
                     bins[chr_char][idx] += cnt
 
-        # Individual rows for genes that span multiple bins (rare — typically <2% of genes).
-        # Each such gene is counted once in every bin it spans, matching the original behaviour.
+        # genes spanning multiple bins (rare) are counted once in every bin they touch
         multi_bin_rows = db.session.execute(
             db.select(chr_expr, start_bin_expr, end_bin_expr)
             .where(

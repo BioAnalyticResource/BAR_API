@@ -1,6 +1,33 @@
+import json
 import re
 import redis
 import os
+from functools import lru_cache
+from pathlib import Path
+
+_COMBINED_MASTER_PATH = Path(__file__).resolve().parents[2] / "data" / "efp_info" / "combined_master.json"
+
+
+@lru_cache(maxsize=1)
+def load_combined_master() -> dict:
+    """Load data/efp_info/combined_master.json, cached after first read."""
+    with open(_COMBINED_MASTER_PATH) as f:
+        return json.load(f)
+
+
+# catches SQL comment/chaining, tautologies, UNION SELECT, script tags, null bytes -- not a per-char blacklist since some eFP projects accept freeform text
+_INJECTION_RE = re.compile(
+    r"(--)"
+    r"|(/\*)|(\*/)"
+    r"|(;\s*(drop|delete|update|insert|alter|exec|union|select)\b)"
+    r"|(\bunion\b\s+\bselect\b)"
+    r"|(\bor\b\s+['\"]?\d+['\"]?\s*=\s*['\"]?\d+)"
+    r"|(<\s*script\b)"
+    r"|(javascript\s*:)"
+    r"|(\bxp_cmdshell\b)"
+    r"|(\x00)",
+    re.IGNORECASE,
+)
 
 
 class BARUtils:
@@ -280,6 +307,16 @@ class BARUtils:
         :return: String
         """
         return poplar_gene.translate(str.maketrans("pOTRIg", "PotriG"))
+
+    @staticmethod
+    def is_injection_attempt(data):
+        """Flag obvious SQL/script injection payloads, run before any format-specific check since some of those are permissive by design."""
+        return bool(_INJECTION_RE.search(data))
+
+    @staticmethod
+    def is_valid_gene_id(pattern, gene_id):
+        """Validate a gene/probeset ID against a combined_master.json gene_id_pattern, rejecting injection payloads first."""
+        return bool(pattern) and not BARUtils.is_injection_attempt(gene_id) and bool(re.fullmatch(pattern, gene_id, re.I))
 
     @staticmethod
     def connect_redis():

@@ -1,11 +1,12 @@
 import re
 from flask_restx import Namespace, Resource, fields
 from flask import request
-from api.utils.bar_utils import BARUtils
-from api.services.efp_data import query_efp_database_dynamic
-from api.models.efp_schemas import SIMPLE_EFP_DATABASE_SCHEMAS
+from api.models.efp_dynamic import SAMPLE_DATA_MODELS
+from api.utils.bar_utils import BARUtils, load_combined_master
+from api import db
 from marshmallow import Schema, ValidationError, fields as marshmallow_fields
 from markupsafe import escape
+from sqlalchemy import func
 
 rnaseq_gene_expression = Namespace(
     "RNA-Seq Gene Expression",
@@ -27,8 +28,8 @@ SPECIES_VALIDATORS = {
     "physcomitrella": BARUtils.is_physcomitrella_gene_valid,
 }
 
-# metadata mirrors the schema catalog so validation stays in sync
-DATABASE_METADATA = {name: spec.get("metadata") or {} for name, spec in SIMPLE_EFP_DATABASE_SCHEMAS.items()}
+# every eFP database's sample IDs follow this same format
+SAMPLE_ID_RE = re.compile(r"^[\w.\-]+$")
 
 # this is only needed for swagger ui post examples
 gene_expression_request_fields = rnaseq_gene_expression.model(
@@ -72,59 +73,32 @@ class RNASeqUtils:
             return {"success": False, "error": "Invalid species", "error_code": 400}
 
         database = database.lower()
-        db_metadata = DATABASE_METADATA.get(database, {})
-        db_species = db_metadata.get("species")
+        db_info = load_combined_master()["databases"].get(database)
+        db_species = db_info["species"] if db_info else None
         if db_species and db_species != species:
             return {"success": False, "error": "Invalid species", "error_code": 400}
 
         if not gene_validator(gene_id):
             return {"success": False, "error": "Invalid gene id", "error_code": 400}
 
-        if database not in DATABASE_METADATA:
+        if db_info is None:
             return {"success": False, "error": "Invalid database", "error_code": 400}
 
-        # sample validation is driven by metadata so regex updates live in one place
-        sample_pattern = db_metadata.get("sample_regex")
-        if not sample_pattern:
-            return {
-                "success": False,
-                "error": f"Sample validation metadata missing for database {database}",
-                "error_code": 500,
-            }
-
-        regex_flags = re.I if db_metadata.get("sample_regex_case_insensitive", True) else 0
-        sample_regex = re.compile(sample_pattern, regex_flags)
-
         # validate samples if the caller provided any
-        if sample_ids:
-            for sample_id in sample_ids:
-                if not sample_regex.search(sample_id):
-                    return {
-                        "success": False,
-                        "error": "Invalid sample id",
-                        "error_code": 400,
-                    }
+        for sample_id in sample_ids:
+            if not SAMPLE_ID_RE.search(sample_id):
+                return {"success": False, "error": "Invalid sample id", "error_code": 400}
 
-        query_result = query_efp_database_dynamic(
-            database,
-            gene_id,
-            sample_ids=sample_ids or None,
-            allow_empty_results=True,
-            sample_case_insensitive=db_metadata.get("sample_case_insensitive_query", True),
+        model = SAMPLE_DATA_MODELS[database]
+        query = db.select(model.data_bot_id, model.data_signal).where(
+            func.upper(model.data_probeset_id) == gene_id.upper()
         )
+        if sample_ids:
+            query = query.where(func.upper(model.data_bot_id).in_([s.upper() for s in sample_ids]))
 
-        if not query_result["success"]:
-            return {
-                "success": False,
-                "error": query_result.get("error", "Database query failed"),
-                "error_code": query_result.get("error_code", 500),
-            }
+        rows = db.session.execute(query).all()
 
-        for entry in query_result.get("data", []):
-            sample_name = entry.get("name")
-            value = entry.get("value")
-            if sample_name is None:
-                continue
+        for sample_name, value in rows:
             try:
                 data[sample_name] = float(value)
             except (TypeError, ValueError):

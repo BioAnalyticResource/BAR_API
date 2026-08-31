@@ -50,7 +50,7 @@ redis==8.0.0
 referencing==0.37.0
 requests==2.34.2
 rich==15.0.0
-rpds-py==2026.5.1
+rpds-py==0.30.0
 setuptools==82.0.1
 six==1.17.0
 SQLAlchemy==2.0.50

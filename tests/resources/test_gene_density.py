@@ -1,6 +1,4 @@
 """
-Reena Obmina | UTEA Project 2026 | University of Toronto
-
 Tests for the gene density endpoint (GET /gene_density).
 
 Covers valid requests, single-bin gene aggregation, multi-bin gene spanning,
