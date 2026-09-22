@@ -1,8 +1,7 @@
 from flask_restx import Namespace, Resource
 from markupsafe import escape
 from api import db
-from api.models.arabidopsis_NIE_umap import UmapCoords as ArabidopsisNIEUmapCoords
-from api.models.arabidopsis_NIE_umap import UmapExpression as ArabidopsisNIEUmapExpression
+from api.models.umap_dynamic import UMAP_COORDS_MODELS, UMAP_DATABASES, UMAP_EXPRESSION_MODELS
 from api.utils.bar_utils import BARUtils, load_combined_master
 
 umap_gene_expression = Namespace(
@@ -20,13 +19,13 @@ class UMAPUtils:
         :return: dict with the coordinates table, expression table and species
         """
         # Set database
-        if database == "arabidopsis_NIE_umap":
-            coords_table = ArabidopsisNIEUmapCoords
-            expression_table = ArabidopsisNIEUmapExpression
-            species = "arabidopsis"
-
-        else:
+        database = str(database)
+        if database not in UMAP_DATABASES:
             return {"success": False, "error": "Invalid database", "error_code": 400}
+
+        coords_table = UMAP_COORDS_MODELS[database]
+        expression_table = UMAP_EXPRESSION_MODELS[database]
+        species = UMAP_DATABASES[database]
 
         return {"success": True, "coords_table": coords_table, "expression_table": expression_table, "species": species}
 

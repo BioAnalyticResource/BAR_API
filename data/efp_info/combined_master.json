@@ -708,7 +708,7 @@
       }
     },
     "pseudobulk_std": {
-      "assigned_databases": 1,
+      "assigned_databases": 14,
       "tables": {
         "sample_data": {
           "columns": {
@@ -1605,6 +1605,258 @@
         "sample_biosource_info",
         "sample_data",
         "sample_general_info"
+      ],
+      "schema_source": "prod_information_schema",
+      "status": "active"
+    },
+    "arabidopsis_flower_lee_pseudobulk": {
+      "species": "arabidopsis",
+      "source": "super_viewer",
+      "platform": "rna_seq",
+      "schema_variant": "pseudobulk_std",
+      "schema_verified": true,
+      "value_semantics": {
+        "quantity": null,
+        "unit": null,
+        "scale": null
+      },
+      "identifier_type": "gene_model",
+      "gene_id_pattern": "arabidopsis",
+      "used_by": [],
+      "views": {},
+      "tables_present": [
+        "sample_data"
+      ],
+      "schema_source": "prod_information_schema",
+      "status": "active"
+    },
+    "arabidopsis_root_shahan_pseudobulk": {
+      "species": "arabidopsis",
+      "source": "super_viewer",
+      "platform": "rna_seq",
+      "schema_variant": "pseudobulk_std",
+      "schema_verified": true,
+      "value_semantics": {
+        "quantity": null,
+        "unit": null,
+        "scale": null
+      },
+      "identifier_type": "gene_model",
+      "gene_id_pattern": "arabidopsis",
+      "used_by": [],
+      "views": {},
+      "tables_present": [
+        "sample_data"
+      ],
+      "schema_source": "prod_information_schema",
+      "status": "active"
+    },
+    "arabidopsis_rosette_21d_lee_pseudobulk": {
+      "species": "arabidopsis",
+      "source": "super_viewer",
+      "platform": "rna_seq",
+      "schema_variant": "pseudobulk_std",
+      "schema_verified": true,
+      "value_semantics": {
+        "quantity": null,
+        "unit": null,
+        "scale": null
+      },
+      "identifier_type": "gene_model",
+      "gene_id_pattern": "arabidopsis",
+      "used_by": [],
+      "views": {},
+      "tables_present": [
+        "sample_data"
+      ],
+      "schema_source": "prod_information_schema",
+      "status": "active"
+    },
+    "arabidopsis_rosette_30d_lee_pseudobulk": {
+      "species": "arabidopsis",
+      "source": "super_viewer",
+      "platform": "rna_seq",
+      "schema_variant": "pseudobulk_std",
+      "schema_verified": true,
+      "value_semantics": {
+        "quantity": null,
+        "unit": null,
+        "scale": null
+      },
+      "identifier_type": "gene_model",
+      "gene_id_pattern": "arabidopsis",
+      "used_by": [],
+      "views": {},
+      "tables_present": [
+        "sample_data"
+      ],
+      "schema_source": "prod_information_schema",
+      "status": "active"
+    },
+    "arabidopsis_seed_0d_lee_pseudobulk": {
+      "species": "arabidopsis",
+      "source": "super_viewer",
+      "platform": "rna_seq",
+      "schema_variant": "pseudobulk_std",
+      "schema_verified": true,
+      "value_semantics": {
+        "quantity": null,
+        "unit": null,
+        "scale": null
+      },
+      "identifier_type": "gene_model",
+      "gene_id_pattern": "arabidopsis",
+      "used_by": [],
+      "views": {},
+      "tables_present": [
+        "sample_data"
+      ],
+      "schema_source": "prod_information_schema",
+      "status": "active"
+    },
+    "arabidopsis_seed_martin_pseudobulk": {
+      "species": "arabidopsis",
+      "source": "super_viewer",
+      "platform": "rna_seq",
+      "schema_variant": "pseudobulk_std",
+      "schema_verified": true,
+      "value_semantics": {
+        "quantity": null,
+        "unit": null,
+        "scale": null
+      },
+      "identifier_type": "gene_model",
+      "gene_id_pattern": "arabidopsis",
+      "used_by": [],
+      "views": {},
+      "tables_present": [
+        "sample_data"
+      ],
+      "schema_source": "prod_information_schema",
+      "status": "active"
+    },
+    "arabidopsis_seedling_12d_lee_pseudobulk": {
+      "species": "arabidopsis",
+      "source": "super_viewer",
+      "platform": "rna_seq",
+      "schema_variant": "pseudobulk_std",
+      "schema_verified": true,
+      "value_semantics": {
+        "quantity": null,
+        "unit": null,
+        "scale": null
+      },
+      "identifier_type": "gene_model",
+      "gene_id_pattern": "arabidopsis",
+      "used_by": [],
+      "views": {},
+      "tables_present": [
+        "sample_data"
+      ],
+      "schema_source": "prod_information_schema",
+      "status": "active"
+    },
+    "arabidopsis_seedling_3d_lee_pseudobulk": {
+      "species": "arabidopsis",
+      "source": "super_viewer",
+      "platform": "rna_seq",
+      "schema_variant": "pseudobulk_std",
+      "schema_verified": true,
+      "value_semantics": {
+        "quantity": null,
+        "unit": null,
+        "scale": null
+      },
+      "identifier_type": "gene_model",
+      "gene_id_pattern": "arabidopsis",
+      "used_by": [],
+      "views": {},
+      "tables_present": [
+        "sample_data"
+      ],
+      "schema_source": "prod_information_schema",
+      "status": "active"
+    },
+    "arabidopsis_seedling_6d_lee_pseudobulk": {
+      "species": "arabidopsis",
+      "source": "super_viewer",
+      "platform": "rna_seq",
+      "schema_variant": "pseudobulk_std",
+      "schema_verified": true,
+      "value_semantics": {
+        "quantity": null,
+        "unit": null,
+        "scale": null
+      },
+      "identifier_type": "gene_model",
+      "gene_id_pattern": "arabidopsis",
+      "used_by": [],
+      "views": {},
+      "tables_present": [
+        "sample_data"
+      ],
+      "schema_source": "prod_information_schema",
+      "status": "active"
+    },
+    "arabidopsis_shoot_zhang_pseudobulk": {
+      "species": "arabidopsis",
+      "source": "super_viewer",
+      "platform": "rna_seq",
+      "schema_variant": "pseudobulk_std",
+      "schema_verified": true,
+      "value_semantics": {
+        "quantity": null,
+        "unit": null,
+        "scale": null
+      },
+      "identifier_type": "gene_model",
+      "gene_id_pattern": "arabidopsis",
+      "used_by": [],
+      "views": {},
+      "tables_present": [
+        "sample_data"
+      ],
+      "schema_source": "prod_information_schema",
+      "status": "active"
+    },
+    "arabidopsis_silique_lee_pseudobulk": {
+      "species": "arabidopsis",
+      "source": "super_viewer",
+      "platform": "rna_seq",
+      "schema_variant": "pseudobulk_std",
+      "schema_verified": true,
+      "value_semantics": {
+        "quantity": null,
+        "unit": null,
+        "scale": null
+      },
+      "identifier_type": "gene_model",
+      "gene_id_pattern": "arabidopsis",
+      "used_by": [],
+      "views": {},
+      "tables_present": [
+        "sample_data"
+      ],
+      "schema_source": "prod_information_schema",
+      "status": "active"
+    },
+    "arabidopsis_stem_lee_pseudobulk": {
+      "species": "arabidopsis",
+      "source": "super_viewer",
+      "platform": "rna_seq",
+      "schema_variant": "pseudobulk_std",
+      "schema_verified": true,
+      "value_semantics": {
+        "quantity": null,
+        "unit": null,
+        "scale": null
+      },
+      "identifier_type": "gene_model",
+      "gene_id_pattern": "arabidopsis",
+      "used_by": [],
+      "views": {},
+      "tables_present": [
+        "sample_data"
       ],
       "schema_source": "prod_information_schema",
       "status": "active"
@@ -30251,6 +30503,27 @@
       ],
       "schema_source": "prod_information_schema",
       "status": "inactive"
+    },
+    "rice_OW_pseudobulk": {
+      "species": "rice",
+      "source": "super_viewer",
+      "platform": "rna_seq",
+      "schema_variant": "pseudobulk_std",
+      "schema_verified": true,
+      "value_semantics": {
+        "quantity": null,
+        "unit": null,
+        "scale": null
+      },
+      "identifier_type": "gene_model",
+      "gene_id_pattern": "rice",
+      "used_by": [],
+      "views": {},
+      "tables_present": [
+        "sample_data"
+      ],
+      "schema_source": "prod_information_schema",
+      "status": "active"
     },
     "rice_abiotic_stress_sc_pseudobulk": {
       "species": "rice",

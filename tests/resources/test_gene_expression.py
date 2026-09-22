@@ -62,7 +62,25 @@ class TestSignalStdColumn(TestCase):
     def test_only_the_pseudobulk_model_maps_data_signal_std(self):
         """The variant-aware model generator has to stay a no-op for every other database."""
         with_std = {name for name, model in SAMPLE_DATA_MODELS.items() if hasattr(model, "data_signal_std")}
-        self.assertEqual(with_std, {"arabidopsis_NIE_pseudobulk"})
+        self.assertEqual(
+            with_std,
+            {
+                "arabidopsis_NIE_pseudobulk",
+                "arabidopsis_flower_lee_pseudobulk",
+                "arabidopsis_root_shahan_pseudobulk",
+                "arabidopsis_rosette_21d_lee_pseudobulk",
+                "arabidopsis_rosette_30d_lee_pseudobulk",
+                "arabidopsis_seed_0d_lee_pseudobulk",
+                "arabidopsis_seed_martin_pseudobulk",
+                "arabidopsis_seedling_12d_lee_pseudobulk",
+                "arabidopsis_seedling_3d_lee_pseudobulk",
+                "arabidopsis_seedling_6d_lee_pseudobulk",
+                "arabidopsis_shoot_zhang_pseudobulk",
+                "arabidopsis_silique_lee_pseudobulk",
+                "arabidopsis_stem_lee_pseudobulk",
+                "rice_OW_pseudobulk",
+            },
+        )
 
     def test_pseudobulk_rows_carry_value_std(self):
         response = self.client.get("/gene_expression/expression/arabidopsis_NIE_pseudobulk/AT1G01010")
